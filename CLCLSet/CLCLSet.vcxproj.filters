@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{9eb50d07-6ce3-4b87-8a72-c3b17187a8e8}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\CLCSet Source Files">
+      <UniqueIdentifier>{e3cbb5ca-58cb-49dc-8460-2ee6a07cdc60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CLCL Source Files">
+      <UniqueIdentifier>{13d48fa0-b36f-481e-b88f-9860b57d763b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{d3c2ea75-f5bd-494c-a2a6-a011338c86be}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Header Files\CLCLSet Header Files">
+      <UniqueIdentifier>{4ef51093-5642-4246-9480-db4063fa5cfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CLCL Header Files">
+      <UniqueIdentifier>{a37c326b-ccb7-457e-903b-857555f0fda8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{09ad011f-0fae-401f-a08c-56f8003ce5b4}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CLCLSet.c">
+      <Filter>Source Files\CLCSet Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectIcon.c">
+      <Filter>Source Files\CLCSet Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectKey.c">
+      <Filter>Source Files\CLCSet Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectPath.c">
+      <Filter>Source Files\CLCSet Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SetAction.c">
+      <Filter>Source Files\CLCSet Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SetFilter.c">
+      <Filter>Source Files\CLCSet Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SetFormat.c">
+      <Filter>Source Files\CLCSet Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SetHistory.c">
+      <Filter>Source Files\CLCSet Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SetMenu.c">
+      <Filter>Source Files\CLCSet Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SetSendkey.c">
+      <Filter>Source Files\CLCSet Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SetTool.c">
+      <Filter>Source Files\CLCSet Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SetViewer.c">
+      <Filter>Source Files\CLCSet Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SetWindow.c">
+      <Filter>Source Files\CLCSet Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Bitmap.c">
+      <Filter>Source Files\CLCL Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClipBoard.c">
+      <Filter>Source Files\CLCL Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Data.c">
+      <Filter>Source Files\CLCL Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\File.c">
+      <Filter>Source Files\CLCL Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Filter.c">
+      <Filter>Source Files\CLCL Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Format.c">
+      <Filter>Source Files\CLCL Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Ini.c">
+      <Filter>Source Files\CLCL Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Memory.c">
+      <Filter>Source Files\CLCL Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Message.c">
+      <Filter>Source Files\CLCL Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Profile.c">
+      <Filter>Source Files\CLCL Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\String.c">
+      <Filter>Source Files\CLCL Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dpi.c">
+      <Filter>Source Files\CLCL Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CLCLSet.rc">
+      <Filter>Source Files\CLCSet Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CLCLSet.h">
+      <Filter>Header Files\CLCLSet Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectIcon.h">
+      <Filter>Header Files\CLCLSet Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectKey.h">
+      <Filter>Header Files\CLCLSet Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectPath.h">
+      <Filter>Header Files\CLCLSet Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SetAction.h">
+      <Filter>Header Files\CLCLSet Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SetFilter.h">
+      <Filter>Header Files\CLCLSet Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SetFormat.h">
+      <Filter>Header Files\CLCLSet Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SetHistory.h">
+      <Filter>Header Files\CLCLSet Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SetMenu.h">
+      <Filter>Header Files\CLCLSet Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SetSendkey.h">
+      <Filter>Header Files\CLCLSet Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SetTool.h">
+      <Filter>Header Files\CLCLSet Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SetViewer.h">
+      <Filter>Header Files\CLCLSet Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SetWindow.h">
+      <Filter>Header Files\CLCLSet Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Bitmap.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClipBoard.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Data.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\File.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Filter.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Format.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\General.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Ini.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Menu.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Message.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Profile.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SendKey.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\String.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Tool.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dpi.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\ico00002.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ico00003.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ico00005.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="icon_mai.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon_mai.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="res\manifest.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,313 @@
+
+----[General]----------------------------
+
+WM_GET_VERSION
+  wParam - 0
+  lParam - 0
+  戻り値 - (int)バージョン
+  機能:
+    CLCLのバージョンを取得します。
+
+WM_GET_WORKPATH
+  wParam - 0
+  lParam - (TCHAR *)作業ディレクトリのパス (OUT)
+  戻り値 - 0
+  機能:
+    作業ディレクトリのパスを取得します。
+    初期設定では "CLCL.exeがあるディレクトリ\ユーザ名" になります。
+
+WM_GET_CLIPBOARD_WATCH
+  wParam - 0
+  lParam - 0
+  戻り値 - (int)0 - 監視していない、1 - 監視中
+  機能:
+    クリップボードの監視状態を取得します。
+
+WM_SET_CLIPBOARD_WATCH
+  wParam - (int)0 - 解除、1 - 監視
+  lParam - 0
+  戻り値 - 0
+  機能:
+    クリップボードの監視を切り替えます。
+
+WM_GET_FORMAT_ICON
+  wParam - (int)アイコンのサイズ
+  lParam - (TCHAR *)形式名
+  戻り値 - (HICON)アイコンのハンドル
+  機能:
+    形式用アイコンを取得します。
+    アイコンのハンドルは利用し終わると破棄してください。
+
+WM_ENABLE_ACCELERATOR
+  wParam - (BOOL)TRUE - 有効、FALSE - 無効
+  lParam - 0
+  戻り値 - 0
+  機能:
+    アクセラレータの有効・無効を切り替えます。
+
+WM_REGIST_HOTKEY
+  wParam - 0
+  lParam - 0
+  戻り値 - 0
+  機能:
+    ホットキーを登録します。
+
+WM_UNREGIST_HOTKEY
+  wParam - 0
+  lParam - 0
+  戻り値 - 0
+  機能:
+    ホットキーを解除します。
+
+
+----[Option]----------------------------
+
+WM_OPTION_SHOW
+  wParam - 0
+  lParam - (TCHAR *)表示タブ
+  戻り値 - 0
+  機能:
+    オプション画面を表示します。
+
+WM_OPTION_GET
+  wParam - 0
+  lParam - 0
+  戻り値 - (OPTION_INFO *)オプション情報
+  機能:
+    オプションを取得します。
+
+WM_OPTION_LOAD
+  wParam - 0
+  lParam - 0
+  戻り値 - 0
+  機能:
+    オプションを再読み込みします。
+
+WM_OPTION_SAVE
+  wParam - 0
+  lParam - 0
+  戻り値 - 0
+  機能:
+    オプションを保存します。
+
+
+----[history & regist]----------------------------
+
+WM_HISTORY_CHANGED
+  wParam - 0
+  lParam - 0
+  戻り値 - 0
+  機能:
+    履歴アイテムの変更を通知します。
+    これを送るとビューアで表示の更新をします。
+
+WM_HISTORY_GET_ROOT
+  wParam - 0
+  lParam - 0
+  戻り値 - (DATA_INFO *)履歴アイテムのルート
+  機能:
+    履歴アイテムを取得します。
+
+WM_HISTORY_LOAD
+  wParam - (int)0 - オプションに従う、1 - 強制的に再読み込み
+  lParam - 0
+  戻り値 - (BOOL)TRUE - 成功、FALSE - 失敗
+  機能:
+    現在の履歴を破棄して履歴を再読み込みします。
+
+WM_HISTORY_SAVE
+  wParam - (int)0 - オプションに従う、1 - 強制的に保存
+  lParam - 0
+  戻り値 - (BOOL)TRUE - 成功、FALSE - 失敗
+  機能:
+    履歴を保存します。
+
+WM_REGIST_CHANGED
+  wParam - 0
+  lParam - 0
+  戻り値 - 0
+  機能:
+    登録アイテムの変更を通知します。
+    これを送るとビューアで表示の更新をします。
+
+WM_REGIST_GET_ROOT
+  wParam - 0
+  lParam - 0
+  戻り値 - (DATA_INFO *)登録アイテムのルート
+  機能:
+    登録アイテムを取得します。
+
+WM_REGIST_LOAD
+  wParam - 0
+  lParam - 0
+  戻り値 - (BOOL)TRUE - 成功、FALSE - 失敗
+  機能:
+    現在の登録アイテムを破棄して登録アイテムを読み込みします。
+
+WM_REGIST_SAVE
+  wParam - 0
+  lParam - 0
+  戻り値 - (BOOL)TRUE - 成功、FALSE - 失敗
+  機能:
+    登録アイテムを保存します。
+
+
+----[Item]----------------------------
+
+WM_ITEM_TO_CLIPBOARD
+  wParam - 0
+  lParam - (DATA_INFO *)アイテム
+  戻り値 - (BOOL)TRUE - 成功、FALSE - 失敗
+  機能:
+    アイテムをクリップボードに送ります。
+
+WM_ITEM_CREATE
+  wParam - (int)作成する種類 (TYPE_DATA or TYPE_ITEM or TYPE_FOLDER)
+  lParam - wParam によって変化
+               TYPE_DATA - (TCHAR *)形式名
+               TYPE_ITEM - (TCHAR *)タイトル
+               TYPE_FOLDER - (TCHAR *)タイトル
+  戻り値 - (DATA_INFO *)作成したアイテム
+  機能:
+    アイテムを作成します。
+
+WM_ITEM_COPY
+  wParam - 0
+  lParam - (DATA_INFO *)コピー元アイテム
+  戻り値 - (DATA_INFO *)コピーしたアイテム
+  機能:
+    アイテムのコピーを作成します。
+
+WM_ITEM_FREE
+  wParam - 0
+  lParam - (DATA_INFO *)解放するアイテム
+  戻り値 - 0
+  機能:
+    アイテムを解放します。
+    nextとchildに設定されたアイテムも解放するためリスト中の1アイテムのみを解放
+    する場合は、リストからアイテムを削除してからこのメッセージを呼んでください。
+
+WM_ITEM_FREE_DATA
+  wParam - (TCHAR *)形式名
+  lParam - (HANDLE)解放するデータ
+  戻り値 - 0
+  機能:
+    データを解放します。
+    アイテムに含まれる di->data を解放する時に呼びます。
+
+WM_ITEM_CHECK
+  wParam - 0
+  lParam - (DATA_INFO *)チェックするアイテム
+  戻り値 - (int)-1 - 存在しない、0 - 履歴に存在する、1 - 登録アイテムに存在する
+  機能:
+    アイテムの存在をチェックします。
+
+WM_ITEM_TO_BYTES
+  wParam - (DWORD *)変換後のサイズ (OUT)
+  lParam - (DATA_INFO *)変換するアイテム
+  戻り値 - (BYTE *)変換後のバイト列
+  機能:
+    アイテムをバイト列を変換します。
+
+WM_ITEM_FROM_BYTES
+  wParam - (BYTE *)変換するバイト列
+  lParam - (DATA_INFO *)設定するアイテム
+  戻り値 - 0
+  機能:
+    バイト列からデータを作成しアイテムに設定します。
+
+WM_ITEM_TO_FILE
+  wParam - (TCHAR *)ファイル名
+  lParam - (DATA_INFO *)保存するアイテム
+  戻り値 - (BOOL)TRUE - 成功、FALSE - 失敗
+  機能:
+    アイテムをファイルに保存します。
+
+WM_ITEM_FROM_FILE
+  wParam - (TCHAR *)ファイル名
+  lParam - (DATA_INFO *)設定するアイテム
+  戻り値 - (BOOL)TRUE - 成功、FALSE - 失敗
+  機能:
+    ファイルからデータを作成してアイテムに設定します。
+
+WM_ITEM_GET_PARENT
+  wParam - 0
+  lParam - (DATA_INFO *)親アイテムを取得するアイテム
+  戻り値 - (DATA_INFO *)親アイテム、見つからない場合は NULL を返す。
+  機能:
+    アイテムの親アイテムを取得します。
+
+WM_ITEM_GET_FORMAT_TO_ITEM
+  wParam - (TCHAR *)形式名
+  lParam - (DATA_INFO *)アイテム情報
+  戻り値 - (DATA_INFO *)TYPE_DATAのアイテム
+  機能:
+    指定の形式名をアイテムから検索する。
+
+WM_ITEM_GET_PRIORITY_HIGHEST
+  wParam - 0
+  lParam - (DATA_INFO *)TYPE_ITEMのアイテム
+  戻り値 - (DATA_INFO *)TYPE_DATAのアイテム
+  機能:
+    優先順位の高い形式のアイテムを取得します。
+
+WM_ITEM_GET_TITLE
+  wParam - (TCHAR *)タイトル (OUT)
+  lParam - (DATA_INFO *)タイトルを取得するアイテム
+  戻り値 - 0
+  機能:
+    アイテムのタイトルを取得します。
+
+WM_ITEM_GET_OPEN_INFO
+  wParam - (OPENFILENAME *)ファイル情報 (OUT)
+  lParam - (TCHAR *)形式名
+  戻り値 - (int)-1 - コモンダイアログを表示しない、0 - 未設定、1 - 設定済み
+  機能:
+    形式毎のファイルを開く情報を取得します。
+
+WM_ITEM_GET_SAVE_INFO
+  wParam - (OPENFILENAME *)ファイル情報 (OUT)
+  lParam - (DATA_INFO )保存情報を取得するアイテム
+  戻り値 - (int)-1 - コモンダイアログを表示しない、0 - 未設定、1 - 設定済み
+  機能:
+    アイテムのファイル保存情報を取得します。
+
+
+----[Viewer]----------------------------
+
+WM_VIEWER_SHOW
+  wParam - 0
+  lParam - 0
+  戻り値 - なし
+  機能:
+    ビューアを表示します。
+
+WM_VIEWER_GET_HWND
+  wParam - 0
+  lParam - 0
+  戻り値 - (HWND)ビューアのウィンドウハンドル、表示されていない場合はNULLを返す
+  機能:
+    ビューアのウィンドウハンドルを取得します。
+
+WM_VIEWER_GET_MAIN_HWND
+  wParam - 0
+  lParam - 0
+  戻り値 - (HWND)メインウィンドウハンドル
+  機能:
+    メインウィンドウハンドルを取得します。
+
+WM_VIEWER_GET_SELECTION
+  wParam - 0
+  lParam - 0
+  戻り値 - (DATA_INFO *)ビューアで選択中のアイテム情報
+  機能:
+    ビューアで選択されているアイテム情報を取得します。
+    ビューアが表示されていない場合や履歴登録アイテム以外のアイテムが選択されて
+    いる場合は、NULL を返す。
+
+WM_VIEWER_SELECT_ITEM
+  wParam - 0
+  lParam - (DATA_INFO *)選択するアイテム情報
+  戻り値 - (BOOL)TRUE - 選択した、FALSE - 選択できなかった
+  機能:
+    ビューアでアイテムを選択状態にします。

@@ -1,0 +1,7 @@
+EXPORTS
+	key_hook_proc	@3
+	SetHook			@4
+	UnHook			@5
+
+SECTIONS
+	my_shared_section READ WRITE SHARED

@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName />
+    <SccLocalPath />
+    <ProjectGuid>{0B765067-FE93-4805-828E-BE5F235DD95B}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_MBCS;UNICODE;OP_XP_STYLE;LC_JP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\Debug\CLCL.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Debug\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\Debug\CLCL.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0411</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug\CLCL.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>.\Debug\CLCL.exe</OutputFile>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;Comctl32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>.\clcl.def</ModuleDefinitionFile>
+    </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\res\manifest.xml %(AdditionalManifestFiles)</AdditionalManifestFiles>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <StringPooling>true</StringPooling>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_MBCS;OP_XP_STYLE;LC_JP;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\Release\CLCL.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Release\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\Release\CLCL.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0411</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release\CLCL.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>.\Release\CLCL.exe</OutputFile>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;Comctl32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>.\clcl.def</ModuleDefinitionFile>
+    </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)\res\manifest.xml %(AdditionalManifestFiles)</AdditionalManifestFiles>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="BinView.c" />
+    <ClCompile Include="Bitmap.c" />
+    <ClCompile Include="ClipBoard.c" />
+    <ClCompile Include="Container.c" />
+    <ClCompile Include="Data.c" />
+    <ClCompile Include="dpi.c" />
+    <ClCompile Include="File.c" />
+    <ClCompile Include="Filter.c" />
+    <ClCompile Include="fmt_Bitmap.c" />
+    <ClCompile Include="fmt_bitmap_view.c" />
+    <ClCompile Include="fmt_file.c" />
+    <ClCompile Include="fmt_file_view.c" />
+    <ClCompile Include="fmt_Text.c" />
+    <ClCompile Include="fmt_text_view.c" />
+    <ClCompile Include="Font.c" />
+    <ClCompile Include="Format.c" />
+    <ClCompile Include="Frame.c" />
+    <ClCompile Include="gdip.cpp" />
+    <ClCompile Include="History.c" />
+    <ClCompile Include="ImageList.c" />
+    <ClCompile Include="Ini.c" />
+    <ClCompile Include="ListView.c" />
+    <ClCompile Include="main.c" />
+    <ClCompile Include="Memory.c" />
+    <ClCompile Include="Menu.c" />
+    <ClCompile Include="Message.c" />
+    <ClCompile Include="OleDragDrop.c" />
+    <ClCompile Include="Profile.c" />
+    <ClCompile Include="Regist.c" />
+    <ClCompile Include="SelectFolder.c" />
+    <ClCompile Include="SelectFormat.c" />
+    <ClCompile Include="SendKey.c" />
+    <ClCompile Include="SetHotkey.c" />
+    <ClCompile Include="StatusBar.c" />
+    <ClCompile Include="String.c" />
+    <ClCompile Include="Tool.c" />
+    <ClCompile Include="ToolBar.c" />
+    <ClCompile Include="ToolTip.c" />
+    <ClCompile Include="TreeView.c" />
+    <ClCompile Include="Viewer.c" />
+    <ClCompile Include="ViewerDnD.c" />
+    <ClCompile Include="ViewerOLEDnD.c" />
+    <ClCompile Include="Window.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="clcl.def" />
+    <CustomBuild Include="res\cursor.cur" />
+    <CustomBuild Include="res\cursor2.cur" />
+    <CustomBuild Include="res\cursor3.cur" />
+    <CustomBuild Include="res\No_m.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CLCL.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BinView.h" />
+    <ClInclude Include="Bitmap.h" />
+    <ClInclude Include="ClipBoard.h" />
+    <ClInclude Include="Container.h" />
+    <ClInclude Include="Data.h" />
+    <ClInclude Include="dpi.h" />
+    <ClInclude Include="File.h" />
+    <ClInclude Include="Filter.h" />
+    <ClInclude Include="fmt_bitmap_view.h" />
+    <ClInclude Include="fmt_file_view.h" />
+    <ClInclude Include="fmt_text_view.h" />
+    <ClInclude Include="Font.h" />
+    <ClInclude Include="Format.h" />
+    <ClInclude Include="Frame.h" />
+    <ClInclude Include="gdip.h" />
+    <ClInclude Include="General.h" />
+    <ClInclude Include="History.h" />
+    <ClInclude Include="ImageList.h" />
+    <ClInclude Include="Ini.h" />
+    <ClInclude Include="ListView.h" />
+    <ClInclude Include="Memory.h" />
+    <ClInclude Include="Menu.h" />
+    <ClInclude Include="Message.h" />
+    <ClInclude Include="OleDragDrop.h" />
+    <ClInclude Include="Profile.h" />
+    <ClInclude Include="Regist.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="SelectFolder.h" />
+    <ClInclude Include="SelectFormat.h" />
+    <ClInclude Include="SendKey.h" />
+    <ClInclude Include="SetHotkey.h" />
+    <ClInclude Include="StatusBar.h" />
+    <ClInclude Include="String.h" />
+    <ClInclude Include="Tool.h" />
+    <ClInclude Include="ToolBar.h" />
+    <ClInclude Include="ToolTip.h" />
+    <ClInclude Include="TreeView.h" />
+    <ClInclude Include="Viewer.h" />
+    <ClInclude Include="ViewerDnD.h" />
+    <ClInclude Include="ViewerOLEDnD.h" />
+    <ClInclude Include="Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\bmp00001.bmp" />
+    <Image Include="res\ico00001.ico" />
+    <Image Include="res\ico00002.ico" />
+    <Image Include="res\ico00003.ico" />
+    <Image Include="res\ico00004.ico" />
+    <Image Include="res\ico00005.ico" />
+    <Image Include="res\ico00006.ico" />
+    <Image Include="res\icon1.ico" />
+    <Image Include="res\icon_etc.ico" />
+    <Image Include="res\icon_fil.ico" />
+    <Image Include="res\icon_pic.ico" />
+    <Image Include="res\icon_str.ico" />
+    <Image Include="res\toolbar1.bmp" />
+    <Image Include="res\toolbar2.bmp" />
+    <Image Include="res\toolbar32.bmp" />
+    <Image Include="res\toolbar48.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="res\manifest.xml" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

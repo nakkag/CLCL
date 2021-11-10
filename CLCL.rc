@@ -1,0 +1,979 @@
+// Microsoft Visual C++ generated resource script.
+//
+#pragma code_page(65001)
+
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 日本語 (日本) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON_MAIN           ICON                    "res\\ico00001.ico"
+
+IDI_ICON_CLIP           ICON                    "res\\icon1.ico"
+
+IDI_ICON_TEXT           ICON                    "res\\icon_str.ico"
+
+IDI_ICON_DEFAULT        ICON                    "res\\icon_etc.ico"
+
+IDI_ICON_CLIPBOARD      ICON                    "res\\ico00004.ico"
+
+IDI_ICON_REGIST         ICON                    "res\\ico00003.ico"
+
+IDI_ICON_BITMAP         ICON                    "res\\icon_pic.ico"
+
+IDI_ICON_FILE           ICON                    "res\\icon_fil.ico"
+
+IDI_ICON_CLIP_BAN       ICON                    "res\\ico00006.ico"
+
+IDI_ICON_FOLDER         ICON                    "res\\ico00002.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RT_MANIFEST
+//
+
+1                       RT_MANIFEST             "res\\manifest.xml"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU_VIEWER MENU
+BEGIN
+    POPUP "ファイル(&F)"
+    BEGIN
+        MENUITEM "新規作成(&N)...\tCtrl+N",         ID_MENUITEM_NEW_ITEM
+        MENUITEM "名前を付けて保存(&S)...\tCtrl+S",     ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "現在の状態を保存(&T)\tSCtrl+S",       ID_MENUITEM_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "インポート(&I)...",                ID_MENUITEM_IMPORT
+        MENUITEM "エクスポート(&E)...",               ID_MENUITEM_EXPORT
+        MENUITEM SEPARATOR
+        MENUITEM "クリップボードを監視(&W)",              ID_MENUITEM_WATCH
+        MENUITEM SEPARATOR
+        MENUITEM "このウィンドウを閉じる(&C)",             ID_MENUITEM_CLOSE
+        MENUITEM "終了(&X)",                      ID_MENUITEM_EXIT
+    END
+    POPUP "編集(&E)"
+    BEGIN
+        MENUITEM "クリップボードに送る(&C)\tCtrl+C",      ID_MENUITEM_CLIPBOARD
+        MENUITEM "クリップボードから貼り付け(&P)\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "登録アイテムに追加(&R)...\tCtrl+R",    ID_MENUITEM_REGIST_ADD
+        MENUITEM SEPARATOR
+        MENUITEM "上へ(&U)\tAlt+↑",               ID_MENUITEM_UP
+        MENUITEM "下へ(&W)\tAlt+↓",               ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "削除(&D)",                      ID_MENUITEM_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "すべて選択(&A)\tCtrl+A",           ID_MENUITEM_SELECT_ALL
+    END
+    POPUP "表示(&V)"
+    BEGIN
+        MENUITEM "ツール バー(&T)",                  ID_MENUITEM_SHOW_TOOLBAR
+        MENUITEM "ステータス バー(&S)",                ID_MENUITEM_SHOW_STATUSBAR
+        MENUITEM SEPARATOR
+        MENUITEM "ツリーに形式を表示(&F)",               ID_MENUITEM_SHOW_FORMAT
+        MENUITEM "バイナリ表示(&B)",                  ID_MENUITEM_SHOW_BIN
+        MENUITEM SEPARATOR
+        MENUITEM "オプション(&O)...",                ID_MENUITEM_OPTION
+    END
+    POPUP "ツール(&T)"
+    BEGIN
+        MENUITEM "ツール設定(&O)...",                ID_MENUITEM_TOOL_SET
+        MENUITEM SEPARATOR
+    END
+    POPUP "ヘルプ(&H)"
+    BEGIN
+        MENUITEM "バージョン情報(&A)...",              ID_MENUITEM_ABOUT
+    END
+END
+
+IDR_MENU_POPUP MENU
+BEGIN
+    POPUP "クリップボード"
+    BEGIN
+        MENUITEM "登録アイテムに追加(&R)...\tCtrl+R",    ID_MENUITEM_REGIST_ADD
+        MENUITEM "名前を付けて保存(&S)...\tCtrl+S",     ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        POPUP "設定(&O)"
+        BEGIN
+            MENUITEM "形式設定(&F)...",                 ID_MENUITEM_SET_FORMAT
+            MENUITEM "フィルタ設定(&L)...",               ID_MENUITEM_SET_FILTER
+        END
+    END
+    POPUP "履歴(TV)"
+    BEGIN
+        MENUITEM "クリップボードに送る(&C)\tCtrl+C",      ID_MENUITEM_CLIPBOARD
+        MENUITEM "クリップボードから貼り付け(&P)\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "登録アイテムに追加(&R)...\tCtrl+R",    ID_MENUITEM_REGIST_ADD
+        MENUITEM "ツール(&T)",                     ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "上へ(&U)\tAlt+↑",               ID_MENUITEM_UP
+        MENUITEM "下へ(&W)\tAlt+↓",               ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "新規作成(&N)...\tCtrl+N",         ID_MENUITEM_NEW_ITEM
+        MENUITEM "名前を付けて保存(&S)...\tCtrl+S",     ID_MENUITEM_DATA_SAVE
+        POPUP "設定(&O)"
+        BEGIN
+            MENUITEM "形式設定(&F)...",                 ID_MENUITEM_SET_FORMAT
+            MENUITEM "フィルタ設定(&L)...",               ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "削除(&D)",                      ID_MENUITEM_DELETE
+    END
+    POPUP "履歴(LV)"
+    BEGIN
+        MENUITEM "開く(&O)",                      ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "クリップボードに送る(&C)\tCtrl+C",      ID_MENUITEM_CLIPBOARD
+        MENUITEM "クリップボードから貼り付け(&P)\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "登録アイテムに追加(&R)...\tCtrl+R",    ID_MENUITEM_REGIST_ADD
+        MENUITEM "ツール(&T)",                     ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "上へ(&U)\tAlt+↑",               ID_MENUITEM_UP
+        MENUITEM "下へ(&W)\tAlt+↓",               ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "新規作成(&N)...\tCtrl+N",         ID_MENUITEM_NEW_ITEM
+        MENUITEM "名前を付けて保存(&S)...\tCtrl+S",     ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "削除(&D)",                      ID_MENUITEM_DELETE
+    END
+    POPUP "登録アイテム(TV)"
+    BEGIN
+        MENUITEM "クリップボードに送る(&C)\tCtrl+C",      ID_MENUITEM_CLIPBOARD
+        MENUITEM "クリップボードから貼り付け(&P)\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "ツール(&T)",                     ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "上へ(&U)\tAlt+↑",               ID_MENUITEM_UP
+        MENUITEM "下へ(&W)\tAlt+↓",               ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "新規作成(&N)...\tCtrl+N",         ID_MENUITEM_NEW_ITEM
+        MENUITEM "フォルダの作成(&F)",                 ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "名前を付けて保存(&S)...\tCtrl+S",     ID_MENUITEM_DATA_SAVE
+        MENUITEM "ホットキー設定(&H)...",              ID_MENUITEM_SET_HOTKEY
+        POPUP "設定(&O)"
+        BEGIN
+            MENUITEM "形式設定(&F)...",                 ID_MENUITEM_SET_FORMAT
+            MENUITEM "フィルタ設定(&L)...",               ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "コピーの作成(&R)...\tCtrl+R",       ID_MENUITEM_REGIST_ADD
+        MENUITEM "移動(&E)...\tSCtrl+R",          ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "名前の変更(&M)",                   ID_MENUITEM_RENAME
+        MENUITEM "名前の初期化(&I)",                  ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "削除(&D)",                      ID_MENUITEM_DELETE
+    END
+    POPUP "登録アイテム(LV)"
+    BEGIN
+        MENUITEM "開く(&O)",                      ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "クリップボードに送る(&C)\tCtrl+C",      ID_MENUITEM_CLIPBOARD
+        MENUITEM "クリップボードから貼り付け(&P)\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "ツール(&T)",                     ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "上へ(&U)\tAlt+↑",               ID_MENUITEM_UP
+        MENUITEM "下へ(&W)\tAlt+↓",               ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "新規作成(&N)...\tCtrl+N",         ID_MENUITEM_NEW_ITEM
+        MENUITEM "フォルダの作成(&F)",                 ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "名前を付けて保存(&S)...\tCtrl+S",     ID_MENUITEM_DATA_SAVE
+        MENUITEM "ホットキー設定(&H)...",              ID_MENUITEM_SET_HOTKEY
+        MENUITEM SEPARATOR
+        MENUITEM "コピーの作成(&R)...\tCtrl+R",       ID_MENUITEM_REGIST_ADD
+        MENUITEM "移動(&E)...\tSCtrl+R",          ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "名前の変更(&M)",                   ID_MENUITEM_RENAME
+        MENUITEM "名前の初期化(&I)",                  ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "削除(&D)",                      ID_MENUITEM_DELETE
+    END
+    POPUP "ドラッグ＆ドロップ"
+    BEGIN
+        MENUITEM "ここにコピー(&C)",                  ID_MENU_DGDP_COPY
+        MENUITEM "ここに移動(&M)",                   ID_MENU_DGDP_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "キャンセル(&L)",                   IDCANCEL
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_CURSOR_MOVE         CURSOR                  "res\\cursor2.cur"
+
+IDC_CURSOR_BAN          CURSOR                  "res\\cursor3.cur"
+
+IDC_CURSOR_COPY         CURSOR                  "res\\cursor.cur"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR ACCELERATORS
+BEGIN
+    "N",            ID_MENUITEM_NEW_ITEM,   VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_MENUITEM_REGIST_ADD, VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_MENUITEM_REGIST_MOVE, VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "S",            ID_MENUITEM_DATA_SAVE,  VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_MENUITEM_SAVE,       VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_DOWN,        ID_MENUITEM_DOWN,       VIRTKEY, ALT, NOINVERT
+    VK_ESCAPE,      ID_MENUITEM_CLOSE,      VIRTKEY, NOINVERT
+    VK_TAB,         ID_ACCEL_CTRL_TAB,      VIRTKEY, CONTROL, NOINVERT
+    VK_UP,          ID_MENUITEM_UP,         VIRTKEY, ALT, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_SELECT_FOLDER DIALOG 0, 0, 211, 195
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "フォルダの選択"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    LTEXT           "msg",IDC_STATIC_MSG,5,5,203,15
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,25,200,145
+    DEFPUSHBUTTON   "OK",IDOK,100,175,50,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,155,175,50,14
+END
+
+IDD_DIALOG_SELECT_FORMAT DIALOGEX 0, 0, 202, 105
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_ACCEPTFILES
+CAPTION "新規作成"
+FONT 9, "ＭＳ Ｐゴシック", 0, 0, 0x1
+BEGIN
+    LTEXT           "追加する形式(&A):",IDC_STATIC,5,5,115,10
+    COMBOBOX        IDC_COMBO_FORMAT,5,15,190,145,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "ファイルを読み込む(&R)",IDC_CHECK_FILE_READ,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,40,185,10
+    LTEXT           "ファイル名(&F):",IDC_STATIC_FILE,5,55,115,10
+    EDITTEXT        IDC_EDIT_FILE,5,65,175,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_FILE_SELECT,182,65,13,13
+    DEFPUSHBUTTON   "OK",IDOK,90,85,50,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,145,85,50,14
+END
+
+IDD_DIALOG_SET_HOTKEY DIALOG 0, 0, 127, 73
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "ホットキー設定"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    LTEXT           "ホットキー(&H):",IDC_STATIC,10,5,75,10
+    CONTROL         "HotKey1",IDC_HOTKEY_ITEM,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,10,15,75,15
+    CONTROL         "+ Win",IDC_CHECK_WIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,18,27,10
+    CONTROL         "貼り付け(&P)",IDC_CHECK_PASTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,35,75,10
+    DEFPUSHBUTTON   "OK",IDOK,10,50,50,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,65,50,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_SELECT_FOLDER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 204
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 188
+    END
+
+    IDD_DIALOG_SELECT_FORMAT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 195
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 98
+    END
+
+    IDD_DIALOG_SET_HOTKEY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 120
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 66
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_TOOLBAR TOOLBAR 16, 16
+BEGIN
+    BUTTON      ID_BUTTON40024
+    BUTTON      ID_BUTTON40049
+    BUTTON      ID_BUTTON40025
+    BUTTON      ID_BUTTON40033
+    BUTTON      ID_BUTTON40034
+    BUTTON      ID_BUTTON40026
+    BUTTON      ID_BUTTON40027
+END
+
+IDR_TOOLBAR32 TOOLBAR 32, 32
+BEGIN
+    BUTTON      ID_BUTTON40024
+    BUTTON      ID_BUTTON40049
+    BUTTON      ID_BUTTON40025
+    BUTTON      ID_BUTTON40033
+    BUTTON      ID_BUTTON40034
+    BUTTON      ID_BUTTON40026
+    BUTTON      ID_BUTTON40027
+END
+
+IDR_TOOLBAR48 TOOLBAR 48, 48
+BEGIN
+    BUTTON      ID_BUTTON40024
+    BUTTON      ID_BUTTON40049
+    BUTTON      ID_BUTTON40025
+    BUTTON      ID_BUTTON40033
+    BUTTON      ID_BUTTON40034
+    BUTTON      ID_BUTTON40026
+    BUTTON      ID_BUTTON40027
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_TOOLBAR             BITMAP                  "res\\toolbar1.bmp"
+
+IDR_TOOLBAR32           BITMAP                  "res\\toolbar32.bmp"
+
+IDR_TOOLBAR48           BITMAP                  "res\\toolbar48.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,1,1,0
+ PRODUCTVERSION 2,1,1,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041104b0"
+        BEGIN
+            VALUE "FileDescription", "CLCL"
+            VALUE "FileVersion", "2.1.1.0"
+            VALUE "InternalName", "CLCL.exe"
+            VALUE "LegalCopyright", "Copyright (C) 1996-2019 by Ohno Tomoaki. All rights reserved."
+            VALUE "OriginalFilename", "CLCL.exe"
+            VALUE "ProductName", "CLCL"
+            VALUE "ProductVersion", "2.1.1.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x411, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_MENU_REGIST         "登録アイテム(&R)"
+    IDS_MENU_CANCEL         "キャンセル(&C)"
+    IDS_MENU_EXIT           "終了(&X)"
+    IDS_MENU_VIEWER         "ビューア(&V)..."
+    IDS_MENU_OPTION         "オプション(&O)..."
+    IDS_MENU_CLIPBOARD_WATCH "クリップボード監視(&W)"
+    IDS_TREEITEM_CLIPBOARD  "クリップボード"
+    IDS_TREEITEM_HISTORY    "履歴"
+    IDS_TREEITEM_REGIST     "登録アイテム"
+    IDS_TREEITEM_NEWFOLDER  "新しいフォルダ"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ERROR_END           "ファイル保存時にエラーが発生しました。\n終了処理を続けますか？"
+    IDS_ERROR_HOTKEY        "ホットキーの登録に失敗しました。\n設定を確認してください。"
+    IDS_ERROR_WINDOW_INIT   "ウィンドウの初期化に失敗しました。"
+    IDS_ERROR_FILENAME      "ファイル名に次の文字は使えません。\n\t\\ / : , ; * ? "" < > |"
+    IDS_ERROR_FOLDERNAME    "指定されたフォルダ名は既に存在します。別の名前を指定してください。"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_LISTCOLUMN_DATA     "データ"
+    IDS_LISTCOLUMN_SIZE     "サイズ"
+    IDS_LISTCOLUMN_DATE     "更新日時"
+    IDS_LISTCOLUMN_WINDOW   "ウィンドウ"
+    IDS_LISTCOLUMN_HOTKEY   "ホットキー"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_QUESTION_DELETE     "選択しているアイテムを削除してもよろしいですか？"
+    IDS_QUESTION_REPLACE    "既に同じ名前の形式が存在します。\nデータを置き換えてもよろしいですか？"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_ADDPOS       "追加するフォルダを選択してください。"
+    IDS_DIALOG_COPYPOS      "登録アイテムをコピーするフォルダを選択してください。"
+    IDS_DIALOG_MOVEPOS      "登録アイテムを移動するフォルダを選択してください。"
+    IDS_DIALOG_IMPORT       "インポートしたアイテムを追加するフォルダを選択してください。"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_VIEWER_COPYNAME     "コピー ～ %s"
+    IDS_VIEWER_COPYNAME_NUM "コピー (%d) ～ %s"
+    IDS_VIEWER_MENU_TOOL_NOTHING "(なし)"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STATUSBAR_ITEM_CNT  "%d 個のアイテム"
+    IDS_STATUSBAR_BYTES     "%d bytes"
+    IDS_STATUSBAR_KB        "%d KB"
+END
+
+STRINGTABLE
+BEGIN
+    ID_MENUITEM_CLIPBOARD_TB "クリップボードに送る"
+    ID_MENUITEM_PASTE_TB    "クリップボードから貼り付け"
+    ID_MENUITEM_REGIST_ADD_TB "登録アイテムに追加"
+    ID_MENUITEM_NEW_ITEM_TB "新規作成"
+    ID_MENUITEM_DELETE_TB   "削除"
+    ID_MENUITEM_UP_TB       "上へ"
+    ID_MENUITEM_DOWN_TB     "下へ"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_UNDO      "元に戻す(&U)"
+    IDS_TEXT_MENU_REDO      "やり直し(&R)"
+    IDS_TEXT_MENU_CUT       "切り取り(&T)"
+    IDS_TEXT_MENU_COPY      "コピー(&C)"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_PASTE     "貼り付け(&P)"
+    IDS_TEXT_MENU_DELETE    "削除(&D)"
+    IDS_TEXT_MENU_SELECT_ALL "すべて選択(&A)"
+    IDS_TEXT_MENU_WORDWRAP  "右端で折り返す(&W)"
+    IDS_TEXT_MENU_SELECT_FONT "フォント(&F)..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BITMAP_MENU_STRETCH "画像をウィンドウのサイズに合わせる(&S)"
+    IDS_BITMAP_MENU_ZOOM_IN "拡大する(&I)\tCtrl+↑"
+    IDS_BITMAP_MENU_ZOOM_OUT "縮小する(&O)\tCtrl+↓"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_FILE_LIST_NAME      "ファイル名"
+    IDS_FILE_LIST_FOLDER    "フォルダ"
+    IDS_FILE_LIST_TYPE      "種類"
+    IDS_FILE_LIST_TYPE_DEF  "ファイル"
+    IDS_FILE_MENU_OPEN      "開く(&O)"
+    IDS_FILE_MENU_ADD       "追加(&A)...\tCtrl+D"
+    IDS_FILE_MENU_DELETE    "解除(&U)"
+    IDS_FILE_DELETE_MSG     "選択しているファイルへのリンクを解除してもよろしいですか？"
+    IDS_FILE_MENU_COPY_FILE "ファイル名のコピー(&F)\tCtrl+C"
+    IDS_FILE_MENU_COPY_PATH "ファイルパスのコピー(&P)\tSCtrl+C"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BIN_MENU_UNDO       "元に戻す(&U)"
+    IDS_BIN_MENU_REDO       "やり直し(&R)"
+    IDS_BIN_MENU_LOCK       "編集のロック(&L)"
+    IDS_BIN_MENU_FONT       "フォント(&F)..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_EXPORT       "エクスポートするフォルダを選択してください。"
+END
+
+#endif    // 日本語 (日本) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// 英語 (米国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU_POPUP MENU
+BEGIN
+    POPUP "Clipboard"
+    BEGIN
+        MENUITEM "&Add to Template...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "&Save As...\tCtrl+S",         ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        POPUP "&Options"
+        BEGIN
+            MENUITEM "&Format...",                  ID_MENUITEM_SET_FORMAT
+            MENUITEM "Fi&lter...",                  ID_MENUITEM_SET_FILTER
+        END
+    END
+    POPUP "History(TV)"
+    BEGIN
+        MENUITEM "Send to &Clipboard\tCtrl+C",  ID_MENUITEM_CLIPBOARD
+        MENUITEM "&Paste from Clipboard\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "&Add to Template...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "&Tools",                      ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Move &Up\tAlt+Up",            ID_MENUITEM_UP
+        MENUITEM "Move Do&wn\tAlt+Down",        ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "&New Item...\tCtrl+N",        ID_MENUITEM_NEW_ITEM
+        MENUITEM "&Save As...\tCtrl+S",         ID_MENUITEM_DATA_SAVE
+        POPUP "&Options"
+        BEGIN
+            MENUITEM "&Format...",                  ID_MENUITEM_SET_FORMAT
+            MENUITEM "Fi&lter...",                  ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "&Delete",                     ID_MENUITEM_DELETE
+    END
+    POPUP "History(LV)"
+    BEGIN
+        MENUITEM "&Open",                       ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "Send to &Clipboard\tCtrl+C",  ID_MENUITEM_CLIPBOARD
+        MENUITEM "&Paste from Clipboard\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "&Add to Template...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "&Tools",                      ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Move &Up\tAlt+Up",            ID_MENUITEM_UP
+        MENUITEM "Move Do&wn\tAlt+Down",        ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "&New Item...\tCtrl+N",        ID_MENUITEM_NEW_ITEM
+        MENUITEM "&Save As...\tCtrl+S",         ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "&Delete",                     ID_MENUITEM_DELETE
+    END
+    POPUP "Regist(TV)"
+    BEGIN
+        MENUITEM "Send to &Clipboard\tCtrl+C",  ID_MENUITEM_CLIPBOARD
+        MENUITEM "&Paste from Clipboard\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "&Tools",                      ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Move &Up\tAlt+Up",            ID_MENUITEM_UP
+        MENUITEM "Move Do&wn\tAlt+Down",        ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "&New Item...\tCtrl+N",        ID_MENUITEM_NEW_ITEM
+        MENUITEM "New &Folder",                 ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "&Save As...\tCtrl+S",         ID_MENUITEM_DATA_SAVE
+        MENUITEM "Set &Hot key...",             ID_MENUITEM_SET_HOTKEY
+        POPUP "&Options"
+        BEGIN
+            MENUITEM "&Format...",                  ID_MENUITEM_SET_FORMAT
+            MENUITEM "Fi&lter...",                  ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "C&reate Copy...\tCtrl+R",     ID_MENUITEM_REGIST_ADD
+        MENUITEM "Mov&e to...\tSCtrl+R",        ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "Rena&me",                     ID_MENUITEM_RENAME
+        MENUITEM "Clear N&ame",                 ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "&Delete",                     ID_MENUITEM_DELETE
+    END
+    POPUP "Regist(LV)"
+    BEGIN
+        MENUITEM "&Open",                       ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "Send to &Clipboard\tCtrl+C",  ID_MENUITEM_CLIPBOARD
+        MENUITEM "&Paste from Clipboard\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "&Tools",                      ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Move &Up\tAlt+Up",            ID_MENUITEM_UP
+        MENUITEM "Move Do&wn\tAlt+Down",        ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "&New Item...\tCtrl+N",        ID_MENUITEM_NEW_ITEM
+        MENUITEM "New &Folder",                 ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "&Save As...\tCtrl+S",         ID_MENUITEM_DATA_SAVE
+        MENUITEM "Set &Hot key...",             ID_MENUITEM_SET_HOTKEY
+        MENUITEM SEPARATOR
+        MENUITEM "C&reate Copy...\tCtrl+R",     ID_MENUITEM_REGIST_ADD
+        MENUITEM "Mov&e to...\tSCtrl+R",        ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "Rena&me",                     ID_MENUITEM_RENAME
+        MENUITEM "Clear N&ame",                 ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "&Delete",                     ID_MENUITEM_DELETE
+    END
+    POPUP "D&&D"
+    BEGIN
+        MENUITEM "&Copy here",                  ID_MENU_DGDP_COPY
+        MENUITEM "&Move here",                  ID_MENU_DGDP_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "Cance&l",                     IDCANCEL
+    END
+END
+
+IDR_MENU_VIEWER MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New Item...\tCtrl+N",        ID_MENUITEM_NEW_ITEM
+        MENUITEM "&Save As...\tCtrl+S",         ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "Save S&tatus\tSCtrl+S",       ID_MENUITEM_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "&Import...",                  ID_MENUITEM_IMPORT
+        MENUITEM "&Export...",                  ID_MENUITEM_EXPORT
+        MENUITEM SEPARATOR
+        MENUITEM "Clipboard &Watch",            ID_MENUITEM_WATCH
+        MENUITEM SEPARATOR
+        MENUITEM "&Close Window",               ID_MENUITEM_CLOSE
+        MENUITEM "E&xit",                       ID_MENUITEM_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "Send to &Clipboard\tCtrl+C",  ID_MENUITEM_CLIPBOARD
+        MENUITEM "&Paste from Clipboard\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "Add to &Template...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM SEPARATOR
+        MENUITEM "Move &Up\tAlt+Up",            ID_MENUITEM_UP
+        MENUITEM "Move Do&wn\tAlt+Down",        ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "&Delete",                     ID_MENUITEM_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "Select &All\tCtrl+A",         ID_MENUITEM_SELECT_ALL
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Toolbar",                    ID_MENUITEM_SHOW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_MENUITEM_SHOW_STATUSBAR
+        MENUITEM SEPARATOR
+        MENUITEM "&Format",                     ID_MENUITEM_SHOW_FORMAT
+        MENUITEM "&Dump",                       ID_MENUITEM_SHOW_BIN
+        MENUITEM SEPARATOR
+        MENUITEM "&Options...",                 ID_MENUITEM_OPTION
+    END
+    POPUP "&Tools"
+    BEGIN
+        MENUITEM "&Tool Setup...",              ID_MENUITEM_TOOL_SET
+        MENUITEM SEPARATOR
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About...",                   ID_MENUITEM_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_SELECT_FOLDER DIALOG 0, 0, 232, 195
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Browse for Folder"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "msg",IDC_STATIC_MSG,5,5,220,19
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,25,220,145
+    DEFPUSHBUTTON   "OK",IDOK,120,175,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,175,175,50,14
+END
+
+IDD_DIALOG_SELECT_FORMAT DIALOGEX 0, 0, 227, 105
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_ACCEPTFILES
+CAPTION "New Item"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    LTEXT           "Format to &Add:",IDC_STATIC,5,5,115,10
+    COMBOBOX        IDC_COMBO_FORMAT,5,15,215,145,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "File is &loaded",IDC_CHECK_FILE_READ,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,40,185,10
+    LTEXT           "&File Name:",IDC_STATIC_FILE,5,55,115,9
+    EDITTEXT        IDC_EDIT_FILE,5,65,195,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_FILE_SELECT,203,65,15,13
+    DEFPUSHBUTTON   "OK",IDOK,115,85,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,171,85,50,14
+END
+
+IDD_DIALOG_SET_HOTKEY DIALOG 0, 0, 125, 72
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Set Hot key"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "&Hot key:",IDC_STATIC,10,5,75,10
+    CONTROL         "HotKey1",IDC_HOTKEY_ITEM,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,10,15,70,15
+    CONTROL         "+ Win",IDC_CHECK_WIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,85,17,31,11
+    CONTROL         "&Paste",IDC_CHECK_PASTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,35,75,10
+    DEFPUSHBUTTON   "OK",IDOK,10,50,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,65,50,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_SELECT_FOLDER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 225
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 188
+    END
+
+    IDD_DIALOG_SELECT_FORMAT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 220
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 98
+    END
+
+    IDD_DIALOG_SET_HOTKEY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 118
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 65
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_MENU_REGIST         "&Template"
+    IDS_MENU_CANCEL         "&Cancel"
+    IDS_MENU_EXIT           "E&xit"
+    IDS_MENU_VIEWER         "&Viewer..."
+    IDS_MENU_OPTION         "&Options..."
+    IDS_MENU_CLIPBOARD_WATCH "Clipboard &Watch"
+    IDS_TREEITEM_CLIPBOARD  "Clipboard"
+    IDS_TREEITEM_HISTORY    "History"
+    IDS_TREEITEM_REGIST     "Template"
+    IDS_TREEITEM_NEWFOLDER  "New Folder"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ERROR_END           "Failed in save.\nIs the termination continued?"
+    IDS_ERROR_HOTKEY        "Failed in the hotkey register."
+    IDS_ERROR_WINDOW_INIT   "Failed in initialization."
+    IDS_ERROR_FILENAME      "A filename cannot contain any of the following characters:\n\t\\ / : , ; * ? "" < > |"
+    IDS_ERROR_FOLDERNAME    "A folder with the name you specified already exists. Specify a different folder name."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_LISTCOLUMN_DATA     "Data"
+    IDS_LISTCOLUMN_SIZE     "Size"
+    IDS_LISTCOLUMN_DATE     "Modified"
+    IDS_LISTCOLUMN_WINDOW   "Window"
+    IDS_LISTCOLUMN_HOTKEY   "Hot key"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_QUESTION_DELETE     "Are you sure you want to delete this item?"
+    IDS_QUESTION_REPLACE    "Do you want to replace it?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_ADDPOS       "Please select a folder to which you can add items."
+    IDS_DIALOG_COPYPOS      "Please select a folder to which copies Template."
+    IDS_DIALOG_MOVEPOS      "Please select a folder to which moves Template."
+    IDS_DIALOG_IMPORT       "Please select a folder to which adds the imported items."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_VIEWER_COPYNAME     "Copy of %s"
+    IDS_VIEWER_COPYNAME_NUM "Copy (%d) of %s"
+    IDS_VIEWER_MENU_TOOL_NOTHING "(None)"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STATUSBAR_ITEM_CNT  "%d items"
+    IDS_STATUSBAR_BYTES     "%d bytes"
+    IDS_STATUSBAR_KB        "%d KB"
+END
+
+STRINGTABLE
+BEGIN
+    ID_MENUITEM_CLIPBOARD_TB "Send to Clipboard"
+    ID_MENUITEM_PASTE_TB    "Paste from Clipboard"
+    ID_MENUITEM_REGIST_ADD_TB "Add to Template"
+    ID_MENUITEM_NEW_ITEM_TB "New Item"
+    ID_MENUITEM_DELETE_TB   "Delete"
+    ID_MENUITEM_UP_TB       "Move Up"
+    ID_MENUITEM_DOWN_TB     "Move Down"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_UNDO      "&Undo"
+    IDS_TEXT_MENU_REDO      "&Redo"
+    IDS_TEXT_MENU_CUT       "Cu&t"
+    IDS_TEXT_MENU_COPY      "&Copy"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_PASTE     "&Paste"
+    IDS_TEXT_MENU_DELETE    "&Delete"
+    IDS_TEXT_MENU_SELECT_ALL "Select &All"
+    IDS_TEXT_MENU_WORDWRAP  "&Word Wrap"
+    IDS_TEXT_MENU_SELECT_FONT "&Font..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BITMAP_MENU_STRETCH "&Stretch Picture"
+    IDS_BITMAP_MENU_ZOOM_IN "Zoom-&In\tCtrl+Up"
+    IDS_BITMAP_MENU_ZOOM_OUT "Zoom-&Out\tCtrl+Down"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_FILE_LIST_NAME      "Name"
+    IDS_FILE_LIST_FOLDER    "Folder"
+    IDS_FILE_LIST_TYPE      "Type"
+    IDS_FILE_LIST_TYPE_DEF  "File"
+    IDS_FILE_MENU_OPEN      "&Open"
+    IDS_FILE_MENU_ADD       "&Add...\tCtrl+D"
+    IDS_FILE_MENU_DELETE    "&Unlink"
+    IDS_FILE_DELETE_MSG     "Cancel the link to the chosen file?"
+    IDS_FILE_MENU_COPY_FILE "Copy &Filename\tCtrl+C"
+    IDS_FILE_MENU_COPY_PATH "Copy &Path\tSCtrl+C"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BIN_MENU_UNDO       "&Undo"
+    IDS_BIN_MENU_REDO       "&Redo"
+    IDS_BIN_MENU_LOCK       "&Locked"
+    IDS_BIN_MENU_FONT       "&Font..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_EXPORT       "Please select a folder to export."
+END
+
+#endif    // 英語 (米国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
