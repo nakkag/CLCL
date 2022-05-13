@@ -1,4 +1,4 @@
-CLCL Ver 2.1.1
+CLCL Ver 2.1.2
 --
 
 ■ はじめに
@@ -21,7 +21,7 @@ CLCL(クルクル)は、クリップボードの履歴を取るソフトです。
 ・Unicode対応
 
 ■ インストール
-Windows XP, Vista, 7, 8, 8.1, 10 で動作します。
+Windows XP以降のOSで動作します。
 
 ダウンロードしたファイルを起動するとCLCLをインストールします。
 アンインストールはコントロールパネルから実施してください。
@@ -334,6 +334,9 @@ CLCL.exe [/vownx]
 K.Takata ( http://webs.to/ken/ )
 
 ■ 更新履歴
+・Ver 2.1.1 -> Ver 2.1.2
+	・画像形式(BITMAP, DIB)でマウスドラッグでのスクロールを可能にした。
+
 ・Ver 2.1.0 -> Ver 2.1.1
 	・ファイル形式でファイル名とファイルパスのコピー機能を追加した。
 	・設定やデータをCLCL.exeと同じ場所に置ける設定を追加した。
@@ -476,7 +479,7 @@ K.Takata ( http://webs.to/ken/ )
 
 バグ、要望、質問は nakka@nakka.com までお願いします。
 
-Copyright (C) 1996-2019 by Ohno Tomoaki. All rights reserved.
+Copyright (C) 1996-2022 by Ohno Tomoaki. All rights reserved.
 	https://www.nakka.com/
 
-2019/12/17
+2022/5/13

@@ -3,7 +3,7 @@
  *
  * fmt_bitmap_view.c
  *
- * Copyright (C) 1996-2019 by Ohno Tomoaki. All rights reserved.
+ * Copyright (C) 1996-2022 by Ohno Tomoaki. All rights reserved.
  *		https://www.nakka.com/
  *		nakka@nakka.com
  */
@@ -59,6 +59,9 @@ typedef struct _BUFFER {
 
 	BOOL stretch_mode;
 	BOOL free;
+
+	BOOL drag;
+	POINT pt;
 
 #ifdef OP_XP_STYLE
 	// XP
@@ -181,8 +184,49 @@ static LRESULT CALLBACK bmpview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		return DLGC_WANTALLKEYS;
 
 	case WM_LBUTTONDOWN:
-	case WM_RBUTTONDOWN:
+		if ((bf = (BUFFER*)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+			break;
+		}
+		SetFocus(hWnd);
+		bf->drag = TRUE;
+		bf->pt.x = (short)LOWORD(lParam);
+		bf->pt.y = (short)HIWORD(lParam);
+		SetCapture(hWnd);
+		break;
+
+	case WM_MOUSEMOVE:
+		if ((bf = (BUFFER*)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+			break;
+		}
+		if (!bf->drag) {
+			break;
+		}
+		GetScrollRange(hWnd, SB_HORZ, &min, &max);
+		if (max != 1 && bf->pt.x != (short)LOWORD(lParam)) {
+			pos = GetScrollPos(hWnd, SB_HORZ);
+			SetScrollPos(hWnd, SB_HORZ, pos + (bf->pt.x - (short)LOWORD(lParam)), TRUE);
+			InvalidateRect(hWnd, NULL, FALSE);
+		}
+		GetScrollRange(hWnd, SB_VERT, &min, &max);
+		if (max != 1 && bf->pt.y != (short)HIWORD(lParam)) {
+			pos = GetScrollPos(hWnd, SB_VERT);
+			SetScrollPos(hWnd, SB_VERT, pos + (bf->pt.y - (short)HIWORD(lParam)), TRUE);
+			InvalidateRect(hWnd, NULL, FALSE);
+		}
+		bf->pt.x = (short)LOWORD(lParam);
+		bf->pt.y = (short)HIWORD(lParam);
+		break;
+
 	case WM_LBUTTONUP:
+		if ((bf = (BUFFER*)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+			break;
+		}
+		SetFocus(hWnd);
+		ReleaseCapture();
+		bf->drag = FALSE;
+		break;
+
+	case WM_RBUTTONDOWN:
 		SetFocus(hWnd);
 		break;
 
@@ -262,7 +306,7 @@ static LRESULT CALLBACK bmpview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		if (max == 1) {
 			break;
 		}
-		i = pos = GetScrollPos(hWnd, SB_HORZ);
+		pos = GetScrollPos(hWnd, SB_HORZ);
 		GetClientRect(hWnd, &window_rect);
 
 		switch (LOWORD(wParam)) {
@@ -300,8 +344,6 @@ static LRESULT CALLBACK bmpview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			break;
 		}
 		SetScrollPos(hWnd, SB_HORZ, pos, TRUE);
-
-		pos = GetScrollPos(hWnd, SB_HORZ);
 		InvalidateRect(hWnd, NULL, FALSE);
 		break;
 
@@ -310,7 +352,7 @@ static LRESULT CALLBACK bmpview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		if (max == 1) {
 			break;
 		}
-		i = pos = GetScrollPos(hWnd, SB_VERT);
+		pos = GetScrollPos(hWnd, SB_VERT);
 		GetClientRect(hWnd, &window_rect);
 
 		switch (LOWORD(wParam)) {
@@ -348,8 +390,6 @@ static LRESULT CALLBACK bmpview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			break;
 		}
 		SetScrollPos(hWnd, SB_VERT, pos, TRUE);
-
-		pos = GetScrollPos(hWnd, SB_VERT);
 		InvalidateRect(hWnd, NULL, FALSE);
 		break;
 

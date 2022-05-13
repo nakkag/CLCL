@@ -3,7 +3,7 @@
  *
  * General.h
  *
- * Copyright (C) 1996-2019 by Ohno Tomoaki. All rights reserved.
+ * Copyright (C) 1996-2022 by Ohno Tomoaki. All rights reserved.
  *		https://www.nakka.com/
  *		nakka@nakka.com
  */
@@ -21,7 +21,7 @@
 #define BUF_SIZE						256
 
 #define APP_NAME						TEXT("CLCL")
-#define APP_VAR							210
+#define APP_VAR							212
 
 #define MAIN_WND_CLASS					TEXT("CLCLMain")
 #define MAIN_WINDOW_TITLE				APP_NAME

@@ -1,4 +1,4 @@
-CLCL Ver 2.1.1
+CLCL Ver 2.1.2
 --
 
 CLCL is clipboard caching utility.
@@ -18,7 +18,7 @@ CLCL is clipboard caching utility.
 - Freeware
 
 --
-Copyright (C) 1996-2019 by Ohno Tomoaki. All rights reserved.
+Copyright (C) 1996-2022 by Ohno Tomoaki. All rights reserved.
 	https://www.nakka.com/
 
-2019/12/17
+2022/5/13
