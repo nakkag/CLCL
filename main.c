@@ -576,6 +576,7 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 	}
 	// ÉÅÉjÉÖÅ[ï\é¶
 	_SetForegroundWindow(hWnd);
+	ShowWindow(hWnd, SW_HIDE);
 	ret = menu_show(hWnd, popup_menu, (caret_flag == TRUE) ? &fi.cpos : NULL);
 	menu_destory(popup_menu);
 	popup_menu = NULL;
