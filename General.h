@@ -21,7 +21,7 @@
 #define BUF_SIZE						256
 
 #define APP_NAME						TEXT("CLCL")
-#define APP_VAR							212
+#define APP_VAR							213
 
 #define MAIN_WND_CLASS					TEXT("CLCLMain")
 #define MAIN_WINDOW_TITLE				APP_NAME
