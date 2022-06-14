@@ -170,7 +170,7 @@ BOOL draw_theme_scroll(LPDRAWITEMSTRUCT lpDrawItem, UINT i, long hTheme)
 		} else if (lpDrawItem->itemState & ODS_FOCUS) {
 			state = ABS_UPHOT;
 		} else {
-			state = ABS_UPNORMAL;
+			state = ABS_UPHOVER;
 		}
 		break;
 
@@ -182,7 +182,7 @@ BOOL draw_theme_scroll(LPDRAWITEMSTRUCT lpDrawItem, UINT i, long hTheme)
 		} else if (lpDrawItem->itemState & ODS_FOCUS) {
 			state = ABS_DOWNHOT;
 		} else {
-			state = ABS_DOWNNORMAL;
+			state = ABS_DOWNHOVER;
 		}
 		break;
 
@@ -194,7 +194,7 @@ BOOL draw_theme_scroll(LPDRAWITEMSTRUCT lpDrawItem, UINT i, long hTheme)
 		} else if (lpDrawItem->itemState & ODS_FOCUS) {
 			state = ABS_RIGHTHOT;
 		} else {
-			state = ABS_RIGHTNORMAL;
+			state = ABS_RIGHTHOVER;
 		}
 		break;
 	}
