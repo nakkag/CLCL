@@ -1,4 +1,4 @@
-CLCL Ver 2.1.2
+CLCL Ver 2.1.3
 --
 
 ■ はじめに
@@ -334,6 +334,11 @@ CLCL.exe [/vownx]
 K.Takata ( http://webs.to/ken/ )
 
 ■ 更新履歴
+・Ver 2.1.2 -> Ver 2.1.3
+	・クリップボードを監視していない時のシステムトレイアイコンを変更した。
+	・設定の上下移動ボタンの改善した。
+	・メニューを表示する時にメイン画面が表示されないように改善した。
+
 ・Ver 2.1.1 -> Ver 2.1.2
 	・画像形式(BITMAP, DIB)でマウスドラッグでのスクロールを可能にした。
 
@@ -482,4 +487,4 @@ K.Takata ( http://webs.to/ken/ )
 Copyright (C) 1996-2022 by Ohno Tomoaki. All rights reserved.
 	https://www.nakka.com/
 
-2022/5/13
+2022/12/1
