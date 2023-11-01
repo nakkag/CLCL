@@ -19,25 +19,25 @@
 // ツールを実行するタイミング
 // When to run the tool
 #define CALLTYPE_MENU					1				// 動作メニュー / Operation menu
-#define CALLTYPE_VIEWER					2				// ビューアのメニュー / Viewer menu 
-#define CALLTYPE_VIEWER_OPEN			4				// ビューアを開いた時 / When you open the viewer 
-#define CALLTYPE_VIEWER_CLOSE			8				// ビューアを閉じる時 / When closing the viewer
-#define CALLTYPE_ADD_HISTORY			16				// データが履歴に追加される時 / When data is added to history
-#define CALLTYPE_ITEM_TO_CLIPBOARD		32				// データをクリップボードに送る時 / When sending data to the clipboard
-#define CALLTYPE_START					64				// 起動時 / At startup
-#define CALLTYPE_END					128				// 終了時 / When finished
+#define CALLTYPE_VIEWER					2				// ビューアのメニュー / Viewer menu
+#define CALLTYPE_VIEWER_OPEN			4				// ビューアを開いた時 / when viewer is opened
+#define CALLTYPE_VIEWER_CLOSE			8				// ビューアを閉じる時 / when viewer is closed
+#define CALLTYPE_ADD_HISTORY			16				// データが履歴に追加される時 / when data is added to history
+#define CALLTYPE_ITEM_TO_CLIPBOARD		32				// データをクリップボードに送る時 / when sending data to the clipboard
+#define CALLTYPE_START					64				// 起動時 / at startup
+#define CALLTYPE_END					128				// 終了時 / when finished
 // option only
-#define CALLTYPE_MENU_COPY_PASTE		256				// コピーと貼り付けを送る / Send copy and paste
+#define CALLTYPE_MENU_COPY_PASTE		256				// コピーと貼り付けを送る / send copy and paste
 // execute only
-#define CALLTYPE_HISTORY				512				// 履歴からの呼び出し / Call from history
-#define CALLTYPE_REGIST					1024			// 登録アイテムからの呼び出し / Call from registered item
+#define CALLTYPE_HISTORY				512				// 履歴からの呼び出し / call from history
+#define CALLTYPE_REGIST					1024			// 登録アイテムからの呼び出し / call from registered item
 
 // ツール戻り値
-// Tool return value
-#define TOOL_ERROR						0				// ツールのエラー / Tool error 
-#define TOOL_SUCCEED					1				// ツールの正常終了 / Successful termination of tool
-#define TOOL_CANCEL						2				// 以降の処理をキャンセル / Cancel subsequent processing
-#define TOOL_DATA_MODIFIED				4				// データ変更あり / Data changed
+// tool return value
+#define TOOL_ERROR						0				// ツールのエラー / tool error
+#define TOOL_SUCCEED					1				// ツールの正常終了 / tool successfully completed
+#define TOOL_CANCEL						2				// 以降の処理をキャンセル / cancel further processing
+#define TOOL_DATA_MODIFIED				4				// データ変更あり / data changed
 
 
 // ツール呼び出し方法 (旧ver)
@@ -106,7 +106,7 @@ typedef struct _TOOL_EXEC_INFO {
 
 	int call_type;						// CALLTYPE_
 	TCHAR *cmd_line;					// ツール設定で指定したコマンドライン / Command line specified in tool settings
-	LPARAM lParam;						// ツールに対応するlong値 / Long value corresponding to the tool 
+	LPARAM lParam;						// ツールに対応するlong値 / long value corresponding to the tool
 } TOOL_EXEC_INFO;
 
 // ツール用アイテム情報
