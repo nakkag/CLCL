@@ -1938,6 +1938,7 @@ static void caret_move(const HWND hWnd, BUFFER *bf, const int key)
 
 /*
  * nedit_proc - Editウィンドウプロシージャ
+ * nedit_proc - Edit window procedure
  */
 static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM wParam, const LPARAM lParam)
 {
