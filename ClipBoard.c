@@ -37,18 +37,20 @@ static BOOL clipboard_set_data(const UINT format, const TCHAR *name, const HANDL
 
 static BOOL should_ignore()
 {
+	static UINT clipboard_viewer_ignore = 0;
 	static UINT exclude_monitoring = 0;
 	static UINT can_record = 0;
 	static UINT can_upload = 0;
 
 	if (exclude_monitoring == 0) {
+		clipboard_viewer_ignore = RegisterClipboardFormatW(L"Clipboard Viewer Ignore");
 		exclude_monitoring = RegisterClipboardFormatW(L"ExcludeClipboardContentFromMonitorProcessing");
 		can_record = RegisterClipboardFormatW(L"CanIncludeInClipboardHistory");
 		can_upload = RegisterClipboardFormatW(L"CanUploadToCloudClipboard");
 	}
 
 	for (UINT fmt = EnumClipboardFormats(0); fmt != 0; fmt = EnumClipboardFormats(fmt)) {
-		if (fmt == exclude_monitoring) {
+		if (fmt == exclude_monitoring || fmt == clipboard_viewer_ignore) {
 			HANDLE h = GetClipboardData(fmt);
 			// フォーマットが ExcludeClipboardContentFromMonitorProcessing のデータが存在する場合は無視する。
 			if (h != 0)
