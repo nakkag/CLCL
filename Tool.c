@@ -29,9 +29,11 @@ extern DATA_INFO history_data;
 extern DATA_INFO regist_data;
 
 // オプション
+// option
 extern OPTION_INFO option;
 
 // 旧ツールのデータ情報
+// Data information of old tool 
 typedef struct _CLIPINFO {
 	unsigned int Type;
 	TCHAR name[BUF_SIZE];
@@ -47,6 +49,7 @@ static int tool_call_func_old(const HWND hWnd, const TOOL_INFO *ti, const int ca
 
 /*
  * tool_title_to_index - タイトルからインデックスを取得
+ * Get index from title
  */
 int tool_title_to_index(const TCHAR *title)
 {
@@ -65,6 +68,7 @@ int tool_title_to_index(const TCHAR *title)
 
 /*
  * tool_initialize - ツール情報の初期化
+ * Initialize tool information
  */
 BOOL tool_initialize(TCHAR *err_str)
 {
@@ -79,6 +83,7 @@ BOOL tool_initialize(TCHAR *err_str)
 			continue;
 		}
 		// モジュールハンドル取得
+		// Get module handle
 		lib = (option.tool_info + i)->lib = LoadLibrary((option.tool_info + i)->lib_file_path);
 		if (lib == NULL) {
 			message_get_error(GetLastError(), buf);
@@ -86,6 +91,7 @@ BOOL tool_initialize(TCHAR *err_str)
 			return FALSE;
 		}
 		// 形式毎の関数アドレス取得
+		// Get function address for each format
 		tchar_to_char((option.tool_info + i)->func_name, cbuf, BUF_SIZE - 1);
 		if ((option.tool_info + i)->old == 0 || (option.tool_info + i)->old == 2) {
 			(option.tool_info + i)->func = GetProcAddress(lib, cbuf);
@@ -104,6 +110,7 @@ BOOL tool_initialize(TCHAR *err_str)
 
 /*
  * tool_data_copy - ツール用アイテムのコピーを作成
+ * Make a copy of the tool item
  */
 TOOL_DATA_INFO *tool_data_copy(DATA_INFO *di, const BOOL next_copy)
 {
@@ -129,6 +136,7 @@ TOOL_DATA_INFO *tool_data_copy(DATA_INFO *di, const BOOL next_copy)
 
 /*
  * tool_data_free - ツール用アイテムの解放
+ * Release tool items
  */
 void tool_data_free(TOOL_DATA_INFO *tdi)
 {
@@ -146,6 +154,7 @@ void tool_data_free(TOOL_DATA_INFO *tdi)
 
 /*
  * tool_data_reflect - ツール用アイテムを実体に反映
+ * Reflect tool items in the entity
  */
 static void tool_data_reflect(const int call_type, TOOL_DATA_INFO *tdi)
 {
@@ -157,6 +166,7 @@ static void tool_data_reflect(const int call_type, TOOL_DATA_INFO *tdi)
 			(((call_type & CALLTYPE_HISTORY) && data_check(&history_data, di) == NULL) ||
 			((call_type & CALLTYPE_REGIST) && data_check(&regist_data, di) == NULL))) {
 			// リスト中にデータが見つからない
+			// No data found in the list
 			continue;
 		}
 		data_menu_free_item(di);
@@ -168,6 +178,7 @@ static void tool_data_reflect(const int call_type, TOOL_DATA_INFO *tdi)
 
 /*
  * tool_call_func_old - 旧ツールの呼び出し
+ * Calling old tools
  */
 static int tool_call_func_old(const HWND hWnd, const TOOL_INFO *ti, const int call_type, TOOL_DATA_INFO *tdi)
 {
@@ -254,6 +265,7 @@ static int tool_call_func_old(const HWND hWnd, const TOOL_INFO *ti, const int ca
 
 /*
  * tool_execute - ツールの呼び出し
+ * Calling a tool
  */
 int tool_execute(const HWND hWnd, TOOL_INFO *ti, const int call_type, DATA_INFO *di, TOOL_DATA_INFO *tdi)
 {
@@ -267,10 +279,12 @@ int tool_execute(const HWND hWnd, TOOL_INFO *ti, const int call_type, DATA_INFO 
 	}
 
 	// ツール用アイテムの設定
+	// Tool item settings
 	if (tdi == NULL) {
 		wk_tdi = tool_data_copy(di, FALSE);
 	}
 	// フラグの設定
+	// Flag setting
 	if (wk_tdi != NULL && ((ctype & CALLTYPE_MENU) || (ctype & CALLTYPE_VIEWER))) {
 		if (data_check(&history_data, wk_tdi->di) != NULL) {
 			ctype |= CALLTYPE_HISTORY;
@@ -280,6 +294,7 @@ int tool_execute(const HWND hWnd, TOOL_INFO *ti, const int call_type, DATA_INFO 
 	}
 
 	// 実行情報の設定
+	// Execution information setting
 	if ((tei = mem_calloc(sizeof(TOOL_EXEC_INFO))) == NULL) {
 		if (tdi == NULL) {
 			tool_data_free(wk_tdi);
@@ -289,7 +304,9 @@ int tool_execute(const HWND hWnd, TOOL_INFO *ti, const int call_type, DATA_INFO 
 	tei->struct_size = sizeof(TOOL_EXEC_INFO);
 	tei->call_type = ctype;
 	if (ti->old == 2) {
-		tei->cmd_line = (TCHAR *)alloc_tchar_to_char(tei->cmd_line);
+		// self-copy? probably right side shoud be ti->cmd_line!
+		//tei->cmd_line = (TCHAR *)alloc_tchar_to_char(tei->cmd_line);
+		tei->cmd_line = (TCHAR *)alloc_tchar_to_char(ti->cmd_line);
 	} else {
 		tei->cmd_line = alloc_copy(ti->cmd_line);
 	}
@@ -299,10 +316,12 @@ int tool_execute(const HWND hWnd, TOOL_INFO *ti, const int call_type, DATA_INFO 
 	if (ti->old == 0 || ti->old == 2) {
 		if (ti->func != NULL) {
 			// ツールの呼び出し
+			// Calling a tool
 			ret = ti->func(hWnd, tei, wk_tdi);
 		}
 	} else {
 		// 旧ツールの呼び出し
+		// Calling old tools
 		ret = tool_call_func_old(hWnd, ti, ctype, wk_tdi);
 	}
 
@@ -326,6 +345,7 @@ int tool_execute(const HWND hWnd, TOOL_INFO *ti, const int call_type, DATA_INFO 
 
 /*
  * tool_execute_all - 呼び出し方法にマッチするツールの実行
+ * Executing a tool that matches the calling method
  */
 int tool_execute_all(const HWND hWnd, const int call_type, DATA_INFO *di)
 {
