@@ -304,8 +304,6 @@ int tool_execute(const HWND hWnd, TOOL_INFO *ti, const int call_type, DATA_INFO 
 	tei->struct_size = sizeof(TOOL_EXEC_INFO);
 	tei->call_type = ctype;
 	if (ti->old == 2) {
-		// self-copy? probably right side shoud be ti->cmd_line!
-		//tei->cmd_line = (TCHAR *)alloc_tchar_to_char(tei->cmd_line);
 		tei->cmd_line = (TCHAR *)alloc_tchar_to_char(ti->cmd_line);
 	} else {
 		tei->cmd_line = alloc_copy(ti->cmd_line);
