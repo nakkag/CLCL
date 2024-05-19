@@ -1,0 +1,313 @@
+
+----[General]----------------------------
+
+WM_GET_VERSION
+  wParam - 0
+  lParam - 0
+  Returned value - (int)version
+  Function:
+    Acquire the CLCL version.
+
+WM_GET_WORKPATH
+  wParam - 0
+  lParam - (TCHAR *) Working directory path (OUT)
+  Returned value - 0
+  Function:
+    Acquire the working directory path. 
+    The initial path is a username directory within the directory that has the CLCL.exe file.
+
+WM_GET_CLIPBOARD_WATCH
+  wParam - 0
+  lParam - 0
+  Returned value - (int)0 – No monitoring?1 - Monitoring
+  Function:
+    Acquire the monitoring state of the clipboard.
+
+WM_SET_CLIPBOARD_WATCH
+  wParam - (int)0 - Cancel?1 - Monitor
+  lParam - 0
+  Returned value - 0
+  Function:
+    Switch the clipboard monitor on or off.
+
+WM_GET_FORMAT_ICON
+  wParam - (int)Icon size
+  lParam - (TCHAR *)Format name
+  Returned value - (HICON)Icon handle
+  Function:
+    Acquire format icon.
+    Please cancel after using the icon handle.
+ 
+WM_ENABLE_ACCELERATOR
+  wParam - (BOOL)TRUE - Enable?FALSE - Disable
+  lParam - 0
+  Returned value - 0
+  Function:
+    Enables or disables the accelerator.
+
+WM_REGIST_HOTKEY
+  wParam - 0
+  lParam - 0
+  Returned value - 0
+  Function:
+    Registers hotkey(s).
+
+WM_UNREGIST_HOTKEY
+  wParam - 0
+  lParam - 0
+  Returned value - 0
+  Function:
+    Un-registers hotkey(s).
+
+
+----[Option]----------------------------
+
+WM_OPTION_SHOW
+  wParam - 0
+  lParam - (TCHAR *)Display tab
+  Returned value - 0
+  Function:
+    Displays the option screen.
+
+WM_OPTION_GET
+  wParam - 0
+  lParam - 0
+  Returned value - (OPTION_INFO *)Option information
+  Function:
+    Acquires options.
+
+WM_OPTION_LOAD
+  wParam - 0
+  lParam - 0
+  Returned value - 0
+  Function:
+    Reload options.
+
+WM_OPTION_SAVE
+  wParam - 0
+  lParam - 0
+  Returned value - 0
+  Function:
+    Save options.
+
+
+----[history & regist]----------------------------
+
+WM_HISTORY_CHANGED
+  wParam - 0
+  lParam - 0
+  Returned value - 0
+  Function:
+    Notifies of any history item changes.
+    Sending this updates the display using the viewer.
+
+WM_HISTORY_GET_ROOT
+  wParam - 0
+  lParam - 0
+  Returned value - (DATA_INFO *)Root history items
+  Function:
+    Acquire history items.
+
+WM_HISTORY_LOAD
+  wParam - (int)0 – Follow option(s)?1 – Force a re-read
+  lParam - 0
+  Returned value - (BOOL)TRUE - Success?FALSE - Failure
+  Function:
+    Clear the current history and re-read.
+
+WM_HISTORY_SAVE
+  wParam - (int)0 - Follow option(s)?1 – Forced save
+  lParam - 0
+  Returned value - (BOOL)TRUE - Success?FALSE - Failure
+  Function:
+    Save the history.
+
+WM_REGIST_CHANGED
+  wParam - 0
+  lParam - 0
+  Returned value - 0
+  Function:
+    Registered item change notification.
+    Sending this updates the display using the viewer.
+
+WM_REGIST_GET_ROOT
+  wParam - 0
+  lParam - 0
+  Returned value - (DATA_INFO *)Root registered items
+  Function:
+    Acquire registered items.
+
+WM_REGIST_LOAD
+  wParam - 0
+  lParam - 0
+  Returned value - (BOOL)TRUE - Success?FALSE - Failure
+  Function:
+    Clear current registered items and re-read.
+
+WM_REGIST_SAVE
+  wParam - 0
+  lParam - 0
+  Returned value - (BOOL)TRUE - Success?FALSE - Failure
+  Function:
+    Save registered item(s).
+
+
+----[Item]----------------------------
+
+WM_ITEM_TO_CLIPBOARD
+  wParam - 0
+  lParam - (DATA_INFO *)Item
+  Returned value - (BOOL)TRUE - Success?FALSE - Failure
+  Function:
+    Send item to clipboard.
+
+WM_ITEM_CREATE
+  wParam - (int)Type created (TYPE_DATA or TYPE_ITEM or TYPE_FOLDER)
+  lParam – Changes depending on the wParam
+               TYPE_DATA - (TCHAR *)Format name
+               TYPE_ITEM - (TCHAR *)Title
+               TYPE_FOLDER - (TCHAR *)Title
+  Returned value - (DATA_INFO *)Created item
+  Function:
+    Create item.
+
+WM_ITEM_COPY
+  wParam - 0
+  lParam - (DATA_INFO *)Original item copy
+  Returned value - (DATA_INFO *)Copied item
+  Function:
+    Create an item copy.
+
+WM_ITEM_FREE
+  wParam - 0
+  lParam - (DATA_INFO *) the item to be released
+  Returned value - 0
+  Function:
+     Release the item.
+     ??? Release only one item in the list. If items are set to 'next' and 'child'
+     ??? remove the item from the list before calling this message.
+
+WM_ITEM_FREE_DATA
+  wParam - (TCHAR *)Format name
+  lParam - (HANDLE)Release data
+  Returned value - 0
+  Function:
+    Release data.
+    Is invoked when the di->data included in the item is released. 
+
+WM_ITEM_CHECK
+  wParam - 0
+  lParam - (DATA_INFO *)The item that checks.
+  Returned value - (int)-1 – doesn’t exist?0 – exists in history?1 - exists in recorded item.
+  Function:
+    Checks item existence.
+
+WM_ITEM_TO_BYTES
+  wParam - (DWORD *)size after change (OUT)
+  lParam - (DATA_INFO *)item to change
+  Returned value - (BYTE *)bytes after change
+  Function:
+    Changes the item to bytes.
+
+WM_ITEM_FROM_BYTES
+  wParam - (BYTE *)Bytes to be changed
+  lParam - (DATA_INFO *)The set item
+  Returned value - 0
+  Function:
+    Creates data from the bytes and establishes the item.
+
+WM_ITEM_TO_FILE
+  wParam - (TCHAR *)File name
+  lParam - (DATA_INFO *)Saved item
+  Returned value - (BOOL)TRUE - Success?FALSE - Failure
+  Function:
+    Saves the item to a file.
+
+WM_ITEM_FROM_FILE
+  wParam - (TCHAR *)File name
+  lParam - (DATA_INFO *)The set item
+  Returned value - (BOOL)TRUE - Success?FALSE - Failure
+  Function:
+    Creates data from the file and sets the item.
+
+WM_ITEM_GET_PARENT
+  wParam - 0
+  lParam - (DATA_INFO *)Item to get parent item
+  Returned value - (DATA_INFO *)If the parent item can’t be found return NULL.
+  Function:
+    Acquire the item’s parent item.
+
+WM_ITEM_GET_FORMAT_TO_ITEM
+  wParam - (TCHAR *)Format name
+  lParam - (DATA_INFO *)Item information
+  Returned value - (DATA_INFO *)TYPE_DATA item
+  Function:
+    Search the item for the assigned format name. 
+
+WM_ITEM_GET_PRIORITY_HIGHEST
+  wParam - 0
+  lParam - (DATA_INFO *)TYPE_ITEM item
+  Returned value - (DATA_INFO *)TYPE_DATA item
+  Function:
+    Acquire the item with the highest priority format.
+
+WM_ITEM_GET_TITLE
+  wParam - (TCHAR *)Title (OUT)
+  lParam - (DATA_INFO *)Item to get title
+  Returned value - 0
+  Function:
+    Acquire the title of the item.
+
+WM_ITEM_GET_OPEN_INFO
+  wParam - (OPENFILENAME *)File information (OUT)
+  lParam - (TCHAR *)Format name
+  Returned value - (int)-1 – don’t display common dialogue?0 - unset?1 – set format
+  Function:
+    Acquire the information to open the file of each format.
+
+WM_ITEM_GET_SAVE_INFO
+  wParam - (OPENFILENAME *)File information (OUT)
+  lParam - (DATA_INFO )Item to get saved information
+  Returned value - (int)-1 - don’t display common dialogue?0 - unset?1 - set format
+  Function:
+    Acquire the item’s saved file information.
+
+
+----[Viewer]----------------------------
+
+WM_VIEWER_SHOW
+  wParam - 0
+  lParam - 0
+  Returned value - none
+  Function:
+    Shows the viewer.
+
+WM_VIEWER_GET_HWND
+  wParam - 0
+  lParam - 0
+  Returned value - 
+(HWND)If the viewer’s window handle isn’t shown then return NULL
+  Function:
+    Acquire the viewer’s window handle.
+
+WM_VIEWER_GET_MAIN_HWND
+  wParam - 0
+  lParam - 0
+  Returned value - (HWND)Main window handle
+  Function:
+   Acquire the main window handle.
+
+WM_VIEWER_GET_SELECTION
+  wParam - 0
+  lParam - 0
+  Returned value - (DATA_INFO *)Selected item information from the viewer
+  Function:
+    Acquire the selected item information from the viewer.
+    If the viewer isn’t displayed or a previously stored item isn’t selected then return NULL.
+
+WM_VIEWER_SELECT_ITEM
+  wParam - 0
+  lParam - (DATA_INFO *)Select item information
+  Returned value - (BOOL)TRUE - Selected?FALSE – Couldn’t select
+  Function:
+    Make the item a selected condition using the viewer.
