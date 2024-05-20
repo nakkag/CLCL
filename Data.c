@@ -38,6 +38,7 @@ DATA_INFO *data_create_data(const UINT format, TCHAR *format_name, const HANDLE 
 	DATA_INFO *new_item;
 
 	// アイテムの確保
+	// securing items
 	if ((new_item = (DATA_INFO *)mem_calloc(sizeof(DATA_INFO))) == NULL) {
 		message_get_error(GetLastError(), err_str);
 		return NULL;
@@ -61,6 +62,7 @@ DATA_INFO *data_create_item(const TCHAR *title, const BOOL set_date, TCHAR *err_
 	DATA_INFO *new_item;
 
 	// アイテムの確保
+	// securing items
 	if ((new_item = (DATA_INFO *)mem_calloc(sizeof(DATA_INFO))) == NULL) {
 		message_get_error(GetLastError(), err_str);
 		return NULL;
@@ -124,16 +126,19 @@ DATA_INFO *data_item_copy(const DATA_INFO *di, const BOOL next_copy, const BOOL 
 		new_di->op_paste = di->op_paste;
 	}
 	// データのコピー
+	// copy data
 	if (di->data != NULL && (new_di->data = format_copy_data(di->format_name, di->data, &new_di->size)) == NULL) {
 		new_di->data = clipboard_copy_data(di->format, di->data, &new_di->size);
 	}
 
 	// 子アイテムのコピー
+	// copy child item
 	if (di->child != NULL && (new_di->child = data_item_copy(di->child, TRUE, move_flag, err_str)) == NULL) {
 		data_free(new_di);
 		return NULL;
 	}
 	// 次アイテムのコピー
+	// copy next item
 	if (next_copy == TRUE && di->next != NULL &&
 		(new_di->next = data_item_copy(di->next, TRUE, move_flag, err_str)) == NULL) {
 		data_free(new_di);
@@ -163,6 +168,7 @@ BOOL data_delete(DATA_INFO **root, DATA_INFO *del_di, const BOOL free_item)
 	for (di = *root; di != NULL; di = di->next) {
 		if (di->next == del_di) {
 			// 削除
+			// delete
 			di->next = del_di->next;
 			del_di->next = NULL;
 			if (free_item == TRUE) {

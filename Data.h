@@ -22,42 +22,43 @@
 
 /* Struct */
 // アイテム情報
+// Item information
 typedef struct _DATA_INFO {
-	DWORD struct_size;					// 構造体のサイズ
+	DWORD struct_size;					// 構造体のサイズ / Structure size
 
 	int type;							// TYPE_
-	TCHAR *title;						// タイトル
+	TCHAR *title;						// タイトル / title
 
-	TCHAR *format_name;					// 形式名
-	int format_name_hash;				// 形式名のハッシュ
-	UINT format;						// 形式値
+	TCHAR *format_name;					// 形式名 / format name
+	int format_name_hash;				// 形式名のハッシュ / format name hash
+	UINT format;						// 形式値 / format value
 
-	HANDLE data;						// データ
-	DWORD size;							// サイズ
+	HANDLE data;						// データ / data
+	DWORD size;							// サイズ / size
 
-	FILETIME modified;					// 更新日時
-	TCHAR *window_name;					// コピーしたウィンドウタイトル
+	FILETIME modified;					// 更新日時 / timestamp of last update
+	TCHAR *window_name;					// コピーしたウィンドウタイトル / copy of window title
 
-	TCHAR *plugin_string;				// プラグイン用データ
+	TCHAR *plugin_string;				// プラグイン用データ / data for plugins
 	LPARAM plugin_param;
 
 // 以下保存しない情報
-	TCHAR *menu_title;					// メニューに表示するタイトル (未設定の場合は形式を表示)
-	BOOL free_title;					// タイトルを TRUE-解放する FALSE-解放しない
-	HICON menu_icon;					// メニューに表示するアイコンハンドル
-	BOOL free_icon;						// アイコンハンドルを TRUE-解放する FALSE-解放しない
-	HBITMAP menu_bitmap;				// メニューに表示するビットマップ
-	BOOL free_bitmap;					// ビットマップハンドルを TRUE-解放する FALSE-解放しない
-	int menu_bmp_width;					// メニューに表示するビットマップの個別サイズ
+	TCHAR *menu_title;					// メニューに表示するタイトル (未設定の場合は形式を表示) / title to display on menu (if not set, display format)
+	BOOL free_title;					// タイトルを TRUE-解放する FALSE-解放しない / title TRUE: release, FALSE: do not release
+	HICON menu_icon;					// メニューに表示するアイコンハンドル / icon handle to display in menu
+	BOOL free_icon;						// アイコンハンドルを TRUE-解放する FALSE-解放しない / TRUE: release the icon handle, FALSE: do not release the icon handle
+	HBITMAP menu_bitmap;				// メニューに表示するビットマップ / bitmap to display in menu
+	BOOL free_bitmap;					// ビットマップハンドルを TRUE-解放する FALSE-解放しない / TRUE: release bitmap handle, FALSE: do not release
+	int menu_bmp_width;					// メニューに表示するビットマップの個別サイズ / individual size of bitmap displayed in menu
 	int menu_bmp_height;
-	LPARAM param1;						// プラグイン用データ
+	LPARAM param1;						// プラグイン用データ / data for plugins
 	LPARAM param2;
 
 	struct _DATA_INFO *child;
 	struct _DATA_INFO *next;
 
 // Ver 1.0.5
-	int hkey_id;						// ホットキー
+	int hkey_id;						// ホットキー / hotkey
 	UINT op_modifiers;
 	UINT op_virtkey;
 	int op_paste;
