@@ -43,6 +43,7 @@ typedef struct _DATA_INFO {
 	LPARAM plugin_param;
 
 // 以下保存しない情報
+// not persistent Information below
 	TCHAR *menu_title;					// メニューに表示するタイトル (未設定の場合は形式を表示) / title to display on menu (if not set, display format)
 	BOOL free_title;					// タイトルを TRUE-解放する FALSE-解放しない / title TRUE: release, FALSE: do not release
 	HICON menu_icon;					// メニューに表示するアイコンハンドル / icon handle to display in menu
