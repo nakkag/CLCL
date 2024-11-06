@@ -86,7 +86,7 @@
       <SubSystem>Console</SubSystem>
       <OutputFile>.\Release\tool_test.dll</OutputFile>
       <ImportLibrary>.\Release\tool_test.lib</ImportLibrary>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>.\tool_test.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
@@ -128,7 +128,7 @@
       <SubSystem>Console</SubSystem>
       <OutputFile>.\Debug\tool_test.dll</OutputFile>
       <ImportLibrary>.\Debug\tool_test.lib</ImportLibrary>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>.\tool_test.def</ModuleDefinitionFile>
       <ImageHasSafeExceptionHandlers />
     </Link>

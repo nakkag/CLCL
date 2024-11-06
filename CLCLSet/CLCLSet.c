@@ -256,6 +256,7 @@ void draw_scroll_sontrol(LPDRAWITEMSTRUCT lpDrawItem, UINT i)
 
 	if (lpDrawItem->itemState & ODS_DISABLED) {
 		// 使用不能
+		// unavailable
 		i |= DFCS_INACTIVE;
 	}
 	if (lpDrawItem->itemState & ODS_SELECTED) {
