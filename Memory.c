@@ -59,7 +59,7 @@ void *mem_alloc(const DWORD size)
 }
 
 /*
- * mem_calloc - 初期化してバッファを確保
+ * mem_calloc - 初期化してバッファを確保 / initialize and secure buffer
  */
 void *mem_calloc(const DWORD size)
 {
@@ -85,7 +85,7 @@ void *mem_calloc(const DWORD size)
 }
 
 /*
- * mem_free - バッファを解放
+ * mem_free - バッファを解放 / free buffer
  */
 void mem_free(void **mem)
 {
@@ -111,7 +111,7 @@ void mem_free(void **mem)
 }
 
 /*
- * mem_debug - メモリ情報の表示
+ * mem_debug - メモリ情報の表示 / show memory information
  */
 #ifdef _DEBUG
 void mem_debug(void)
@@ -141,7 +141,7 @@ void mem_debug(void)
 #endif	// _DEBUG
 
 /*
- * mem_cmp - メモリの比較
+ * mem_cmp - メモリの比較 / compare memory
  */
 int mem_cmp(const BYTE *mem1, const DWORD size1, const BYTE *mem2, const DWORD size2)
 {
@@ -152,7 +152,7 @@ int mem_cmp(const BYTE *mem1, const DWORD size1, const BYTE *mem2, const DWORD s
 }
 
 /*
- * alloc_copy - バッファを確保して文字列をコピーする
+ * alloc_copy - バッファを確保して文字列をコピーする / allocate buffer and copy the string
  */
 TCHAR *alloc_copy(const TCHAR *buf)
 {
@@ -169,7 +169,7 @@ TCHAR *alloc_copy(const TCHAR *buf)
 }
 
 /*
- * alloc_copy_n - バッファを確保して指定長さ分の文字列をコピーする
+ * alloc_copy_n - バッファを確保して指定長さ分の文字列をコピーする / allocate buffer and copy string of specified length
  */
 TCHAR *alloc_copy_n(const TCHAR *buf, const int size)
 {
@@ -204,7 +204,7 @@ char *alloc_tchar_to_char(const TCHAR *str)
 #endif
 
 /*
- * alloc_char_to_tchar - メモリを確保して char を TCHAR に変換する
+ * alloc_char_to_tchar - メモリを確保して char を TCHAR に変換する / allocate memory and convert char to TCHAR
  */
 #ifdef UNICODE
 TCHAR *alloc_char_to_tchar(const char *str)
