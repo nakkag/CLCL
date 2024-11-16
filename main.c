@@ -107,6 +107,7 @@ DATA_INFO regist_data;
 static DATA_INFO *paste_di;
 
 // ツールメニュー情報
+// Tool menu information
 typedef struct _TOOL_MENU_INFO {
 	BOOL enable;
 	TOOL_INFO *ti;
@@ -115,6 +116,7 @@ typedef struct _TOOL_MENU_INFO {
 static TOOL_MENU_INFO tmi;
 
 // フォーカス情報
+// focus information
 typedef struct _FOCUS_INFO {
 	HWND active_wnd;
 	HWND focus_wnd;
@@ -124,6 +126,7 @@ typedef struct _FOCUS_INFO {
 static FOCUS_INFO focus_info;
 
 // オプション
+// option information
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
@@ -234,6 +237,7 @@ BOOL theme_draw(const HWND hWnd, const HRGN draw_hrgn, const HTHEME hTheme)
 		return FALSE;
 	}
 	// 状態の設定
+	// set the state
 	if (IsWindowEnabled(hWnd) == 0) {
 		stats = ETS_DISABLED;
 	} else if (GetFocus() == hWnd) {
@@ -242,6 +246,7 @@ BOOL theme_draw(const HWND hWnd, const HRGN draw_hrgn, const HTHEME hTheme)
 		stats = ETS_NORMAL;
 	}
 	// ウィンドウ枠の描画
+	// draw window frame
 	hdc = GetDCEx(hWnd, draw_hrgn, DCX_WINDOW | DCX_INTERSECTRGN);
 	if (hdc == NULL) {
 		hdc = GetWindowDC(hWnd);
@@ -255,6 +260,7 @@ BOOL theme_draw(const HWND hWnd, const HRGN draw_hrgn, const HTHEME hTheme)
 	ReleaseDC(hWnd, hdc);
 
 	// スクロールバーの描画
+	// draw the scrollbar
 	GetWindowRect(hWnd, (LPRECT)&rect);
 	hrgn = CreateRectRgn(rect.left + GetSystemMetrics(SM_CXEDGE), rect.top + GetSystemMetrics(SM_CYEDGE),
 		rect.right - GetSystemMetrics(SM_CXEDGE), rect.bottom - GetSystemMetrics(SM_CYEDGE));
@@ -266,7 +272,7 @@ BOOL theme_draw(const HWND hWnd, const HRGN draw_hrgn, const HTHEME hTheme)
 #endif
 
 /*
- * set_menu_layerer - メニューを半透明にする (Windows2000～)
+ * set_menu_layerer - メニューを半透明にする - Make menu semi-transparent (Windows2000～)
  */
 #ifdef MENU_LAYERER
 static BOOL set_menu_layerer(const HWND hWnd, const int alpha)
@@ -351,10 +357,12 @@ BOOL _SetForegroundWindow(const HWND hWnd)
 static void get_focus_info(FOCUS_INFO *fi)
 {
 	// フォーカスを持つウィンドウの取得
+	// get the window with focus
 	fi->active_wnd = GetForegroundWindow();
 	AttachThreadInput(GetWindowThreadProcessId(fi->active_wnd, NULL), GetCurrentThreadId(), TRUE);
 	fi->focus_wnd = GetFocus();
 	// キャレット位置取得
+	// get caret position
 	if (GetCaretPos(&fi->cpos) == TRUE && (fi->cpos.x > 0 || fi->cpos.y > 0)) {
 		ClientToScreen(fi->focus_wnd, &fi->cpos);
 		fi->caret = TRUE;
@@ -2035,6 +2043,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 	case WM_ITEM_GET_FORMAT_TO_ITEM:
 		// 形式名からアイテムを取得
+		// get item by format name
 		if (lParam != 0 && wParam != 0) {
 			DATA_INFO *di = (DATA_INFO *)lParam;
 

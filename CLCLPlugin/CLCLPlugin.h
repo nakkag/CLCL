@@ -75,30 +75,33 @@
 #define TYPE_ROOT						3
 
 // ツールを実行するタイミング
-#define CALLTYPE_MENU					1				// 動作メニュー
-#define CALLTYPE_VIEWER					2				// ビューアのメニュー
-#define CALLTYPE_VIEWER_OPEN			4				// ビューアを開いた時
-#define CALLTYPE_VIEWER_CLOSE			8				// ビューアを閉じる時
-#define CALLTYPE_ADD_HISTORY			16				// データが履歴に追加される時
-#define CALLTYPE_ITEM_TO_CLIPBOARD		32				// データをクリップボードに送る時
-#define CALLTYPE_START					64				// 起動時
-#define CALLTYPE_END					128				// 終了時
+// When to run the tool
+#define CALLTYPE_MENU					1				// 動作メニュー / Operation menu
+#define CALLTYPE_VIEWER					2				// ビューアのメニュー / Viewer menu
+#define CALLTYPE_VIEWER_OPEN			4				// ビューアを開いた時 / when viewer is opened
+#define CALLTYPE_VIEWER_CLOSE			8				// ビューアを閉じる時 / when viewer is closed
+#define CALLTYPE_ADD_HISTORY			16				// データが履歴に追加される時 / when data is added to history
+#define CALLTYPE_ITEM_TO_CLIPBOARD		32				// データをクリップボードに送る時 / when sending data to the clipboard
+#define CALLTYPE_START					64				// 起動時 / at startup
+#define CALLTYPE_END					128				// 終了時 / when finished
 // option only
-#define CALLTYPE_MENU_COPY_PASTE		256				// コピーと貼り付けを送る
+#define CALLTYPE_MENU_COPY_PASTE		256				// コピーと貼り付けを送る / send copy and paste
 // execute only
-#define CALLTYPE_HISTORY				512				// 履歴からの呼び出し
-#define CALLTYPE_REGIST					1024			// 登録アイテムからの呼び出し
+#define CALLTYPE_HISTORY				512				// 履歴からの呼び出し / call from history
+#define CALLTYPE_REGIST					1024			// 登録アイテムからの呼び出し / call from registered item
 
 // ツール戻り値
-#define TOOL_ERROR						0				// ツールのエラー
-#define TOOL_SUCCEED					1				// ツールの正常終了
-#define TOOL_CANCEL						2				// 以降の処理をキャンセル
-#define TOOL_DATA_MODIFIED				4				// データ変更あり
+// tool return value
+#define TOOL_ERROR						0				// ツールのエラー / tool error
+#define TOOL_SUCCEED					1				// ツールの正常終了 / tool successfully completed
+#define TOOL_CANCEL						2				// 以降の処理をキャンセル / cancel further processing
+#define TOOL_DATA_MODIFIED				4				// データ変更あり / data changed
 
 /* Struct */
 // 形式取得情報
+// Format acquisition information
 typedef struct _FORMAT_GET_INFO {
-	DWORD struct_size;					// 構造体のサイズ
+	DWORD struct_size;					// 構造体のサイズ / Structure size
 
 	TCHAR format_name[BUF_SIZE];
 	TCHAR func_header[BUF_SIZE];
@@ -106,8 +109,9 @@ typedef struct _FORMAT_GET_INFO {
 } FORMAT_GET_INFO;
 
 // ツール取得情報
+// Tool acquisition information
 typedef struct _TOOL_GET_INFO {
-	DWORD struct_size;					// 構造体のサイズ
+	DWORD struct_size;					// 構造体のサイズ / Structure size
 
 	TCHAR title[BUF_SIZE];
 	TCHAR func_name[BUF_SIZE];
@@ -116,61 +120,65 @@ typedef struct _TOOL_GET_INFO {
 } TOOL_GET_INFO;
 
 // ツール実行情報
+// Tool execution information
 typedef struct _TOOL_EXEC_INFO {
-	DWORD struct_size;					// 構造体のサイズ
+	DWORD struct_size;					// 構造体のサイズ / Structure size
 
 	int call_type;						// CALLTYPE_
-	TCHAR *cmd_line;					// ツール設定で指定したコマンドライン
-	LPARAM lParam;						// ツールに対応するlong値
+	TCHAR *cmd_line;					// ツール設定で指定したコマンドライン / Command line specified in tool settings
+	LPARAM lParam;						// ツールに対応するlong値 / long value corresponding to the tool
 } TOOL_EXEC_INFO;
 
 // アイテム情報
+// Item information
 typedef struct _DATA_INFO {
-	DWORD struct_size;					// 構造体のサイズ
+	DWORD struct_size;					// 構造体のサイズ / Structure size
 
 	int type;							// TYPE_
-	TCHAR *title;						// タイトル
+	TCHAR *title;						// タイトル / title
 
-	TCHAR *format_name;					// 形式名
-	int format_name_hash;				// 形式名のハッシュ
-	UINT format;						// 形式値
+	TCHAR *format_name;					// 形式名 / Format name
+	int format_name_hash;				// 形式名のハッシュ / format name hash
+	UINT format;						// 形式値 / Format value
 
-	HANDLE data;						// データ
-	DWORD size;							// サイズ
+	HANDLE data;						// データ / data
+	DWORD size;							// サイズ / size
 
-	FILETIME modified;					// 更新日時
-	TCHAR *window_name;					// コピーしたウィンドウタイトル
+	FILETIME modified;					// 更新日時 / Update date and time
+	TCHAR *window_name;					// コピーしたウィンドウタイトル / Copied window title
 
-	TCHAR *plugin_string;				// プラグイン用データ
+	TCHAR *plugin_string;				// プラグイン用データ / Data for plugins
 	LPARAM plugin_param;
 
 // 以下保存しない情報
-	TCHAR *menu_title;					// メニューに表示するタイトル (未設定の場合は形式を表示)
-	BOOL free_title;					// タイトルを TRUE-解放する FALSE-解放しない
-	HICON menu_icon;					// メニューに表示するアイコンハンドル
-	BOOL free_icon;						// アイコンハンドルを TRUE-解放する FALSE-解放しない
-	HBITMAP menu_bitmap;				// メニューに表示するビットマップ
-	BOOL free_bitmap;					// ビットマップハンドルを TRUE-解放する FALSE-解放しない
-	int menu_bmp_width;					// メニューに表示するビットマップの個別サイズ
+// Information not saved below
+	TCHAR *menu_title;					// メニューに表示するタイトル (未設定の場合は形式を表示) / Title to display on menu (if not set, display format)
+	BOOL free_title;					// タイトルを TRUE-解放する FALSE-解放しない / Title TRUE-Release,  FALSE-Do not release
+	HICON menu_icon;					// メニューに表示するアイコンハンドル / Icon handle to display in menu
+	BOOL free_icon;						// アイコンハンドルを TRUE-解放する FALSE-解放しない / TRUE - release the icon handle, FALSE - do not release the icon handle
+	HBITMAP menu_bitmap;				// メニューに表示するビットマップ / Bitmap to display in menu
+	BOOL free_bitmap;					// ビットマップハンドルを TRUE-解放する FALSE-解放しない / TRUE - release bitmap handle, FALSE - do not release
+	int menu_bmp_width;					// メニューに表示するビットマップの個別サイズ / Individual size of bitmap displayed in menu
 	int menu_bmp_height;
-	LPARAM param1;						// プラグイン用データ
+	LPARAM param1;						// プラグイン用データ / Data for plugins
 	LPARAM param2;
 
 	struct _DATA_INFO *child;
 	struct _DATA_INFO *next;
 
 // Ver 1.0.5
-	int hkey_id;						// ホットキー
+	int hkey_id;						// ホットキー / hotkey
 	UINT op_modifiers;
 	UINT op_virtkey;
 	int op_paste;
 } DATA_INFO;
 
 // ツール用アイテム情報
+// Tool item information
 typedef struct _TOOL_DATA_INFO {
-	DWORD struct_size;					// 構造体のサイズ
+	DWORD struct_size;					// 構造体のサイズ / Structure size
 
-	struct _DATA_INFO *di;				// アイテム情報
+	struct _DATA_INFO *di;				// アイテム情報 / Item information
 
 	struct _TOOL_DATA_INFO *child;
 	struct _TOOL_DATA_INFO *next;
