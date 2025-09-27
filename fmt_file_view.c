@@ -14,6 +14,7 @@
 #undef  _INC_OLE
 #include <shlobj.h>
 #include <commctrl.h>
+#include <versionhelpers.h>
 
 #include "General.h"
 #include "Memory.h"
@@ -113,7 +114,6 @@ HDROP create_dropfile(const TCHAR **FileName, const int cnt, DWORD *ret_size)
 {
 	HDROP hDrop;
 	LPDROPFILES lpDropFile;
-	OSVERSIONINFO os_info;
 #ifndef UNICODE
 	wchar_t wbuf[BUF_SIZE];
 #endif
@@ -122,10 +122,8 @@ HDROP create_dropfile(const TCHAR **FileName, const int cnt, DWORD *ret_size)
 	int flen = 0;
 	int i;
 
-	// OSのバージョン取得
-	os_info.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx(&os_info);
-	if (os_info.dwPlatformId == VER_PLATFORM_WIN32_NT) {
+	// OSのバージョン取得（Windows 8.1以降の推奨方法）
+	if (IsWindowsVersionOrGreater(6, 0, 0)) {
 		fWide = TRUE;
 	}
 
