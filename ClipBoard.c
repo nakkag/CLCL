@@ -198,6 +198,10 @@ BOOL clipboard_set_datainfo(const HWND hWnd, DATA_INFO *set_di, TCHAR *err_str)
 	if (set_di == NULL) {
 		return FALSE;
 	}
+	// クリップボードが利用可能かどうかを事前にチェック
+	// 短い遅延を追加して他のアプリケーションのクリップボード操作を待つ
+	Sleep(10);
+
 	// クリップボードの初期化
 	if (OpenClipboard(hWnd) == FALSE) {
 		message_get_error(GetLastError(), err_str);

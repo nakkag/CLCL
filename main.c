@@ -774,6 +774,10 @@ static BOOL clipboard_to_history(const HWND hWnd)
 		return TRUE;
 	}
 
+	// クリップボードが利用可能かどうかを事前にチェック
+	// 短い遅延を追加して他のアプリケーションのクリップボード操作を待つ
+	Sleep(10);
+
 	if (OpenClipboard(hWnd) == FALSE) {
 		// クリップボードが利用可能になるまで待機
 		SetTimer(hWnd, ID_HISTORY_TIMER, RECLIP_INTERVAL, NULL);
@@ -1488,8 +1492,8 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			// 履歴に入れない
 			break;
 		}
-		// 履歴に追加
-		SetTimer(hWnd, ID_HISTORY_TIMER, option.history_add_interval, NULL);
+		// 履歴に追加（少し遅延を追加してクリップボードのロック競合を回避）
+		SetTimer(hWnd, ID_HISTORY_TIMER, max(option.history_add_interval, 100), NULL);
 		SetTimer(hWnd, ID_RECHAIN_TIMER, RECHAIN_INTERVAL, NULL);
 		rechain_cnt = 0;
 		break;
