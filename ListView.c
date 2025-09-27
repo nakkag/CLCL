@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * ListView.c
@@ -36,20 +36,20 @@
 static HFONT list_font;
 static HWND gTreeView;
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
 
 /*
- * listview_create - ƒŠƒXƒgƒrƒ…[‚Ìì¬
+ * listview_create - ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ä½œæˆ
  */
 HWND listview_create(const HINSTANCE hInstance, const HWND hWnd, const int id, const HIMAGELIST icon_list)
 {
 	HWND hListView;
 	LV_COLUMN lvc;
 
-	// ƒŠƒXƒgƒrƒ…[‚Ìì¬
+	// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ä½œæˆ
 	hListView = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE,
 		WC_LISTVIEW, NULL, WS_TABSTOP | WS_CHILD |
 		LVS_REPORT | LVS_AUTOARRANGE | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS | LVS_EDITLABELS,
@@ -59,7 +59,7 @@ HWND listview_create(const HINSTANCE hInstance, const HWND hWnd, const int id, c
 	}
 	ListView_SetExtendedListViewStyle(hListView, LVS_EX_INFOTIP);
 
-	// ƒtƒHƒ“ƒgİ’è
+	// ãƒ•ã‚©ãƒ³ãƒˆè¨­å®š
 	if (*option.list_font_name != TEXT('\0')) {
 		if (list_font != NULL) {
 			DeleteObject(list_font);
@@ -69,10 +69,10 @@ HWND listview_create(const HINSTANCE hInstance, const HWND hWnd, const int id, c
 		SendMessage(hListView, WM_SETFONT, (WPARAM)list_font, MAKELPARAM(TRUE, 0));
 	}
 	
-	// ƒCƒ[ƒWƒŠƒXƒg‚Ìİ’è
+	// ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã®è¨­å®š
 	ListView_SetImageList(hListView, icon_list, LVSIL_SMALL);
 
-	// ƒJƒ‰ƒ€İ’è
+	// ã‚«ãƒ©ãƒ è¨­å®š
 	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
 	lvc.fmt = LVCFMT_LEFT;
@@ -102,11 +102,11 @@ HWND listview_create(const HINSTANCE hInstance, const HWND hWnd, const int id, c
 }
 
 /*
- * listview_close - ƒŠƒXƒgƒrƒ…[‚Ì‰ğ•ú
+ * listview_close - ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®è§£æ”¾
  */
 void listview_close(const HWND hListView)
 {
-	// ƒtƒHƒ“ƒg‰ğ•ú
+	// ãƒ•ã‚©ãƒ³ãƒˆè§£æ”¾
 	if (list_font != NULL) {
 		DeleteObject(list_font);
 		list_font = NULL;
@@ -114,7 +114,7 @@ void listview_close(const HWND hListView)
 }
 
 /*
- * ListView_NotifyProc - ƒŠƒXƒgƒrƒ…[ƒCƒxƒ“ƒg
+ * ListView_NotifyProc - ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆ
  */
 LRESULT listview_notify_proc(const HWND hWnd, const LPARAM lParam)
 {
@@ -124,38 +124,38 @@ LRESULT listview_notify_proc(const HWND hWnd, const LPARAM lParam)
 	NMHDR *nmhdr = (NMHDR *)lParam;
 
 	switch (lvd->hdr.code) {
-	case LVN_ITEMCHANGED:		// ƒAƒCƒeƒ€‚Ì‘I‘ğó‘Ô‚Ì•ÏX
-	case LVN_BEGINLABELEDIT:	// ƒ^ƒCƒgƒ‹•ÒWŠJn
-	case LVN_ENDLABELEDIT:		// ƒ^ƒCƒgƒ‹•ÒWI—¹
-	case LVN_GETDISPINFO:		// •\¦ƒAƒCƒeƒ€‚Ì—v‹
+	case LVN_ITEMCHANGED:		// ã‚¢ã‚¤ãƒ†ãƒ ã®é¸æŠçŠ¶æ…‹ã®å¤‰æ›´
+	case LVN_BEGINLABELEDIT:	// ã‚¿ã‚¤ãƒˆãƒ«ç·¨é›†é–‹å§‹
+	case LVN_ENDLABELEDIT:		// ã‚¿ã‚¤ãƒˆãƒ«ç·¨é›†çµ‚äº†
+	case LVN_GETDISPINFO:		// è¡¨ç¤ºã‚¢ã‚¤ãƒ†ãƒ ã®è¦æ±‚
 	case LVN_ITEMACTIVATE:
 		return SendMessage(hWnd, WM_LV_EVENT, lvd->hdr.code, lParam);
 	}
 
 	switch (nmlv->hdr.code) {
-	case LVN_BEGINDRAG:			// ƒhƒ‰ƒbƒO‚ÌŠJn (ƒ}ƒEƒX‚Ì¶ƒ{ƒ^ƒ“)
-	case LVN_BEGINRDRAG:		// ƒhƒ‰ƒbƒO‚ÌŠJn (ƒ}ƒEƒX‚Ì‰Eƒ{ƒ^ƒ“)
+	case LVN_BEGINDRAG:			// ãƒ‰ãƒ©ãƒƒã‚°ã®é–‹å§‹ (ãƒã‚¦ã‚¹ã®å·¦ãƒœã‚¿ãƒ³)
+	case LVN_BEGINRDRAG:		// ãƒ‰ãƒ©ãƒƒã‚°ã®é–‹å§‹ (ãƒã‚¦ã‚¹ã®å³ãƒœã‚¿ãƒ³)
 	case NM_CUSTOMDRAW:
 		return SendMessage(hWnd, WM_LV_EVENT, nmlv->hdr.code, lParam);
 	}
 
 	switch (lvk->hdr.code) {
-	case LVN_KEYDOWN:			// ƒL[ƒ_ƒEƒ“
+	case LVN_KEYDOWN:			// ã‚­ãƒ¼ãƒ€ã‚¦ãƒ³
 		return SendMessage(hWnd, WM_LV_EVENT, lvk->hdr.code, lParam);
 	}
 
 	switch (nmhdr->code) {
-	case NM_SETFOCUS:			// ƒtƒH[ƒJƒX‚Ì•ÏX
-	case NM_CLICK:				// ƒNƒŠƒbƒN
-	case NM_DBLCLK:				// ƒ_ƒuƒ‹ƒNƒŠƒbƒN
-	case NM_RCLICK:				// ‰EƒNƒŠƒbƒN
+	case NM_SETFOCUS:			// ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã®å¤‰æ›´
+	case NM_CLICK:				// ã‚¯ãƒªãƒƒã‚¯
+	case NM_DBLCLK:				// ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯
+	case NM_RCLICK:				// å³ã‚¯ãƒªãƒƒã‚¯
 		return SendMessage(hWnd, WM_LV_EVENT, nmhdr->code, lParam);
 	}
 	return FALSE;
 }
 
 /*
- * compare_func - ƒ\[ƒg—p•¶š—ñ”äŠr
+ * compare_func - ã‚½ãƒ¼ãƒˆç”¨æ–‡å­—åˆ—æ¯”è¼ƒ
  */
 static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 {
@@ -168,11 +168,11 @@ static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 	int header;
 	int ret;
 
-	// ƒ\[ƒgî•ñ
+	// ã‚½ãƒ¼ãƒˆæƒ…å ±
 	order = (colum < 0) ? 1 : 0;
 	header = ABS(colum) - 1;
 
-	// ƒf[ƒ^æ“¾
+	// ãƒ‡ãƒ¼ã‚¿å–å¾—
 	if (lParam1 == 0 || lParam2 == 0 ||
 		(d1 = (DATA_INFO *)treeview_get_lparam(gTreeView, (HTREEITEM)lParam1)) == NULL ||
 		(d2 = (DATA_INFO *)treeview_get_lparam(gTreeView, (HTREEITEM)lParam2)) == NULL) {
@@ -184,14 +184,14 @@ static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 
 	switch (header) {
 	case 0:
-		// ƒf[ƒ^
+		// ãƒ‡ãƒ¼ã‚¿
 		lstrcpy(buf1, data_get_title(d1));
 		lstrcpy(buf2, data_get_title(d2));
 		ret = lstrcmpi(buf1, buf2);
 		break;
 
 	case 1:
-		// ƒTƒCƒY
+		// ã‚µã‚¤ã‚º
 		len1 = 0;
 		for (cdi = d1->child; cdi != NULL; cdi = cdi->next) {
 			len1 += cdi->size;
@@ -204,12 +204,12 @@ static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 		break;
 
 	case 2:
-		// XV“ú
+		// æ›´æ–°æ—¥æ™‚
 		ret = CompareFileTime(&d1->modified, &d2->modified);
 		break;
 
 	case 3:
-		// ƒEƒBƒ“ƒhƒE–¼
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å
 		if (d1->window_name != NULL) {
 			lstrcpy(buf1, d1->window_name);
 		}
@@ -223,7 +223,7 @@ static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 }
 
 /*
- * listview_header_notify_proc - ƒŠƒXƒgƒrƒ…[ƒwƒbƒ_ƒƒbƒZ[ƒW
+ * listview_header_notify_proc - ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ãƒ˜ãƒƒãƒ€ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
  */
 LRESULT listview_header_notify_proc(const HWND hListView, const HWND hTreeView, const LPARAM lParam)
 {
@@ -232,10 +232,10 @@ LRESULT listview_header_notify_proc(const HWND hListView, const HWND hTreeView, 
 
 	switch (hdn->hdr.code) {
 	case HDN_ITEMCLICK:
-		// ƒ\[ƒg‚Ìİ’è
+		// ã‚½ãƒ¼ãƒˆã®è¨­å®š
 		colum = (ABS(colum) == (hdn->iItem + 1)) ? (colum * -1) : (hdn->iItem + 1);
 		gTreeView = hTreeView;
-		// ƒ\[ƒg
+		// ã‚½ãƒ¼ãƒˆ
 		ListView_SortItems(hListView, compare_func, colum);
 		break;
 	}
@@ -243,7 +243,7 @@ LRESULT listview_header_notify_proc(const HWND hListView, const HWND hTreeView, 
 }
 
 /*
- * listview_set_lparam - ƒAƒCƒeƒ€‚ÌLPARAM‚ğİ’è
+ * listview_set_lparam - ã‚¢ã‚¤ãƒ†ãƒ ã®LPARAMã‚’è¨­å®š
  */
 BOOL listview_set_lparam(const HWND hListView, const int i, const LPARAM lParam)
 {
@@ -257,7 +257,7 @@ BOOL listview_set_lparam(const HWND hListView, const int i, const LPARAM lParam)
 }
 
 /*
- * listview_get_lparam - ƒAƒCƒeƒ€‚ÌLPARAM‚ğæ“¾
+ * listview_get_lparam - ã‚¢ã‚¤ãƒ†ãƒ ã®LPARAMã‚’å–å¾—
  */
 LPARAM listview_get_lparam(const HWND hListView, const int i)
 {
@@ -271,7 +271,7 @@ LPARAM listview_get_lparam(const HWND hListView, const int i)
 }
 
 /*
- * listview_lparam_to_item - LPARAM‚©‚çƒAƒCƒeƒ€‚ğŒŸõ
+ * listview_lparam_to_item - LPARAMã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã‚’æ¤œç´¢
  */
 int listview_lparam_to_item(const HWND hListView, const LPARAM lParam)
 {
@@ -288,7 +288,7 @@ int listview_lparam_to_item(const HWND hListView, const LPARAM lParam)
 }
 
 /*
- * listview_lparam_select - LPARAM‚©‚çƒAƒCƒeƒ€‚ğ‘I‘ğ
+ * listview_lparam_select - LPARAMã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã‚’é¸æŠ
  */
 BOOL listview_lparam_select(const HWND hListView, const LPARAM lParam)
 {
@@ -305,7 +305,7 @@ BOOL listview_lparam_select(const HWND hListView, const LPARAM lParam)
 }
 
 /*
- * listview_get_icon - ƒAƒCƒeƒ€‚ÌƒAƒCƒRƒ“ƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+ * listview_get_icon - ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚¢ã‚¤ã‚³ãƒ³ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
  */
 int listview_get_icon(const HWND hListView, const int i)
 {
@@ -319,7 +319,7 @@ int listview_get_icon(const HWND hListView, const int i)
 }
 
 /*
- * listview_get_hitest - ƒ}ƒEƒX‚Ì‰º‚ÌƒAƒCƒeƒ€‚ÌƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+ * listview_get_hitest - ãƒã‚¦ã‚¹ã®ä¸‹ã®ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
  */
 int listview_get_hitest(const HWND hListView)
 {
@@ -339,7 +339,7 @@ int listview_get_hitest(const HWND hListView)
 }
 
 /*
- * listview_move_item - ƒŠƒXƒgƒrƒ…[‚ÌƒAƒCƒeƒ€‚ğˆÚ“®
+ * listview_move_item - ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’ç§»å‹•
  */
 void listview_move_item(const HWND hListView, int index, const int Move)
 {

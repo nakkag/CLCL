@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Format.c
@@ -24,13 +24,13 @@
 /* Define */
 
 /* Global Variables */
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
 
 /*
- * format_get_index - Œ`®î•ñ‚ÌƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+ * format_get_index - å½¢å¼æƒ…å ±ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
  */
 int format_get_index(const TCHAR *format_name, const int name_hash)
 {
@@ -66,7 +66,7 @@ int format_get_index(const TCHAR *format_name, const int name_hash)
 }
 
 /*
- * format_get_priority_highest - —Dæ‡ˆÊ‚ªˆê”Ô‚‚¢ƒf[ƒ^‚ğæ“¾
+ * format_get_priority_highest - å„ªå…ˆé †ä½ãŒä¸€ç•ªé«˜ã„ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
  */
 DATA_INFO *format_get_priority_highest(DATA_INFO *di)
 {
@@ -89,7 +89,7 @@ DATA_INFO *format_get_priority_highest(DATA_INFO *di)
 }
 
 /*
- * format_initialize - Œ`®î•ñ‚Ì‰Šú‰»
+ * format_initialize - å½¢å¼æƒ…å ±ã®åˆæœŸåŒ–
  */
 BOOL format_initialize(TCHAR *err_str)
 {
@@ -99,7 +99,7 @@ BOOL format_initialize(TCHAR *err_str)
 	int i;
 
 	for (i = 0; i < option.format_cnt; i++) {
-		// ƒ‚ƒWƒ…[ƒ‹ƒnƒ“ƒhƒ‹æ“¾
+		// ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒãƒ³ãƒ‰ãƒ«å–å¾—
 		if ((option.format_info + i)->lib_file_path != NULL &&
 			*(option.format_info + i)->lib_file_path != TEXT('\0')) {
 			lib = (option.format_info + i)->lib = LoadLibrary((option.format_info + i)->lib_file_path);
@@ -109,10 +109,10 @@ BOOL format_initialize(TCHAR *err_str)
 				return FALSE;
 			}
 		} else {
-			// –{‘Ì
+			// æœ¬ä½“
 			lib = GetModuleHandle(NULL);
 		}
-		// Œ`®–ˆ‚ÌŠÖ”ƒAƒhƒŒƒXæ“¾
+		// å½¢å¼æ¯ã®é–¢æ•°ã‚¢ãƒ‰ãƒ¬ã‚¹å–å¾—
 		// general
 		wsprintf(buf, TEXT("%sinitialize"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
@@ -201,7 +201,7 @@ BOOL format_initialize(TCHAR *err_str)
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_window_hide_data = GetProcAddress(lib, cbuf);
 
-		// ‰Šú‰»
+		// åˆæœŸåŒ–
 		if ((option.format_info + i)->func_initialize != NULL) {
 			((option.format_info + i)->func_initialize)();
 		}
@@ -210,7 +210,7 @@ BOOL format_initialize(TCHAR *err_str)
 }
 
 /*
- * format_get_icon - Œ`®—p‚ÌƒAƒCƒRƒ“‚ğæ“¾
+ * format_get_icon - å½¢å¼ç”¨ã®ã‚¢ã‚¤ã‚³ãƒ³ã‚’å–å¾—
  */
 HICON format_get_icon(const int index, const int icon_size, BOOL *free_icon)
 {
@@ -221,7 +221,7 @@ HICON format_get_icon(const int index, const int icon_size, BOOL *free_icon)
 }
 
 /*
- * format_free - Œ`®î•ñ‚Ì‰ğ•ú
+ * format_free - å½¢å¼æƒ…å ±ã®è§£æ”¾
  */
 BOOL format_free(void)
 {
@@ -236,7 +236,7 @@ BOOL format_free(void)
 }
 
 /*
- * format_initialize_item - Œ`®–ˆ‚ÌƒAƒCƒeƒ€‚Ì‰Šú‰»
+ * format_initialize_item - å½¢å¼æ¯ã®ã‚¢ã‚¤ãƒ†ãƒ ã®åˆæœŸåŒ–
  */
 BOOL format_initialize_item(DATA_INFO *di, const BOOL set_init_data)
 {
@@ -250,7 +250,7 @@ BOOL format_initialize_item(DATA_INFO *di, const BOOL set_init_data)
 }
 
 /*
- * format_copy_data - Œ`®–ˆ‚Ìƒf[ƒ^ƒRƒs[
+ * format_copy_data - å½¢å¼æ¯ã®ãƒ‡ãƒ¼ã‚¿ã‚³ãƒ”ãƒ¼
  */
 HANDLE format_copy_data(const TCHAR *format_name, const HANDLE data, DWORD *ret_size)
 {
@@ -264,7 +264,7 @@ HANDLE format_copy_data(const TCHAR *format_name, const HANDLE data, DWORD *ret_
 }
 
 /*
- * format_data_to_bytes - ƒf[ƒ^‚ğƒoƒCƒg—ñ‚É•ÏŠ·
+ * format_data_to_bytes - ãƒ‡ãƒ¼ã‚¿ã‚’ãƒã‚¤ãƒˆåˆ—ã«å¤‰æ›
  */
 BYTE *format_data_to_bytes(const DATA_INFO *di, DWORD *ret_size)
 {
@@ -278,7 +278,7 @@ BYTE *format_data_to_bytes(const DATA_INFO *di, DWORD *ret_size)
 }
 
 /*
- * format_bytes_to_data - ƒoƒCƒg—ñ‚ğƒf[ƒ^‚É•ÏŠ·
+ * format_bytes_to_data - ãƒã‚¤ãƒˆåˆ—ã‚’ãƒ‡ãƒ¼ã‚¿ã«å¤‰æ›
  */
 HANDLE format_bytes_to_data(const TCHAR *format_name, const BYTE *data, DWORD *size)
 {
@@ -292,11 +292,11 @@ HANDLE format_bytes_to_data(const TCHAR *format_name, const BYTE *data, DWORD *s
 }
 
 /*
- * format_get_file_info - Œ`®–ˆ‚ÌƒRƒ‚ƒ“ƒ_ƒCƒAƒƒOî•ñ‚Ìæ“¾ (mode = TRUE-open FALSE-save)
+ * format_get_file_info - å½¢å¼æ¯ã®ã‚³ãƒ¢ãƒ³ãƒ€ã‚¤ã‚¢ãƒ­ã‚°æƒ…å ±ã®å–å¾— (mode = TRUE-open FALSE-save)
  *
- *	–ß‚è’l: -1 - ƒRƒ‚ƒ“ƒ_ƒCƒAƒƒO‚ğ•\¦‚µ‚È‚¢
- *			0  - –¢İ’è
- *			1  - İ’èÏ‚İ
+ *	æˆ»ã‚Šå€¤: -1 - ã‚³ãƒ¢ãƒ³ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤ºã—ãªã„
+ *			0  - æœªè¨­å®š
+ *			1  - è¨­å®šæ¸ˆã¿
  */
 int format_get_file_info(const TCHAR *format_name, const DATA_INFO *di, OPENFILENAME *of, const BOOL mode)
 {
@@ -310,7 +310,7 @@ int format_get_file_info(const TCHAR *format_name, const DATA_INFO *di, OPENFILE
 }
 
 /*
- * format_data_to_file - ƒf[ƒ^‚ğƒtƒ@ƒCƒ‹‚É•Û‘¶
+ * format_data_to_file - ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜
  */
 BOOL format_data_to_file(DATA_INFO *di, const TCHAR *file_name, const int filter_index, TCHAR *err_str)
 {
@@ -324,7 +324,7 @@ BOOL format_data_to_file(DATA_INFO *di, const TCHAR *file_name, const int filter
 }
 
 /*
- * format_file_to_data - ƒtƒ@ƒCƒ‹‚©‚çƒf[ƒ^‚ğì¬
+ * format_file_to_data - ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’ä½œæˆ
  */
 HANDLE format_file_to_data(const TCHAR *file_name, const TCHAR *format_name, DWORD *ret_size, TCHAR *err_str)
 {
@@ -338,7 +338,7 @@ HANDLE format_file_to_data(const TCHAR *file_name, const TCHAR *format_name, DWO
 }
 
 /*
- * format_free_data - Œ`®–ˆ‚Ìƒf[ƒ^‚ğ‰ğ•ú
+ * format_free_data - å½¢å¼æ¯ã®ãƒ‡ãƒ¼ã‚¿ã‚’è§£æ”¾
  */
 BOOL format_free_data(const TCHAR *format_name, HANDLE data)
 {
@@ -352,7 +352,7 @@ BOOL format_free_data(const TCHAR *format_name, HANDLE data)
 }
 
 /*
- * format_free_item - Œ`®–ˆ‚ÌƒAƒCƒeƒ€î•ñ‚ğ‰ğ•ú
+ * format_free_item - å½¢å¼æ¯ã®ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±ã‚’è§£æ”¾
  */
 BOOL format_free_item(DATA_INFO *di)
 {
@@ -366,7 +366,7 @@ BOOL format_free_item(DATA_INFO *di)
 }
 
 /*
- * format_get_menu_title - Œ`®–ˆ‚Ìƒƒjƒ…[ƒ^ƒCƒgƒ‹‚ğæ“¾
+ * format_get_menu_title - å½¢å¼æ¯ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¿ã‚¤ãƒˆãƒ«ã‚’å–å¾—
  */
 BOOL format_get_menu_title(DATA_INFO *di)
 {
@@ -383,7 +383,7 @@ BOOL format_get_menu_title(DATA_INFO *di)
 }
 
 /*
- * format_get_menu_icon - Œ`®–ˆ‚Ìƒƒjƒ…[—pƒAƒCƒRƒ“‚ğæ“¾
+ * format_get_menu_icon - å½¢å¼æ¯ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç”¨ã‚¢ã‚¤ã‚³ãƒ³ã‚’å–å¾—
  */
 BOOL format_get_menu_icon(DATA_INFO *di)
 {
@@ -400,7 +400,7 @@ BOOL format_get_menu_icon(DATA_INFO *di)
 }
 
 /*
- * format_get_menu_bitmap - Œ`®–ˆ‚Ìƒƒjƒ…[—pƒrƒbƒgƒ}ƒbƒv‚ğæ“¾
+ * format_get_menu_bitmap - å½¢å¼æ¯ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç”¨ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’å–å¾—
  */
 BOOL format_get_menu_bitmap(DATA_INFO *di)
 {
@@ -417,7 +417,7 @@ BOOL format_get_menu_bitmap(DATA_INFO *di)
 }
 
 /*
- * format_get_tooltip_text - Œ`®–ˆ‚Ìƒƒjƒ…[—pƒc[ƒ‹ƒ`ƒbƒvƒeƒLƒXƒg‚ğæ“¾
+ * format_get_tooltip_text - å½¢å¼æ¯ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç”¨ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—
  */
 TCHAR *format_get_tooltip_text(DATA_INFO *di)
 {
@@ -431,7 +431,7 @@ TCHAR *format_get_tooltip_text(DATA_INFO *di)
 }
 
 /*
- * format_window_create - Œ`®–ˆ‚Ìƒf[ƒ^•\¦ƒEƒBƒ“ƒhƒE‚Ìì¬
+ * format_window_create - å½¢å¼æ¯ã®ãƒ‡ãƒ¼ã‚¿è¡¨ç¤ºã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½œæˆ
  */
 BOOL format_window_create(const HWND parent_wnd)
 {
@@ -446,7 +446,7 @@ BOOL format_window_create(const HWND parent_wnd)
 }
 
 /*
- * format_window_destroy - Œ`®–ˆ‚Ìƒf[ƒ^•\¦ƒEƒBƒ“ƒhƒE‚Ì”jŠü
+ * format_window_destroy - å½¢å¼æ¯ã®ãƒ‡ãƒ¼ã‚¿è¡¨ç¤ºã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ç ´æ£„
  */
 BOOL format_window_destroy(void)
 {
@@ -461,7 +461,7 @@ BOOL format_window_destroy(void)
 }
 
 /*
- * format_window_show_data - Œ`®–ˆ‚Ìƒf[ƒ^‚ğ•\¦
+ * format_window_show_data - å½¢å¼æ¯ã®ãƒ‡ãƒ¼ã‚¿ã‚’è¡¨ç¤º
  */
 BOOL format_window_show_data(const HWND hWnd, DATA_INFO *di, const BOOL lock)
 {
@@ -475,7 +475,7 @@ BOOL format_window_show_data(const HWND hWnd, DATA_INFO *di, const BOOL lock)
 }
 
 /*
- * format_window_save_data - Œ`®–ˆ‚Ìƒf[ƒ^‚ğ•Û‘¶
+ * format_window_save_data - å½¢å¼æ¯ã®ãƒ‡ãƒ¼ã‚¿ã‚’ä¿å­˜
  */
 BOOL format_window_save_data(const HWND hWnd, DATA_INFO *di)
 {
@@ -489,7 +489,7 @@ BOOL format_window_save_data(const HWND hWnd, DATA_INFO *di)
 }
 
 /*
- * format_window_hide_data - Œ`®–ˆ‚Ìƒf[ƒ^‚ğ”ñ•\¦
+ * format_window_hide_data - å½¢å¼æ¯ã®ãƒ‡ãƒ¼ã‚¿ã‚’éè¡¨ç¤º
  */
 BOOL format_window_hide_data(const HWND hWnd, DATA_INFO *di)
 {

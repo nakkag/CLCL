@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * TreeView.c
@@ -47,19 +47,19 @@ extern DATA_INFO clip_di;
 extern DATA_INFO history_data;
 extern DATA_INFO regist_data;
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
 
 /*
- * treeview_create - ƒcƒŠ[ƒrƒ…[‚Ìì¬
+ * treeview_create - ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã®ä½œæˆ
  */
 HWND treeview_create(const HINSTANCE hInstance, const HWND hWnd, const int id, const HIMAGELIST icon_list)
 {
 	HWND hTreeView;
 
-	// ƒcƒŠ[ƒrƒ…[‚Ìì¬
+	// ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã®ä½œæˆ
 	hTreeView = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE,
 		WC_TREEVIEW, NULL, WS_VISIBLE | WS_CHILD | WS_TABSTOP |
 		TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_EDITLABELS,
@@ -68,7 +68,7 @@ HWND treeview_create(const HINSTANCE hInstance, const HWND hWnd, const int id, c
 		return NULL;
 	}
 
-	// ƒtƒHƒ“ƒgİ’è
+	// ãƒ•ã‚©ãƒ³ãƒˆè¨­å®š
 	if (*option.tree_font_name != TEXT('\0')) {
 		if (tree_font != NULL) {
 			DeleteObject(tree_font);
@@ -78,13 +78,13 @@ HWND treeview_create(const HINSTANCE hInstance, const HWND hWnd, const int id, c
 		SendMessage(hTreeView, WM_SETFONT, (WPARAM)tree_font, MAKELPARAM(TRUE, 0));
 	}
 
-	// ƒCƒ[ƒWƒŠƒXƒg‚Ìİ’è
+	// ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã®è¨­å®š
 	TreeView_SetImageList(hTreeView, icon_list, TVSIL_NORMAL);
 	return hTreeView;
 }
 
 /*
- * treeview_set_init_item - ƒcƒŠ[ƒrƒ…[‚Ì‰ŠúƒAƒCƒeƒ€İ’è
+ * treeview_set_init_item - ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã®åˆæœŸã‚¢ã‚¤ãƒ†ãƒ è¨­å®š
  */
 BOOL treeview_set_init_item(const HWND hTreeView)
 {
@@ -94,12 +94,12 @@ BOOL treeview_set_init_item(const HWND hTreeView)
 	SendMessage(hTreeView, WM_SETREDRAW, (WPARAM)FALSE, 0);
 	TreeView_DeleteAllItems(hTreeView);
 
-	// ƒ‹[ƒgƒAƒCƒeƒ€‚ğ’Ç‰Á
+	// ãƒ«ãƒ¼ãƒˆã‚¢ã‚¤ãƒ†ãƒ ã‚’è¿½åŠ 
 	clip_treeitem = history_treeitem = regist_treeitem = NULL;
 	for (p = option.tree_root_order; *p != TEXT('\0'); p++) {
 		switch (*p) {
 		case TEXT('0'):
-			// ƒNƒŠƒbƒvƒ{[ƒh
+			// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰
 			if (clip_treeitem != NULL) {
 				break;
 			}
@@ -111,7 +111,7 @@ BOOL treeview_set_init_item(const HWND hTreeView)
 			break;
 
 		case TEXT('1'):
-			// —š—ğ
+			// å±¥æ­´
 			if (history_treeitem != NULL) {
 				break;
 			}
@@ -123,7 +123,7 @@ BOOL treeview_set_init_item(const HWND hTreeView)
 			break;
 
 		case TEXT('2'):
-			// “o˜^ƒAƒCƒeƒ€
+			// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ 
 			if (regist_treeitem != NULL) {
 				break;
 			}
@@ -145,7 +145,7 @@ BOOL treeview_set_init_item(const HWND hTreeView)
 			(HTREEITEM)TVI_ROOT, (HTREEITEM)TVI_LAST, ICON_REGIST, ICON_REGIST, 0);
 	}
 
-	// ƒNƒŠƒbƒvƒ{[ƒh
+	// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰
 	if (clip_treeitem != NULL) {
 		treeview_datainfo_to_treeitem(hTreeView, clip_treeitem, clip_di.child);
 		if (option.tree_clip_expand == 1) {
@@ -153,7 +153,7 @@ BOOL treeview_set_init_item(const HWND hTreeView)
 		}
 	}
 
-	// —š—ğ
+	// å±¥æ­´
 	if (history_treeitem != NULL) {
 		treeview_datainfo_to_treeitem(hTreeView, history_treeitem, history_data.child);
 		if (option.tree_history_expand == 1) {
@@ -161,7 +161,7 @@ BOOL treeview_set_init_item(const HWND hTreeView)
 		}
 	}
 
-	// “o˜^ƒAƒCƒeƒ€
+	// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ 
 	if (regist_treeitem != NULL) {
 		treeview_datainfo_to_treeitem(hTreeView, regist_treeitem, regist_data.child);
 		if (option.tree_regist_expand == 1) {
@@ -169,7 +169,7 @@ BOOL treeview_set_init_item(const HWND hTreeView)
 		}
 	}
 
-	// ˆê”Ôã‚ÌƒAƒCƒeƒ€‚ğ‘I‘ğ
+	// ä¸€ç•ªä¸Šã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’é¸æŠ
 	TreeView_SelectItem(hTreeView, sel_item);
 	TreeView_EnsureVisible(hTreeView, sel_item);
 
@@ -179,11 +179,11 @@ BOOL treeview_set_init_item(const HWND hTreeView)
 }
 
 /*
- * treeview_close - ƒcƒŠ[ƒrƒ…[‚Ì‰ğ•ú
+ * treeview_close - ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã®è§£æ”¾
  */
 void treeview_close(const HWND hTreeView)
 {
-	// ƒtƒHƒ“ƒg‰ğ•ú
+	// ãƒ•ã‚©ãƒ³ãƒˆè§£æ”¾
 	if (tree_font != NULL) {
 		DeleteObject(tree_font);
 		tree_font = NULL;
@@ -191,7 +191,7 @@ void treeview_close(const HWND hTreeView)
 }
 
 /*
- * treeview_notify_proc - ƒcƒŠ[ƒrƒ…[ƒCƒxƒ“ƒg
+ * treeview_notify_proc - ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆ
  */
 LRESULT treeview_notify_proc(const HWND hWnd, LPARAM lParam)
 {
@@ -216,7 +216,7 @@ LRESULT treeview_notify_proc(const HWND hWnd, LPARAM lParam)
 	}
 
 	switch (tvk->hdr.code) {
-	case TVN_KEYDOWN:			// ƒL[ƒ_ƒEƒ“
+	case TVN_KEYDOWN:			// ã‚­ãƒ¼ãƒ€ã‚¦ãƒ³
 		return SendMessage(hWnd, WM_TV_EVENT, tvk->hdr.code, lParam);
 	}
 
@@ -230,22 +230,22 @@ LRESULT treeview_notify_proc(const HWND hWnd, LPARAM lParam)
 }
 
 /*
- * treeview_scroll - ƒcƒŠ[ƒrƒ…[‚ğƒXƒNƒ[ƒ‹‚µ‚ÄƒAƒCƒeƒ€‚ğ•\¦
+ * treeview_scroll - ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã‚’ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã—ã¦ã‚¢ã‚¤ãƒ†ãƒ ã‚’è¡¨ç¤º
  */
 void treeview_scroll(const HWND hTreeView)
 {
 	RECT rect, item_rect;
 	POINT pt;
 
-	// ƒcƒŠ[ƒrƒ…[‚ÌƒTƒCƒYæ“¾
+	// ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã®ã‚µã‚¤ã‚ºå–å¾—
 	GetClientRect(hTreeView, &rect);
-	// ƒ}ƒEƒXˆÊ’uæ“¾
+	// ãƒã‚¦ã‚¹ä½ç½®å–å¾—
 	GetCursorPos(&pt);
 	ScreenToClient(hTreeView, &pt);
-	//ƒAƒCƒeƒ€‚Ì‚‚³æ“¾
+	//ã‚¢ã‚¤ãƒ†ãƒ ã®é«˜ã•å–å¾—
 	TreeView_GetItemRect(hTreeView, treeview_get_hitest(hTreeView), &item_rect, FALSE);
 
-	// ƒXƒNƒ[ƒ‹
+	// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«
 	if (pt.y < rect.top + (item_rect.bottom - item_rect.top)) {
 		SendMessage(hTreeView, WM_VSCROLL, SB_LINEUP, 0);
 	} else if (pt.y > rect.bottom - (item_rect.bottom - item_rect.top)) {
@@ -254,7 +254,7 @@ void treeview_scroll(const HWND hTreeView)
 }
 
 /*
- * treeview_set_item - ƒcƒŠ[ƒrƒ…[ƒAƒCƒeƒ€‚Ì’Ç‰Á
+ * treeview_set_item - ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã‚¢ã‚¤ãƒ†ãƒ ã®è¿½åŠ 
  */
 HTREEITEM treeview_set_item(const HWND hTreeView, TCHAR *buf, const HTREEITEM hParent, const HTREEITEM After,
 							const int icon, const int select_icon, LPARAM lParam)
@@ -280,7 +280,7 @@ HTREEITEM treeview_set_item(const HWND hTreeView, TCHAR *buf, const HTREEITEM hP
 }
 
 /*
- * treeview_delete_child - qƒAƒCƒeƒ€‚ğíœ
+ * treeview_delete_child - å­ã‚¢ã‚¤ãƒ†ãƒ ã‚’å‰Šé™¤
  */
 void treeview_delete_child(const HWND hTreeView, const HTREEITEM parent_item)
 {
@@ -294,7 +294,7 @@ void treeview_delete_child(const HWND hTreeView, const HTREEITEM parent_item)
 }
 
 /*
- * treeview_set_text - ƒAƒCƒeƒ€‚ÌƒeƒLƒXƒg‚ğİ’è
+ * treeview_set_text - ã‚¢ã‚¤ãƒ†ãƒ ã®ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®š
  */
 BOOL treeview_set_text(const HWND hTreeView, const HTREEITEM hItem, TCHAR *text)
 {
@@ -311,7 +311,7 @@ BOOL treeview_set_text(const HWND hTreeView, const HTREEITEM hItem, TCHAR *text)
 }
 
 /*
- * treeview_get_text - ƒAƒCƒeƒ€‚ÌƒeƒLƒXƒg‚ğæ“¾
+ * treeview_get_text - ã‚¢ã‚¤ãƒ†ãƒ ã®ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—
  */
 BOOL treeview_get_text(const HWND hTreeView, const HTREEITEM hItem, TCHAR *text)
 {
@@ -328,7 +328,7 @@ BOOL treeview_get_text(const HWND hTreeView, const HTREEITEM hItem, TCHAR *text)
 }
 
 /*
- * treeview_set_icon - ƒAƒCƒeƒ€‚ÌƒAƒCƒRƒ“‚ğİ’è
+ * treeview_set_icon - ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¨­å®š
  */
 BOOL treeview_set_icon(const HWND hTreeView, const HTREEITEM hItem, const int icon, const int select_icon)
 {
@@ -345,7 +345,7 @@ BOOL treeview_set_icon(const HWND hTreeView, const HTREEITEM hItem, const int ic
 }
 
 /*
- * treeview_get_icon - ƒAƒCƒeƒ€‚ÌƒAƒCƒRƒ“‚ğæ“¾
+ * treeview_get_icon - ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚¢ã‚¤ã‚³ãƒ³ã‚’å–å¾—
  */
 int treeview_get_icon(const HWND hTreeView, const HTREEITEM hItem)
 {
@@ -362,7 +362,7 @@ int treeview_get_icon(const HWND hTreeView, const HTREEITEM hItem)
 }
 
 /*
- * treeview_set_lparam - ƒAƒCƒeƒ€‚Éî•ñ‚ğŠÖ˜A‚Â‚¯‚é
+ * treeview_set_lparam - ã‚¢ã‚¤ãƒ†ãƒ ã«æƒ…å ±ã‚’é–¢é€£ã¤ã‘ã‚‹
  */
 BOOL treeview_set_lparam(const HWND hTreeView, const HTREEITEM hItem, const LPARAM lParam)
 {
@@ -378,7 +378,7 @@ BOOL treeview_set_lparam(const HWND hTreeView, const HTREEITEM hItem, const LPAR
 }
 
 /*
- * treeview_get_lparam - ƒAƒCƒeƒ€‚ÉŠÖ˜A•t‚¯‚ç‚ê‚½î•ñ‚Ìæ“¾
+ * treeview_get_lparam - ã‚¢ã‚¤ãƒ†ãƒ ã«é–¢é€£ä»˜ã‘ã‚‰ã‚ŒãŸæƒ…å ±ã®å–å¾—
  */
 LPARAM treeview_get_lparam(const HWND hTreeView, const HTREEITEM hItem)
 {
@@ -395,7 +395,7 @@ LPARAM treeview_get_lparam(const HWND hTreeView, const HTREEITEM hItem)
 }
 
 /*
- * treeview_lparam_to_item - LPARAM‚©‚çƒAƒCƒeƒ€‚ğŒŸõ
+ * treeview_lparam_to_item - LPARAMã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã‚’æ¤œç´¢
  */
 HTREEITEM treeview_lparam_to_item(const HWND hTreeView, const HTREEITEM hParent, const LPARAM lParam)
 {
@@ -419,7 +419,7 @@ HTREEITEM treeview_lparam_to_item(const HWND hTreeView, const HTREEITEM hParent,
 }
 
 /*
- * treeview_get_rootitem - ƒAƒCƒeƒ€‚Ìƒ‹[ƒg‚ğæ“¾
+ * treeview_get_rootitem - ã‚¢ã‚¤ãƒ†ãƒ ã®ãƒ«ãƒ¼ãƒˆã‚’å–å¾—
  */
 HTREEITEM treeview_get_rootitem(const HWND hTreeView, const HTREEITEM hItem)
 {
@@ -433,7 +433,7 @@ HTREEITEM treeview_get_rootitem(const HWND hTreeView, const HTREEITEM hItem)
 }
 
 /*
- * treeview_get_hitest - ƒ}ƒEƒX‚Ì‰º‚ÌƒAƒCƒeƒ€‚ğæ“¾
+ * treeview_get_hitest - ãƒã‚¦ã‚¹ã®ä¸‹ã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—
  */
 HTREEITEM treeview_get_hitest(const HWND hTreeView)
 {
@@ -441,7 +441,7 @@ HTREEITEM treeview_get_hitest(const HWND hTreeView)
 	POINT apos;
 	RECT treeview_rect;
 
-	// ƒ}ƒEƒX‚ÌˆÊ’u‚ğæ“¾
+	// ãƒã‚¦ã‚¹ã®ä½ç½®ã‚’å–å¾—
 	GetCursorPos((LPPOINT)&apos);
 	GetWindowRect(hTreeView, (LPRECT)&treeview_rect);
 	apos.x = apos.x - treeview_rect.left;
@@ -454,7 +454,7 @@ HTREEITEM treeview_get_hitest(const HWND hTreeView)
 }
 
 /*
- * treeview_copy_item - ƒcƒŠƒrƒ…[ƒAƒCƒeƒ€‚ÌƒRƒs[‚ğì¬
+ * treeview_copy_item - ãƒ„ãƒªãƒ“ãƒ¥ãƒ¼ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚³ãƒ”ãƒ¼ã‚’ä½œæˆ
  */
 HTREEITEM treeview_copy_item(const HWND hTreeView, const HTREEITEM parent_item, const HTREEITEM hItem, const HTREEITEM After)
 {
@@ -485,7 +485,7 @@ HTREEITEM treeview_copy_item(const HWND hTreeView, const HTREEITEM parent_item, 
 
 	cItem = TreeView_GetChild(hTreeView, hItem);
 	while (cItem != NULL) {
-		// Ä‹A
+		// å†å¸°
 		treeview_copy_item(hTreeView, new_item, cItem, (HTREEITEM)TVI_LAST);
 		cItem = TreeView_GetNextSibling(hTreeView, cItem);
 	}
@@ -493,7 +493,7 @@ HTREEITEM treeview_copy_item(const HWND hTreeView, const HTREEITEM parent_item, 
 }
 
 /*
- * treeview_datainfo_to_treeitem - ƒcƒŠ[ƒrƒ…[‚Éƒf[ƒ^‚ğİ’è
+ * treeview_datainfo_to_treeitem - ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã«ãƒ‡ãƒ¼ã‚¿ã‚’è¨­å®š
  */
 HTREEITEM treeview_datainfo_to_treeitem(const HWND hTreeView, const HTREEITEM parent_item, DATA_INFO *di)
 {
@@ -507,7 +507,7 @@ HTREEITEM treeview_datainfo_to_treeitem(const HWND hTreeView, const HTREEITEM pa
 	for (; di != NULL; di = di->next) {
 		switch (di->type) {
 		case TYPE_FOLDER:
-			// ƒtƒHƒ‹ƒ_
+			// ãƒ•ã‚©ãƒ«ãƒ€
 			pos_item = (HTREEITEM)TVI_LAST;
 			prev_item = NULL;
 			hItem = TreeView_GetChild(hTreeView, parent_item);
@@ -539,7 +539,7 @@ HTREEITEM treeview_datainfo_to_treeitem(const HWND hTreeView, const HTREEITEM pa
 			break;
 
 		case TYPE_ITEM:
-			// ƒAƒCƒeƒ€
+			// ã‚¢ã‚¤ãƒ†ãƒ 
 			wk_di = format_get_priority_highest(di);
 			icon = ICON_FORMAT + format_get_index(wk_di->format_name, wk_di->format_name_hash);
 			hItem = treeview_set_item(hTreeView, data_get_title(di),
@@ -556,7 +556,7 @@ HTREEITEM treeview_datainfo_to_treeitem(const HWND hTreeView, const HTREEITEM pa
 			break;
 
 		case TYPE_DATA:
-			// ƒf[ƒ^
+			// ãƒ‡ãƒ¼ã‚¿
 			icon = ICON_FORMAT + format_get_index(di->format_name, di->format_name_hash);
 			hItem = treeview_set_item(hTreeView, di->format_name, parent_item, (HTREEITEM)TVI_LAST, icon, icon, (LPARAM)di);
 			if (ret_item == NULL) {
@@ -569,7 +569,7 @@ HTREEITEM treeview_datainfo_to_treeitem(const HWND hTreeView, const HTREEITEM pa
 }
 
 /*
- * treeview_sync_datainfo - ƒf[ƒ^‚ÆƒcƒŠ[ƒAƒCƒeƒ€‚Ì“¯Šú
+ * treeview_sync_datainfo - ãƒ‡ãƒ¼ã‚¿ã¨ãƒ„ãƒªãƒ¼ã‚¢ã‚¤ãƒ†ãƒ ã®åŒæœŸ
  */
 BOOL treeview_sync_datainfo(const HWND hTreeView, const HTREEITEM parent_item, DATA_INFO *di)
 {
@@ -580,14 +580,14 @@ BOOL treeview_sync_datainfo(const HWND hTreeView, const HTREEITEM parent_item, D
 	DATA_INFO *wk_di;
 	int icon;
 
-	// ƒcƒŠ[ƒAƒCƒeƒ€‚Ìíœ
+	// ãƒ„ãƒªãƒ¼ã‚¢ã‚¤ãƒ†ãƒ ã®å‰Šé™¤
 	hItem = TreeView_GetNextItem(hTreeView, parent_item, TVGN_CHILD);
 	while (hItem != NULL) {
 		wk_di = (DATA_INFO *)treeview_get_lparam(hTreeView, hItem);
 		for (cdi = di; cdi != NULL && cdi != wk_di; cdi = cdi->next)
 			;
 		if (cdi == NULL) {
-			// ƒcƒŠ[‚©‚çƒAƒCƒeƒ€‚ğíœ
+			// ãƒ„ãƒªãƒ¼ã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã‚’å‰Šé™¤
 			delete_item = hItem;
 			hItem = TreeView_GetNextItem(hTreeView, hItem, TVGN_NEXT);
 			TreeView_DeleteItem(hTreeView, delete_item);
@@ -596,7 +596,7 @@ BOOL treeview_sync_datainfo(const HWND hTreeView, const HTREEITEM parent_item, D
 		}
 	}
 
-	// ƒcƒŠ[ƒAƒCƒeƒ€‚Ì’Ç‰Á
+	// ãƒ„ãƒªãƒ¼ã‚¢ã‚¤ãƒ†ãƒ ã®è¿½åŠ 
 	insert_item = (HTREEITEM)TVI_FIRST;
 	hItem = TreeView_GetNextItem(hTreeView, parent_item, TVGN_CHILD);
 	cdi = (hItem == NULL) ? NULL : (DATA_INFO *)treeview_get_lparam(hTreeView, hItem);
@@ -630,7 +630,7 @@ BOOL treeview_sync_datainfo(const HWND hTreeView, const HTREEITEM parent_item, D
 		} else {
 			switch (di->type) {
 			case TYPE_FOLDER:
-				// ƒtƒHƒ‹ƒ_
+				// ãƒ•ã‚©ãƒ«ãƒ€
 				hItem = treeview_set_item(hTreeView, di->title,
 					parent_item, insert_item, ICON_FOLDER, ICON_FOLDER_OPEN, (LPARAM)di);
 				if (hItem == NULL) {
@@ -640,7 +640,7 @@ BOOL treeview_sync_datainfo(const HWND hTreeView, const HTREEITEM parent_item, D
 				break;
 
 			case TYPE_ITEM:
-				// ƒAƒCƒeƒ€
+				// ã‚¢ã‚¤ãƒ†ãƒ 
 				wk_di = format_get_priority_highest(di);
 				icon = ICON_FORMAT + format_get_index(wk_di->format_name, wk_di->format_name_hash);
 				hItem = treeview_set_item(hTreeView, data_get_title(di),
@@ -652,7 +652,7 @@ BOOL treeview_sync_datainfo(const HWND hTreeView, const HTREEITEM parent_item, D
 				break;
 
 			case TYPE_DATA:
-				// ƒf[ƒ^
+				// ãƒ‡ãƒ¼ã‚¿
 				icon = ICON_FORMAT + format_get_index(di->format_name, di->format_name_hash);
 				hItem = treeview_set_item(hTreeView, di->format_name,
 					parent_item, insert_item, icon, icon, (LPARAM)di);
@@ -670,7 +670,7 @@ BOOL treeview_sync_datainfo(const HWND hTreeView, const HTREEITEM parent_item, D
 		}
 	}
 	while (hItem != NULL && hItem != (HTREEITEM)TVI_LAST) {
-		// ƒcƒŠ[‚©‚çƒAƒCƒeƒ€‚ğíœ
+		// ãƒ„ãƒªãƒ¼ã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã‚’å‰Šé™¤
 		delete_item = hItem;
 		hItem = TreeView_GetNextItem(hTreeView, hItem, TVGN_NEXT);
 		TreeView_DeleteItem(hTreeView, delete_item);
@@ -679,7 +679,7 @@ BOOL treeview_sync_datainfo(const HWND hTreeView, const HTREEITEM parent_item, D
 }
 
 /*
- * treeview_refresh_title - ƒcƒŠ[ƒrƒ…[ƒAƒCƒeƒ€‚Ìƒ^ƒCƒgƒ‹‚ğXV
+ * treeview_refresh_title - ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ›´æ–°
  */
 BOOL treeview_title_refresh(const HWND hTreeView, HTREEITEM hItem)
 {
@@ -705,17 +705,17 @@ BOOL treeview_title_refresh(const HWND hTreeView, HTREEITEM hItem)
 	default:
 		return FALSE;
 	}
-	// ƒ^ƒCƒgƒ‹‚ğİ’è
+	// ã‚¿ã‚¤ãƒˆãƒ«ã‚’è¨­å®š
 	data_menu_free_item(wk_di);
 	treeview_set_text(hTreeView, hItem, data_get_title(di));
-	// ƒAƒCƒRƒ“‚ğİ’è
+	// ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¨­å®š
 	icon = ICON_FORMAT + format_get_index(wk_di->format_name, wk_di->format_name_hash);
 	treeview_set_icon(hTreeView, hItem, icon, icon);
 	return TRUE;
 }
 
 /*
- * treeview_delete_item - ƒcƒŠ[ƒrƒ…[‚©‚çƒAƒCƒeƒ€‚Ìíœ
+ * treeview_delete_item - ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã®å‰Šé™¤
  */
 BOOL treeview_delete_item(const HWND hTreeView, const HTREEITEM hItem)
 {
@@ -723,12 +723,12 @@ BOOL treeview_delete_item(const HWND hTreeView, const HTREEITEM hItem)
 	DATA_INFO *di, *wk_di;
 	DATA_INFO **pdi;
 
-	// ƒf[ƒ^‚Ìæ“¾
+	// ãƒ‡ãƒ¼ã‚¿ã®å–å¾—
 	if ((di = (DATA_INFO *)treeview_get_lparam(hTreeView, hItem)) == NULL) {
 		return FALSE;
 	}
 
-	// ƒ‹[ƒgƒf[ƒ^‚Ìæ“¾
+	// ãƒ«ãƒ¼ãƒˆãƒ‡ãƒ¼ã‚¿ã®å–å¾—
 	pItem = TreeView_GetParent(hTreeView, hItem);
 	wk_di = NULL;
 	if (pItem == NULL || pItem == clip_treeitem) {
@@ -746,7 +746,7 @@ BOOL treeview_delete_item(const HWND hTreeView, const HTREEITEM hItem)
 	}
 
 	if (hItem == TreeView_GetSelection(hTreeView)) {
-		// ‘I‘ğ’†‚ÌƒAƒCƒeƒ€‚Íƒf[ƒ^‚ÌŠÖ˜A‚Â‚¯‚ğ‰ğœ
+		// é¸æŠä¸­ã®ã‚¢ã‚¤ãƒ†ãƒ ã¯ãƒ‡ãƒ¼ã‚¿ã®é–¢é€£ã¤ã‘ã‚’è§£é™¤
 		TreeView_SelectItem(hTreeView, NULL);
 		treeview_set_lparam(hTreeView, hItem, 0);
 		TreeView_SelectItem(hTreeView, hItem);
@@ -754,7 +754,7 @@ BOOL treeview_delete_item(const HWND hTreeView, const HTREEITEM hItem)
 
 	switch (di->type) {
 	case TYPE_DATA:
-		// ƒf[ƒ^‚Ìíœ
+		// ãƒ‡ãƒ¼ã‚¿ã®å‰Šé™¤
 		data_delete(pdi, di, TRUE);
 		if (*pdi == NULL) {
 			treeview_delete_item(hTreeView, pItem);
@@ -765,18 +765,18 @@ BOOL treeview_delete_item(const HWND hTreeView, const HTREEITEM hItem)
 
 	case TYPE_ITEM:
 	case TYPE_FOLDER:
-		// ƒAƒCƒeƒ€‚Ìíœ
+		// ã‚¢ã‚¤ãƒ†ãƒ ã®å‰Šé™¤
 		data_delete(pdi, di, TRUE);
 		break;
 	}
 
-	// ƒcƒŠ[ƒrƒ…[ƒAƒCƒeƒ€‚Ìíœ
+	// ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã‚¢ã‚¤ãƒ†ãƒ ã®å‰Šé™¤
 	TreeView_DeleteItem(hTreeView, hItem);
 	return TRUE;
 }
 
 /*
- * treeview_move_up - ƒAƒCƒeƒ€‚ğã‚ÉˆÚ“®
+ * treeview_move_up - ã‚¢ã‚¤ãƒ†ãƒ ã‚’ä¸Šã«ç§»å‹•
  */
 HTREEITEM treeview_move_up(const HWND hTreeView, const HTREEITEM hItem)
 {
@@ -784,7 +784,7 @@ HTREEITEM treeview_move_up(const HWND hTreeView, const HTREEITEM hItem)
 	DATA_INFO *di, *cdi, *prev_di, *wk_di;
 	DATA_INFO **pdi;
 
-	// ‘O‚ÌƒAƒCƒeƒ€‚ğæ“¾
+	// å‰ã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—
 	if ((prev_item = TreeView_GetPrevSibling(hTreeView, hItem)) == NULL) {
 		return NULL;
 	}
@@ -792,7 +792,7 @@ HTREEITEM treeview_move_up(const HWND hTreeView, const HTREEITEM hItem)
 		return NULL;
 	}
 
-	// eƒf[ƒ^‚ğæ“¾
+	// è¦ªãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
 	if ((parent_item = TreeView_GetParent(hTreeView, hItem)) == history_treeitem) {
 		pdi = &history_data.child;
 	} else if (parent_item == regist_treeitem) {
@@ -807,7 +807,7 @@ HTREEITEM treeview_move_up(const HWND hTreeView, const HTREEITEM hItem)
 		pdi = &di->child;
 	}
 
-	// ƒf[ƒ^“ü‚ê‘Ö‚¦
+	// ãƒ‡ãƒ¼ã‚¿å…¥ã‚Œæ›¿ãˆ
 	if ((di = (DATA_INFO *)treeview_get_lparam(hTreeView, hItem)) == NULL) {
 		return NULL;
 	}
@@ -828,7 +828,7 @@ HTREEITEM treeview_move_up(const HWND hTreeView, const HTREEITEM hItem)
 		prev_di = cdi;
 	}
 
-	// ƒcƒŠ[ƒrƒ…[ƒAƒCƒeƒ€‚Ì“ü‚ê‘Ö‚¦
+	// ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã‚¢ã‚¤ãƒ†ãƒ ã®å…¥ã‚Œæ›¿ãˆ
 	if ((prev_item = TreeView_GetPrevSibling(hTreeView, prev_item)) == NULL) {
 		prev_item = (HTREEITEM)TVI_FIRST;
 	}
@@ -843,7 +843,7 @@ HTREEITEM treeview_move_up(const HWND hTreeView, const HTREEITEM hItem)
 }
 
 /*
- * treeview_move_down - ƒAƒCƒeƒ€‚ğ‰º‚ÉˆÚ“®
+ * treeview_move_down - ã‚¢ã‚¤ãƒ†ãƒ ã‚’ä¸‹ã«ç§»å‹•
  */
 HTREEITEM treeview_move_down(const HWND hTreeView, const HTREEITEM hItem)
 {
@@ -851,12 +851,12 @@ HTREEITEM treeview_move_down(const HWND hTreeView, const HTREEITEM hItem)
 	DATA_INFO *di, *cdi, *prev_di, *wk_di;
 	DATA_INFO **pdi;
 
-	// ‘O‚ÌƒAƒCƒeƒ€‚ğæ“¾
+	// å‰ã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—
 	if ((next_item = TreeView_GetNextSibling(hTreeView, hItem)) == NULL) {
 		return NULL;
 	}
 
-	// eƒf[ƒ^‚ğæ“¾
+	// è¦ªãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
 	if ((parent_item = TreeView_GetParent(hTreeView, hItem)) == history_treeitem) {
 		pdi = &history_data.child;
 	} else if (parent_item == regist_treeitem) {
@@ -870,7 +870,7 @@ HTREEITEM treeview_move_down(const HWND hTreeView, const HTREEITEM hItem)
 		pdi = &di->child;
 	}
 
-	// ƒf[ƒ^“ü‚ê‘Ö‚¦
+	// ãƒ‡ãƒ¼ã‚¿å…¥ã‚Œæ›¿ãˆ
 	if ((di = (DATA_INFO *)treeview_get_lparam(hTreeView, hItem)) == NULL || di->next == NULL) {
 		return NULL;
 	}
@@ -893,7 +893,7 @@ HTREEITEM treeview_move_down(const HWND hTreeView, const HTREEITEM hItem)
 		prev_di = cdi;
 	}
 
-	// ƒcƒŠ[ƒrƒ…[ƒAƒCƒeƒ€‚Ì“ü‚ê‘Ö‚¦
+	// ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã‚¢ã‚¤ãƒ†ãƒ ã®å…¥ã‚Œæ›¿ãˆ
 	if ((ret_item = treeview_copy_item(hTreeView, parent_item, hItem, next_item)) == NULL) {
 		return NULL;
 	}

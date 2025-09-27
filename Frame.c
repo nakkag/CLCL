@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Frame.c
@@ -18,15 +18,15 @@
 #include "dpi.h"
 
 /* Define */
-#define NOMOVESIZE		Scale(6)		// ƒtƒŒ[ƒ€‚ÌˆÚ“®§ŒÀ’l
+#define NOMOVESIZE		Scale(6)		// ãƒ•ãƒ¬ãƒ¼ãƒ ã®ç§»å‹•åˆ¶é™å€¤
 
 /* Global Variables */
-static RECT *frame_rect;		// ƒtƒŒ[ƒ€‚ÌˆÊ’uî•ñ
+static RECT *frame_rect;		// ãƒ•ãƒ¬ãƒ¼ãƒ ã®ä½ç½®æƒ…å ±
 
 /* ocal Function Prototypes */
 
 /*
- * frame_initialize - ƒtƒŒ[ƒ€•`‰æ—p\‘¢‘Ì‚Ì‰Šú‰»
+ * frame_initialize - ãƒ•ãƒ¬ãƒ¼ãƒ æç”»ç”¨æ§‹é€ ä½“ã®åˆæœŸåŒ–
  */
 BOOL frame_initialize(const HWND hWnd)
 {
@@ -41,7 +41,7 @@ BOOL frame_initialize(const HWND hWnd)
 }
 
 /*
- * frame_free - ƒtƒŒ[ƒ€•`‰æ—p\‘¢‘Ì‚Ì‰ğ•ú
+ * frame_free - ãƒ•ãƒ¬ãƒ¼ãƒ æç”»ç”¨æ§‹é€ ä½“ã®è§£æ”¾
  */
 void frame_free(void)
 {
@@ -52,7 +52,7 @@ void frame_free(void)
 }
 
 /*
- * frame_draw - ƒtƒŒ[ƒ€‚Ì•`‰æ
+ * frame_draw - ãƒ•ãƒ¬ãƒ¼ãƒ ã®æç”»
  */
 int frame_draw(const HWND hWnd, const HWND hTreeView)
 {
@@ -65,7 +65,7 @@ int frame_draw(const HWND hWnd, const HWND hTreeView)
 	GetWindowRect(hWnd, (LPRECT)&window_rect);
 	GetWindowRect(hTreeView, (LPRECT)&treeview_rect);
 
-	// ƒtƒŒ[ƒ€‚ÌˆÚ“®§ŒÀ
+	// ãƒ•ãƒ¬ãƒ¼ãƒ ã®ç§»å‹•åˆ¶é™
 	if (apos.x <= (window_rect.left + NOMOVESIZE + GetSystemMetrics(SM_CXFRAME))) {
 		apos.x = window_rect.left + NOMOVESIZE + GetSystemMetrics(SM_CXFRAME);
 
@@ -73,19 +73,19 @@ int frame_draw(const HWND hWnd, const HWND hTreeView)
 		apos.x = window_rect.right - (NOMOVESIZE + (FRAME_CNT * 2)) - GetSystemMetrics(SM_CXFRAME);
 	}
 
-	// ‘O‰ñ‚ÌˆÊ’u‚Æ”äŠr
+	// å‰å›ã®ä½ç½®ã¨æ¯”è¼ƒ
 	if (apos.x == frame_rect[0].left) {
 		return 1;
 	}
 
 	hdc = GetWindowDC(hWnd);
 
-	// ‘O‰ñ•`‰æ•ª‚ğÁ‹
+	// å‰å›æç”»åˆ†ã‚’æ¶ˆå»
 	for (draw_cnt = 0;draw_cnt < FRAME_CNT;draw_cnt++) {
 		DrawFocusRect(hdc, (LPRECT)&frame_rect[draw_cnt]);
 	}
 
-	// ƒtƒŒ[ƒ€‚Ì•`‰æ
+	// ãƒ•ãƒ¬ãƒ¼ãƒ ã®æç”»
 	for (draw_cnt = 0;draw_cnt < FRAME_CNT;draw_cnt++) {
 		(frame_rect + draw_cnt)->left = apos.x + draw_cnt - window_rect.left;
 		(frame_rect + draw_cnt)->right = (frame_rect + draw_cnt)->left + FRAME_CNT + 1;
@@ -99,7 +99,7 @@ int frame_draw(const HWND hWnd, const HWND hTreeView)
 }
 
 /*
- * frame_draw_end - ƒtƒŒ[ƒ€‚Ì•`‰æI—¹AƒtƒŒ[ƒ€‚ÌÅIˆÊ’u‚ğ•Ô‚·
+ * frame_draw_end - ãƒ•ãƒ¬ãƒ¼ãƒ ã®æç”»çµ‚äº†ã€ãƒ•ãƒ¬ãƒ¼ãƒ ã®æœ€çµ‚ä½ç½®ã‚’è¿”ã™
  */
 int frame_draw_end(const HWND hWnd)
 {
@@ -113,14 +113,14 @@ int frame_draw_end(const HWND hWnd)
 		return -1;
 	}
 
-	// ‘O‰ñ•`‰æ•ª‚ğÁ‹
+	// å‰å›æç”»åˆ†ã‚’æ¶ˆå»
 	hdc = GetWindowDC(hWnd);
 	for (draw_cnt = 0;draw_cnt < FRAME_CNT;draw_cnt++) {
 		DrawFocusRect(hdc, (LPRECT)&frame_rect[draw_cnt]);
 	}
 	ReleaseDC(hWnd, hdc);
 
-	// ‹«ŠEˆÊ’u‚Ìæ“¾
+	// å¢ƒç•Œä½ç½®ã®å–å¾—
 	ret = frame_rect[0].left - GetSystemMetrics(SM_CXFRAME);
 
 	frame_free();

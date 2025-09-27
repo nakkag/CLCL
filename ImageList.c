@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * ImageList.c
@@ -28,7 +28,7 @@
 /* Global Variables */
 extern TCHAR work_path[];
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
@@ -36,9 +36,9 @@ static int imagelist_icon_add(const HINSTANCE hInstance, const HIMAGELIST icon_l
 static int imagelist_fileicon_add(const HIMAGELIST icon_list, const TCHAR *path, const UINT flag);
 
 /*
- * imagelist_icon_add - ƒCƒ[ƒWƒŠƒXƒg‚ÉƒAƒCƒRƒ“‚ğ’Ç‰Á
+ * imagelist_icon_add - ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã«ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¿½åŠ 
  *
- *	ƒtƒ@ƒCƒ‹‚ªw’è‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍƒŠƒ\[ƒX‚©‚çæ“¾
+ *	ãƒ•ã‚¡ã‚¤ãƒ«ãŒæŒ‡å®šã•ã‚Œã¦ã„ãªã„å ´åˆã¯ãƒªã‚½ãƒ¼ã‚¹ã‹ã‚‰å–å¾—
  */
 static int imagelist_icon_add(const HINSTANCE hInstance, const HIMAGELIST icon_list, const int index)
 {
@@ -47,14 +47,14 @@ static int imagelist_icon_add(const HINSTANCE hInstance, const HIMAGELIST icon_l
 
 	hIcon = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(index), IMAGE_ICON,
 		SICONSIZE, SICONSIZE, 0);
-	// ƒCƒ[ƒWƒŠƒXƒg‚ÉƒAƒCƒRƒ“‚ğ’Ç‰Á
+	// ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã«ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¿½åŠ 
 	ret = ImageList_AddIcon(icon_list, hIcon);
 	DestroyIcon(hIcon);
 	return ret;
 }
 
 /*
- * imagelist_fileicon_add - ƒCƒ[ƒWƒŠƒXƒg‚ÉŠÖ˜A•t‚¯‚³‚ê‚½ƒAƒCƒRƒ“‚ğ’Ç‰Á
+ * imagelist_fileicon_add - ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã«é–¢é€£ä»˜ã‘ã•ã‚ŒãŸã‚¢ã‚¤ã‚³ãƒ³ã‚’è¿½åŠ 
  */
 static int imagelist_fileicon_add(const HIMAGELIST icon_list, const TCHAR *path, const UINT flag)
 {
@@ -70,14 +70,14 @@ static int imagelist_fileicon_add(const HIMAGELIST icon_list, const TCHAR *path,
 	if (hIcon == NULL) {
 		return -1;
 	}
-	// ƒCƒ[ƒWƒŠƒXƒg‚ÉƒAƒCƒRƒ“‚ğ’Ç‰Á
+	// ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã«ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¿½åŠ 
 	ret = ImageList_AddIcon(icon_list, hIcon);
 	DestroyIcon(hIcon);
 	return ret;
 }
 
 /*
- * create_imagelist - ƒCƒ[ƒWƒŠƒXƒg‚Ìì¬
+ * create_imagelist - ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã®ä½œæˆ
  */
 HIMAGELIST create_imagelist(const HINSTANCE hInstance)
 {
@@ -94,10 +94,10 @@ HIMAGELIST create_imagelist(const HINSTANCE hInstance)
 	imagelist_icon_add(hInstance, icon_list, IDI_ICON_REGIST);
 	imagelist_icon_add(hInstance, icon_list, IDI_ICON_FOLDER);
 	imagelist_icon_add(hInstance, icon_list, IDI_ICON_FOLDER);
-	// –¢’è‹`‚ÌŒ`®ƒAƒCƒRƒ“
+	// æœªå®šç¾©ã®å½¢å¼ã‚¢ã‚¤ã‚³ãƒ³
 	imagelist_icon_add(hInstance, icon_list, IDI_ICON_DEFAULT);
 
-	// Œ`®–ˆ‚ÌƒAƒCƒRƒ“’Ç‰Á
+	// å½¢å¼æ¯ã®ã‚¢ã‚¤ã‚³ãƒ³è¿½åŠ 
 	for (i = 0; i < option.format_cnt; i++) {
 		free_icon = TRUE;
 		if ((hIcon = format_get_icon(i, SICONSIZE, &free_icon)) == NULL) {

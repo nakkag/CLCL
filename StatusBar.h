@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CLCL
  *
  * StatusBar.h

@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * BinView.c
@@ -36,11 +36,11 @@
 #define WM_SET_SCROLLBAR				(WM_APP + 101)
 #define WM_SHOW_MENU					(WM_APP + 102)
 
-// ƒzƒC[ƒ‹ƒƒbƒZ[ƒW
+// ãƒ›ã‚¤ãƒ¼ãƒ«ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 #ifndef WM_MOUSEWHEEL
 #define WM_MOUSEWHEEL					0x020A
 #endif
-// XPƒe[ƒ}•ÏX’Ê’m
+// XPãƒ†ãƒ¼ãƒå¤‰æ›´é€šçŸ¥
 #ifndef WM_THEMECHANGED
 #define WM_THEMECHANGED					0x031A
 #endif
@@ -71,53 +71,53 @@ typedef struct _UNDO {
 } UNDO;
 
 typedef struct _BUFFER {
-	// •\¦‚·‚éƒf[ƒ^
+	// è¡¨ç¤ºã™ã‚‹ãƒ‡ãƒ¼ã‚¿
 	BYTE *data;
 	DWORD data_len;
 	DWORD data_size;
 
-	// UNDOƒoƒbƒtƒ@
+	// UNDOãƒãƒƒãƒ•ã‚¡
 	UNDO *undo;
 	int undo_size;
 	int undo_len;
 
-	// ‘I‘ğˆÊ’u
+	// é¸æŠä½ç½®
 	BYTE *sp;
-	// “ü—ÍƒJƒEƒ“ƒg
+	// å…¥åŠ›ã‚«ã‚¦ãƒ³ãƒˆ
 	int input_cnt;
 
-	// s”
+	// è¡Œæ•°
 	int height;
-	// ƒXƒNƒ[ƒ‹ ƒo[‚ÌŒ»İˆÊ’u
+	// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ« ãƒãƒ¼ã®ç¾åœ¨ä½ç½®
 	int pos_x;
 	int pos_y;
-	// ƒXƒNƒ[ƒ‹ ƒo[‚ÌÅ‘å’l
+	// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ« ãƒãƒ¼ã®æœ€å¤§å€¤
 	int max_x;
 	int max_y;
 
-	// •`‰æ—pî•ñ
+	// æç”»ç”¨æƒ…å ±
 	HDC mdc;
 	HBITMAP ret_bmp;
 	HBRUSH hbrush;
 	HFONT hfont;
 	HFONT ret_font;
 
-	// ƒtƒHƒ“ƒg‚Ì‚‚³
+	// ãƒ•ã‚©ãƒ³ãƒˆã®é«˜ã•
 	int font_height;
-	// 1•¶š‚ÌƒtƒHƒ“ƒg‚Ì•
+	// 1æ–‡å­—ã®ãƒ•ã‚©ãƒ³ãƒˆã®å¹…
 	int char_width;
-	// sŠÔ
+	// è¡Œé–“
 	int spacing;
-	// ¶ƒ}[ƒWƒ“
+	// å·¦ãƒãƒ¼ã‚¸ãƒ³
 	int left_margin;
 
-	// ƒƒbƒNó‘Ô
+	// ãƒ­ãƒƒã‚¯çŠ¶æ…‹
 	BOOL lock;
-	// •ÏXƒtƒ‰ƒO
+	// å¤‰æ›´ãƒ•ãƒ©ã‚°
 	BOOL modified;
-	// ‘}“üƒ‚[ƒh
+	// æŒ¿å…¥ãƒ¢ãƒ¼ãƒ‰
 	BOOL insert_mode;
-	// ƒ}ƒ‹ƒ`ƒoƒCƒg
+	// ãƒãƒ«ãƒãƒã‚¤ãƒˆ
 	BOOL dbcs;
 
 #ifdef OP_XP_STYLE
@@ -126,7 +126,7 @@ typedef struct _BUFFER {
 #endif	// OP_XP_STYLE
 } BUFFER;
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
@@ -152,7 +152,7 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 /*
- * txtview_select_font - ƒtƒHƒ“ƒg‚Ì‘I‘ğ
+ * txtview_select_font - ãƒ•ã‚©ãƒ³ãƒˆã®é¸æŠ
  */
 static BOOL binview_select_font(const HWND hWnd)
 {
@@ -160,7 +160,7 @@ static BOOL binview_select_font(const HWND hWnd)
 	LOGFONT lf;
 	HDC hdc;
 
-	// ƒtƒHƒ“ƒgî•ñ‚Ìì¬
+	// ãƒ•ã‚©ãƒ³ãƒˆæƒ…å ±ã®ä½œæˆ
 	ZeroMemory(&lf, sizeof(LOGFONT));
 	hdc = GetDC(NULL);
 	lf.lfHeight = -(int)((option.bin_font_size * GetDeviceCaps(hdc, LOGPIXELSY)) / 72);
@@ -170,7 +170,7 @@ static BOOL binview_select_font(const HWND hWnd)
 	lf.lfCharSet = option.bin_font_charset;
 	lstrcpy(lf.lfFaceName, option.bin_font_name);
 
-	// ƒtƒHƒ“ƒg‘I‘ğƒ_ƒCƒAƒƒO‚ğ•\¦
+	// ãƒ•ã‚©ãƒ³ãƒˆé¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤º
 	ZeroMemory(&cf, sizeof(CHOOSEFONT));
 	cf.lStructSize = sizeof(CHOOSEFONT);
 	cf.hwndOwner = hWnd;
@@ -181,7 +181,7 @@ static BOOL binview_select_font(const HWND hWnd)
 		return FALSE;
 	}
 
-	// İ’èæ“¾
+	// è¨­å®šå–å¾—
 	mem_free(&option.bin_font_name);
 	option.bin_font_name = alloc_copy(lf.lfFaceName);
 	option.bin_font_weight = lf.lfWeight;
@@ -192,7 +192,7 @@ static BOOL binview_select_font(const HWND hWnd)
 }
 
 /*
- * binview_refresh_line - ‚PsXV
+ * binview_refresh_line - ï¼‘è¡Œæ›´æ–°
  */
 static void binview_refresh_line(const HWND hWnd, const BUFFER *bf, const BYTE *st, const BYTE *en)
 {
@@ -213,7 +213,7 @@ static void binview_refresh_line(const HWND hWnd, const BUFFER *bf, const BYTE *
 }
 
 /*
- * binview_point_to_select - À•W‚©‚ç•¶šˆÊ’u‚ğæ“¾
+ * binview_point_to_select - åº§æ¨™ã‹ã‚‰æ–‡å­—ä½ç½®ã‚’å–å¾—
  */
 static BYTE *binview_point_to_select(const HWND hWnd, const BUFFER *bf, const int x, const int y)
 {
@@ -231,12 +231,12 @@ static BYTE *binview_point_to_select(const HWND hWnd, const BUFFER *bf, const in
 		i = bf->height - 1;
 	}
 
-	// ƒAƒhƒŒƒX
+	// ã‚¢ãƒ‰ãƒ¬ã‚¹
 	offset = bf->left_margin - (bf->pos_x * bf->char_width);
 	offset += bf->char_width * ADDRESS_LEN;
 	offset += bf->char_width * 2;
 
-	// 16i
+	// 16é€²
 	for (p = (BYTE *)bf->data + i * LINE_LEN, j = 0; j < LINE_LEN; p++, j++) {
 		if (j == LINE_LEN / 2) {
 			offset += bf->char_width;
@@ -252,7 +252,7 @@ static BYTE *binview_point_to_select(const HWND hWnd, const BUFFER *bf, const in
 	}
 	offset += bf->char_width;
 
-	// ƒLƒƒƒ‰ƒNƒ^
+	// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿
 	for (p = (BYTE *)bf->data + i * LINE_LEN, j = 0; j < LINE_LEN; p++, j++) {
 		offset += bf->char_width;
 		if (x <= offset) {
@@ -269,7 +269,7 @@ static BYTE *binview_point_to_select(const HWND hWnd, const BUFFER *bf, const in
 }
 
 /*
- * binview_ensure_visible - ‘I‘ğˆÊ’u‚ğ•\¦
+ * binview_ensure_visible - é¸æŠä½ç½®ã‚’è¡¨ç¤º
  */
 static void binview_ensure_visible(const HWND hWnd, BUFFER *bf)
 {
@@ -320,7 +320,7 @@ static void binview_ensure_visible(const HWND hWnd, BUFFER *bf)
 }
 
 /*
- * binview_set_scrollbar - ƒXƒNƒ[ƒ‹ƒo[İ’è
+ * binview_set_scrollbar - ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼è¨­å®š
  */
 static void binview_set_scrollbar(const HWND hWnd, BUFFER *bf)
 {
@@ -329,7 +329,7 @@ static void binview_set_scrollbar(const HWND hWnd, BUFFER *bf)
 
 	GetClientRect(hWnd, &rect);
 
-	// ‰¡ƒXƒNƒ[ƒ‹ƒo[
+	// æ¨ªã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼
 	if ((rect.right / bf->char_width) < LINE_WIDTH) {
 		EnableScrollBar(hWnd, SB_HORZ, ESB_ENABLE_BOTH);
 
@@ -355,7 +355,7 @@ static void binview_set_scrollbar(const HWND hWnd, BUFFER *bf)
 		SetScrollInfo(hWnd, SB_HORZ, &si, TRUE);
 	}
 
-	// cƒXƒNƒ[ƒ‹ƒo[
+	// ç¸¦ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼
 	if (rect.bottom / bf->font_height < bf->height) {
 		EnableScrollBar(hWnd, SB_VERT, ESB_ENABLE_BOTH);
 
@@ -383,21 +383,21 @@ static void binview_set_scrollbar(const HWND hWnd, BUFFER *bf)
 }
 
 /*
- * binview_set_undo - UNDO’Ç‰Á
+ * binview_set_undo - UNDOè¿½åŠ 
  */
 static BOOL binview_set_undo(BUFFER *bf, const int type)
 {
 	UNDO *ud;
 	int i;
 
-	// ƒJƒŒƒ“ƒgˆÊ’uˆÈ~‚ğ‰Šú‰»
+	// ã‚«ãƒ¬ãƒ³ãƒˆä½ç½®ä»¥é™ã‚’åˆæœŸåŒ–
 	for (i = bf->undo_len; i < bf->undo_size; i++) {
 		(bf->undo + i)->type = 0;
 	}
 
 	i = bf->undo_len;
 	if (bf->undo_len + 1 >= bf->undo_size) {
-		// UNDOƒoƒbƒtƒ@‚ÌŠm•Û
+		// UNDOãƒãƒƒãƒ•ã‚¡ã®ç¢ºä¿
 		bf->undo_size += RESERVE_UNDO;
 		if ((ud = mem_calloc(sizeof(UNDO) * bf->undo_size)) == NULL) {
 			return FALSE;
@@ -409,7 +409,7 @@ static BOOL binview_set_undo(BUFFER *bf, const int type)
 		bf->undo = ud;
 	}
 
-	// UNDOİ’è
+	// UNDOè¨­å®š
 	(bf->undo + i)->type = type;
 	(bf->undo + i)->st = bf->sp - bf->data;
 	(bf->undo + i)->data = *bf->sp;
@@ -418,7 +418,7 @@ static BOOL binview_set_undo(BUFFER *bf, const int type)
 }
 
 /*
- * binview_undo_exec - UNDO‚ÌÀs
+ * binview_undo_exec - UNDOã®å®Ÿè¡Œ
  */
 static BOOL binview_undo_exec(const HWND hWnd, BUFFER *bf)
 {
@@ -434,12 +434,12 @@ static BOOL binview_undo_exec(const HWND hWnd, BUFFER *bf)
 	bf->sp = bf->data + (bf->undo + i)->st;
 	switch ((bf->undo + i)->type) {
 	case UNDO_TYPE_INPUT:
-		// “ü—Í•¶š‚Ìíœ
+		// å…¥åŠ›æ–‡å­—ã®å‰Šé™¤
 		binview_delete(hWnd, bf);
 		break;
 
 	case UNDO_TYPE_DELETE:
-		// íœ•¶š‚Ì’Ç‰Á
+		// å‰Šé™¤æ–‡å­—ã®è¿½åŠ 
 		binview_insert(hWnd, bf);
 		*bf->sp = (bf->undo + i)->data;
 		binview_refresh_line(hWnd, bf, bf->sp, bf->sp);
@@ -451,7 +451,7 @@ static BOOL binview_undo_exec(const HWND hWnd, BUFFER *bf)
 }
 
 /*
- * binview_redo_exec - REDO‚ÌÀs
+ * binview_redo_exec - REDOã®å®Ÿè¡Œ
  */
 static BOOL binview_redo_exec(const HWND hWnd, BUFFER *bf)
 {
@@ -467,7 +467,7 @@ static BOOL binview_redo_exec(const HWND hWnd, BUFFER *bf)
 	bf->sp = bf->data + (bf->undo + i)->st;
 	switch ((bf->undo + i)->type) {
 	case UNDO_TYPE_INPUT:
-		// •¶š’Ç‰Á
+		// æ–‡å­—è¿½åŠ 
 		binview_insert(hWnd, bf);
 		*bf->sp = (bf->undo + i)->data;
 		binview_refresh_line(hWnd, bf, bf->sp, bf->sp);
@@ -475,7 +475,7 @@ static BOOL binview_redo_exec(const HWND hWnd, BUFFER *bf)
 		break;
 
 	case UNDO_TYPE_DELETE:
-		// •¶šíœ
+		// æ–‡å­—å‰Šé™¤
 		binview_delete(hWnd, bf);
 		break;
 	}
@@ -484,14 +484,14 @@ static BOOL binview_redo_exec(const HWND hWnd, BUFFER *bf)
 }
 
 /*
- * binview_insert - ‘}“ü
+ * binview_insert - æŒ¿å…¥
  */
 static BOOL binview_insert(const HWND hWnd, BUFFER *bf)
 {
 	BYTE *p;
 
 	if (bf->data == NULL) {
-		// V‹KŠm•Û
+		// æ–°è¦ç¢ºä¿
 		bf->data_size = RESERVE_BUF;
 		bf->data = mem_alloc(sizeof(BYTE) * bf->data_size);
 		if (bf->data == NULL) {
@@ -499,7 +499,7 @@ static BOOL binview_insert(const HWND hWnd, BUFFER *bf)
 		}
 		bf->sp = bf->data;
 	} else {
-		// ‘}“ü
+		// æŒ¿å…¥
 		if (bf->data_len + 1 >= bf->data_size) {
 			bf->data_size = bf->data_len + 1 + RESERVE_BUF;
 			p = mem_alloc(sizeof(BYTE) * bf->data_size);
@@ -526,13 +526,13 @@ static BOOL binview_insert(const HWND hWnd, BUFFER *bf)
 }
 
 /*
- * binview_input - “ü—Í
+ * binview_input - å…¥åŠ›
  */
 static BOOL binview_input(const HWND hWnd, BUFFER *bf, const TCHAR c)
 {
 	int i;
 
-	// 16i”‚É•ÏŠ·
+	// 16é€²æ•°ã«å¤‰æ›
 	if (c >= TEXT('0') && c <= TEXT('9')) {
 		i = c - TEXT('0');
 	} else if (c >= TEXT('A') && c <= TEXT('F')) {
@@ -544,7 +544,7 @@ static BOOL binview_input(const HWND hWnd, BUFFER *bf, const TCHAR c)
 	}
 
 	if (bf->data == NULL || bf->sp == bf->data + bf->data_len || (bf->insert_mode == TRUE && bf->input_cnt == 0)) {
-		// ‘}“ü
+		// æŒ¿å…¥
 		if (binview_insert(hWnd, bf) == FALSE) {
 			return FALSE;
 		}
@@ -552,12 +552,12 @@ static BOOL binview_input(const HWND hWnd, BUFFER *bf, const TCHAR c)
 		binview_set_undo(bf, UNDO_TYPE_DELETE);
 	}
 
-	// •¶šİ’è
+	// æ–‡å­—è¨­å®š
 	*bf->sp = *bf->sp << 4 | i;
 	bf->modified = TRUE;
 	binview_refresh_line(hWnd, bf, bf->sp, bf->sp);
 
-	// Ÿ‚Ì•¶š‚ÖˆÚ“®
+	// æ¬¡ã®æ–‡å­—ã¸ç§»å‹•
 	bf->input_cnt++;
 	if (bf->input_cnt >= 2) {
 		binview_flush(bf);
@@ -571,15 +571,15 @@ static BOOL binview_input(const HWND hWnd, BUFFER *bf, const TCHAR c)
 }
 
 /*
- * binview_delete - íœ
+ * binview_delete - å‰Šé™¤
  */
 static void binview_delete(const HWND hWnd, BUFFER *bf)
 {
-	// íœ
+	// å‰Šé™¤
 	MoveMemory(bf->sp, bf->sp + 1, bf->data_len - (bf->sp - bf->data) - 1);
 	bf->data_len--;
 	if (bf->data_len <= 0) {
-		// ‰ğ•ú
+		// è§£æ”¾
 		bf->sp = NULL;
 		mem_free(&bf->data);
 		bf->data_size = 0;
@@ -597,7 +597,7 @@ static void binview_delete(const HWND hWnd, BUFFER *bf)
 }
 
 /*
- * binview_flush - “ü—Í‚Ì”½‰f
+ * binview_flush - å…¥åŠ›ã®åæ˜ 
  */
 static void binview_flush(BUFFER *bf)
 {
@@ -608,7 +608,7 @@ static void binview_flush(BUFFER *bf)
 }
 
 /*
- * itox - 16i•¶š—ñ‚Ìì¬
+ * itox - 16é€²æ–‡å­—åˆ—ã®ä½œæˆ
  */
 static void itox(const DWORD num, const int col, TCHAR *ret)
 {
@@ -624,7 +624,7 @@ static void itox(const DWORD num, const int col, TCHAR *ret)
 }
 
 /*
- * draw_init - •`‰æî•ñ‚Ì‰Šú‰»
+ * draw_init - æç”»æƒ…å ±ã®åˆæœŸåŒ–
  */
 static BOOL draw_init(const HWND hWnd, BUFFER *bf)
 {
@@ -644,7 +644,7 @@ static BOOL draw_init(const HWND hWnd, BUFFER *bf)
 }
 
 /*
- * draw_free - •`‰æî•ñ‚Ì‰ğ•ú
+ * draw_free - æç”»æƒ…å ±ã®è§£æ”¾
  */
 static void draw_free(BUFFER *bf)
 {
@@ -655,7 +655,7 @@ static void draw_free(BUFFER *bf)
 }
 
 /*
- * binview_draw_line - 1s•`‰æ
+ * binview_draw_line - 1è¡Œæç”»
  */
 static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const int i)
 {
@@ -675,14 +675,14 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 		return;
 	}
 
-	// ˆÊ’uî•ñ
+	// ä½ç½®æƒ…å ±
 	offset = bf->left_margin - (bf->pos_x * bf->char_width);
 	height = bf->spacing / 2;
 
-	// ”wŒiF
+	// èƒŒæ™¯è‰²
 	SetBkColor(mdc, GetSysColor(COLOR_WINDOW));
 
-	// ƒAƒhƒŒƒX•\¦
+	// ã‚¢ãƒ‰ãƒ¬ã‚¹è¡¨ç¤º
 	if (bf->lock == FALSE && option.bin_lock == 0) {
 		SetTextColor(mdc, GetSysColor(COLOR_HIGHLIGHT));
 	} else {
@@ -692,7 +692,7 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 	TextOut(mdc, offset, height, buf, ADDRESS_LEN);
 	offset += (ADDRESS_LEN * bf->char_width) + (2 * bf->char_width);
 
-	// 16i•\¦
+	// 16é€²è¡¨ç¤º
 	SetTextColor(mdc, GetSysColor(COLOR_WINDOWTEXT));
 	p = (BYTE *)bf->data + (i * LINE_LEN);
 	r = cbuf;
@@ -708,10 +708,10 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 			s = buf;
 		}
 		if ((DWORD)(p - (BYTE *)bf->data) < (DWORD)bf->data_len) {
-			// 16i
+			// 16é€²
 			itox(*p, 2, s);
 			s += 2;
-			// ƒLƒƒƒ‰ƒNƒ^
+			// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿
 			if (bf->dbcs == TRUE) {
 				bf->dbcs = FALSE;
 				if (j == 0) {
@@ -730,7 +730,7 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 			*(r++) = ' ';
 		}
 		if (p == bf->sp) {
-			// ‘I‘ğ•¶š
+			// é¸æŠæ–‡å­—
 			if (GetFocus() == hWnd) {
 				hbr = CreateSolidBrush(GetSysColor(COLOR_HIGHLIGHT));
 			} else {
@@ -738,7 +738,7 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 			}
 			SetRect(&drect, offset - 1, 0, offset + (2 * bf->char_width) + 1, bf->font_height);
 			if (bf->insert_mode == FALSE) {
-				// ã‘‚«ƒ‚[ƒh
+				// ä¸Šæ›¸ããƒ¢ãƒ¼ãƒ‰
 				FillRect(mdc, &drect, hbr);
 				if (GetFocus() == hWnd) {
 					SetTextColor(mdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
@@ -770,7 +770,7 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 	TextOut(mdc, offset, height, buf, lstrlen(buf));
 	offset += (lstrlen(buf) * bf->char_width) + bf->char_width;
 
-	// ƒLƒƒƒ‰ƒNƒ^•\¦
+	// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿è¡¨ç¤º
 #ifdef UNICODE
 	char_to_tchar(cbuf, buf, BUF_SIZE - 1);
 	tp = buf;
@@ -835,7 +835,7 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 }
 
 /*
- * binview_proc - ƒEƒBƒ“ƒhƒE‚ÌƒvƒƒV[ƒWƒƒ
+ * binview_proc - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -847,7 +847,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 	switch (msg) {
 	case WM_CREATE:
-		// ƒEƒBƒ“ƒhƒEì¬
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½œæˆ
 		if ((bf = mem_calloc(sizeof(BUFFER))) == NULL) {
 			return -1;
 		}
@@ -857,17 +857,17 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		bf->hTheme = theme_open(hWnd);
 #endif	// OP_XP_STYLE
 
-		// •`‰æ—pî•ñ
+		// æç”»ç”¨æƒ…å ±
 		hdc = GetDC(hWnd);
 		GetClientRect(hWnd, &rect);
 		bf->mdc = CreateCompatibleDC(hdc);
 		ReleaseDC(hWnd, hdc);
 		draw_init(hWnd, bf);
 
-		// ”wŒiƒuƒ‰ƒV
+		// èƒŒæ™¯ãƒ–ãƒ©ã‚·
 		bf->hbrush = CreateSolidBrush(GetSysColor(COLOR_WINDOW));
 
-		// ƒtƒHƒ“ƒgì¬
+		// ãƒ•ã‚©ãƒ³ãƒˆä½œæˆ
 		bf->hfont = font_create(option.bin_font_name, option.bin_font_size, option.bin_font_charset,
 			option.bin_font_weight, (option.bin_font_italic == 0) ? FALSE : TRUE, TRUE);
 		bf->ret_font = SelectObject(bf->mdc, bf->hfont);
@@ -893,12 +893,12 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		break;
 
 	case WM_CLOSE:
-		// ƒEƒBƒ“ƒhƒE‚ğ•Â‚¶‚é
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’é–‰ã˜ã‚‹
 		DestroyWindow(hWnd);
 		break;
 
 	case WM_DESTROY:
-		// ƒEƒBƒ“ƒhƒE‚Ì”jŠü
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ç ´æ£„
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) != NULL) {
 			SetWindowLong(hWnd, GWL_USERDATA, (LPARAM)0);
 #ifdef OP_XP_STYLE
@@ -919,29 +919,29 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 
 	case WM_SIZE:
-		// ƒTƒCƒY•ÏX
+		// ã‚µã‚¤ã‚ºå¤‰æ›´
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
 
-		// ƒXƒNƒ[ƒ‹ƒo[‚ÌXV
+		// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã®æ›´æ–°
 		SendMessage(hWnd, WM_SET_SCROLLBAR, 0, 0);
 
-		// •`‰æî•ñ‚ÌXV
+		// æç”»æƒ…å ±ã®æ›´æ–°
 		draw_free(bf);
 		draw_init(hWnd, bf);
 		InvalidateRect(hWnd, NULL, FALSE);
 		break;
 
 	case WM_EXITSIZEMOVE:
-		// ƒTƒCƒY•ÏXŠ®—¹
+		// ã‚µã‚¤ã‚ºå¤‰æ›´å®Œäº†
 		break;
 
 	case WM_SETFOCUS:
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
-		// ‘I‘ğ•¶š‚Ì‚ ‚és‚ğÄ•`‰æ
+		// é¸æŠæ–‡å­—ã®ã‚ã‚‹è¡Œã‚’å†æç”»
 		binview_refresh_line(hWnd, bf, bf->sp, bf->sp);
 		break;
 
@@ -949,7 +949,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
-		// ‘I‘ğ•¶š‚Ì‚ ‚és‚ğÄ•`‰æ
+		// é¸æŠæ–‡å­—ã®ã‚ã‚‹è¡Œã‚’å†æç”»
 		binview_refresh_line(hWnd, bf, bf->sp, bf->sp);
 		break;
 
@@ -1069,7 +1069,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		}
 		binview_flush(bf);
 		binview_refresh_line(hWnd, bf, bf->sp, bf->sp);
-		// À•W‚©‚ç•¶šˆÊ’u‚ğæ“¾
+		// åº§æ¨™ã‹ã‚‰æ–‡å­—ä½ç½®ã‚’å–å¾—
 		bf->sp = binview_point_to_select(hWnd, bf, (short)LOWORD(lParam), (short)HIWORD(lParam));
 		binview_refresh_line(hWnd, bf, bf->sp, bf->sp);
 
@@ -1107,7 +1107,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 				bf->lock == TRUE || option.bin_lock != 0) {
 				break;
 			}
-			// íœ
+			// å‰Šé™¤
 			binview_flush(bf);
 			binview_set_undo(bf, UNDO_TYPE_DELETE);
 			binview_delete(hWnd, bf);
@@ -1130,10 +1130,10 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 		case 'Z':
 			if (GetKeyState(VK_CONTROL) < 0 && GetKeyState(VK_SHIFT) < 0) {
-				// ‚â‚è’¼‚µ
+				// ã‚„ã‚Šç›´ã—
 				SendMessage(hWnd, EM_REDO, 0, 0);
 			} else if (GetKeyState(VK_CONTROL) < 0) {
-				// Œ³‚É–ß‚·
+				// å…ƒã«æˆ»ã™
 				SendMessage(hWnd, EM_UNDO, 0, 0);
 			}
 			break;
@@ -1207,12 +1207,12 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 				break;
 			}
 			binview_flush(bf);
-			// ‘I‘ğˆÊ’u‚ğ•\¦
+			// é¸æŠä½ç½®ã‚’è¡¨ç¤º
 			binview_ensure_visible(hWnd, bf);
 			binview_refresh_line(hWnd, bf, bf->sp, bf->sp);
-			// ‰¡ˆÊ’u‚Ìæ“¾
+			// æ¨ªä½ç½®ã®å–å¾—
 			i = (bf->sp - bf->data) % LINE_LEN;
-			// ‚Pƒy[ƒW‘O‚ÉˆÚ“®
+			// ï¼‘ãƒšãƒ¼ã‚¸å‰ã«ç§»å‹•
 			bf->sp -= rect.bottom / bf->font_height * LINE_LEN;
 			if (bf->sp < bf->data) {
 				bf->sp = bf->data + i;
@@ -1226,15 +1226,15 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 				break;
 			}
 			binview_flush(bf);
-			// ‘I‘ğˆÊ’u‚ğ•\¦
+			// é¸æŠä½ç½®ã‚’è¡¨ç¤º
 			binview_ensure_visible(hWnd, bf);
 			binview_refresh_line(hWnd, bf, bf->sp, bf->sp);
-			// ‰¡ˆÊ’u‚Ìæ“¾
+			// æ¨ªä½ç½®ã®å–å¾—
 			i = (LINE_LEN - (bf->sp - bf->data) % LINE_LEN);
 			if ((bf->data_len + 1) % LINE_LEN != 0) {
 				i -= (LINE_LEN - (bf->data_len + 1) % LINE_LEN);
 			}
-			// 1ƒy[ƒWŒã‚ë‚ÉˆÚ“®
+			// 1ãƒšãƒ¼ã‚¸å¾Œã‚ã«ç§»å‹•
 			bf->sp += rect.bottom / bf->font_height * LINE_LEN;
 			if (bf->sp > bf->data + bf->data_len) {
 				bf->sp = bf->data + bf->data_len - i + 1;
@@ -1249,7 +1249,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		break;
 
 	case WM_CHAR:
-		// “ü—Í
+		// å…¥åŠ›
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
 			bf->lock == TRUE || option.bin_lock != 0) {
 			break;
@@ -1268,7 +1268,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			i = bf->pos_y + (ps.rcPaint.top / bf->font_height) - 1;
 			bf->dbcs = FALSE;
 			for (; i < bf->pos_y + (ps.rcPaint.bottom / bf->font_height) + 1; i++) {
-				// ”wŒi“h‚è‚Â‚Ô‚µ
+				// èƒŒæ™¯å¡—ã‚Šã¤ã¶ã—
 				FillRect(bf->mdc, &rect, bf->hbrush);
 				// draw line
 				binview_draw_line(hWnd, bf->mdc, bf, i);
@@ -1286,7 +1286,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 #ifdef OP_XP_STYLE
 	case WM_NCPAINT:
-		// XP—p‚Ì”wŒi•`‰æ
+		// XPç”¨ã®èƒŒæ™¯æç”»
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
 			theme_draw(hWnd, (HRGN)wParam, bf->hTheme) == FALSE) {
 			return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -1297,7 +1297,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
-		// XPƒe[ƒ}‚Ì•ÏX
+		// XPãƒ†ãƒ¼ãƒã®å¤‰æ›´
 		theme_close(bf->hTheme);
 		bf->hTheme = theme_open(hWnd);
 		break;
@@ -1305,7 +1305,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 	case WM_UNDO:
 	case EM_UNDO:
-		// Œ³‚É–ß‚·
+		// å…ƒã«æˆ»ã™
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
 			bf->lock == TRUE || option.bin_lock != 0) {
 			break;
@@ -1314,7 +1314,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		break;
 
 	case EM_REDO:
-		// ‚â‚è’¼‚µ
+		// ã‚„ã‚Šç›´ã—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
 			bf->lock == TRUE || option.bin_lock != 0) {
 			break;
@@ -1337,11 +1337,11 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		return ((bf->undo != NULL && (bf->undo + bf->undo_len)->type != 0) ? TRUE : FALSE);
 
 	case WM_SET_BINDATA:
-		// ƒf[ƒ^İ’è
+		// ãƒ‡ãƒ¼ã‚¿è¨­å®š
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
-		// ‰Šú‰»
+		// åˆæœŸåŒ–
 		bf->pos_x = 0;
 		bf->pos_y = 0;
 		bf->lock = wParam;
@@ -1353,13 +1353,13 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			bf->undo_len = 0;
 		}
 		if (bf->data != NULL) {
-			// ‰ğ•ú
+			// è§£æ”¾
 			mem_free(&bf->data);
 			bf->data_size = 0;
 			bf->data_len = 0;
 		}
 		if ((DATA_INFO *)lParam != NULL && ((DATA_INFO *)lParam)->data != NULL) {
-			// ƒf[ƒ^‚ğƒoƒCƒg—ñ‚É•ÏŠ·
+			// ãƒ‡ãƒ¼ã‚¿ã‚’ãƒã‚¤ãƒˆåˆ—ã«å¤‰æ›
 			if ((bf->data = format_data_to_bytes((DATA_INFO *)lParam, &bf->data_len)) == NULL) {
 				bf->data = clipboard_data_to_bytes((DATA_INFO *)lParam, &bf->data_len);
 			}
@@ -1371,16 +1371,16 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		break;
 
 	case WM_SAVE_BINDATA:
-		// ƒf[ƒ^•Û‘¶
+		// ãƒ‡ãƒ¼ã‚¿ä¿å­˜
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || bf->modified == FALSE) {
 			return FALSE;
 		}
 		if ((DATA_INFO *)lParam != NULL) {
-			// ‰ğ•ú
+			// è§£æ”¾
 			if (((DATA_INFO *)lParam)->data != NULL && format_free_data(((DATA_INFO *)lParam)->format_name, ((DATA_INFO *)lParam)->data) == FALSE) {
 				clipboard_free_data(((DATA_INFO *)lParam)->format_name, ((DATA_INFO *)lParam)->data);
 			}
-			// ƒoƒCƒg—ñ‚ğƒf[ƒ^‚É•ÏŠ·
+			// ãƒã‚¤ãƒˆåˆ—ã‚’ãƒ‡ãƒ¼ã‚¿ã«å¤‰æ›
 			if ((((DATA_INFO *)lParam)->data = format_bytes_to_data(((DATA_INFO *)lParam)->format_name, bf->data, &bf->data_len)) == NULL) {
 				((DATA_INFO *)lParam)->data = clipboard_bytes_to_data(((DATA_INFO *)lParam)->format_name, bf->data, &bf->data_len);
 			}
@@ -1391,7 +1391,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		return TRUE;
 
 	case WM_SET_SCROLLBAR:
-		// ƒXƒNƒ[ƒ‹ƒo[İ’è
+		// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼è¨­å®š
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -1399,12 +1399,12 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		break;
 
 	case WM_SHOW_MENU:
-		// ƒƒjƒ…[•\¦
+		// ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¡¨ç¤º
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) != NULL) {
 			HMENU hMenu;
 			POINT apos;
 
-			// ƒƒjƒ…[‚Ìì¬
+			// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ä½œæˆ
 			hMenu = CreatePopupMenu();
 			AppendMenu(hMenu, MF_STRING | (SendMessage(hWnd, EM_CANUNDO, 0, 0) == TRUE) ? 0 : MF_GRAYED,
 				EM_UNDO, message_get_res(IDS_BIN_MENU_UNDO));
@@ -1417,7 +1417,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 				1, message_get_res(IDS_BIN_MENU_LOCK));
 			AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
 			AppendMenu(hMenu, MF_STRING, 2, message_get_res(IDS_BIN_MENU_FONT));
-			// ƒƒjƒ…[‚Ì•\¦
+			// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®è¡¨ç¤º
 			GetCursorPos((LPPOINT)&apos);
 			i = TrackPopupMenu(hMenu, TPM_TOPALIGN | TPM_RETURNCMD, apos.x, apos.y, 0, hWnd, NULL);
 			DestroyMenu(hMenu);
@@ -1426,18 +1426,18 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			}
 			switch (i) {
 			case 1:
-				// ƒƒbƒN
+				// ãƒ­ãƒƒã‚¯
 				option.bin_lock = !option.bin_lock;
 				InvalidateRect(hWnd, NULL, FALSE);
 				break;
 			case 2:
-				// ƒtƒHƒ“ƒg
+				// ãƒ•ã‚©ãƒ³ãƒˆ
 				if (binview_select_font(hWnd) == TRUE) {
 					if (bf->hfont != NULL) {
 						SelectObject(bf->mdc, bf->ret_font);
 						DeleteObject(bf->hfont);
 					}
-					// ƒtƒHƒ“ƒgì¬
+					// ãƒ•ã‚©ãƒ³ãƒˆä½œæˆ
 					bf->hfont = font_create(option.bin_font_name, option.bin_font_size, option.bin_font_charset,
 						option.bin_font_weight, (option.bin_font_italic == 0) ? FALSE : TRUE, TRUE);
 					bf->ret_font = SelectObject(bf->mdc, bf->hfont);
@@ -1465,7 +1465,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 }
 
 /*
- * binview_regist - ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì“o˜^
+ * binview_regist - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ç™»éŒ²
  */
 BOOL binview_regist(const HINSTANCE hInstance)
 {
@@ -1481,18 +1481,18 @@ BOOL binview_regist(const HINSTANCE hInstance)
 	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wc.lpszMenuName = NULL;
 	wc.lpszClassName = WINDOW_CLASS;
-	// ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì“o˜^
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ç™»éŒ²
 	return RegisterClass(&wc);
 }
 
 /*
- * binview_create - ƒoƒCƒiƒŠƒrƒ…[ƒA‚Ìì¬
+ * binview_create - ãƒã‚¤ãƒŠãƒªãƒ“ãƒ¥ãƒ¼ã‚¢ã®ä½œæˆ
  */
 HWND binview_create(const HINSTANCE hInstance, const HWND pWnd, int id)
 {
 	HWND hWnd;
 
-	// ƒEƒBƒ“ƒhƒE‚Ìì¬
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½œæˆ
 	hWnd = CreateWindowEx(WS_EX_CLIENTEDGE,
 		WINDOW_CLASS,
 		TEXT(""),

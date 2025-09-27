@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Ini.c
@@ -42,7 +42,7 @@ static BOOL ini_get_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INF
 static BOOL ini_put_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt);
 
 /*
- * ini_get_format_name - Œ`®–¼‚Ìæ“¾
+ * ini_get_format_name - å½¢å¼åã®å–å¾—
  */
 static FORMAT_NAME *ini_get_format_name(TCHAR *format_name, int *cnt)
 {
@@ -51,7 +51,7 @@ static FORMAT_NAME *ini_get_format_name(TCHAR *format_name, int *cnt)
 	TCHAR *p, *r;
 	int i;
 
-	// €–Ú”‚Ìæ“¾
+	// é …ç›®æ•°ã®å–å¾—
 	p = format_name;
 	*cnt = 0;
 	while (1) {
@@ -69,13 +69,13 @@ static FORMAT_NAME *ini_get_format_name(TCHAR *format_name, int *cnt)
 		}
 	}
 
-	// Šm•Û
+	// ç¢ºä¿
 	if ((ret = mem_calloc(sizeof(FORMAT_NAME) * (*cnt))) == NULL) {
 		*cnt = 0;
 		return NULL;
 	}
 
-	// €–Ú‚ğØ‚èo‚·
+	// é …ç›®ã‚’åˆ‡ã‚Šå‡ºã™
 	p = format_name;
 	r = buf;
 	i = 0;
@@ -103,7 +103,7 @@ static FORMAT_NAME *ini_get_format_name(TCHAR *format_name, int *cnt)
 }
 
 /*
- * ini_get_option - ƒƒjƒ…[ƒIƒvƒVƒ‡ƒ“‚ğæ“¾
+ * ini_get_option - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’å–å¾—
  */
 static BOOL ini_get_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt, TCHAR *err_str)
 {
@@ -145,7 +145,7 @@ static BOOL ini_get_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INF
 }
 
 /*
- * ini_get_option - ƒIƒvƒVƒ‡ƒ“‚ğæ“¾
+ * ini_get_option - ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’å–å¾—
  */
 BOOL ini_get_option(TCHAR *err_str)
 {
@@ -165,7 +165,7 @@ BOOL ini_get_option(TCHAR *err_str)
 	wsprintf(ini_path, TEXT("%s\\%s"), work_path, USER_INI);
 	wsprintf(ini_path_old, TEXT("%s\\%s"), work_path, USER_INI_OLD);
 	if (file_check_file(ini_path) == FALSE && file_check_file(ini_path_old) == TRUE) {
-		// INIƒtƒ@ƒCƒ‹–¼•ÏX (Ver 1.0.8)
+		// INIãƒ•ã‚¡ã‚¤ãƒ«åå¤‰æ›´ (Ver 1.0.8)
 		MoveFile(ini_path_old, ini_path);
 	}
 	profile_initialize(ini_path, TRUE);
@@ -435,7 +435,7 @@ BOOL ini_get_option(TCHAR *err_str)
 		(option.format_info + 3)->func_header = alloc_copy(TEXT("file_"));
 
 		for (i = 0; i < option.format_cnt; i++) {
-			// Œ`®–¼‚Ìæ“¾
+			// å½¢å¼åã®å–å¾—
 			(option.format_info + i)->fn = ini_get_format_name((option.format_info + i)->format_name,
 				&(option.format_info + i)->fn_cnt);
 		}
@@ -452,7 +452,7 @@ BOOL ini_get_option(TCHAR *err_str)
 			wsprintf(buf, TEXT("func_header-%d"), i);
 			(option.format_info + i)->func_header = profile_alloc_string(TEXT("format"), buf, TEXT(""), ini_path);
 
-			// Œ`®–¼‚Ìæ“¾
+			// å½¢å¼åã®å–å¾—
 			(option.format_info + i)->fn = ini_get_format_name((option.format_info + i)->format_name,
 				&(option.format_info + i)->fn_cnt);
 		}
@@ -507,7 +507,7 @@ BOOL ini_get_option(TCHAR *err_str)
 		(option.filter_info + 2)->limit_size = 0;
 
 		for (i = 0; i < option.filter_cnt; i++) {
-			// Œ`®–¼‚Ìæ“¾
+			// å½¢å¼åã®å–å¾—
 			(option.filter_info + i)->fn = ini_get_format_name((option.filter_info + i)->format_name,
 				&(option.filter_info + i)->fn_cnt);
 		}
@@ -526,7 +526,7 @@ BOOL ini_get_option(TCHAR *err_str)
 			wsprintf(buf, TEXT("limit_size-%d"), i);
 			(option.filter_info + i)->limit_size = profile_get_int(TEXT("filter"), buf, 0, ini_path);
 
-			// Œ`®–¼‚Ìæ“¾
+			// å½¢å¼åã®å–å¾—
 			(option.filter_info + i)->fn = ini_get_format_name((option.filter_info + i)->format_name,
 				&(option.filter_info + i)->fn_cnt);
 		}
@@ -734,7 +734,7 @@ BOOL ini_get_option(TCHAR *err_str)
 }
 
 /*
- * ini_put_menu - ƒƒjƒ…[ƒIƒvƒVƒ‡ƒ“‚ğ‘‚«‚±‚Ş
+ * ini_put_menu - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’æ›¸ãã“ã‚€
  */
 static BOOL ini_put_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt)
 {
@@ -776,7 +776,7 @@ static BOOL ini_put_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INF
 }
 
 /*
- * ini_put_option - ƒIƒvƒVƒ‡ƒ“‚ğ‘‚«‚±‚Ş
+ * ini_put_option - ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’æ›¸ãã“ã‚€
  */
 BOOL ini_put_option(void)
 {
@@ -1091,7 +1091,7 @@ BOOL ini_put_option(void)
 }
 
 /*
- * ini_free_format_name - Œ`®–¼‚ğ‰ğ•ú
+ * ini_free_format_name - å½¢å¼åã‚’è§£æ”¾
  */
 void ini_free_format_name(FORMAT_NAME *fn, const int fn_cnt)
 {
@@ -1106,7 +1106,7 @@ void ini_free_format_name(FORMAT_NAME *fn, const int fn_cnt)
 }
 
 /*
- * ini_free_menu - ƒƒjƒ…[ƒIƒvƒVƒ‡ƒ“‚ğ‰ğ•ú
+ * ini_free_menu - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è§£æ”¾
  */
 void ini_free_menu(MENU_INFO *mi, const int mcnt)
 {
@@ -1130,7 +1130,7 @@ void ini_free_menu(MENU_INFO *mi, const int mcnt)
 }
 
 /*
- * ini_free - ƒIƒvƒVƒ‡ƒ“‚ğ‰ğ•ú
+ * ini_free - ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è§£æ”¾
  */
 BOOL ini_free(void)
 {

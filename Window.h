@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Window.h
@@ -16,7 +16,7 @@
 /* Define */
 
 /* Struct */
-// ƒEƒBƒ“ƒhƒEƒtƒBƒ‹ƒ^
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ•ã‚£ãƒ«ã‚¿
 typedef struct _WINDOW_FILTER_INFO {
 	TCHAR *title;						// Window title
 	TCHAR *class_name;					// Window class name

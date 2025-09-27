@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * format_template.c
@@ -22,16 +22,16 @@
 /* Local Function Prototypes */
 
 /*
- * get_format_header - “à•”Œ`Ž®‚ðˆ—‚·‚éƒwƒbƒ_‚ÌŽæ“¾
+ * get_format_header - å†…éƒ¨å½¢å¼ã‚’å‡¦ç†ã™ã‚‹ãƒ˜ãƒƒãƒ€ã®å–å¾—
  *
- *	ˆø”:
- *		hWnd - ŒÄ‚Ño‚µŒ³ƒEƒBƒ“ƒhƒE
- *		index - Žæ“¾‚ÌƒCƒ“ƒfƒbƒNƒX (0`)
- *		fgi - Œ`Ž®Žæ“¾î•ñ
+ *	å¼•æ•°:
+ *		hWnd - å‘¼ã³å‡ºã—å…ƒã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+ *		index - å–å¾—ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ (0ï½ž)
+ *		fgi - å½¢å¼å–å¾—æƒ…å ±
  *
- *	–ß‚è’l:
- *		TRUE - ŽŸ‚ÉŽæ“¾‚·‚éŒ`Ž®‚ ‚è
- *		FALSE - Žæ“¾‚ÌI—¹
+ *	æˆ»ã‚Šå€¤:
+ *		TRUE - æ¬¡ã«å–å¾—ã™ã‚‹å½¢å¼ã‚ã‚Š
+ *		FALSE - å–å¾—ã®çµ‚äº†
  */
 __declspec(dllexport) BOOL CALLBACK get_format_header(const HWND hWnd, const int index, FORMAT_GET_INFO *fgi)
 {
@@ -39,7 +39,7 @@ __declspec(dllexport) BOOL CALLBACK get_format_header(const HWND hWnd, const int
 	case 0:
 		lstrcpy(fgi->format_name, TEXT("FORMAT"));
 		lstrcpy(fgi->func_header, TEXT("func_"));
-		lstrcpy(fgi->comment, TEXT("ƒRƒƒ“ƒg"));
+		lstrcpy(fgi->comment, TEXT("ã‚³ãƒ¡ãƒ³ãƒˆ"));
 		return TRUE;
 
 	case 1:
@@ -49,14 +49,14 @@ __declspec(dllexport) BOOL CALLBACK get_format_header(const HWND hWnd, const int
 }
 
 /*
- * func_show_property - ƒvƒƒpƒeƒB•\Ž¦
+ * func_show_property - ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£è¡¨ç¤º
  *
- *	ˆø”:
- *		hWnd - ƒIƒvƒVƒ‡ƒ“ƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹
+ *	å¼•æ•°:
+ *		hWnd - ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒãƒ³ãƒ‰ãƒ«
  *
- *	–ß‚è’l:
- *		TRUE - ƒvƒƒpƒeƒB‚ ‚è
- *		FALSE - ƒvƒƒpƒeƒB‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		TRUE - ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚ã‚Š
+ *		FALSE - ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãªã—
  */
 __declspec(dllexport) BOOL CALLBACK func_show_property(const HWND hWnd)
 {
@@ -64,14 +64,14 @@ __declspec(dllexport) BOOL CALLBACK func_show_property(const HWND hWnd)
 }
 
 /*
- * func_initialize - ‰Šú‰»
+ * func_initialize - åˆæœŸåŒ–
  *
- *	ˆø”:
- *		‚È‚µ
+ *	å¼•æ•°:
+ *		ãªã—
  *
- *	–ß‚è’l:
- *		TRUE - ‰Šú‰»‚ ‚è
- *		FALSE - ‰Šú‰»‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		TRUE - åˆæœŸåŒ–ã‚ã‚Š
+ *		FALSE - åˆæœŸåŒ–ãªã—
  */
 __declspec(dllexport) BOOL CALLBACK func_initialize(void)
 {
@@ -79,17 +79,17 @@ __declspec(dllexport) BOOL CALLBACK func_initialize(void)
 }
 
 /*
- * func_get_icon - Œ`Ž®—p‚ÌƒAƒCƒRƒ“‚ðŽæ“¾
+ * func_get_icon - å½¢å¼ç”¨ã®ã‚¢ã‚¤ã‚³ãƒ³ã‚’å–å¾—
  *
- *	ˆø”:
- *		icon_size - Žæ“¾‚·‚éƒAƒCƒRƒ“‚ÌƒTƒCƒY
- *		*free_icon - (OUT) TRUE - ‰ð•ú‚·‚éAFALSE - ‰ð•ú‚µ‚È‚¢
- *					 ‰Šú’l‚Í TRUE ‚É‚È‚Á‚Ä‚¢‚Ü‚·B
+ *	å¼•æ•°:
+ *		icon_size - å–å¾—ã™ã‚‹ã‚¢ã‚¤ã‚³ãƒ³ã®ã‚µã‚¤ã‚º
+ *		*free_icon - (OUT) TRUE - è§£æ”¾ã™ã‚‹ã€FALSE - è§£æ”¾ã—ãªã„
+ *					 åˆæœŸå€¤ã¯ TRUE ã«ãªã£ã¦ã„ã¾ã™ã€‚
  *
- *	–ß‚è’l:
- *		ƒAƒCƒRƒ“‚Ìƒnƒ“ƒhƒ‹
- *		NULL ‚Ìê‡‚ÍƒAƒCƒRƒ“‚È‚µ
- *		*free_icon ‚É TRUE ‚ðÝ’è‚·‚é‚ÆƒAƒCƒRƒ“‚Ìƒnƒ“ƒhƒ‹‚Í–{‘Ì‘¤‚Å‰ð•ú‚³‚ê‚Ü‚·
+ *	æˆ»ã‚Šå€¤:
+ *		ã‚¢ã‚¤ã‚³ãƒ³ã®ãƒãƒ³ãƒ‰ãƒ«
+ *		NULL ã®å ´åˆã¯ã‚¢ã‚¤ã‚³ãƒ³ãªã—
+ *		*free_icon ã« TRUE ã‚’è¨­å®šã™ã‚‹ã¨ã‚¢ã‚¤ã‚³ãƒ³ã®ãƒãƒ³ãƒ‰ãƒ«ã¯æœ¬ä½“å´ã§è§£æ”¾ã•ã‚Œã¾ã™
  */
 __declspec(dllexport) HICON CALLBACK func_get_icon(const int icon_size, BOOL *free_icon)
 {
@@ -97,14 +97,14 @@ __declspec(dllexport) HICON CALLBACK func_get_icon(const int icon_size, BOOL *fr
 }
 
 /*
- * func_free - I—¹ˆ—
+ * func_free - çµ‚äº†å‡¦ç†
  *
- *	ˆø”:
- *		‚È‚µ
+ *	å¼•æ•°:
+ *		ãªã—
  *
- *	–ß‚è’l:
- *		TRUE - I—¹ˆ—‚ ‚è
- *		FALSE - I—¹ˆ—‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		TRUE - çµ‚äº†å‡¦ç†ã‚ã‚Š
+ *		FALSE - çµ‚äº†å‡¦ç†ãªã—
  */
 __declspec(dllexport) BOOL CALLBACK func_free(void)
 {
@@ -112,16 +112,16 @@ __declspec(dllexport) BOOL CALLBACK func_free(void)
 }
 
 /*
- * func_initialize_item - ƒAƒCƒeƒ€î•ñ‚Ì‰Šú‰»
+ * func_initialize_item - ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±ã®åˆæœŸåŒ–
  *	
- *	ˆø”:
- *		di - ‰Šú‰»‚·‚éƒAƒCƒeƒ€î•ñ
- *		set_init_data - TRUE ‚ÌŽž‚Í di->data ‚Æ di->size ‚ðÝ’è‰Â”\‚Å‚·B
- *		                FALSE ‚ÌŽž‚ÍÝ’è‚µ‚È‚¢‚Å‚­‚¾‚³‚¢B
+ *	å¼•æ•°:
+ *		di - åˆæœŸåŒ–ã™ã‚‹ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±
+ *		set_init_data - TRUE ã®æ™‚ã¯ di->data ã¨ di->size ã‚’è¨­å®šå¯èƒ½ã§ã™ã€‚
+ *		                FALSE ã®æ™‚ã¯è¨­å®šã—ãªã„ã§ãã ã•ã„ã€‚
  *
- *	–ß‚è’l:
- *		TRUE - ‰Šú‰»ˆ—‚ ‚è
- *		FALSE - ‰Šú‰»ˆ—‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		TRUE - åˆæœŸåŒ–å‡¦ç†ã‚ã‚Š
+ *		FALSE - åˆæœŸåŒ–å‡¦ç†ãªã—
  */
 __declspec(dllexport) BOOL CALLBACK func_initialize_item(DATA_INFO *di, const BOOL set_init_data)
 {
@@ -129,16 +129,16 @@ __declspec(dllexport) BOOL CALLBACK func_initialize_item(DATA_INFO *di, const BO
 }
 
 /*
- * func_copy_data - ƒf[ƒ^‚ÌƒRƒs[
+ * func_copy_data - ãƒ‡ãƒ¼ã‚¿ã®ã‚³ãƒ”ãƒ¼
  *
- *	ˆø”:
- *		format_name - Œ`Ž®–¼
- *		data - ƒRƒs[‚·‚éƒf[ƒ^
- *		ret_size - ƒf[ƒ^‚ÌƒTƒCƒY (out)
+ *	å¼•æ•°:
+ *		format_name - å½¢å¼å
+ *		data - ã‚³ãƒ”ãƒ¼ã™ã‚‹ãƒ‡ãƒ¼ã‚¿
+ *		ret_size - ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º (out)
  *
- *	–ß‚è’l:
- *		ƒRƒs[‚µ‚½ƒf[ƒ^
- *		NULL ‚Ìê‡‚ÍƒRƒs[ˆ—‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		ã‚³ãƒ”ãƒ¼ã—ãŸãƒ‡ãƒ¼ã‚¿
+ *		NULL ã®å ´åˆã¯ã‚³ãƒ”ãƒ¼å‡¦ç†ãªã—
  */
 __declspec(dllexport) HANDLE CALLBACK func_copy_data(const TCHAR *format_name, const HANDLE data, DWORD *ret_size)
 {
@@ -146,15 +146,15 @@ __declspec(dllexport) HANDLE CALLBACK func_copy_data(const TCHAR *format_name, c
 }
 
 /*
- * func_data_to_bytes - ƒf[ƒ^‚ðƒoƒCƒg—ñ‚É•ÏŠ·
+ * func_data_to_bytes - ãƒ‡ãƒ¼ã‚¿ã‚’ãƒã‚¤ãƒˆåˆ—ã«å¤‰æ›
  *
- *	ˆø”:
- *		di - •ÏŠ·‚·‚éƒAƒCƒeƒ€î•ñ
- *		ret_size - ƒf[ƒ^‚ÌƒTƒCƒY (out)
+ *	å¼•æ•°:
+ *		di - å¤‰æ›ã™ã‚‹ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±
+ *		ret_size - ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º (out)
  *
- *	–ß‚è’l:
- *		•ÏŠ·‚µ‚½ƒoƒCƒg—ñ
- *		NULL ‚Ìê‡‚Í•ÏŠ·ˆ—‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		å¤‰æ›ã—ãŸãƒã‚¤ãƒˆåˆ—
+ *		NULL ã®å ´åˆã¯å¤‰æ›å‡¦ç†ãªã—
  */
 __declspec(dllexport) BYTE* CALLBACK func_data_to_bytes(const DATA_INFO *di, DWORD *ret_size)
 {
@@ -162,17 +162,17 @@ __declspec(dllexport) BYTE* CALLBACK func_data_to_bytes(const DATA_INFO *di, DWO
 }
 
 /*
- * func_bytes_to_data - ƒoƒCƒg—ñ‚ðƒf[ƒ^‚É•ÏŠ·
+ * func_bytes_to_data - ãƒã‚¤ãƒˆåˆ—ã‚’ãƒ‡ãƒ¼ã‚¿ã«å¤‰æ›
  *
- *	ˆø”:
- *		format_name - Œ`Ž®–¼
- *		data - •ÏŠ·‚·‚éƒoƒCƒg—ñ
- *		size - ƒoƒCƒg—ñ‚ÌƒTƒCƒY (in/out)
- *		       ’l‚ðÝ’è‚·‚é‚Æƒf[ƒ^‚ÌƒTƒCƒY‚É‚È‚è‚Ü‚·B
+ *	å¼•æ•°:
+ *		format_name - å½¢å¼å
+ *		data - å¤‰æ›ã™ã‚‹ãƒã‚¤ãƒˆåˆ—
+ *		size - ãƒã‚¤ãƒˆåˆ—ã®ã‚µã‚¤ã‚º (in/out)
+ *		       å€¤ã‚’è¨­å®šã™ã‚‹ã¨ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚ºã«ãªã‚Šã¾ã™ã€‚
  *
- *	–ß‚è’l:
- *		•ÏŠ·‚µ‚½ƒf[ƒ^
- *		NULL ‚Ìê‡‚Í•ÏŠ·ˆ—‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		å¤‰æ›ã—ãŸãƒ‡ãƒ¼ã‚¿
+ *		NULL ã®å ´åˆã¯å¤‰æ›å‡¦ç†ãªã—
  */
 __declspec(dllexport) HANDLE CALLBACK func_bytes_to_data(const TCHAR *format_name, const BYTE *data, DWORD *size)
 {
@@ -180,18 +180,18 @@ __declspec(dllexport) HANDLE CALLBACK func_bytes_to_data(const TCHAR *format_nam
 }
 
 /*
- * func_get_file_info - ƒRƒ‚ƒ“ƒ_ƒCƒAƒƒOî•ñ‚ÌŽæ“¾
+ * func_get_file_info - ã‚³ãƒ¢ãƒ³ãƒ€ã‚¤ã‚¢ãƒ­ã‚°æƒ…å ±ã®å–å¾—
  *
- *	ˆø”:
- *		format_name - Œ`Ž®–¼
- *		di - ƒAƒCƒeƒ€î•ñ (mode‚ªTRUE‚Ìê‡‚Í NULL)
- *		of - ƒRƒ‚ƒ“ƒ_ƒCƒAƒƒO‚Ìƒtƒ@ƒCƒ‹î•ñ
- *		mode - TRUE - openAFALSE - save
+ *	å¼•æ•°:
+ *		format_name - å½¢å¼å
+ *		di - ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ± (modeãŒTRUEã®å ´åˆã¯ NULL)
+ *		of - ã‚³ãƒ¢ãƒ³ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±
+ *		mode - TRUE - openã€FALSE - save
  *
- *	–ß‚è’l:
- *		-1 - ƒRƒ‚ƒ“ƒ_ƒCƒAƒƒO‚ð•\Ž¦‚µ‚È‚¢
- *		0 - –¢Ý’è
- *		1 - Ý’èÏ‚Ý
+ *	æˆ»ã‚Šå€¤:
+ *		-1 - ã‚³ãƒ¢ãƒ³ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤ºã—ãªã„
+ *		0 - æœªè¨­å®š
+ *		1 - è¨­å®šæ¸ˆã¿
  */
 __declspec(dllexport) int CALLBACK func_get_file_info(const TCHAR *format_name, const DATA_INFO *di, OPENFILENAME *of, const BOOL mode)
 {
@@ -199,18 +199,18 @@ __declspec(dllexport) int CALLBACK func_get_file_info(const TCHAR *format_name, 
 }
 
 /*
- * func_data_to_file - ƒf[ƒ^‚ðƒtƒ@ƒCƒ‹‚É•Û‘¶
+ * func_data_to_file - ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜
  *
- *	ˆø”:
- *		di - •Û‘¶‚·‚éƒAƒCƒeƒ€î•ñ
- *		file_name - ƒtƒ@ƒCƒ‹–¼
- *		filter_index - ƒtƒ@ƒCƒ‹‘I‘ðŽž‚ÌƒtƒBƒ‹ƒ^ƒCƒ“ƒfƒbƒNƒX
- *		               ƒtƒ@ƒCƒ‹‘I‘ð‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Í 0
- *		err_str - ƒGƒ‰[•¶Žš—ñ (out)
+ *	å¼•æ•°:
+ *		di - ä¿å­˜ã™ã‚‹ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±
+ *		file_name - ãƒ•ã‚¡ã‚¤ãƒ«å
+ *		filter_index - ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠžæ™‚ã®ãƒ•ã‚£ãƒ«ã‚¿ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+ *		               ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠžã•ã‚Œã¦ã„ãªã„å ´åˆã¯ 0
+ *		err_str - ã‚¨ãƒ©ãƒ¼æ–‡å­—åˆ— (out)
  *
- *	–ß‚è’l:
- *		TRUE - ¬Œ÷
- *		FALSE - Ž¸”s (err_str ‚ð‹ó‚Å•Ô‚·‚Æ•Û‘¶ˆ—‚È‚µ)
+ *	æˆ»ã‚Šå€¤:
+ *		TRUE - æˆåŠŸ
+ *		FALSE - å¤±æ•— (err_str ã‚’ç©ºã§è¿”ã™ã¨ä¿å­˜å‡¦ç†ãªã—)
  */
 __declspec(dllexport) BOOL CALLBACK func_data_to_file(DATA_INFO *di, const TCHAR *file_name, const int filter_index, TCHAR *err_str)
 {
@@ -218,18 +218,18 @@ __declspec(dllexport) BOOL CALLBACK func_data_to_file(DATA_INFO *di, const TCHAR
 }
 
 /*
- * func_file_to_data - ƒtƒ@ƒCƒ‹‚©‚çƒf[ƒ^‚ðì¬
+ * func_file_to_data - ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’ä½œæˆ
  *
- *	ˆø”:
- *		file_name - ƒtƒ@ƒCƒ‹–¼
- *		format_name - Œ`Ž®–¼
- *		ret_size - ƒf[ƒ^‚ÌƒTƒCƒY (out)
- *		           NULL‚Ìê‡‚ ‚è
- *		err_str - ƒGƒ‰[•¶Žš—ñ (out)
+ *	å¼•æ•°:
+ *		file_name - ãƒ•ã‚¡ã‚¤ãƒ«å
+ *		format_name - å½¢å¼å
+ *		ret_size - ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º (out)
+ *		           NULLã®å ´åˆã‚ã‚Š
+ *		err_str - ã‚¨ãƒ©ãƒ¼æ–‡å­—åˆ— (out)
  *
- *	–ß‚è’l:
- *		“Ç‚Ýž‚ñ‚¾ƒf[ƒ^
- *		NULL ‚Ìê‡‚ÍŽ¸”s (err_str ‚ð‹ó‚Å•Ô‚·‚Æ“Ç‚Ýž‚Ýˆ—‚È‚µ)
+ *	æˆ»ã‚Šå€¤:
+ *		èª­ã¿è¾¼ã‚“ã ãƒ‡ãƒ¼ã‚¿
+ *		NULL ã®å ´åˆã¯å¤±æ•— (err_str ã‚’ç©ºã§è¿”ã™ã¨èª­ã¿è¾¼ã¿å‡¦ç†ãªã—)
  */
 __declspec(dllexport) HANDLE CALLBACK func_file_to_data(const TCHAR *file_name, const TCHAR *format_name, DWORD *ret_size, TCHAR *err_str)
 {
@@ -237,15 +237,15 @@ __declspec(dllexport) HANDLE CALLBACK func_file_to_data(const TCHAR *file_name, 
 }
 
 /*
- * func_free_data - ƒf[ƒ^‚Ì‰ð•ú
+ * func_free_data - ãƒ‡ãƒ¼ã‚¿ã®è§£æ”¾
  *
- *	ˆø”:
- *		format_name - Œ`Ž®–¼
- *		data - ‰ð•ú‚·‚éƒf[ƒ^
+ *	å¼•æ•°:
+ *		format_name - å½¢å¼å
+ *		data - è§£æ”¾ã™ã‚‹ãƒ‡ãƒ¼ã‚¿
  *
- *	–ß‚è’l:
- *		TRUE - ‰ð•úÏ‚Ý
- *		FALSE - ‰ð•úˆ—‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		TRUE - è§£æ”¾æ¸ˆã¿
+ *		FALSE - è§£æ”¾å‡¦ç†ãªã—
  */
 __declspec(dllexport) BOOL CALLBACK func_free_data(const TCHAR *format_name, HANDLE data)
 {
@@ -253,17 +253,17 @@ __declspec(dllexport) BOOL CALLBACK func_free_data(const TCHAR *format_name, HAN
 }
 
 /*
- * func_free_item - ƒAƒCƒeƒ€î•ñ‚Ì‰ð•ú
+ * func_free_item - ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±ã®è§£æ”¾
  *
- *	plugin_param, param1, param2 ‚ÉÝ’è‚µ‚½ƒƒ‚ƒŠ‚Ì‰ð•ú‚È‚Ç‚ð‚µ‚Ä‚­‚¾‚³‚¢
- *	‚»‚Ì‘¼‚Ìî•ñ‚ð‰ð•ú‚µ‚½ê‡‚Íƒƒ“ƒo‚ÉNULL‚ðÝ’è‚µ‚Ä‚­‚¾‚³‚¢
+ *	plugin_param, param1, param2 ã«è¨­å®šã—ãŸãƒ¡ãƒ¢ãƒªã®è§£æ”¾ãªã©ã‚’ã—ã¦ãã ã•ã„
+ *	ãã®ä»–ã®æƒ…å ±ã‚’è§£æ”¾ã—ãŸå ´åˆã¯ãƒ¡ãƒ³ãƒã«NULLã‚’è¨­å®šã—ã¦ãã ã•ã„
  *
- *	ˆø”:
- *		di - ƒAƒCƒeƒ€î•ñ
+ *	å¼•æ•°:
+ *		di - ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±
  *
- *	–ß‚è’l:
- *		TRUE - ‰ð•úˆ—‚ ‚è
- *		FALSE - ‰ð•úˆ—‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		TRUE - è§£æ”¾å‡¦ç†ã‚ã‚Š
+ *		FALSE - è§£æ”¾å‡¦ç†ãªã—
  */
 __declspec(dllexport) BOOL CALLBACK func_free_item(DATA_INFO *di)
 {
@@ -271,14 +271,14 @@ __declspec(dllexport) BOOL CALLBACK func_free_item(DATA_INFO *di)
 }
 
 /*
- * func_get_menu_title - ƒƒjƒ…[ƒ^ƒCƒgƒ‹‚ÌŽæ“¾
+ * func_get_menu_title - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¿ã‚¤ãƒˆãƒ«ã®å–å¾—
  *
- *	ˆø”:
- *		di - ƒAƒCƒeƒ€î•ñ (menu_title ‚Æ free_title ‚ð•ÒW)
+ *	å¼•æ•°:
+ *		di - ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ± (menu_title ã¨ free_title ã‚’ç·¨é›†)
  *
- *	–ß‚è’l:
- *		TRUE - ƒ^ƒCƒgƒ‹‚ ‚è
- *		FALSE - ƒ^ƒCƒgƒ‹‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		TRUE - ã‚¿ã‚¤ãƒˆãƒ«ã‚ã‚Š
+ *		FALSE - ã‚¿ã‚¤ãƒˆãƒ«ãªã—
  */
 __declspec(dllexport) BOOL CALLBACK func_get_menu_title(DATA_INFO *di)
 {
@@ -286,15 +286,15 @@ __declspec(dllexport) BOOL CALLBACK func_get_menu_title(DATA_INFO *di)
 }
 
 /*
- * func_get_menu_icon - ƒƒjƒ…[—pƒAƒCƒRƒ“‚ÌŽæ“¾
+ * func_get_menu_icon - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç”¨ã‚¢ã‚¤ã‚³ãƒ³ã®å–å¾—
  *
- *	ˆø”:
- *		di - ƒAƒCƒeƒ€î•ñ (menu_icon ‚Æ free_icon ‚ð•ÒW)
- *		icon_size - ƒƒjƒ…[‚É•\Ž¦‚·‚éƒAƒCƒRƒ“‚ÌƒTƒCƒY
+ *	å¼•æ•°:
+ *		di - ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ± (menu_icon ã¨ free_icon ã‚’ç·¨é›†)
+ *		icon_size - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ã‚¢ã‚¤ã‚³ãƒ³ã®ã‚µã‚¤ã‚º
  *
- *	–ß‚è’l:
- *		TRUE - ƒAƒCƒRƒ“‚ ‚è
- *		FALSE - ƒAƒCƒRƒ“‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		TRUE - ã‚¢ã‚¤ã‚³ãƒ³ã‚ã‚Š
+ *		FALSE - ã‚¢ã‚¤ã‚³ãƒ³ãªã—
  */
 __declspec(dllexport) BOOL CALLBACK func_get_menu_icon(DATA_INFO *di, const int icon_size)
 {
@@ -302,19 +302,19 @@ __declspec(dllexport) BOOL CALLBACK func_get_menu_icon(DATA_INFO *di, const int 
 }
 
 /*
- * func_get_menu_bitmap - ƒƒjƒ…[—pƒrƒbƒgƒ}ƒbƒv‚ÌŽæ“¾
+ * func_get_menu_bitmap - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç”¨ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ã®å–å¾—
  *
- *	ˆø”:
- *		di - ƒAƒCƒeƒ€î•ñ (menu_bitmap ‚Æ free_bitmap ‚ð•ÒW)
- *		width - ƒrƒbƒgƒ}ƒbƒv‚Ì‰¡•
- *		height - ƒrƒbƒgƒ}ƒbƒv‚Ìc•
+ *	å¼•æ•°:
+ *		di - ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ± (menu_bitmap ã¨ free_bitmap ã‚’ç·¨é›†)
+ *		width - ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ã®æ¨ªå¹…
+ *		height - ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ã®ç¸¦å¹…
  *
- *	–ß‚è’l:
- *		TRUE - ƒrƒbƒgƒ}ƒbƒv‚ ‚è
- *		FALSE - ƒrƒbƒgƒ}ƒbƒv‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		TRUE - ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ã‚ã‚Š
+ *		FALSE - ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ãªã—
  *
- *	ŒÂ•Ê‚ÉƒTƒCƒY‚ðŽw’è‚·‚éê‡‚Í di->menu_bmp_width ‚Æ di->menu_bmp_height ‚É
- *	ƒrƒbƒgƒ}ƒbƒv‚ÌƒTƒCƒY‚ðÝ’è‚·‚éB
+ *	å€‹åˆ¥ã«ã‚µã‚¤ã‚ºã‚’æŒ‡å®šã™ã‚‹å ´åˆã¯ di->menu_bmp_width ã¨ di->menu_bmp_height ã«
+ *	ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ã®ã‚µã‚¤ã‚ºã‚’è¨­å®šã™ã‚‹ã€‚
  */
 __declspec(dllexport) BOOL CALLBACK func_get_menu_bitmap(DATA_INFO *di, const int width, const int height)
 {
@@ -322,14 +322,14 @@ __declspec(dllexport) BOOL CALLBACK func_get_menu_bitmap(DATA_INFO *di, const in
 }
 
 /*
- * func_get_tooltip_text - ƒƒjƒ…[—pƒc[ƒ‹ƒ`ƒbƒvƒeƒLƒXƒg‚ÌŽæ“¾
+ * func_get_tooltip_text - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç”¨ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ãƒ†ã‚­ã‚¹ãƒˆã®å–å¾—
  *	
- *	ˆø”:
- *		di - ƒAƒCƒeƒ€î•ñ
+ *	å¼•æ•°:
+ *		di - ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±
  *
- *	–ß‚è’l:
- *		ƒc[ƒ‹ƒ`ƒbƒv‚É•\Ž¦‚·‚éƒeƒLƒXƒg
- *		NULL ‚Ìê‡‚Íƒc[ƒ‹ƒ`ƒbƒv‚ð•\Ž¦‚µ‚È‚¢
+ *	æˆ»ã‚Šå€¤:
+ *		ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã«è¡¨ç¤ºã™ã‚‹ãƒ†ã‚­ã‚¹ãƒˆ
+ *		NULL ã®å ´åˆã¯ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã‚’è¡¨ç¤ºã—ãªã„
  */
 __declspec(dllexport) TCHAR* CALLBACK func_get_tooltip_text(DATA_INFO *di)
 {
@@ -337,14 +337,14 @@ __declspec(dllexport) TCHAR* CALLBACK func_get_tooltip_text(DATA_INFO *di)
 }
 
 /*
- * func_window_create - ƒf[ƒ^•\Ž¦ƒEƒBƒ“ƒhƒE‚Ìì¬
+ * func_window_create - ãƒ‡ãƒ¼ã‚¿è¡¨ç¤ºã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½œæˆ
  *
- *	ˆø”:
- *		parent_wnd - eƒEƒBƒ“ƒhƒE
+ *	å¼•æ•°:
+ *		parent_wnd - è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  *
- *	–ß‚è’l:
- *		ì¬‚µ‚½ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
- *		NULL ‚Ìê‡‚ÍƒEƒBƒ“ƒhƒE‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		ä½œæˆã—ãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+ *		NULL ã®å ´åˆã¯ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãªã—
  */
 __declspec(dllexport) HWND CALLBACK func_window_create(const HWND parent_wnd)
 {
@@ -352,14 +352,14 @@ __declspec(dllexport) HWND CALLBACK func_window_create(const HWND parent_wnd)
 }
 
 /*
- * func_window_destroy - ƒf[ƒ^•\Ž¦ƒEƒBƒ“ƒhƒE‚Ì”jŠü
+ * func_window_destroy - ãƒ‡ãƒ¼ã‚¿è¡¨ç¤ºã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ç ´æ£„
  *
- *	ˆø”:
- *		hWnd - ƒf[ƒ^•\Ž¦ƒEƒBƒ“ƒhƒE
+ *	å¼•æ•°:
+ *		hWnd - ãƒ‡ãƒ¼ã‚¿è¡¨ç¤ºã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  *
- *	–ß‚è’l:
- *		TRUE - ”jŠüˆ—‚ ‚è
- *		FALSE - ”jŠüˆ—‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		TRUE - ç ´æ£„å‡¦ç†ã‚ã‚Š
+ *		FALSE - ç ´æ£„å‡¦ç†ãªã—
  */
 __declspec(dllexport) BOOL CALLBACK func_window_destroy(const HWND hWnd)
 {
@@ -367,16 +367,16 @@ __declspec(dllexport) BOOL CALLBACK func_window_destroy(const HWND hWnd)
 }
 
 /*
- * func_window_show_data - ƒf[ƒ^‚Ì•\Ž¦
+ * func_window_show_data - ãƒ‡ãƒ¼ã‚¿ã®è¡¨ç¤º
  *
- *	ˆø”:
- *		hWnd - ƒf[ƒ^•\Ž¦ƒEƒBƒ“ƒhƒE
- *		di - •\Ž¦‚·‚éƒAƒCƒeƒ€î•ñ
- *		lock - TRUE - •ÏX•s‰ÂAFALSE - •ÏX‰Â
+ *	å¼•æ•°:
+ *		hWnd - ãƒ‡ãƒ¼ã‚¿è¡¨ç¤ºã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+ *		di - è¡¨ç¤ºã™ã‚‹ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±
+ *		lock - TRUE - å¤‰æ›´ä¸å¯ã€FALSE - å¤‰æ›´å¯
  *
- *	–ß‚è’l:
- *		TRUE - ƒf[ƒ^•\Ž¦ˆ—‚ ‚è
- *		FALSE - ƒf[ƒ^•\Ž¦ˆ—‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		TRUE - ãƒ‡ãƒ¼ã‚¿è¡¨ç¤ºå‡¦ç†ã‚ã‚Š
+ *		FALSE - ãƒ‡ãƒ¼ã‚¿è¡¨ç¤ºå‡¦ç†ãªã—
  */
 __declspec(dllexport) BOOL CALLBACK func_window_show_data(const HWND hWnd, DATA_INFO *di, const BOOL lock)
 {
@@ -384,15 +384,15 @@ __declspec(dllexport) BOOL CALLBACK func_window_show_data(const HWND hWnd, DATA_
 }
 
 /*
- * func_window_save_data - ƒf[ƒ^‚Ì•Û‘¶
+ * func_window_save_data - ãƒ‡ãƒ¼ã‚¿ã®ä¿å­˜
  *
- *	ˆø”:
- *		hWnd - ƒf[ƒ^•\Ž¦ƒEƒBƒ“ƒhƒE
- *		di - •Û‘¶‚·‚éƒAƒCƒeƒ€î•ñ
+ *	å¼•æ•°:
+ *		hWnd - ãƒ‡ãƒ¼ã‚¿è¡¨ç¤ºã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+ *		di - ä¿å­˜ã™ã‚‹ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±
  *
- *	–ß‚è’l:
- *		TRUE - ƒf[ƒ^•Û‘¶ˆ—‚ ‚è
- *		FALSE - ƒf[ƒ^•Û‘¶ˆ—‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		TRUE - ãƒ‡ãƒ¼ã‚¿ä¿å­˜å‡¦ç†ã‚ã‚Š
+ *		FALSE - ãƒ‡ãƒ¼ã‚¿ä¿å­˜å‡¦ç†ãªã—
  */
 __declspec(dllexport) BOOL CALLBACK func_window_save_data(const HWND hWnd, DATA_INFO *di)
 {
@@ -400,15 +400,15 @@ __declspec(dllexport) BOOL CALLBACK func_window_save_data(const HWND hWnd, DATA_
 }
 
 /*
- * func_window_hide_data - ƒf[ƒ^‚Ì”ñ•\Ž¦
+ * func_window_hide_data - ãƒ‡ãƒ¼ã‚¿ã®éžè¡¨ç¤º
  *
- *	ˆø”:
- *		hWnd - ƒf[ƒ^•\Ž¦ƒEƒBƒ“ƒhƒE
- *		di - ”ñ•\Ž¦‚É‚·‚éƒAƒCƒeƒ€î•ñ
+ *	å¼•æ•°:
+ *		hWnd - ãƒ‡ãƒ¼ã‚¿è¡¨ç¤ºã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+ *		di - éžè¡¨ç¤ºã«ã™ã‚‹ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±
  *
- *	–ß‚è’l:
- *		TRUE - ƒf[ƒ^”ñ•\Ž¦ˆ—‚ ‚è
- *		FALSE - ƒf[ƒ^”ñ•\Ž¦ˆ—‚È‚µ
+ *	æˆ»ã‚Šå€¤:
+ *		TRUE - ãƒ‡ãƒ¼ã‚¿éžè¡¨ç¤ºå‡¦ç†ã‚ã‚Š
+ *		FALSE - ãƒ‡ãƒ¼ã‚¿éžè¡¨ç¤ºå‡¦ç†ãªã—
  */
 __declspec(dllexport) BOOL CALLBACK func_window_hide_data(const HWND hWnd, DATA_INFO *di)
 {

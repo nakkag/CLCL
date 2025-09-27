@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CLCL
  *
  * fmt_file_view.h

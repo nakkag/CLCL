@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * History.c
@@ -28,7 +28,7 @@
 /* Define */
 
 /* Global Variables */
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
@@ -36,7 +36,7 @@ static BOOL history_compare(DATA_INFO *d1, DATA_INFO *d2);
 static BOOL history_overlap_check(DATA_INFO **root, DATA_INFO *new_item);
 
 /*
- * history_compare - —š—ð‚Ì”äŠr
+ * history_compare - å±¥æ­´ã®æ¯”è¼ƒ
  */
 static BOOL history_compare(DATA_INFO *d1, DATA_INFO *d2)
 {
@@ -49,11 +49,11 @@ static BOOL history_compare(DATA_INFO *d1, DATA_INFO *d2)
 	}
 
 	while (d1 != NULL && d2 != NULL) {
-		// Œ`Ž®‚ÆƒTƒCƒY‚Ì”äŠr
+		// å½¢å¼ã¨ã‚µã‚¤ã‚ºã®æ¯”è¼ƒ
 		if (d1->format != d2->format || d1->size != d2->size) {
 			return FALSE;
 		}
-		// ƒƒ‚ƒŠ‚Ì”äŠr
+		// ãƒ¡ãƒ¢ãƒªã®æ¯”è¼ƒ
 		if ((mem1 = format_data_to_bytes(d1, &size1)) == NULL) {
 			mem1 = clipboard_data_to_bytes(d1, &size1);
 		}
@@ -80,7 +80,7 @@ static BOOL history_compare(DATA_INFO *d1, DATA_INFO *d2)
 }
 
 /*
- * history_overlap_check - —š—ð‚Ìd•¡ƒ`ƒFƒbƒN
+ * history_overlap_check - å±¥æ­´ã®é‡è¤‡ãƒã‚§ãƒƒã‚¯
  */
 static BOOL history_overlap_check(DATA_INFO **root, DATA_INFO *new_item)
 {
@@ -92,14 +92,14 @@ static BOOL history_overlap_check(DATA_INFO **root, DATA_INFO *new_item)
 	}
 	switch (option.history_overlap_check) {
 	case 1:
-		// d•¡ƒAƒCƒeƒ€‚Ìƒ`ƒFƒbƒN
+		// é‡è¤‡ã‚¢ã‚¤ãƒ†ãƒ ã®ãƒã‚§ãƒƒã‚¯
 		if (history_compare(*root, new_item) == TRUE) {
 			return FALSE;
 		}
 		break;
 
 	case 2:
-		// ‘SƒAƒCƒeƒ€‚©‚çd•¡ƒ`ƒFƒbƒN
+		// å…¨ã‚¢ã‚¤ãƒ†ãƒ ã‹ã‚‰é‡è¤‡ãƒã‚§ãƒƒã‚¯
 		for (di = *root; di != NULL; di = di->next) {
 			if (history_compare(di, new_item) == TRUE) {
 				return FALSE;
@@ -108,7 +108,7 @@ static BOOL history_overlap_check(DATA_INFO **root, DATA_INFO *new_item)
 		break;
 
 	case 3:
-		// d•¡ƒAƒCƒeƒ€‚Ìíœ
+		// é‡è¤‡ã‚¢ã‚¤ãƒ†ãƒ ã®å‰Šé™¤
 		di = *root;
 		wk_di = NULL;
 		while (di != NULL) {
@@ -117,7 +117,7 @@ static BOOL history_overlap_check(DATA_INFO **root, DATA_INFO *new_item)
 				di = di->next;
 				continue;
 			}
-			// ƒAƒCƒeƒ€‚Ìíœ
+			// ã‚¢ã‚¤ãƒ†ãƒ ã®å‰Šé™¤
 			if (wk_di == NULL) {
 				*root = di->next;
 				di->next = NULL;
@@ -136,7 +136,7 @@ static BOOL history_overlap_check(DATA_INFO **root, DATA_INFO *new_item)
 }
 
 /*
- * history_add - —š—ð‚ÉƒAƒCƒeƒ€‚ð’Ç‰Á
+ * history_add - å±¥æ­´ã«ã‚¢ã‚¤ãƒ†ãƒ ã‚’è¿½åŠ 
  */
 BOOL history_add(DATA_INFO **root, DATA_INFO *new_item, const BOOL overlap_check)
 {
@@ -144,21 +144,21 @@ BOOL history_add(DATA_INFO **root, DATA_INFO *new_item, const BOOL overlap_check
 	TCHAR buf[BUF_SIZE];
 	int i;
 
-	// d•¡ƒ`ƒFƒbƒN
+	// é‡è¤‡ãƒã‚§ãƒƒã‚¯
 	if (overlap_check == TRUE && history_overlap_check(root, new_item) == FALSE) {
 		return FALSE;
 	}
 
-	// “úŽž
+	// æ—¥æ™‚
 	data_set_modified(new_item);
 
-	// ƒEƒBƒ“ƒhƒE–¼
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å
 	*buf = TEXT('\0');
 	GetWindowText(GetForegroundWindow(), buf, BUF_SIZE - 1);
 	mem_free(&new_item->window_name);
 	new_item->window_name = alloc_copy(buf);
 
-	// ƒŠƒXƒg‚Ìæ“ª‚É’Ç‰Á
+	// ãƒªã‚¹ãƒˆã®å…ˆé ­ã«è¿½åŠ 
 	if (*root == NULL) {
 		*root = new_item;
 	} else {
@@ -166,7 +166,7 @@ BOOL history_add(DATA_INFO **root, DATA_INFO *new_item, const BOOL overlap_check
 		*root = new_item;
 	}
 
-	// —š—ðíœ
+	// å±¥æ­´å‰Šé™¤
 	for (di = *root, i = 1; di != NULL; di = di->next, i++) {
 		if (i >= option.history_max) {
 			data_free(di->next);

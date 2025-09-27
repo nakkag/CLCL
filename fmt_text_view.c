@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * fmt_text_view.c
@@ -38,11 +38,11 @@
 #define LINE_MAX						32768
 #define TAB_STOP						8
 
-// ƒzƒC[ƒ‹ƒƒbƒZ[ƒW
+// ãƒ›ã‚¤ãƒ¼ãƒ«ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 #ifndef WM_MOUSEWHEEL
 #define WM_MOUSEWHEEL					0x020A
 #endif
-// XPƒe[ƒ}•ÏX’Ê’m
+// XPãƒ†ãƒ¼ãƒå¤‰æ›´é€šçŸ¥
 #ifndef WM_THEMECHANGED
 #define WM_THEMECHANGED					0x031A
 #endif
@@ -63,7 +63,7 @@
 #define BUF_LEN							(bf->buf_len + bf->input_len - bf->del_len - bf->ip_len)
 
 /* Global Variables */
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
@@ -122,7 +122,7 @@ static void caret_move(const HWND hWnd, BUFFER *bf, const int key);
 static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM wParam, const LPARAM lParam);
 
 /*
- * font_select - ƒtƒHƒ“ƒg‚Ì‘I‘ğ
+ * font_select - ãƒ•ã‚©ãƒ³ãƒˆã®é¸æŠ
  */
 static BOOL font_select(const HWND hWnd)
 {
@@ -130,7 +130,7 @@ static BOOL font_select(const HWND hWnd)
 	LOGFONT lf;
 	HDC hdc;
 
-	// ƒtƒHƒ“ƒgî•ñ‚Ìì¬
+	// ãƒ•ã‚©ãƒ³ãƒˆæƒ…å ±ã®ä½œæˆ
 	ZeroMemory(&lf, sizeof(LOGFONT));
 	hdc = GetDC(NULL);
 	lf.lfHeight = -(int)((option.fmt_txt_font_size * GetDeviceCaps(hdc, LOGPIXELSY)) / 72);
@@ -140,7 +140,7 @@ static BOOL font_select(const HWND hWnd)
 	lf.lfCharSet = option.fmt_txt_font_charset;
 	lstrcpy(lf.lfFaceName, option.fmt_txt_font_name);
 
-	// ƒtƒHƒ“ƒg‘I‘ğƒ_ƒCƒAƒƒO‚ğ•\¦
+	// ãƒ•ã‚©ãƒ³ãƒˆé¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤º
 	ZeroMemory(&cf, sizeof(CHOOSEFONT));
 	cf.lStructSize = sizeof(CHOOSEFONT);
 	cf.hwndOwner = hWnd;
@@ -151,7 +151,7 @@ static BOOL font_select(const HWND hWnd)
 		return FALSE;
 	}
 
-	// İ’èæ“¾
+	// è¨­å®šå–å¾—
 	mem_free(&option.fmt_txt_font_name);
 	option.fmt_txt_font_name = alloc_copy(lf.lfFaceName);
 	option.fmt_txt_font_weight = lf.lfWeight;
@@ -162,7 +162,7 @@ static BOOL font_select(const HWND hWnd)
 }
 
 /*
- * string_to_clipboard - •¶š—ñ‚ğƒNƒŠƒbƒvƒ{[ƒh‚Éİ’è
+ * string_to_clipboard - æ–‡å­—åˆ—ã‚’ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«è¨­å®š
  */
 static BOOL string_to_clipboard(const HWND hWnd, const TCHAR *st, const TCHAR *en)
 {
@@ -200,7 +200,7 @@ static BOOL string_to_clipboard(const HWND hWnd, const TCHAR *st, const TCHAR *e
 }
 
 /*
- * notify_message - eƒEƒBƒ“ƒhƒE‚É’Ê’m
+ * notify_message - è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«é€šçŸ¥
  */
 static void notify_message(const HWND hWnd, const BUFFER *bf, const int code)
 {
@@ -208,7 +208,7 @@ static void notify_message(const HWND hWnd, const BUFFER *bf, const int code)
 }
 
 /*
- * get_edit_rect - •`‰æ—Ìˆæ‚Ìæ“¾
+ * get_edit_rect - æç”»é ˜åŸŸã®å–å¾—
  */
 static BOOL get_edit_rect(const HWND hWnd, const BUFFER *bf, RECT *rect)
 {
@@ -224,7 +224,7 @@ static BOOL get_edit_rect(const HWND hWnd, const BUFFER *bf, RECT *rect)
 }
 
 /*
- * set_scrollbar - ƒXƒNƒ[ƒ‹ƒo[‚Ìİ’è
+ * set_scrollbar - ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã®è¨­å®š
  */
 static void set_scrollbar(const HWND hWnd, BUFFER *bf)
 {
@@ -233,7 +233,7 @@ static void set_scrollbar(const HWND hWnd, BUFFER *bf)
 
 	get_edit_rect(hWnd, bf, &rect);
 
-	// ‰¡ƒXƒNƒ[ƒ‹ƒo[
+	// æ¨ªã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼
 	if (bf->wordwrap == FALSE && (rect.right - rect.left) < bf->line_width) {
 		int width = bf->line_width / bf->char_width + 1;
 
@@ -261,7 +261,7 @@ static void set_scrollbar(const HWND hWnd, BUFFER *bf)
 		SetScrollInfo(hWnd, SB_HORZ, &si, TRUE);
 	}
 
-	// cƒXƒNƒ[ƒ‹ƒo[
+	// ç¸¦ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼
 	if (((rect.bottom - rect.top) / bf->font_height) < bf->line_len) {
 		EnableScrollBar(hWnd, SB_VERT, ESB_ENABLE_BOTH);
 
@@ -289,7 +289,7 @@ static void set_scrollbar(const HWND hWnd, BUFFER *bf)
 }
 
 /*
- * ensure_visible - ƒLƒƒƒŒƒbƒgˆÊ’u‚ğ•\¦
+ * ensure_visible - ã‚­ãƒ£ãƒ¬ãƒƒãƒˆä½ç½®ã‚’è¡¨ç¤º
  */
 static void ensure_visible(const HWND hWnd, BUFFER *bf)
 {
@@ -340,7 +340,7 @@ static void ensure_visible(const HWND hWnd, BUFFER *bf)
 }
 
 /*
- * is_lead_byte - ƒ}ƒ‹ƒ`ƒoƒCƒg‚Ìæ“ªƒoƒCƒg‚©ƒ`ƒFƒbƒN
+ * is_lead_byte - ãƒãƒ«ãƒãƒã‚¤ãƒˆã®å…ˆé ­ãƒã‚¤ãƒˆã‹ãƒã‚§ãƒƒã‚¯
  */
 static BOOL is_lead_byte(const BUFFER *bf, TCHAR *p)
 {
@@ -351,7 +351,7 @@ static BOOL is_lead_byte(const BUFFER *bf, TCHAR *p)
 }
 
 /*
- * get_char_extent - •¶š‚Ì•`‰æ•‚Ìæ“¾
+ * get_char_extent - æ–‡å­—ã®æç”»å¹…ã®å–å¾—
  */
 static int get_char_extent(BUFFER *bf, TCHAR *str, int *ret_len)
 {
@@ -385,7 +385,7 @@ static int get_char_extent(BUFFER *bf, TCHAR *str, int *ret_len)
 }
 
 /*
- * char_next - Ÿ‚Ì•¶š‚ğæ“¾
+ * char_next - æ¬¡ã®æ–‡å­—ã‚’å–å¾—
  */
 static TCHAR *char_next(const BUFFER *bf, TCHAR *p)
 {
@@ -404,7 +404,7 @@ static TCHAR *char_next(const BUFFER *bf, TCHAR *p)
 }
 
 /*
- * char_prev - ‘O‚Ì•¶š‚ğæ“¾
+ * char_prev - å‰ã®æ–‡å­—ã‚’å–å¾—
  */
 static TCHAR *char_prev(const BUFFER *bf, TCHAR *p)
 {
@@ -423,7 +423,7 @@ static TCHAR *char_prev(const BUFFER *bf, TCHAR *p)
 }
 
 /*
- * index_to_char - •¶šƒCƒ“ƒfƒbƒNƒX‚©‚ç•¶šˆÊ’u‚ğæ“¾
+ * index_to_char - æ–‡å­—ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‹ã‚‰æ–‡å­—ä½ç½®ã‚’å–å¾—
  */
 static TCHAR *index_to_char(const BUFFER *bf, const DWORD index)
 {
@@ -444,7 +444,7 @@ static TCHAR *index_to_char(const BUFFER *bf, const DWORD index)
 }
 
 /*
- * char_to_index - •¶šˆÊ’u‚©‚ç•¶šƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+ * char_to_index - æ–‡å­—ä½ç½®ã‹ã‚‰æ–‡å­—ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
  */
 static DWORD char_to_index(const BUFFER *bf, const TCHAR *p)
 {
@@ -465,7 +465,7 @@ static DWORD char_to_index(const BUFFER *bf, const TCHAR *p)
 }
 
 /*
- * index_to_line - •¶šƒCƒ“ƒfƒbƒNƒX‚©‚çsˆÊ’u‚ğæ“¾
+ * index_to_line - æ–‡å­—ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‹ã‚‰è¡Œä½ç½®ã‚’å–å¾—
  */
 static int index_to_line(const BUFFER *bf, const DWORD index)
 {
@@ -494,7 +494,7 @@ static int index_to_line(const BUFFER *bf, const DWORD index)
 }
 
 /*
- * line_alloc - sî•ñ‚ÌŠm•Û
+ * line_alloc - è¡Œæƒ…å ±ã®ç¢ºä¿
  */
 static BOOL line_alloc(BUFFER *bf, const int i, const int size)
 {
@@ -513,14 +513,14 @@ static BOOL line_alloc(BUFFER *bf, const int i, const int size)
 }
 
 /*
- * line_move - sî•ñ‚ÌˆÚ“®
+ * line_move - è¡Œæƒ…å ±ã®ç§»å‹•
  */
 static BOOL line_move(BUFFER *bf, const int i, const int len)
 {
 	int *ln;
 
 	if (bf->line_len + len + 1 > bf->line_size) {
-		// ’Ç‰Á
+		// è¿½åŠ 
 		bf->line_size = bf->line_len + len + 1 + RESERVE_LINE;
 		if ((ln = mem_alloc(sizeof(int) * bf->line_size)) == NULL) {
 			return FALSE;
@@ -535,7 +535,7 @@ static BOOL line_move(BUFFER *bf, const int i, const int len)
 	bf->line_len += len;
 
 	if (bf->line_len + 1 < bf->line_size - RESERVE_LINE) {
-		// ‰ğ•ú
+		// è§£æ”¾
 		bf->line_size = bf->line_len + 1 + RESERVE_LINE;
 		if ((ln = mem_alloc(sizeof(int) * bf->line_size)) == NULL) {
 			return FALSE;
@@ -548,7 +548,7 @@ static BOOL line_move(BUFFER *bf, const int i, const int len)
 }
 
 /*
- * line_get - s“ªƒCƒ“ƒfƒbƒNƒX‚Ìæ“¾
+ * line_get - è¡Œé ­ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®å–å¾—
  */
 static DWORD line_get(const BUFFER *bf, const int lindex)
 {
@@ -559,7 +559,7 @@ static DWORD line_get(const BUFFER *bf, const int lindex)
 }
 
 /*
- * line_set - s“ªƒCƒ“ƒfƒbƒNƒX‚ğİ’è
+ * line_set - è¡Œé ­ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¨­å®š
  */
 static void line_set(BUFFER *bf, const int lindex, const DWORD len)
 {
@@ -571,7 +571,7 @@ static void line_set(BUFFER *bf, const int lindex, const DWORD len)
 }
 
 /*
- * line_flush - sî•ñ‚Ì”½‰f
+ * line_flush - è¡Œæƒ…å ±ã®åæ˜ 
  */
 static void line_flush(BUFFER *bf)
 {
@@ -585,7 +585,7 @@ static void line_flush(BUFFER *bf)
 }
 
 /*
- * line_add_length - sî•ñ‚É•¶š”‚ğ’Ç‰Á
+ * line_add_length - è¡Œæƒ…å ±ã«æ–‡å­—æ•°ã‚’è¿½åŠ 
  */
 static void line_add_length(BUFFER *bf, const int index, const int len)
 {
@@ -601,7 +601,7 @@ static void line_add_length(BUFFER *bf, const int index, const int len)
 }
 
 /*
- * line_get_length - s‚Ì’·‚³‚ğæ“¾
+ * line_get_length - è¡Œã®é•·ã•ã‚’å–å¾—
  */
 static int line_get_length(const BUFFER *bf, const DWORD index)
 {
@@ -615,7 +615,7 @@ static int line_get_length(const BUFFER *bf, const DWORD index)
 }
 
 /*
- * line_get_next_index - Ÿ‚Ìs“ª‚Ì•¶šƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+ * line_get_next_index - æ¬¡ã®è¡Œé ­ã®æ–‡å­—ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
  */
 static DWORD line_get_next_index(BUFFER *bf, const DWORD index)
 {
@@ -656,7 +656,7 @@ static DWORD line_get_next_index(BUFFER *bf, const DWORD index)
 			}
 			if ((bf->wordwrap == TRUE && offset + tab > line_size) ||
 				(bf->line_max > 0 && cnt + bf->tab_stop - (cnt % bf->tab_stop) > bf->line_max)) {
-				// Ü‚è•Ô‚µ
+				// æŠ˜ã‚Šè¿”ã—
 				if (word != -1 && word != index && clen == 1) {
 					i = word;
 					offset = word_offset;
@@ -677,7 +677,7 @@ static DWORD line_get_next_index(BUFFER *bf, const DWORD index)
 			width = get_char_extent(bf, p, &clen);
 			if ((bf->wordwrap == TRUE && offset + width > line_size) ||
 				(bf->line_max > 0 && cnt + 1 > bf->line_max)) {
-				// Ü‚è•Ô‚µ
+				// æŠ˜ã‚Šè¿”ã—
 				if (word != -1 && word != index && clen == 1) {
 					i = word;
 					offset = word_offset;
@@ -695,7 +695,7 @@ static DWORD line_get_next_index(BUFFER *bf, const DWORD index)
 				word = -1;
 			} else if (*p != TEXT(' ')) {
 				if (word == (DWORD)-1) {
-					// ’PŒê‚ÌŠJnˆÊ’u
+					// å˜èªã®é–‹å§‹ä½ç½®
 					word = i;
 					word_offset = offset;
 				}
@@ -706,14 +706,14 @@ static DWORD line_get_next_index(BUFFER *bf, const DWORD index)
 		}
 	}
 	if (bf->wordwrap == FALSE && bf->line_width < offset + bf->right_margin) {
-		// 1s‚Ì’·‚³ (ƒXƒNƒ[ƒ‹ƒo[—p)
+		// 1è¡Œã®é•·ã• (ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ç”¨)
 		bf->line_width = offset + bf->right_margin;
 	}
 	return i;
 }
 
 /*
- * line_set_info - sî•ñ‚Ìİ’è
+ * line_set_info - è¡Œæƒ…å ±ã®è¨­å®š
  */
 static BOOL line_set_info(BUFFER *bf)
 {
@@ -725,7 +725,7 @@ static BOOL line_set_info(BUFFER *bf)
 		switch (*index_to_char(bf, index)) {
 		case TEXT('\r'):
 		case TEXT('\n'):
-			// s“ª‚ÌƒCƒ“ƒfƒbƒNƒX‚ğİ’è
+			// è¡Œé ­ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¨­å®š
 			line_set(bf, i, index + 1);
 			if (++i >= bf->line_size && line_alloc(bf, i, BUF_LEN / 30) == FALSE) {
 				return FALSE;
@@ -734,7 +734,7 @@ static BOOL line_set_info(BUFFER *bf)
 			break;
 
 		default:
-			// s“ª‚ÌƒCƒ“ƒfƒbƒNƒX‚ğİ’è (Ü‚è•Ô‚µ)
+			// è¡Œé ­ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¨­å®š (æŠ˜ã‚Šè¿”ã—)
 			line_set(bf, i, index);
 			if (++i >= bf->line_size && line_alloc(bf, i, BUF_LEN / 30) == FALSE) {
 				return FALSE;
@@ -749,7 +749,7 @@ static BOOL line_set_info(BUFFER *bf)
 }
 
 /*
- * line_get_count - ˜_—s”‚Ìæ“¾
+ * line_get_count - è«–ç†è¡Œæ•°ã®å–å¾—
  */
 static int line_get_count(BUFFER *bf, const int lindex)
 {
@@ -759,7 +759,7 @@ static int line_get_count(BUFFER *bf, const int lindex)
 	for (i = lindex + 1; i < bf->line_len; i++) {
 		p = index_to_char(bf, line_get(bf, i) - 1);
 		if (*p == TEXT('\r') || *p == TEXT('\n')) {
-			// ˜_—s‚ÌI’[
+			// è«–ç†è¡Œã®çµ‚ç«¯
 			break;
 		}
 	}
@@ -767,7 +767,7 @@ static int line_get_count(BUFFER *bf, const int lindex)
 }
 
 /*
- * line_set_count - sî•ñ‚Ìİ’è
+ * line_set_count - è¡Œæƒ…å ±ã®è¨­å®š
  */
 static int line_set_count(BUFFER *bf, const int lindex, const int old_cnt, const int line_cnt)
 {
@@ -780,19 +780,19 @@ static int line_set_count(BUFFER *bf, const int lindex, const int old_cnt, const
 	while (1) {
 		index = line_get_next_index(bf, index);
 		if ((i - lindex) >= old_cnt) {
-			// ‘}“üs‚ğˆÚ“®
+			// æŒ¿å…¥è¡Œã‚’ç§»å‹•
 			line_move(bf, i, 1);
 		}
 		p = index_to_char(bf, index);
 		if (*p == TEXT('\r') || *p == TEXT('\n')) {
-			// s“ª‚ÌƒCƒ“ƒfƒbƒNƒX‚ğİ’è
+			// è¡Œé ­ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¨­å®š
 			index++;
 			line_set(bf, i++, index);
 			if (++rcnt >= line_cnt) {
 				break;
 			}
 		} else {
-			// s“ª‚ÌƒCƒ“ƒfƒbƒNƒX‚ğİ’è (Ü‚è•Ô‚µ)
+			// è¡Œé ­ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¨­å®š (æŠ˜ã‚Šè¿”ã—)
 			line_set(bf, i++, index);
 			if (index >= BUF_LEN) {
 				break;
@@ -801,21 +801,21 @@ static int line_set_count(BUFFER *bf, const int lindex, const int old_cnt, const
 	}
 
 	if ((i - lindex) < old_cnt) {
-		// sî•ñ‚Ìíœ
+		// è¡Œæƒ…å ±ã®å‰Šé™¤
 		line_move(bf, i + old_cnt - (i - lindex), -(old_cnt - (i - lindex)));
 	}
 	return (i - lindex);
 }
 
 /*
- * line_refresh - w’è”ÍˆÍ•¶š—ñ‚Ì‚ ‚és‚ğÄ•`‰æ‘ÎÛ‚É‚·‚é
+ * line_refresh - æŒ‡å®šç¯„å›²æ–‡å­—åˆ—ã®ã‚ã‚‹è¡Œã‚’å†æç”»å¯¾è±¡ã«ã™ã‚‹
  */
 static void line_refresh(const HWND hWnd, const BUFFER *bf, const DWORD p, const DWORD r)
 {
 	RECT rect;
 	int i, j;
 
-	// •¶šˆÊ’u‚©‚çs‚ÌƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+	// æ–‡å­—ä½ç½®ã‹ã‚‰è¡Œã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
 	i = index_to_line(bf, p);
 	if (p == r) {
 		j = i;
@@ -828,7 +828,7 @@ static void line_refresh(const HWND hWnd, const BUFFER *bf, const DWORD p, const
 	i -= bf->pos_y;
 	j -= bf->pos_y;
 
-	// Ä•`‰æ
+	// å†æç”»
 	get_edit_rect(hWnd, bf, &rect);
 	if (i * bf->font_height > (rect.bottom - rect.top) || j * bf->font_height + bf->font_height < 0) {
 		return;
@@ -843,7 +843,7 @@ static void line_refresh(const HWND hWnd, const BUFFER *bf, const DWORD p, const
 }
 
 /*
- * undo_alloc - UNDO‚ÌŠm•Û
+ * undo_alloc - UNDOã®ç¢ºä¿
  */
 static BOOL undo_alloc(BUFFER *bf)
 {
@@ -862,7 +862,7 @@ static BOOL undo_alloc(BUFFER *bf)
 }
 
 /*
- * undo_free - UNDO‚Ì‰ğ•ú
+ * undo_free - UNDOã®è§£æ”¾
  */
 static void undo_free(BUFFER *bf, const int index)
 {
@@ -875,7 +875,7 @@ static void undo_free(BUFFER *bf, const int index)
 }
 
 /*
- * undo_set - UNDO‚ÌƒZƒbƒg
+ * undo_set - UNDOã®ã‚»ãƒƒãƒˆ
  */
 static BOOL undo_set(BUFFER *bf, const int type, const DWORD index, const DWORD len)
 {
@@ -888,11 +888,11 @@ static BOOL undo_set(BUFFER *bf, const int type, const DWORD index, const DWORD 
 	(bf->undo + bf->undo_len)->len = len;
 	switch (type) {
 	case UNDO_TYPE_INPUT:
-		// “ü—Í
+		// å…¥åŠ›
 		break;
 
 	case UNDO_TYPE_DELETE:
-		// íœ
+		// å‰Šé™¤
 		if (((bf->undo + bf->undo_len)->buf = mem_alloc(sizeof(TCHAR) * len)) == NULL) {
 			return FALSE;
 		}
@@ -904,7 +904,7 @@ static BOOL undo_set(BUFFER *bf, const int type, const DWORD index, const DWORD 
 }
 
 /*
- * undo_exec - UNDO‚ÌÀs
+ * undo_exec - UNDOã®å®Ÿè¡Œ
  */
 static BOOL undo_exec(const HWND hWnd, BUFFER *bf)
 {
@@ -944,7 +944,7 @@ static BOOL undo_exec(const HWND hWnd, BUFFER *bf)
 }
 
 /*
- * redo_exec - REDO‚ÌÀs
+ * redo_exec - REDOã®å®Ÿè¡Œ
  */
 static BOOL redo_exec(const HWND hWnd, BUFFER *bf)
 {
@@ -978,7 +978,7 @@ static BOOL redo_exec(const HWND hWnd, BUFFER *bf)
 }
 
 /*
- * string_init - ‰Šú‰»
+ * string_init - åˆæœŸåŒ–
  */
 static BOOL string_init(BUFFER *bf)
 {
@@ -1024,7 +1024,7 @@ static BOOL string_init(BUFFER *bf)
 }
 
 /*
- * string_set - •¶š—ñ‚Ìİ’è
+ * string_set - æ–‡å­—åˆ—ã®è¨­å®š
  */
 static BOOL string_set(const HWND hWnd, BUFFER *bf, const TCHAR *str, const DWORD len)
 {
@@ -1037,7 +1037,7 @@ static BOOL string_set(const HWND hWnd, BUFFER *bf, const TCHAR *str, const DWOR
 		return FALSE;
 	}
 
-	// •¶š—ñİ’è
+	// æ–‡å­—åˆ—è¨­å®š
 	mem_free(&bf->buf);
 	bf->buf_len = len;
 	bf->buf_size = bf->buf_len + 1 + RESERVE_BUF;
@@ -1047,14 +1047,14 @@ static BOOL string_set(const HWND hWnd, BUFFER *bf, const TCHAR *str, const DWOR
 	}
 	CopyMemory(bf->buf, str, sizeof(TCHAR) * (bf->buf_len + 1));
 	if (bf->lowercase == TRUE) {
-		// ¬•¶š‚É•ÏŠ·
+		// å°æ–‡å­—ã«å¤‰æ›
 		CharLowerBuff(bf->buf, bf->buf_len);
 	} else if (bf->uppercase == TRUE) {
-		// ‘å•¶š‚É•ÏŠ·
+		// å¤§æ–‡å­—ã«å¤‰æ›
 		CharUpperBuff(bf->buf, bf->buf_len);
 	}
 
-	// sî•ñ‚Ìİ’è
+	// è¡Œæƒ…å ±ã®è¨­å®š
 	line_set_info(bf);
 	set_scrollbar(hWnd, bf);
 	InvalidateRect(hWnd, NULL, FALSE);
@@ -1064,7 +1064,7 @@ static BOOL string_set(const HWND hWnd, BUFFER *bf, const TCHAR *str, const DWOR
 }
 
 /*
- * string_insert - •¶š—ñ‚Ì’Ç‰Á
+ * string_insert - æ–‡å­—åˆ—ã®è¿½åŠ 
  */
 static BOOL string_insert(const HWND hWnd, BUFFER *bf, TCHAR *str, const int len, const BOOL insert_mode)
 {
@@ -1077,7 +1077,7 @@ static BOOL string_insert(const HWND hWnd, BUFFER *bf, TCHAR *str, const int len
 	int ilen = len;
 	BOOL sel = FALSE;
 
-	// “ü—Í§ŒÀ (‘}“üƒ‚[ƒh)
+	// å…¥åŠ›åˆ¶é™ (æŒ¿å…¥ãƒ¢ãƒ¼ãƒ‰)
 	if ((insert_mode == TRUE || (bf->cp != bf->sp)) && bf->limit_len != 0 && 
 		(BUF_LEN - ((bf->cp > bf->sp) ? bf->cp - bf->sp : bf->sp - bf->cp)) + ilen > bf->limit_len) {
 		i = bf->limit_len - (BUF_LEN - ((bf->cp > bf->sp) ? bf->cp - bf->sp : bf->sp - bf->cp));
@@ -1090,14 +1090,14 @@ static BOOL string_insert(const HWND hWnd, BUFFER *bf, TCHAR *str, const int len
 				ilen++;
 			}
 		}
-		// eƒEƒBƒ“ƒhƒE‚É’Ê’m
+		// è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«é€šçŸ¥
 		notify_message(hWnd, bf, EN_MAXTEXT);
 		if (ilen <= 0) {
 			return FALSE;
 		}
 	}
 	if (bf->cp != bf->sp) {
-		// ‘I‘ğ•¶š‚Ìíœ
+		// é¸æŠæ–‡å­—ã®å‰Šé™¤
 		string_delete(hWnd, bf, bf->cp, bf->sp);
 		if (bf->cp > bf->sp) {
 			SWAP(bf->cp, bf->sp);
@@ -1108,11 +1108,11 @@ static BOOL string_insert(const HWND hWnd, BUFFER *bf, TCHAR *str, const int len
 	if (bf->dp != NULL) {
 		string_flush(bf, TRUE);
 	}
-	// “ü—Í§ŒÀ (ã‘‚«ƒ‚[ƒh)
+	// å…¥åŠ›åˆ¶é™ (ä¸Šæ›¸ããƒ¢ãƒ¼ãƒ‰)
 	if (insert_mode == FALSE && sel == FALSE && bf->limit_len != 0) {
 		for (i = bf->cp, p = str; i - (int)bf->cp < ilen && (p - str) < ilen; i++, p++){
 			if ((DWORD)i >= BUF_LEN || *index_to_char(bf, i) == TEXT('\r') || *index_to_char(bf, i) == TEXT('\n')) {
-				// •¶––‚Æs––‚Ìê‡‚ÍˆÈ~‚ğ‘}“üƒ‚[ƒh‚Æ“¯‚¶“®ì
+				// æ–‡æœ«ã¨è¡Œæœ«ã®å ´åˆã¯ä»¥é™ã‚’æŒ¿å…¥ãƒ¢ãƒ¼ãƒ‰ã¨åŒã˜å‹•ä½œ
 				if (BUF_LEN + ilen > bf->limit_len) {
 					i = bf->limit_len - BUF_LEN;
 					for (ilen = (p - str); ilen < i; ilen++) {
@@ -1129,10 +1129,10 @@ static BOOL string_insert(const HWND hWnd, BUFFER *bf, TCHAR *str, const int len
 			}
 			if (IS_LEAD_TBYTE((TBYTE)*p) == TRUE && (int)(p - str) < ilen) {
 				if (is_lead_byte(bf, index_to_char(bf, i)) == TRUE) {
-					// 2ƒoƒCƒgƒR[ƒh‚É2ƒoƒCƒg‚Ìã‘‚«
+					// 2ãƒã‚¤ãƒˆã‚³ãƒ¼ãƒ‰ã«2ãƒã‚¤ãƒˆã®ä¸Šæ›¸ã
 					i++;
 				} else if ((BUF_LEN - (i - bf->cp)) + (p - str) + 1 > bf->limit_len) {
-					// 1ƒoƒCƒgƒR[ƒh‚É2ƒoƒCƒg‚ğã‘‚«‚µ‚Ä§ŒÀ‚ğ’´‚¦‚éê‡‚ÍˆÈ~‚ğØÌ‚Ä
+					// 1ãƒã‚¤ãƒˆã‚³ãƒ¼ãƒ‰ã«2ãƒã‚¤ãƒˆã‚’ä¸Šæ›¸ãã—ã¦åˆ¶é™ã‚’è¶…ãˆã‚‹å ´åˆã¯ä»¥é™ã‚’åˆ‡æ¨ã¦
 					ilen = p - str;
 					break;
 				}
@@ -1140,7 +1140,7 @@ static BOOL string_insert(const HWND hWnd, BUFFER *bf, TCHAR *str, const int len
 			}
 		}
 		if (ilen != len) {
-			// eƒEƒBƒ“ƒhƒE‚É’Ê’m
+			// è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«é€šçŸ¥
 			notify_message(hWnd, bf, EN_MAXTEXT);
 		}
 		if (ilen <= 0) {
@@ -1148,7 +1148,7 @@ static BOOL string_insert(const HWND hWnd, BUFFER *bf, TCHAR *str, const int len
 		}
 	}
 
-	// ‰üs”‚Ìæ“¾
+	// æ”¹è¡Œæ•°ã®å–å¾—
 	for (p = str; (p - str) < ilen; p++) {
 		if (*p == TEXT('\r') || *p == TEXT('\n')) {
 			if (*p == TEXT('\r') && *(p + 1) == TEXT('\n')) {
@@ -1157,10 +1157,10 @@ static BOOL string_insert(const HWND hWnd, BUFFER *bf, TCHAR *str, const int len
 			ret_cnt++;
 		}
 	}
-	// ’Ç‰Á‘O‚Ì•\¦s”
+	// è¿½åŠ å‰ã®è¡¨ç¤ºè¡Œæ•°
 	lcnt1 = line_get_count(bf, index_to_line(bf, (bf->ip == NULL) ? bf->cp : ((bf->ip - bf->buf) + bf->input_len)));
 
-	// “ü—Íƒoƒbƒtƒ@‚Ìİ’è
+	// å…¥åŠ›ãƒãƒƒãƒ•ã‚¡ã®è¨­å®š
 	if (bf->input_len + ilen + 1 > bf->input_size) {
 		bf->input_size = bf->input_len + ilen + 1 + RESERVE_INPUT;
 		if ((p = mem_alloc(sizeof(TCHAR) * bf->input_size)) == NULL) {
@@ -1172,10 +1172,10 @@ static BOOL string_insert(const HWND hWnd, BUFFER *bf, TCHAR *str, const int len
 	}
 	CopyMemory(bf->input_buf + bf->input_len, str, sizeof(TCHAR) * ilen);
 	if (bf->lowercase == TRUE) {
-		// ¬•¶š‚É•ÏŠ·
+		// å°æ–‡å­—ã«å¤‰æ›
 		CharLowerBuff(bf->input_buf + bf->input_len, ilen);
 	} else if (bf->uppercase == TRUE) {
-		// ‘å•¶š‚É•ÏŠ·
+		// å¤§æ–‡å­—ã«å¤‰æ›
 		CharUpperBuff(bf->input_buf + bf->input_len, ilen);
 	}
 	bf->input_len += ilen;
@@ -1185,7 +1185,7 @@ static BOOL string_insert(const HWND hWnd, BUFFER *bf, TCHAR *str, const int len
 	bf->cp += ilen;
 	bf->sp = bf->cp;
 
-	// ã‘‚«ƒ‚[ƒh
+	// ä¸Šæ›¸ããƒ¢ãƒ¼ãƒ‰
 	for (p = str, ip_len = 0; sel == FALSE && insert_mode == FALSE && (p - str) < ilen; p++, ip_len++) {
 		if (char_to_index(bf, bf->ip + bf->ip_len + ip_len) >= BUF_LEN ||
 			*(bf->ip + bf->ip_len + ip_len) == TEXT('\r') || *(bf->ip + bf->ip_len + ip_len) == TEXT('\n')) {
@@ -1200,27 +1200,27 @@ static BOOL string_insert(const HWND hWnd, BUFFER *bf, TCHAR *str, const int len
 	}
 	bf->ip_len += ip_len;
 
-	// sî•ñ‚Ìİ’è
+	// è¡Œæƒ…å ±ã®è¨­å®š
 	st = (bf->ip - bf->buf) + (bf->input_len - ilen);
 	i = index_to_line(bf, st) + 1;
 	lcnt2 = (ret_cnt > 0) ? line_set_count(bf, i, 0, ret_cnt) : 0;
 	lcnt2 += line_set_count(bf, i + lcnt2, lcnt1, 0);
 	line_add_length(bf, i + lcnt2, ilen - ip_len);
 
-	// eƒEƒBƒ“ƒhƒE‚É’Ê’m
+	// è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«é€šçŸ¥
 	notify_message(hWnd, bf, EN_UPDATE);
 
 	if (lcnt1 > lcnt2) {
-		// s”Œ¸­
+		// è¡Œæ•°æ¸›å°‘
 		InvalidateRect(hWnd, NULL, FALSE);
 	} else if (ret_cnt > 0 || lcnt1 != lcnt2) {
-		// •¡”s
+		// è¤‡æ•°è¡Œ
 		line_refresh(hWnd, bf, line_get(bf, i - 1), bf->buf_len + bf->input_len);
 	} else if (lcnt2 > 1) {
-		// Ü‚è•Ô‚µ‚ğŠÜ‚ß‚Ä”½‰f
+		// æŠ˜ã‚Šè¿”ã—ã‚’å«ã‚ã¦åæ˜ 
 		line_refresh(hWnd, bf, line_get(bf, i - 1), line_get(bf, i + lcnt2 - 2));
 	} else {
-		// ’Pˆês
+		// å˜ä¸€è¡Œ
 		line_refresh(hWnd, bf, st, st);
 	}
 	set_scrollbar(hWnd, bf);
@@ -1230,13 +1230,13 @@ static BOOL string_insert(const HWND hWnd, BUFFER *bf, TCHAR *str, const int len
 		bf->undo_pos = bf->undo_len;
 	}
 	bf->modified = TRUE;
-	// eƒEƒBƒ“ƒhƒE‚É’Ê’m
+	// è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«é€šçŸ¥
 	notify_message(hWnd, bf, EN_CHANGE);
 	return TRUE;
 }
 
 /*
- * string_delete - •¶š—ñ‚Ìíœ
+ * string_delete - æ–‡å­—åˆ—ã®å‰Šé™¤
  */
 static void string_delete(const HWND hWnd, BUFFER *bf, DWORD st, DWORD en)
 {
@@ -1254,15 +1254,15 @@ static void string_delete(const HWND hWnd, BUFFER *bf, DWORD st, DWORD en)
 		return;
 	}
 
-	// s”æ“¾
+	// è¡Œæ•°å–å¾—
 	ret_cnt = index_to_line(bf, en) - index_to_line(bf, st);
 	lcnt1 = line_get_count(bf, index_to_line(bf, en));
 
-	// íœˆÊ’uİ’è
+	// å‰Šé™¤ä½ç½®è¨­å®š
 	bf->dp = bf->buf + st;
 	bf->del_len += en - st;
 
-	// sî•ñ‚Ìİ’è
+	// è¡Œæƒ…å ±ã®è¨­å®š
 	i = index_to_line(bf, st) + 1;
 	if (ret_cnt > 0) {
 		line_move(bf, i + ret_cnt, -ret_cnt);
@@ -1270,43 +1270,43 @@ static void string_delete(const HWND hWnd, BUFFER *bf, DWORD st, DWORD en)
 	lcnt2 = line_set_count(bf, i, lcnt1, 0);
 	line_add_length(bf, i + lcnt2, st - en);
 
-	// eƒEƒBƒ“ƒhƒE‚É’Ê’m
+	// è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«é€šçŸ¥
 	notify_message(hWnd, bf, EN_UPDATE);
 
 	if (ret_cnt > 0 || lcnt1 != lcnt2) {
-		// •¡”s
+		// è¤‡æ•°è¡Œ
 		InvalidateRect(hWnd, NULL, FALSE);
 	} else if (lcnt2 > 1) {
-		// Ü‚è•Ô‚µ‚ğŠÜ‚ß‚Ä”½‰f
+		// æŠ˜ã‚Šè¿”ã—ã‚’å«ã‚ã¦åæ˜ 
 		line_refresh(hWnd, bf, line_get(bf, i - 1), line_get(bf, i + lcnt2 - 2));
 	} else {
-		// ’Pˆês
+		// å˜ä¸€è¡Œ
 		line_refresh(hWnd, bf, st, en);
 	}
 	if (bf->modified == FALSE) {
 		bf->undo_pos = bf->undo_len;
 	}
 	bf->modified = TRUE;
-	// eƒEƒBƒ“ƒhƒE‚É’Ê’m
+	// è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«é€šçŸ¥
 	notify_message(hWnd, bf, EN_CHANGE);
 }
 
 /*
- * string_delete_char - •¶š‚Ìíœ
+ * string_delete_char - æ–‡å­—ã®å‰Šé™¤
  */
 static void string_delete_char(const HWND hWnd, BUFFER *bf, DWORD st)
 {
 	int i = 1;
 
 	if (bf->cp != bf->sp) {
-		// ‘I‘ğ•¶š‚Ìíœ
+		// é¸æŠæ–‡å­—ã®å‰Šé™¤
 		string_delete(hWnd, bf, bf->cp, bf->sp);
 		if (bf->cp > bf->sp) {
 			SWAP(bf->cp, bf->sp);
 		}
 		bf->sp = bf->cp;
 	} else {
-		// ˆê•¶šíœ
+		// ä¸€æ–‡å­—å‰Šé™¤
 		if (is_lead_byte(bf, index_to_char(bf, st)) == TRUE) {
 			i++;
 		}
@@ -1320,7 +1320,7 @@ static void string_delete_char(const HWND hWnd, BUFFER *bf, DWORD st)
 }
 
 /*
- * string_flush - íœ‚Æ“ü—Íƒoƒbƒtƒ@‚Ì”½‰f
+ * string_flush - å‰Šé™¤ã¨å…¥åŠ›ãƒãƒƒãƒ•ã‚¡ã®åæ˜ 
  */
 static BOOL string_flush(BUFFER *bf, const BOOL undo_flag)
 {
@@ -1328,11 +1328,11 @@ static BOOL string_flush(BUFFER *bf, const BOOL undo_flag)
 
 	if (bf->dp != NULL) {
 		if (undo_flag == TRUE) {
-			// undo‚É’Ç‰Á
+			// undoã«è¿½åŠ 
 			undo_set(bf, UNDO_TYPE_DELETE, bf->dp - bf->buf, bf->del_len);
 		}
 
-		// íœ•¶š—ñ‚Ì”½‰f
+		// å‰Šé™¤æ–‡å­—åˆ—ã®åæ˜ 
 		MoveMemory(bf->dp, bf->dp + bf->del_len, sizeof(TCHAR) * (bf->buf_len - (bf->dp - bf->buf + bf->del_len) + 1));
 		bf->buf_len -= bf->del_len;
 		bf->dp = NULL;
@@ -1348,7 +1348,7 @@ static BOOL string_flush(BUFFER *bf, const BOOL undo_flag)
 			mem_free(&bf->buf);
 			bf->buf = p;
 		}
-		// sî•ñ‚Ì”½‰f
+		// è¡Œæƒ…å ±ã®åæ˜ 
 		line_flush(bf);
 		return TRUE;
 	}
@@ -1357,14 +1357,14 @@ static BOOL string_flush(BUFFER *bf, const BOOL undo_flag)
 	}
 
 	if (undo_flag == TRUE) {
-		// undo‚É’Ç‰Á
+		// undoã«è¿½åŠ 
 		if (bf->ip_len > 0) {
 			undo_set(bf, UNDO_TYPE_DELETE, bf->ip - bf->buf, bf->ip_len);
 		}
 		undo_set(bf, UNDO_TYPE_INPUT, bf->ip - bf->buf, bf->input_len);
 	}
 
-	// “ü—Íƒoƒbƒtƒ@‚Ì”½‰f
+	// å…¥åŠ›ãƒãƒƒãƒ•ã‚¡ã®åæ˜ 
 	if (bf->buf_len + bf->input_len - bf->ip_len + 1 > bf->buf_size) {
 		bf->buf_size = bf->buf_len + bf->input_len - bf->ip_len + 1 + RESERVE_BUF;
 		if ((p = mem_alloc(sizeof(TCHAR) * bf->buf_size)) == NULL) {
@@ -1383,7 +1383,7 @@ static BOOL string_flush(BUFFER *bf, const BOOL undo_flag)
 	}
 	bf->buf_len += bf->input_len - bf->ip_len;
 
-	// “ü—Íƒoƒbƒtƒ@‚Ì‰ğ•ú
+	// å…¥åŠ›ãƒãƒƒãƒ•ã‚¡ã®è§£æ”¾
 	if (bf->input_size > RESERVE_INPUT) {
 		mem_free(&bf->input_buf);
 		bf->input_size = RESERVE_INPUT;
@@ -1396,13 +1396,13 @@ static BOOL string_flush(BUFFER *bf, const BOOL undo_flag)
 	bf->ip = NULL;
 	bf->ip_len = 0;
 
-	// sî•ñ‚Ì”½‰f
+	// è¡Œæƒ…å ±ã®åæ˜ 
 	line_flush(bf);
 	return TRUE;
 }
 
 /*
- * draw_init - •`‰æî•ñ‚Ì‰Šú‰»
+ * draw_init - æç”»æƒ…å ±ã®åˆæœŸåŒ–
  */
 static BOOL draw_init(const HWND hWnd, BUFFER *bf)
 {
@@ -1420,13 +1420,13 @@ static BOOL draw_init(const HWND hWnd, BUFFER *bf)
 	bf->ret_bmp = SelectObject(bf->mdc, hBmp);
 	ReleaseDC(hWnd, hdc);
 
-	// ƒŠ[ƒWƒ‡ƒ“‚Ìì¬
+	// ãƒªãƒ¼ã‚¸ãƒ§ãƒ³ã®ä½œæˆ
 	hrgn[0] = CreateRectRgnIndirect(&rect);
 	bf->hrgn = CreateRectRgnIndirect(&rect);
-	// œ‹‚·‚éƒŠ[ƒWƒ‡ƒ“‚Ìì¬
+	// é™¤å»ã™ã‚‹ãƒªãƒ¼ã‚¸ãƒ§ãƒ³ã®ä½œæˆ
 	get_edit_rect(hWnd, bf, &rect);
 	hrgn[1] = CreateRectRgnIndirect(&rect);
-	// ƒŠ[ƒWƒ‡ƒ“‚ÌŒ‹‡
+	// ãƒªãƒ¼ã‚¸ãƒ§ãƒ³ã®çµåˆ
 	CombineRgn(bf->hrgn, hrgn[0], hrgn[1], RGN_DIFF);
 	DeleteObject(hrgn[0]);
 	DeleteObject(hrgn[1]);
@@ -1434,7 +1434,7 @@ static BOOL draw_init(const HWND hWnd, BUFFER *bf)
 }
 
 /*
- * draw_free - •`‰æî•ñ‚Ì‰ğ•ú
+ * draw_free - æç”»æƒ…å ±ã®è§£æ”¾
  */
 static void draw_free(BUFFER *bf)
 {
@@ -1447,7 +1447,7 @@ static void draw_free(BUFFER *bf)
 }
 
 /*
- * draw_rect - ‹éŒ`•`‰æ
+ * draw_rect - çŸ©å½¢æç”»
  */
 static void draw_rect(const HWND hWnd, const HDC mdc, const BUFFER *bf, const int left, const int top, const int right, const int bottom)
 {
@@ -1468,7 +1468,7 @@ static void draw_rect(const HWND hWnd, const HDC mdc, const BUFFER *bf, const in
 }
 
 /*
- * draw_string - •¶š—ñ•`‰æ
+ * draw_string - æ–‡å­—åˆ—æç”»
  */
 static int draw_string(const HWND hWnd, const HDC mdc, const BUFFER *bf, const RECT *drect, const int left, const int top, const TCHAR *str, const int len, const BOOL sel)
 {
@@ -1493,7 +1493,7 @@ static int draw_string(const HWND hWnd, const HDC mdc, const BUFFER *bf, const R
 }
 
 /*
- * draw_line - 1s•`‰æ
+ * draw_line - 1è¡Œæç”»
  */
 static void draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const int i, const int left, const int right)
 {
@@ -1515,12 +1515,12 @@ static void draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const int i, c
 	for (j = line_get(bf, i), s = p = index_to_char(bf, line_get(bf, i)); j < line_get(bf, i + 1) && offset <= width; j++, p = char_next(bf, p)) {
 		if (s != p) {
 			if (bf->ip != NULL && (p == bf->ip + bf->ip_len || p == bf->input_buf)) {
-				// “ü—Íƒoƒbƒtƒ@‚Ìo—Í
+				// å…¥åŠ›ãƒãƒƒãƒ•ã‚¡ã®å‡ºåŠ›
 				r = (p == bf->input_buf) ? bf->ip : (bf->input_buf + bf->input_len);
 				offset += draw_string(hWnd, mdc, bf, &drect, offset, top, s, r - s, bf->sel);
 				s = p;
 			} else if (bf->dp != NULL && p == bf->dp + bf->del_len) {
-				// íœ•¶š—ñ
+				// å‰Šé™¤æ–‡å­—åˆ—
 				offset += draw_string(hWnd, mdc, bf, &drect, offset, top, s, bf->dp - s, bf->sel);
 				s = p;
 			} else if ((j % DRAW_LEN) == 0) {
@@ -1530,13 +1530,13 @@ static void draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const int i, c
 		}
 		if ((j >= bf->sp && j < bf->cp) || (j >= bf->cp && j < bf->sp)) {
 			if (bf->sel == FALSE) {
-				// ‘I‘ğŠJn
+				// é¸æŠé–‹å§‹
 				offset += draw_string(hWnd, mdc, bf, &drect, offset, top, s, p - s, bf->sel);
 				s = p;
 				bf->sel = TRUE;
 			}
 		} else if (bf->sel == TRUE) {
-			// ‘I‘ğI—¹
+			// é¸æŠçµ‚äº†
 			offset += draw_string(hWnd, mdc, bf, &drect, offset, top, s, p - s, bf->sel);
 			s = p;
 			bf->sel = FALSE;
@@ -1585,7 +1585,7 @@ static void draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const int i, c
 }
 
 /*
- * caret_set_size - ƒLƒƒƒŒƒbƒg‚ÌƒTƒCƒYİ’è
+ * caret_set_size - ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã®ã‚µã‚¤ã‚ºè¨­å®š
  */
 static void caret_set_size(const HWND hWnd, BUFFER *bf)
 {
@@ -1603,7 +1603,7 @@ static void caret_set_size(const HWND hWnd, BUFFER *bf)
 }
 
 /*
- * caret_char_to_caret - •¶šˆÊ’u‚©‚çƒLƒƒƒŒƒbƒg‚ÌˆÊ’uæ“¾
+ * caret_char_to_caret - æ–‡å­—ä½ç½®ã‹ã‚‰ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã®ä½ç½®å–å¾—
  */
 static int caret_char_to_caret(const HDC mdc, BUFFER *bf, const int i, const DWORD cp)
 {
@@ -1617,10 +1617,10 @@ static int caret_char_to_caret(const HDC mdc, BUFFER *bf, const int i, const DWO
 	for (j = line_get(bf, i), s = p = index_to_char(bf, line_get(bf, i)); j < line_get(bf, i + 1); j++, p = char_next(bf, p)) {
 		r = NULL;
 		if (s != p && bf->ip != NULL && (p == bf->ip + bf->ip_len || p == bf->input_buf)) {
-			// “ü—Íƒoƒbƒtƒ@
+			// å…¥åŠ›ãƒãƒƒãƒ•ã‚¡
 			r = (p == bf->input_buf) ? bf->ip : (bf->input_buf + bf->input_len);
 		} else if (s != p && bf->dp != NULL && p == bf->dp + bf->del_len) {
-			// íœ•¶š—ñ
+			// å‰Šé™¤æ–‡å­—åˆ—
 			r = bf->dp;
 		}
 		if (r != NULL) {
@@ -1663,7 +1663,7 @@ static int caret_char_to_caret(const HDC mdc, BUFFER *bf, const int i, const DWO
 }
 
 /*
- * caret_point_to_caret - À•W‚©‚çƒLƒƒƒŒƒbƒg‚ÌˆÊ’uæ“¾
+ * caret_point_to_caret - åº§æ¨™ã‹ã‚‰ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã®ä½ç½®å–å¾—
  */
 static DWORD caret_point_to_caret(BUFFER *bf, const int x, const int y)
 {
@@ -1718,7 +1718,7 @@ static DWORD caret_point_to_caret(BUFFER *bf, const int x, const int y)
 }
 
 /*
- * caret_get_token - ƒLƒƒƒŒƒbƒgˆÊ’u‚Ìƒg[ƒNƒ“‚ğæ“¾
+ * caret_get_token - ã‚­ãƒ£ãƒ¬ãƒƒãƒˆä½ç½®ã®ãƒˆãƒ¼ã‚¯ãƒ³ã‚’å–å¾—
  */
 static void caret_get_token(BUFFER *bf)
 {
@@ -1727,7 +1727,7 @@ static void caret_get_token(BUFFER *bf)
 
 	i = index_to_line(bf, bf->cp);
 	for (; i > 0; i--) {
-		// ˜_—s‚Ìæ“ª‚ÉˆÚ“®
+		// è«–ç†è¡Œã®å…ˆé ­ã«ç§»å‹•
 		p = index_to_char(bf, line_get(bf, i) - 1);
 		if (*p == TEXT('\r') || *p == TEXT('\n')) {
 			break;
@@ -1763,7 +1763,7 @@ static void caret_get_token(BUFFER *bf)
 }
 
 /*
- * caret_move - ƒLƒƒƒŒƒbƒg‚ÌˆÚ“®
+ * caret_move - ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã®ç§»å‹•
  */
 static void caret_move(const HWND hWnd, BUFFER *bf, const int key)
 {
@@ -1783,10 +1783,10 @@ static void caret_move(const HWND hWnd, BUFFER *bf, const int key)
 	switch (key) {
 	case VK_HOME:
 		if (GetKeyState(VK_CONTROL) < 0) {
-			// ‘S‘Ì‚Ìæ“ª
+			// å…¨ä½“ã®å…ˆé ­
 			bf->cp = 0;
 		} else {
-			// ˜_—s“ª
+			// è«–ç†è¡Œé ­
 			for (; *(index_to_char(bf, bf->cp)) == TEXT('\r') || *(index_to_char(bf, bf->cp)) == TEXT('\n'); bf->cp--)
 				;
 			for (; bf->cp > 0 && *(index_to_char(bf, bf->cp)) != TEXT('\r') && *(index_to_char(bf, bf->cp)) != TEXT('\n'); bf->cp--)
@@ -1800,10 +1800,10 @@ static void caret_move(const HWND hWnd, BUFFER *bf, const int key)
 
 	case VK_END:
 		if (GetKeyState(VK_CONTROL) < 0) {
-			// ‘S‘Ì‚Ì––”ö
+			// å…¨ä½“ã®æœ«å°¾
 			bf->cp = BUF_LEN;
 		} else {
-			// ˜_—s––
+			// è«–ç†è¡Œæœ«
 			for (; bf->cp < BUF_LEN && *(index_to_char(bf, bf->cp)) != TEXT('\r') && *(index_to_char(bf, bf->cp)) != TEXT('\n'); bf->cp++)
 				;
 		}
@@ -1875,7 +1875,7 @@ static void caret_move(const HWND hWnd, BUFFER *bf, const int key)
 	case VK_LEFT:
 		bf->cpx = 0;
 		if (bf->cp != bf->sp && GetKeyState(VK_SHIFT) >= 0) {
-			// ‘I‘ğ‰ğœ
+			// é¸æŠè§£é™¤
 			if (bf->cp > bf->sp) {
 				SWAP(bf->cp, bf->sp);
 			}
@@ -1902,7 +1902,7 @@ static void caret_move(const HWND hWnd, BUFFER *bf, const int key)
 	case VK_RIGHT:
 		bf->cpx = 0;
 		if (bf->cp != bf->sp && GetKeyState(VK_SHIFT) >= 0) {
-			// ‘I‘ğ‰ğœ
+			// é¸æŠè§£é™¤
 			if (bf->cp < bf->sp) {
 				SWAP(bf->cp, bf->sp);
 			}
@@ -1937,7 +1937,7 @@ static void caret_move(const HWND hWnd, BUFFER *bf, const int key)
 }
 
 /*
- * nedit_proc - EditƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+ * nedit_proc - Editã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  * nedit_proc - Edit window procedure
  */
 static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM wParam, const LPARAM lParam)
@@ -1985,14 +1985,14 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		if (string_init(bf) == FALSE) {
 			return -1;
 		}
-		// ƒoƒbƒtƒ@‚Ì‰Šú‰»
+		// ãƒãƒƒãƒ•ã‚¡ã®åˆæœŸåŒ–
 		bf->buf_size = RESERVE_BUF;
 		if ((bf->buf = mem_alloc(sizeof(TCHAR) * bf->buf_size)) == NULL) {
 			return -1;
 		}
 		*bf->buf = TEXT('\0');
 
-		// •`‰æî•ñ‚Ì‰Šú‰»
+		// æç”»æƒ…å ±ã®åˆæœŸåŒ–
 		hdc = GetDC(hWnd);
 		bf->mdc = CreateCompatibleDC(hdc);
 		ReleaseDC(hWnd, hdc);
@@ -2014,7 +2014,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		SetWindowLong(hWnd, GWL_USERDATA, (LPARAM)bf);
 		SendMessage(hWnd, WM_REFLECT, 0, 0);
 
-		// ‰Šú•¶š—ñ‚Ìİ’è
+		// åˆæœŸæ–‡å­—åˆ—ã®è¨­å®š
 		if (((LPCREATESTRUCT)lParam)->lpszName != NULL) {
 			SendMessage(hWnd, WM_SETTEXT, 0, (LPARAM)((LPCREATESTRUCT)lParam)->lpszName);
 		}
@@ -2053,7 +2053,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		CreateCaret(hWnd, NULL, 0, bf->font_height);
 		ShowCaret(hWnd);
 		line_refresh(hWnd, bf, bf->cp, bf->sp);
-		// eƒEƒBƒ“ƒhƒE‚É’Ê’m
+		// è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«é€šçŸ¥
 		notify_message(hWnd, bf, EN_SETFOCUS);
 		break;
 
@@ -2064,7 +2064,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		HideCaret(hWnd);
 		DestroyCaret();
 		line_refresh(hWnd, bf, bf->cp, bf->sp);
-		// eƒEƒBƒ“ƒhƒE‚É’Ê’m
+		// è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«é€šçŸ¥
 		notify_message(hWnd, bf, EN_KILLFOCUS);
 		break;
 
@@ -2077,7 +2077,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		}
 		get_edit_rect(hWnd, bf, &rect);
 		if (bf->wordwrap == TRUE && (rect.right - rect.left) > 0) {
-			// sî•ñ‚ÌÄİ’è
+			// è¡Œæƒ…å ±ã®å†è¨­å®š
 			bf->width = (rect.right - rect.left);
 			bf->line_len = 0;
 			line_set_info(bf);
@@ -2089,7 +2089,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 
 		InvalidateRect(hWnd, NULL, FALSE);
 
-		// IME‚Ìİ’è
+		// IMEã®è¨­å®š
 		hIMC = ImmGetContext(hWnd);
 		GetCaretPos(&pt);
 		cf.dwStyle = CFS_POINT | CFS_RECT;
@@ -2157,7 +2157,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		case SB_PAGELEFT:
 		case SB_PAGERIGHT:
 			if (i - bf->pos_x != 0) {
-				// eƒEƒBƒ“ƒhƒE‚É’Ê’m
+				// è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«é€šçŸ¥
 				notify_message(hWnd, bf, EN_HSCROLL);
 			}
 			break;
@@ -2220,7 +2220,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		case SB_PAGEUP:
 		case SB_PAGEDOWN:
 			if (i - bf->pos_y != 0) {
-				// eƒEƒBƒ“ƒhƒE‚É’Ê’m
+				// è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«é€šçŸ¥
 				notify_message(hWnd, bf, EN_VSCROLL);
 			}
 			break;
@@ -2240,13 +2240,13 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 
 		case VK_INSERT:
 			if (GetKeyState(VK_CONTROL) < 0) {
-				// ƒRƒs[
+				// ã‚³ãƒ”ãƒ¼
 				SendMessage(hWnd, WM_COPY, 0, 0);
 			} else if (GetKeyState(VK_SHIFT) < 0) {
-				// “\‚è•t‚¯
+				// è²¼ã‚Šä»˜ã‘
 				SendMessage(hWnd, WM_PASTE, 0, 0);
 			} else {
-				// “ü—Íƒ‚[ƒhØ‘Ö
+				// å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰åˆ‡æ›¿
 				bf->insert_mode = !bf->insert_mode;
 
 				DestroyCaret();
@@ -2261,10 +2261,10 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 				break;
 			}
 			if (GetKeyState(VK_SHIFT) < 0) {
-				// Ø‚èæ‚è
+				// åˆ‡ã‚Šå–ã‚Š
 				SendMessage(hWnd, WM_CUT, 0, 0);
 			} else {
-				// íœ
+				// å‰Šé™¤
 				string_delete_char(hWnd, bf, bf->cp);
 			}
 			break;
@@ -2284,7 +2284,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 
 		case 'A':
 			if (GetKeyState(VK_CONTROL) < 0) {
-				// ‘S‚Ä‘I‘ğ
+				// å…¨ã¦é¸æŠ
 				SendMessage(hWnd, EM_SETSEL, 0, -1);
 			}
 			break;
@@ -2309,10 +2309,10 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 
 		case 'Z':
 			if (GetKeyState(VK_CONTROL) < 0 && GetKeyState(VK_SHIFT) < 0) {
-				// ‚â‚è’¼‚µ
+				// ã‚„ã‚Šç›´ã—
 				SendMessage(hWnd, EM_REDO, 0, 0);
 			} else if (GetKeyState(VK_CONTROL) < 0) {
-				// Œ³‚É–ß‚·
+				// å…ƒã«æˆ»ã™
 				SendMessage(hWnd, EM_UNDO, 0, 0);
 			}
 			break;
@@ -2346,7 +2346,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		}
 		switch (wParam) {
 		case VK_RETURN:
-			// ‰üs
+			// æ”¹è¡Œ
 			string_insert(hWnd, bf, TEXT("\r\n"), 2, TRUE);
 			string_flush(bf, TRUE);
 			break;
@@ -2389,11 +2389,11 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 
 			hIMC = ImmGetContext(hWnd);
 			if (bf->hfont != NULL) {
-				// ƒtƒHƒ“ƒg‚Ìİ’è
+				// ãƒ•ã‚©ãƒ³ãƒˆã®è¨­å®š
 				GetObject(bf->hfont, sizeof(LOGFONT), &lf);
 				ImmSetCompositionFont(hIMC, &lf);
 			}
-			// ˆÊ’u‚Ìİ’è
+			// ä½ç½®ã®è¨­å®š
 			GetCaretPos(&pt);
 			cf.dwStyle = CFS_POINT | CFS_RECT;
 			cf.ptCurrentPos.x = pt.x;
@@ -2411,7 +2411,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 			bf->lock == FALSE && (lParam & GCS_RESULTSTR)) {
 			TCHAR *buf;
 
-			// Šm’è•¶š—ñ‚ğƒoƒbƒtƒ@‚É’Ç‰Á
+			// ç¢ºå®šæ–‡å­—åˆ—ã‚’ãƒãƒƒãƒ•ã‚¡ã«è¿½åŠ 
 			hIMC = ImmGetContext(hWnd);
 			len = ImmGetCompositionString(hIMC, GCS_RESULTSTR, NULL, 0);
 			buf = mem_calloc(len + sizeof(TCHAR));
@@ -2421,7 +2421,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 				UpdateWindow(hWnd);
 				mem_free(&buf);
 			}
-			// ˆÊ’u‚Ìİ’è
+			// ä½ç½®ã®è¨­å®š
 			GetCaretPos(&pt);
 			cf.dwStyle = CFS_POINT | CFS_RECT;
 			cf.ptCurrentPos.x = pt.x;
@@ -2508,7 +2508,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		cp = bf->cp;
 		bf->sp = bf->cp;
 		sp = caret_point_to_caret(bf, (short)LOWORD(lParam), (short)HIWORD(lParam));
-		// •¶š—ñ‘I‘ğ
+		// æ–‡å­—åˆ—é¸æŠ
 		caret_get_token(bf);
 		ensure_visible(hWnd, bf);
 		line_refresh(hWnd, bf, cp, sp);
@@ -2555,7 +2555,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 					SetCaretPos(len, (j - bf->pos_y) * bf->font_height + bf->top_margin);
 					j = -1;
 				}
-				// 1s•`‰æ
+				// 1è¡Œæç”»
 				FillRect(bf->mdc, &rect, hBrush);
 				draw_line(hWnd, bf->mdc, bf, i, ps.rcPaint.left, ps.rcPaint.right);
 				BitBlt(hdc,
@@ -2564,13 +2564,13 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 					bf->mdc, ps.rcPaint.left, 0, SRCCOPY);
 			}
 			if ((i - bf->pos_y) * bf->font_height + bf->top_margin < ps.rcPaint.bottom) {
-				// •¶––‚Ì—]”’•`‰æ
+				// æ–‡æœ«ã®ä½™ç™½æç”»
 				SetRect(&rect,
 					ps.rcPaint.left, (i - bf->pos_y) * bf->font_height + bf->top_margin,
 					ps.rcPaint.right, ps.rcPaint.bottom);
 				FillRect(hdc, &rect, hBrush);
 			}
-			// ‹éŒ`•`‰æ
+			// çŸ©å½¢æç”»
 			FillRgn(hdc, bf->hrgn, hBrush);
 			DeleteObject(hBrush);
 
@@ -2584,7 +2584,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 
 #ifdef OP_XP_STYLE
 	case WM_NCPAINT:
-		// XP—p‚Ì”wŒi•`‰æ
+		// XPç”¨ã®èƒŒæ™¯æç”»
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
 			theme_draw(hWnd, (HRGN)wParam, bf->hTheme) == FALSE) {
 			return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -2595,14 +2595,14 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || bf->hModThemes == NULL) {
 			break;
 		}
-		// XPƒe[ƒ}‚Ì•ÏX
+		// XPãƒ†ãƒ¼ãƒã®å¤‰æ›´
 		theme_close(bf->hTheme);
 		bf->hTheme = theme_open(hWnd);
 		break;
 #endif	// OP_XP_STYLE
 
 	case WM_SETTEXT:
-		// ƒeƒLƒXƒg‚ğİ’è
+		// ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®š
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || lParam == 0) {
 			break;
 		}
@@ -2617,7 +2617,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		return string_set(hWnd, bf, (TCHAR *)lParam, i);
 
 	case WM_GETTEXT:
-		// ƒeƒLƒXƒg‚ğæ“¾
+		// ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || lParam == 0) {
 			break;
 		}
@@ -2626,14 +2626,14 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		return lstrlen((TCHAR *)lParam);
 
 	case WM_GETTEXTLENGTH:
-		// ƒeƒLƒXƒg‚Ì’·‚³‚ğæ“¾
+		// ãƒ†ã‚­ã‚¹ãƒˆã®é•·ã•ã‚’å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
 		return BUF_LEN;
 
 	case WM_SETFONT:
-		// ƒtƒHƒ“ƒg‚ğİ’è
+		// ãƒ•ã‚©ãƒ³ãƒˆã‚’è¨­å®š
 		{
 			LOGFONT lf;
 
@@ -2659,14 +2659,14 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case WM_GETFONT:
-		// ƒtƒHƒ“ƒg‚ğæ“¾
+		// ãƒ•ã‚©ãƒ³ãƒˆã‚’å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
 		return (LRESULT)bf->hfont;
 
 	case WM_CLEAR:
-		// íœ
+		// å‰Šé™¤
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || bf->lock == TRUE) {
 			break;
 		}
@@ -2676,7 +2676,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case WM_COPY:
-		// ƒRƒs[
+		// ã‚³ãƒ”ãƒ¼
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -2691,7 +2691,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case WM_CUT:
-		// Ø‚èæ‚è
+		// åˆ‡ã‚Šå–ã‚Š
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || bf->lock == TRUE) {
 			break;
 		}
@@ -2700,7 +2700,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case WM_PASTE:
-		// “\‚è•t‚¯
+		// è²¼ã‚Šä»˜ã‘
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || bf->lock == TRUE) {
 			break;
 		}
@@ -2732,21 +2732,21 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case EM_CANUNDO:
-		// UNDO‰Â”\‚©æ“¾
+		// UNDOå¯èƒ½ã‹å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
 		return ((bf->undo_len > 0 || bf->ip != NULL || bf->dp != NULL) ? TRUE : FALSE);
 
 	case EM_CANREDO:
-		// REDO‰Â”\‚©æ“¾
+		// REDOå¯èƒ½ã‹å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
 		return (((bf->undo + bf->undo_len)->type != 0) ? TRUE : FALSE);
 
 	case EM_EMPTYUNDOBUFFER:
-		// UNDOƒoƒbƒtƒ@‚ğƒNƒŠƒA
+		// UNDOãƒãƒƒãƒ•ã‚¡ã‚’ã‚¯ãƒªã‚¢
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -2761,14 +2761,14 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case EM_GETFIRSTVISIBLELINE:
-		// ˆê”Ôã‚É•\¦‚³‚ê‚Ä‚¢‚és”Ô†‚ğæ“¾
+		// ä¸€ç•ªä¸Šã«è¡¨ç¤ºã•ã‚Œã¦ã„ã‚‹è¡Œç•ªå·ã‚’å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
 		return bf->pos_y;
 
 	case EM_GETLINE:
-		// 1s‚Ì•¶š—ñ‚ğæ“¾
+		// 1è¡Œã®æ–‡å­—åˆ—ã‚’å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || lParam == 0) {
 			break;
 		}
@@ -2781,21 +2781,21 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		return line_get_length(bf, line_get(bf, wParam));
 
 	case EM_GETLINECOUNT:
-		// s”æ“¾
+		// è¡Œæ•°å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
 		return bf->line_len;
 
 	case EM_GETMODIFY:
-		// •ÏXƒtƒ‰ƒO‚ğæ“¾
+		// å¤‰æ›´ãƒ•ãƒ©ã‚°ã‚’å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
 		return bf->modified;
 
 	case EM_GETRECT:
-		// •`‰æ—Ìˆæ‚Ìæ“¾
+		// æç”»é ˜åŸŸã®å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || lParam == 0) {
 			break;
 		}
@@ -2803,7 +2803,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case EM_GETSEL:
-		// ‘I‘ğ‚³‚ê‚Ä‚¢‚éƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+		// é¸æŠã•ã‚Œã¦ã„ã‚‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -2818,7 +2818,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		return MAKELPARAM(i, j);
 
 	case EM_LIMITTEXT:
-		// “ü—Í•¶š”§ŒÀ
+		// å…¥åŠ›æ–‡å­—æ•°åˆ¶é™
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -2829,7 +2829,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case EM_LINEFROMCHAR:
-		// “Á’è•¶šƒCƒ“ƒfƒbƒNƒX‚ªŠÜ‚Ü‚ê‚és”Ô†‚ğæ“¾
+		// ç‰¹å®šæ–‡å­—ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒå«ã¾ã‚Œã‚‹è¡Œç•ªå·ã‚’å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -2843,7 +2843,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		return index_to_line(bf, wParam);
 
 	case EM_LINEINDEX:
-		// s”Ô†‚Ì•¶šƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+		// è¡Œç•ªå·ã®æ–‡å­—ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -2856,7 +2856,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		return line_get(bf, wParam);
 
 	case EM_LINELENGTH:
-		// s‚Ì’·‚³‚ğæ“¾
+		// è¡Œã®é•·ã•ã‚’å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -2873,7 +2873,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		return line_get_length(bf, wParam);
 
 	case EM_LINESCROLL:
-		// …•½A‚’¼‚ÉƒXƒNƒ[ƒ‹
+		// æ°´å¹³ã€å‚ç›´ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -2905,7 +2905,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case EM_REPLACESEL:
-		// ‘I‘ğ”ÍˆÍ‚ÌƒeƒLƒXƒg‚ğ’u‚«Š·‚¦‚é
+		// é¸æŠç¯„å›²ã®ãƒ†ã‚­ã‚¹ãƒˆã‚’ç½®ãæ›ãˆã‚‹
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || lParam == 0) {
 			break;
 		}
@@ -2913,7 +2913,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case EM_SCROLL:
-		// ƒeƒLƒXƒg‚ğ‚’¼‚ÉƒXƒNƒ[ƒ‹
+		// ãƒ†ã‚­ã‚¹ãƒˆã‚’å‚ç›´ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -2947,7 +2947,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		return MAKELRESULT(i, TRUE);
 
 	case EM_SCROLLCARET:
-		// ƒLƒƒƒŒƒbƒgˆÊ’u‚ÉƒXƒNƒ[ƒ‹
+		// ã‚­ãƒ£ãƒ¬ãƒƒãƒˆä½ç½®ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -2956,7 +2956,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		return !0;
 
 	case EM_SETMODIFY:
-		// •ÏXƒtƒ‰ƒO‚ğƒZƒbƒg
+		// å¤‰æ›´ãƒ•ãƒ©ã‚°ã‚’ã‚»ãƒƒãƒˆ
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -2964,14 +2964,14 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case EM_GETREADONLY:
-		// “Ç‚İæ‚èê—pƒtƒ‰ƒO‚Ìæ“¾
+		// èª­ã¿å–ã‚Šå°‚ç”¨ãƒ•ãƒ©ã‚°ã®å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
 		return bf->lock;
 
 	case EM_SETREADONLY:
-		// “Ç‚İæ‚èê—p‚Ìİ’è
+		// èª­ã¿å–ã‚Šå°‚ç”¨ã®è¨­å®š
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -2991,7 +2991,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		return !0;
 
 	case EM_SETRECT:
-		// •`‰æ—Ìˆæ‚Ìİ’è (Ä•`‰æ‚ ‚è)
+		// æç”»é ˜åŸŸã®è¨­å®š (å†æç”»ã‚ã‚Š)
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || lParam == 0) {
 			break;
 		}
@@ -3000,7 +3000,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case EM_SETRECTNP:
-		// •`‰æ—Ìˆæ‚Ìİ’è (Ä•`‰æ‚È‚µ)
+		// æç”»é ˜åŸŸã®è¨­å®š (å†æç”»ãªã—)
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || lParam == 0) {
 			break;
 		}
@@ -3015,7 +3015,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case EM_SETSEL:
-		// ‘I‘ğƒCƒ“ƒfƒbƒNƒX‚Ìİ’è
+		// é¸æŠã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®è¨­å®š
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -3042,7 +3042,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case EM_SETTABSTOPS:
-		// ƒ^ƒuƒXƒgƒbƒv‚Ìİ’è
+		// ã‚¿ãƒ–ã‚¹ãƒˆãƒƒãƒ—ã®è¨­å®š
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -3058,7 +3058,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 
 	case WM_UNDO:
 	case EM_UNDO:
-		// Œ³‚É–ß‚·
+		// å…ƒã«æˆ»ã™
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || bf->lock == TRUE) {
 			break;
 		}
@@ -3066,7 +3066,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case EM_REDO:
-		// ‚â‚è’¼‚µ
+		// ã‚„ã‚Šç›´ã—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || bf->lock == TRUE) {
 			break;
 		}
@@ -3074,7 +3074,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case WM_GETBUFFERINFO:
-		// “à•”ƒoƒbƒtƒ@‚Ìæ“¾
+		// å†…éƒ¨ãƒãƒƒãƒ•ã‚¡ã®å–å¾—
 		if (lParam == 0) {
 			break;
 		}
@@ -3082,14 +3082,14 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case WM_REFLECT:
-		// •`‰æî•ñ‚ÌXV
+		// æç”»æƒ…å ±ã®æ›´æ–°
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) != NULL) {
 			TEXTMETRIC tm;
 			HCURSOR old_cursor;
 
 			old_cursor = SetCursor(LoadCursor(NULL, IDC_WAIT));
 
-			// ƒtƒHƒ“ƒgî•ñ‚Ìæ“¾
+			// ãƒ•ã‚©ãƒ³ãƒˆæƒ…å ±ã®å–å¾—
 			GetTextMetrics(bf->mdc, &tm);
 			bf->font_height = tm.tmHeight + bf->spacing;
 			bf->char_width = tm.tmAveCharWidth;
@@ -3112,7 +3112,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case WM_GETWORDWRAP:
-		// Ü‚è•Ô‚µƒtƒ‰ƒO‚Ìæ“¾
+		// æŠ˜ã‚Šè¿”ã—ãƒ•ãƒ©ã‚°ã®å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -3120,7 +3120,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		return ((i & WS_HSCROLL) ? FALSE : TRUE);
 
 	case WM_SETWORDWRAP:
-		// Ü‚è•Ô‚µİ’è
+		// æŠ˜ã‚Šè¿”ã—è¨­å®š
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
@@ -3132,14 +3132,14 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		break;
 
 	case WM_GETMEMSIZE:
-		// “à•”ƒƒ‚ƒŠ‚ÌƒTƒCƒYæ“¾
+		// å†…éƒ¨ãƒ¡ãƒ¢ãƒªã®ã‚µã‚¤ã‚ºå–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
 		return (BUF_LEN * sizeof(TCHAR));
 
 	case WM_GETMEM:
-		// “à•”ƒƒ‚ƒŠ‚Ìæ“¾
+		// å†…éƒ¨ãƒ¡ãƒ¢ãƒªã®å–å¾—
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || lParam == 0) {
 			break;
 		}
@@ -3148,7 +3148,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		return (BUF_LEN * sizeof(TCHAR));
 
 	case WM_SETMEM:
-		// ƒƒ‚ƒŠ‚ğ“à•”ƒƒ‚ƒŠ‚Éİ’è
+		// ãƒ¡ãƒ¢ãƒªã‚’å†…éƒ¨ãƒ¡ãƒ¢ãƒªã«è¨­å®š
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || lParam == 0) {
 			break;
 		}
@@ -3162,7 +3162,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 			DWORD ret;
 			DWORD st, en;
 
-			// ƒƒjƒ…[‚Ìì¬
+			// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ä½œæˆ
 			hMenu = CreatePopupMenu();
 			AppendMenu(hMenu, MF_STRING | (SendMessage(hWnd, EM_CANUNDO, 0, 0) == TRUE) ? 0 : MF_GRAYED,
 				EM_UNDO, message_get_res(IDS_TEXT_MENU_UNDO));
@@ -3181,7 +3181,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 				2, message_get_res(IDS_TEXT_MENU_WORDWRAP));
 			AppendMenu(hMenu, MF_STRING, 3, message_get_res(IDS_TEXT_MENU_SELECT_FONT));
 
-			// ƒƒjƒ…[‚Ì•\¦
+			// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®è¡¨ç¤º
 			GetCursorPos((LPPOINT)&apos);
 			ret = TrackPopupMenu(hMenu, TPM_TOPALIGN | TPM_RETURNCMD, apos.x, apos.y, 0, hWnd, NULL);
 			DestroyMenu(hMenu);
@@ -3190,12 +3190,12 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 			}
 			switch (ret) {
 			case 1:
-				// ‚·‚×‚Ä‘I‘ğ
+				// ã™ã¹ã¦é¸æŠ
 				SendMessage(hWnd, EM_SETSEL, 0, -1);
 				break;
 
 			case 2:
-				// ‰E’[‚ÅÜ‚è•Ô‚·
+				// å³ç«¯ã§æŠ˜ã‚Šè¿”ã™
 				if (SendMessage(hWnd, WM_GETWORDWRAP, 0, 0) == FALSE) {
 					SendMessage(hWnd, WM_SETWORDWRAP, TRUE, 0);
 					option.fmt_txt_viewer_word_wrap = 1;
@@ -3206,7 +3206,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 				break;
 
 			case 3:
-				// ƒtƒHƒ“ƒg‘I‘ğ
+				// ãƒ•ã‚©ãƒ³ãƒˆé¸æŠ
 				if (font_select(hWnd) == TRUE) {
 					hFont = font_create(option.fmt_txt_font_name, option.fmt_txt_font_size, option.fmt_txt_font_charset,
 						option.fmt_txt_font_weight, (option.fmt_txt_font_italic == 0) ? FALSE : TRUE, FALSE);
@@ -3231,7 +3231,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 }
 
 /*
- * txtview_regist - ƒNƒ‰ƒX‚Ì“o˜^
+ * txtview_regist - ã‚¯ãƒ©ã‚¹ã®ç™»éŒ²
  */
 BOOL txtview_regist(const HINSTANCE hInstance)
 {

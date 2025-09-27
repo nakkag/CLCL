@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * dpi.c
@@ -34,7 +34,7 @@ static FARPROC _GetDpiForMonitor;
 
 
 /*
- * Scale - ƒXƒP[ƒ‹•ÏŠ·‚µ‚½’l‚Ìæ“¾
+ * Scale - ã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›ã—ãŸå€¤ã®å–å¾—
  */
 int Scale(int x)
 {
@@ -50,7 +50,7 @@ int Scale(int x)
 }
 
 /*
- * UnScale - ƒXƒP[ƒ‹‚ğ–ß‚µ‚½’l‚Ìæ“¾
+ * UnScale - ã‚¹ã‚±ãƒ¼ãƒ«ã‚’æˆ»ã—ãŸå€¤ã®å–å¾—
  */
 int UnScale(int x)
 {
@@ -66,7 +66,7 @@ int UnScale(int x)
 }
 
 /*
- * GetScale - ƒXƒP[ƒ‹‚Ìæ“¾
+ * GetScale - ã‚¹ã‚±ãƒ¼ãƒ«ã®å–å¾—
  */
 UINT GetScale()
 {
@@ -82,7 +82,7 @@ UINT GetScale()
 }
 
 /*
- * SetScale - ƒXƒP[ƒ‹‚Ìİ’è
+ * SetScale - ã‚¹ã‚±ãƒ¼ãƒ«ã®è¨­å®š
  */
 void SetScale(UINT iDPI)
 {
@@ -94,7 +94,7 @@ void SetScale(UINT iDPI)
 }
 
 /*
- * GetAwareness - Awareness‚Ìæ“¾
+ * GetAwareness - Awarenessã®å–å¾—
  */
 PROCESS_DPI_AWARENESS GetAwareness()
 {
@@ -107,7 +107,7 @@ PROCESS_DPI_AWARENESS GetAwareness()
 }
 
 /*
- * SetAwareness - Awareness‚Ìİ’è
+ * SetAwareness - Awarenessã®è¨­å®š
  */
 void SetAwareness(PROCESS_DPI_AWARENESS awareness)
 {
@@ -122,7 +122,7 @@ void SetAwareness(PROCESS_DPI_AWARENESS awareness)
 }
 
 /*
- * ScaleRect - RECT‚ÌƒXƒP[ƒ‹•ÏŠ·
+ * ScaleRect - RECTã®ã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›
  */
 void ScaleRect(RECT* pRect)
 {
@@ -133,7 +133,7 @@ void ScaleRect(RECT* pRect)
 }
 
 /*
- * UnScaleRect - RECT‚ÌƒXƒP[ƒ‹•ÏŠ·
+ * UnScaleRect - RECTã®ã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›
  */
 void UnScaleRect(RECT* pRect)
 {
@@ -144,7 +144,7 @@ void UnScaleRect(RECT* pRect)
 }
 
 /*
- * ScalePoint - POINT‚ÌƒXƒP[ƒ‹•ÏŠ·
+ * ScalePoint - POINTã®ã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›
  */
 void ScalePoint(POINT* pPoint)
 {
@@ -153,7 +153,7 @@ void ScalePoint(POINT* pPoint)
 }
 
 /*
- * UnScalePoint - POINT‚ÌƒXƒP[ƒ‹•ÏŠ·
+ * UnScalePoint - POINTã®ã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›
  */
 void UnScalePoint(POINT* pPoint)
 {
@@ -162,7 +162,7 @@ void UnScalePoint(POINT* pPoint)
 }
 
 /*
- * InitDpi - DPI‚Ì‰Šú‰»
+ * InitDpi - DPIã®åˆæœŸåŒ–
  */
 void InitDpi()
 {
@@ -179,7 +179,7 @@ void InitDpi()
 		return;
 	}
 
-	// DPI‚Ì‰Šú‰»
+	// DPIã®åˆæœŸåŒ–
 	GetAwareness();
 	UINT dpix = 0, dpiy = 0;
 	POINT pt = { 1, 1 };

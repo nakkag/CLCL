@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCLSet
  *
  * SelectKey.c
@@ -52,7 +52,7 @@ static void selectkey_get_keyname(const UINT modifiers, const UINT virtkey, TCHA
 static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 /*
- * selectkey_get_keyname - ƒL[–¼‚ğæ“¾
+ * selectkey_get_keyname - ã‚­ãƒ¼åã‚’å–å¾—
  */
 static void selectkey_get_keyname(const UINT modifiers, const UINT virtkey, TCHAR *ret)
 {
@@ -96,7 +96,7 @@ static void selectkey_get_keyname(const UINT modifiers, const UINT virtkey, TCHA
 }
 
 /*
- * selectkey_proc - ƒL[‘I‘ğ
+ * selectkey_proc - ã‚­ãƒ¼é¸æŠ
  */
 static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -133,7 +133,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 			}
 		}
 #endif	// OP_XP_STYLE
-		// •`‰æ‚Ì‰Šú‰»
+		// æç”»ã®åˆæœŸåŒ–
 		hdc = GetDC(hWnd);
 		hRetFont = SelectObject(hdc, (HFONT)SendMessage(GetParent(hWnd), WM_GETFONT, 0, 0));
 		GetTextMetrics(hdc, &tm);
@@ -173,7 +173,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		if ((si = (SELECTKEY_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
-		// ƒLƒƒƒŒƒbƒg‚Ì•\¦
+		// ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã®è¡¨ç¤º
 		CreateCaret(hWnd, 0, 0, si->font_height);
 		InvalidateRect(hWnd, NULL, FALSE);
 		ShowCaret(hWnd);
@@ -201,17 +201,17 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		break;
 
 	case WM_PAINT:
-		// ƒeƒLƒXƒg•`‰æ
+		// ãƒ†ã‚­ã‚¹ãƒˆæç”»
 		if ((si = (SELECTKEY_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
-		// ƒL[–¼‚Ìæ“¾
+		// ã‚­ãƒ¼åã®å–å¾—
 		selectkey_get_keyname(si->modifiers, si->virtkey, buf);
 
 		hdc = BeginPaint(hWnd, &ps);
 		GetClientRect(hWnd, (LPRECT)&rect);
 
-		// ”wŒi‚Ì“h‚è‚Â‚Ô‚µ
+		// èƒŒæ™¯ã®å¡—ã‚Šã¤ã¶ã—
 		if (IsWindowEnabled(hWnd) == FALSE) {
 			hbrush = GetSysColorBrush(COLOR_BTNFACE);
 		} else {
@@ -219,7 +219,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		}
 		FillRect(hdc, &rect, hbrush);
 
-		// ƒeƒLƒXƒg‚Ì•`‰æ
+		// ãƒ†ã‚­ã‚¹ãƒˆã®æç”»
 		if (IsWindowEnabled(hWnd) == FALSE) {
 			SetTextColor(hdc, GetSysColor(COLOR_GRAYTEXT));
 			SetBkColor(hdc, GetSysColor(COLOR_BTNFACE));
@@ -232,7 +232,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		ExtTextOut(hdc, 1, 1, ETO_OPAQUE, &rect, buf, lstrlen(buf), NULL);
 
 		if (GetFocus() == hWnd) {
-			// ƒLƒƒƒŒƒbƒg‚ÌˆÊ’u‚ğİ’è
+			// ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã®ä½ç½®ã‚’è¨­å®š
 			SetCaretPos(sz.cx + 1, 1);
 		}
 		SelectObject(hdc, hRetFont);
@@ -244,14 +244,14 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		if ((si = (SELECTKEY_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || si->hTheme == NULL) {
 			return DefWindowProc(hWnd, msg, wParam, lParam);
 		}
-		// XP—p‚Ì”wŒi•`‰æ
+		// XPç”¨ã®èƒŒæ™¯æç”»
 		if (_DrawThemeBackground == NULL) {
 			_DrawThemeBackground = GetProcAddress(si->hModThemes, "DrawThemeBackground");
 		}
 		if (_DrawThemeBackground == NULL) {
 			return DefWindowProc(hWnd, msg, wParam, lParam);
 		}
-		// ó‘Ô‚Ìİ’è
+		// çŠ¶æ…‹ã®è¨­å®š
 		if (IsWindowEnabled(hWnd) == 0) {
 			stats = ETS_DISABLED;
 		} else if (GetFocus() == hWnd) {
@@ -259,7 +259,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		} else {
 			stats = ETS_NORMAL;
 		}
-		// ƒEƒBƒ“ƒhƒE˜g‚Ì•`‰æ
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦æ ã®æç”»
 		if ((hdc = GetDCEx(hWnd, (HRGN)wParam, DCX_WINDOW | DCX_INTERSECTRGN)) == NULL) {
 			hdc = GetWindowDC(hWnd);
 		}
@@ -276,7 +276,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		if ((si = (SELECTKEY_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || si->hModThemes == NULL) {
 			break;
 		}
-		// XPƒe[ƒ}‚Ì•ÏX
+		// XPãƒ†ãƒ¼ãƒã®å¤‰æ›´
 		if (si->hTheme != NULL) {
 			if (_CloseThemeData == NULL) {
 				_CloseThemeData = GetProcAddress(si->hModThemes, "CloseThemeData");
@@ -301,7 +301,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 			break;
 		}
 		if (wParam == VK_TAB) {
-			// ƒtƒH[ƒJƒX‚ÌˆÚ“®
+			// ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã®ç§»å‹•
 			if (GetKeyState(VK_SHIFT) & 0x1000) {
 				if (si->modifiers != 0 && si->virtkey == 0) {
 					si->modifiers = 0;
@@ -314,11 +314,11 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 			break;
 		}
 		if (lParam & 0x40000000) {
-			// ’¼‘O‚É“¯‚¶ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡‚Íˆ—‚µ‚È‚¢
+			// ç›´å‰ã«åŒã˜ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯å‡¦ç†ã—ãªã„
 			break;
 		}
 
-		// §ŒäƒL[
+		// åˆ¶å¾¡ã‚­ãƒ¼
 		si->modifiers = 0;
 		if (GetKeyState(VK_CONTROL) & 0x1000) {
 			si->modifiers |= HOTKEYF_CONTROL;
@@ -333,7 +333,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 			si->modifiers |= HOTKEYF_WIN;
 		}
 
-		// ‰¼‘zƒL[
+		// ä»®æƒ³ã‚­ãƒ¼
 		if (wParam == VK_CONTROL || wParam == VK_SHIFT || wParam == VK_MENU ||
 			wParam == VK_RCONTROL || wParam == VK_RSHIFT || wParam == VK_RMENU ||
 			wParam == VK_LWIN || wParam == VK_RWIN) {
@@ -353,7 +353,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 			(wParam == VK_CONTROL || wParam == VK_SHIFT || wParam == VK_MENU ||
 			wParam == VK_RCONTROL || wParam == VK_RSHIFT || wParam == VK_RMENU ||
 			wParam == VK_LWIN || wParam == VK_RWIN)) {
-			// ƒL[‰ğœ
+			// ã‚­ãƒ¼è§£é™¤
 			si->modifiers = 0;
 			InvalidateRect(hWnd, NULL, FALSE);
 		}
@@ -384,7 +384,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 }
 
 /*
- * init_selectkey - ƒL[‘I‘ğ‚Ì‰Šú‰»
+ * init_selectkey - ã‚­ãƒ¼é¸æŠã®åˆæœŸåŒ–
  */
 BOOL init_selectkey(const HINSTANCE hInstance)
 {
@@ -400,7 +400,7 @@ BOOL init_selectkey(const HINSTANCE hInstance)
 	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wc.lpszMenuName = NULL;
 	wc.lpszClassName = WINDOW_CLASS;
-	// ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì“o˜^
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ç™»éŒ²
 	return RegisterClass(&wc);
 }
 /* End of source */

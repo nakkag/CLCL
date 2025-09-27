@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * ToolTip.c
@@ -59,7 +59,7 @@ typedef struct _TOOLTIP_INFO {
 	HWND hWnd;
 } TOOLTIP_INFO;
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
@@ -68,7 +68,7 @@ static void tooltip_draw_text(const TOOLTIP_INFO *ti, const HDC hdc, RECT *rect)
 static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 /*
- * tooltip_get_cursor_height - ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚Ì‚‚³‚ğæ“¾
+ * tooltip_get_cursor_height - ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã®é«˜ã•ã‚’å–å¾—
  */
 static int tooltip_get_cursor_height(const HCURSOR hcursor)
 {
@@ -78,18 +78,18 @@ static int tooltip_get_cursor_height(const HCURSOR hcursor)
 	int width, height;
 	int x, y;
 
-	// ƒJ[ƒ\ƒ‹‚Ì‘å‚«‚³æ“¾
+	// ã‚«ãƒ¼ã‚½ãƒ«ã®å¤§ãã•å–å¾—
 	width = GetSystemMetrics(SM_CXCURSOR);
 	height = GetSystemMetrics(SM_CYCURSOR);
 
-	// ƒJ[ƒ\ƒ‹(ƒ}ƒXƒN)‚Ì•`‰æ
+	// ã‚«ãƒ¼ã‚½ãƒ«(ãƒã‚¹ã‚¯)ã®æç”»
 	hdc = GetDC(NULL);
 	mdc = CreateCompatibleDC(hdc);
 	hbmp = CreateCompatibleBitmap(hdc, width, height);
 	ret_hbmp = SelectObject(mdc, hbmp);
 	DrawIconEx(mdc, 0, 0, hcursor, width, height, 0, NULL, DI_MASK);
 
-	// ƒJ[ƒ\ƒ‹‚Ì‚‚³æ“¾
+	// ã‚«ãƒ¼ã‚½ãƒ«ã®é«˜ã•å–å¾—
 	for (y = height - 1; y >= 0; y--) {
 		for (x = 0; x < width; x++) {
 			if (GetPixel(mdc, x, y) != RGB(255, 255, 255)) {
@@ -105,7 +105,7 @@ static int tooltip_get_cursor_height(const HCURSOR hcursor)
 	DeleteDC(mdc);
 	ReleaseDC(NULL, hdc);
 
-	// ƒzƒbƒgƒXƒ|ƒbƒg‚ÌˆÊ’u‚ğæ“¾
+	// ãƒ›ãƒƒãƒˆã‚¹ãƒãƒƒãƒˆã®ä½ç½®ã‚’å–å¾—
 	ZeroMemory(&icon_info, sizeof(ICONINFO));
 	GetIconInfo(hcursor, &icon_info);
 	if (icon_info.hbmMask != NULL) {
@@ -118,7 +118,7 @@ static int tooltip_get_cursor_height(const HCURSOR hcursor)
 }
 
 /*
- * tooltip_draw_text - ƒc[ƒ‹ƒ`ƒbƒv‚Ì•`‰æ
+ * tooltip_draw_text - ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã®æç”»
  */
 static void tooltip_draw_text(const TOOLTIP_INFO *ti, const HDC hdc, RECT *rect)
 {
@@ -135,13 +135,13 @@ static void tooltip_draw_text(const TOOLTIP_INFO *ti, const HDC hdc, RECT *rect)
 	DWORD color_infotext = GetSysColor(COLOR_INFOTEXT);
 #endif	// TOOLTIP_COLOR
 
-	// ”wŒi‚Ì“h‚è‚Â‚Ô‚µ
+	// èƒŒæ™¯ã®å¡—ã‚Šã¤ã¶ã—
 	hbrush = CreateSolidBrush(color_infoback);
 	FillRect(hdc, rect, hbrush);
 	DeleteObject(hbrush);
 
 	if (ti->buf != NULL) {
-		// ƒeƒLƒXƒg‚Ì•`‰æ
+		// ãƒ†ã‚­ã‚¹ãƒˆã®æç”»
 		hRetFont = SelectObject(hdc, (ti->hfont != NULL) ? ti->hfont : GetStockObject(DEFAULT_GUI_FONT));
 		SetRect(rect,
 			rect->left + option.tooltip_margin_x,
@@ -163,7 +163,7 @@ static void tooltip_draw_text(const TOOLTIP_INFO *ti, const HDC hdc, RECT *rect)
 }
 
 /*
- * tooltip_proc - ƒc[ƒ‹ƒ`ƒbƒv
+ * tooltip_proc - ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—
  */
 static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -182,7 +182,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			return -1;
 		}
 		if (*option.tooltip_font_name != TEXT('\0')) {
-			// ƒtƒHƒ“ƒgì¬
+			// ãƒ•ã‚©ãƒ³ãƒˆä½œæˆ
 			ti->hfont = font_create(option.tooltip_font_name,
 				option.tooltip_font_size, option.tooltip_font_charset, option.tooltip_font_weight,
 				(option.tooltip_font_italic == 0) ? FALSE : TRUE, FALSE);
@@ -190,7 +190,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			ncMetrics.cbSize = sizeof(NONCLIENTMETRICS);
 			if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS,
 				sizeof(NONCLIENTMETRICS), &ncMetrics, 0) == TRUE) {
-				// ƒfƒtƒHƒ‹ƒg‚ÌƒtƒHƒ“ƒgì¬
+				// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ•ã‚©ãƒ³ãƒˆä½œæˆ
 				ti->hfont = CreateFontIndirect(&ncMetrics.lfStatusFont);
 			}
 		}
@@ -228,21 +228,21 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		ncMetrics.cbSize = sizeof(NONCLIENTMETRICS);
 		if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS,
 			sizeof(NONCLIENTMETRICS), &ncMetrics, 0) == TRUE) {
-			// ƒfƒtƒHƒ‹ƒg‚ÌƒtƒHƒ“ƒgì¬
+			// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ•ã‚©ãƒ³ãƒˆä½œæˆ
 			ti->hfont = CreateFontIndirect(&ncMetrics.lfStatusFont);
 		}
 		break;
 
 #ifdef TOOLTIP_ANIMATE
 	case WM_PRINT:
-		// ƒeƒLƒXƒg•`‰æ
+		// ãƒ†ã‚­ã‚¹ãƒˆæç”»
 		if ((ti = (TOOLTIP_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
-		// ”ñƒNƒ‰ƒCƒAƒ“ƒgƒGƒŠƒA‚Ì•`‰æ
+		// éã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã‚¨ãƒªã‚¢ã®æç”»
 		DefWindowProc(hWnd, msg, wParam, lParam);
 
-		// ƒc[ƒ‹ƒ`ƒbƒv‚Ì•`‰æ
+		// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã®æç”»
 		GetClientRect(hWnd, (LPRECT)&rect);
 		SetRect(&rect, rect.left + 1, rect.top + 1, rect.right + 1, rect.bottom + 1);
 		tooltip_draw_text(ti, (HDC)wParam, &rect);
@@ -250,13 +250,13 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 #endif
 
 	case WM_PAINT:
-		// ƒeƒLƒXƒg•`‰æ
+		// ãƒ†ã‚­ã‚¹ãƒˆæç”»
 		if ((ti = (TOOLTIP_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
 			break;
 		}
 		hdc = BeginPaint(hWnd, &ps);
 
-		// ƒc[ƒ‹ƒ`ƒbƒv‚Ì•`‰æ
+		// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã®æç”»
 		GetClientRect(hWnd, (LPRECT)&rect);
 		tooltip_draw_text(ti, hdc, &rect);
 
@@ -269,7 +269,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 	case WM_RBUTTONDOWN:
 	case WM_SETCURSOR:
 	case WM_TOOLTIP_HIDE:
-		// ƒc[ƒ‹ƒ`ƒbƒv”ñ•\¦
+		// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—éè¡¨ç¤º
 		KillTimer(hWnd, ID_SHOW_TIMER);
 		KillTimer(hWnd, ID_MOUSE_TIMER);
 		ShowWindow(hWnd, SW_HIDE);
@@ -280,7 +280,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		break;
 
 	case WM_TOOLTIP_SHOW:
-		// ƒc[ƒ‹ƒ`ƒbƒv•\¦
+		// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—è¡¨ç¤º
 		KillTimer(hWnd, ID_SHOW_TIMER);
 		KillTimer(hWnd, ID_MOUSE_TIMER);
 		ShowWindow(hWnd, SW_HIDE);
@@ -292,12 +292,12 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			break;
 		}
 
-		// À•Wİ’è
+		// åº§æ¨™è¨­å®š
 		ti->top = ((TOOLTIP_INFO *)lParam)->top;
 		ti->pt.x = ((TOOLTIP_INFO *)lParam)->pt.x;
 		ti->pt.y = ((TOOLTIP_INFO *)lParam)->pt.y;
 
-		// ƒEƒBƒ“ƒhƒEæ“¾
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å–å¾—
 		if (ti->pt.x == 0 && ti->pt.y == 0) {
 			GetCursorPos(&pt);
 			ti->hWnd = WindowFromPoint(pt);
@@ -305,13 +305,13 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			ti->hWnd = NULL;
 		}
 
-		// ƒeƒLƒXƒgİ’è
+		// ãƒ†ã‚­ã‚¹ãƒˆè¨­å®š
 		if (ti->buf != NULL) {
 			mem_free(&ti->buf);
 		}
 		ti->buf = alloc_copy(((TOOLTIP_INFO *)lParam)->buf);
 
-		// ƒc[ƒ‹ƒ`ƒbƒv•\¦
+		// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—è¡¨ç¤º
 		SetTimer(hWnd, ID_SHOW_TIMER, wParam, NULL);
 		break;
 
@@ -324,7 +324,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 				break;
 			}
 
-			// •\¦ˆÊ’uæ“¾ (ƒ}ƒEƒXˆÊ’u)
+			// è¡¨ç¤ºä½ç½®å–å¾— (ãƒã‚¦ã‚¹ä½ç½®)
 			if (ti->pt.x == 0 && ti->pt.y == 0) {
 				GetCursorPos(&ti->pt);
 				ti->top = tooltip_get_cursor_height(GetCursor()) + 1;
@@ -334,7 +334,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 				}
 			}
 
-			// ƒTƒCƒYæ“¾
+			// ã‚µã‚¤ã‚ºå–å¾—
 			hdc = GetDC(hWnd);
 			hRetFont = SelectObject(hdc, (ti->hfont != NULL) ? ti->hfont : GetStockObject(DEFAULT_GUI_FONT));
 			SetRectEmpty(&rect);
@@ -348,14 +348,14 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			SelectObject(hdc, hRetFont);
 			ReleaseDC(hWnd, hdc);
 
-			// ƒEƒBƒ“ƒhƒEƒTƒCƒYİ’è
+			// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºè¨­å®š
 			SetRect(&rect,
 				ti->pt.x,
 				ti->pt.y + ti->top,
 				rect.right + (option.tooltip_margin_x * 2) + 2,
 				rect.bottom + (option.tooltip_margin_y * 2) + 2);
 
-			// ‰¡ˆÊ’u‚Ì•â³
+			// æ¨ªä½ç½®ã®è£œæ­£
 			if (rect.left + rect.right > GetSystemMetrics(SM_CXSCREEN)) {
 				rect.left = GetSystemMetrics(SM_CXSCREEN) - rect.right;
 			}
@@ -363,7 +363,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 				rect.left = 0;
 			}
 
-			// cˆÊ’u‚Ì•â³
+			// ç¸¦ä½ç½®ã®è£œæ­£
 			if (rect.top + rect.bottom > GetSystemMetrics(SM_CYSCREEN)) {
 				rect.top = ti->pt.y - rect.bottom;
 			}
@@ -374,7 +374,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 				rect.top = 0;
 			}
 
-			// ƒEƒBƒ“ƒhƒE‚ÌˆÊ’u‚ÆƒTƒCƒY‚ğİ’è
+			// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½ç½®ã¨ã‚µã‚¤ã‚ºã‚’è¨­å®š
 			SetWindowPos(hWnd, HWND_TOPMOST,
 				rect.left, rect.top, rect.right, rect.bottom,
 				SWP_NOACTIVATE);
@@ -385,7 +385,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 				FARPROC AnimateWindow;
 				BOOL effect_flag;
 
-				// ƒEƒBƒ“ƒhƒE•\¦
+				// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦è¡¨ç¤º
 				SystemParametersInfo(SPI_GETTOOLTIPANIMATION, 0, &effect_flag, 0);
 				if (effect_flag == TRUE) {
 					SystemParametersInfo(SPI_GETTOOLTIPFADE, 0, &effect_flag, 0);
@@ -393,7 +393,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 					if (user32_lib != NULL) {
 						AnimateWindow = GetProcAddress(user32_lib, "AnimateWindow");
 						if (AnimateWindow != NULL) {
-							// ƒAƒjƒ[ƒVƒ‡ƒ“•\¦
+							// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³è¡¨ç¤º
 							AnimateWindow(hWnd, 200, (effect_flag == TRUE) ? AW_BLEND : (AW_SLIDE | AW_VER_POSITIVE));
 						}
 						FreeLibrary(user32_lib);
@@ -411,7 +411,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 				KillTimer(hWnd, wParam);
 				break;
 			}
-			// ƒ}ƒEƒX‚Ì‰º‚ÌƒEƒBƒ“ƒhƒE‚ğƒ`ƒFƒbƒN
+			// ãƒã‚¦ã‚¹ã®ä¸‹ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ãƒã‚§ãƒƒã‚¯
 			GetCursorPos(&pt);
 			if (ti->pt.x != pt.x && ti->pt.y != pt.y && ti->hWnd != WindowFromPoint(pt)) {
 				SendMessage(hWnd, WM_TOOLTIP_HIDE, 0, 0);
@@ -428,7 +428,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 }
 
 /*
- * tooltip_show - ƒc[ƒ‹ƒ`ƒbƒv‚ğ•\¦
+ * tooltip_show - ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã‚’è¡¨ç¤º
  */
 BOOL tooltip_show(const HWND hToolTip, TCHAR *tip_text, const long x, const long y, const long top)
 {
@@ -443,7 +443,7 @@ BOOL tooltip_show(const HWND hToolTip, TCHAR *tip_text, const long x, const long
 }
 
 /*
- * tooltip_hide - ƒc[ƒ‹ƒ`ƒbƒv‚ğ”ñ•\¦
+ * tooltip_hide - ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã‚’éè¡¨ç¤º
  */
 void tooltip_hide(const HWND hToolTip)
 {
@@ -451,7 +451,7 @@ void tooltip_hide(const HWND hToolTip)
 }
 
 /*
- * tooltip_close - ƒc[ƒ‹ƒ`ƒbƒv‚ğ•Â‚¶‚é
+ * tooltip_close - ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã‚’é–‰ã˜ã‚‹
  */
 void tooltip_close(const HWND hToolTip)
 {
@@ -459,7 +459,7 @@ void tooltip_close(const HWND hToolTip)
 }
 
 /*
- * tooltip_regist - ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì“o˜^
+ * tooltip_regist - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ç™»éŒ²
  */
 BOOL tooltip_regist(const HINSTANCE hInstance)
 {
@@ -475,18 +475,18 @@ BOOL tooltip_regist(const HINSTANCE hInstance)
 	wc.hbrBackground = (HBRUSH)(COLOR_INFOBK + 1);
 	wc.lpszMenuName = NULL;
 	wc.lpszClassName = WINDOW_CLASS;
-	// ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì“o˜^
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ç™»éŒ²
 	return RegisterClass(&wc);
 }
 
 /*
- * tooltip_create - ƒc[ƒ‹ƒ`ƒbƒv‚Ìì¬
+ * tooltip_create - ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã®ä½œæˆ
  */
 HWND tooltip_create(const HINSTANCE hInstance)
 {
 	HWND hWnd;
 
-	// ƒEƒBƒ“ƒhƒE‚Ìì¬
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½œæˆ
 	hWnd = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_TOPMOST,
 		WINDOW_CLASS,
 		TEXT(""),

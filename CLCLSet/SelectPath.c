@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCLSet
  *
  * SelectPath.c
@@ -47,9 +47,9 @@ static HTREEITEM treeview_path_to_item(const HWND hTreeView, const HTREEITEM hIt
 static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 /*
- * imagelist_icon_add - ƒCƒ[ƒWƒŠƒXƒg‚ÉƒAƒCƒRƒ“‚ğ’Ç‰Á
+ * imagelist_icon_add - ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã«ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¿½åŠ 
  *
- *	ƒtƒ@ƒCƒ‹‚ªw’è‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍƒŠƒ\[ƒX‚©‚çæ“¾
+ *	ãƒ•ã‚¡ã‚¤ãƒ«ãŒæŒ‡å®šã•ã‚Œã¦ã„ãªã„å ´åˆã¯ãƒªã‚½ãƒ¼ã‚¹ã‹ã‚‰å–å¾—
  */
 static int imagelist_icon_add(const HINSTANCE hInstance, const HIMAGELIST icon_list, const int index)
 {
@@ -58,14 +58,14 @@ static int imagelist_icon_add(const HINSTANCE hInstance, const HIMAGELIST icon_l
 
 	hIcon = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(index), IMAGE_ICON,
 		SICONSIZE, SICONSIZE, 0);
-	// ƒCƒ[ƒWƒŠƒXƒg‚ÉƒAƒCƒRƒ“‚ğ’Ç‰Á
+	// ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã«ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¿½åŠ 
 	ret = ImageList_AddIcon(icon_list, hIcon);
 	DestroyIcon(hIcon);
 	return ret;
 }
 
 /*
- * imagelist_fileicon_add - ƒCƒ[ƒWƒŠƒXƒg‚ÉŠÖ˜A•t‚¯‚³‚ê‚½ƒAƒCƒRƒ“‚ğ’Ç‰Á
+ * imagelist_fileicon_add - ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã«é–¢é€£ä»˜ã‘ã•ã‚ŒãŸã‚¢ã‚¤ã‚³ãƒ³ã‚’è¿½åŠ 
  */
 static int imagelist_fileicon_add(const HIMAGELIST icon_list, const TCHAR *path, const UINT flag)
 {
@@ -76,14 +76,14 @@ static int imagelist_fileicon_add(const HIMAGELIST icon_list, const TCHAR *path,
 	SHGetFileInfo(path, SHGFI_USEFILEATTRIBUTES, &shfi, sizeof(SHFILEINFO),
 		SHGFI_ICON | SHGFI_SMALLICON | flag);
 	hIcon = shfi.hIcon;
-	// ƒCƒ[ƒWƒŠƒXƒg‚ÉƒAƒCƒRƒ“‚ğ’Ç‰Á
+	// ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã«ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¿½åŠ 
 	ret = ImageList_AddIcon(icon_list, hIcon);
 	DestroyIcon(hIcon);
 	return ret;
 }
 
 /*
- * create_imagelist - ƒCƒ[ƒWƒŠƒXƒg‚Ìì¬
+ * create_imagelist - ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã®ä½œæˆ
  */
 static HIMAGELIST create_imagelist(const HINSTANCE hInstance)
 {
@@ -93,14 +93,14 @@ static HIMAGELIST create_imagelist(const HINSTANCE hInstance)
 	ImageList_SetBkColor(icon_list, GetSysColor(COLOR_WINDOW));
 
 	imagelist_icon_add(hInstance, icon_list, IDI_ICON_REGIST);
-	// ƒtƒHƒ‹ƒ_
+	// ãƒ•ã‚©ãƒ«ãƒ€
 	imagelist_fileicon_add(icon_list, work_path, 0);
 	imagelist_fileicon_add(icon_list, work_path, SHGFI_OPENICON);
 	return icon_list;
 }
 
 /*
- * treeview_set_item - ƒcƒŠ[ƒrƒ…[ƒAƒCƒeƒ€‚Ì’Ç‰Á
+ * treeview_set_item - ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã‚¢ã‚¤ãƒ†ãƒ ã®è¿½åŠ 
  */
 static HTREEITEM treeview_set_item(const HWND hTreeView, TCHAR *buf, const HTREEITEM hParent, const HTREEITEM After,
 							const int icon, const int select_icon, LPARAM lParam)
@@ -126,7 +126,7 @@ static HTREEITEM treeview_set_item(const HWND hTreeView, TCHAR *buf, const HTREE
 }
 
 /*
- * treeview_datainfo_to_treeitem - ƒcƒŠ[ƒrƒ…[‚Éƒf[ƒ^‚ğİ’è
+ * treeview_datainfo_to_treeitem - ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã«ãƒ‡ãƒ¼ã‚¿ã‚’è¨­å®š
  */
 static void treeview_datainfo_to_treeitem(const HWND hTreeView, const HTREEITEM parent_item, DATA_INFO *di)
 {
@@ -135,7 +135,7 @@ static void treeview_datainfo_to_treeitem(const HWND hTreeView, const HTREEITEM 
 	for (; di != NULL; di = di->next) {
 		switch (di->type) {
 		case TYPE_FOLDER:
-			// ƒtƒHƒ‹ƒ_
+			// ãƒ•ã‚©ãƒ«ãƒ€
 			hItem = treeview_set_item(hTreeView, di->title, parent_item, (HTREEITEM)TVI_LAST,
 				ICON_FOLDER, ICON_FOLDER_OPEN, (LPARAM)di);
 			if (hItem == NULL) {
@@ -152,7 +152,7 @@ static void treeview_datainfo_to_treeitem(const HWND hTreeView, const HTREEITEM 
 }
 
 /*
- * treeview_get_text - ƒAƒCƒeƒ€‚ÌƒeƒLƒXƒg‚ğæ“¾
+ * treeview_get_text - ã‚¢ã‚¤ãƒ†ãƒ ã®ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—
  */
 static BOOL treeview_get_text(const HWND hTreeView, const HTREEITEM hItem, TCHAR *text)
 {
@@ -169,7 +169,7 @@ static BOOL treeview_get_text(const HWND hTreeView, const HTREEITEM hItem, TCHAR
 }
 
 /*
- * TreeView_GetPath - ƒcƒŠ[ƒrƒ…[ƒAƒCƒeƒ€‚ÌƒpƒX‚ğæ“¾‚·‚é
+ * TreeView_GetPath - ãƒ„ãƒªãƒ¼ãƒ“ãƒ¥ãƒ¼ã‚¢ã‚¤ãƒ†ãƒ ã®ãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹
  */
 static void treeview_get_path(const HWND hTreeView, const HTREEITEM root, const HTREEITEM hItem, TCHAR *ret)
 {
@@ -178,7 +178,7 @@ static void treeview_get_path(const HWND hTreeView, const HTREEITEM root, const 
 	TCHAR name[BUF_SIZE];
 	TCHAR work[BUF_SIZE];
 
-	// ƒ‹[ƒgƒAƒCƒeƒ€‚Ìê‡‚Í‚»‚Ì‚Ü‚ÜƒpƒX‚ğ•Ô‚·
+	// ãƒ«ãƒ¼ãƒˆã‚¢ã‚¤ãƒ†ãƒ ã®å ´åˆã¯ãã®ã¾ã¾ãƒ‘ã‚¹ã‚’è¿”ã™
 	if (hItem == root) {
 		lstrcpy(ret, TEXT("\\"));
 		return;
@@ -196,12 +196,12 @@ static void treeview_get_path(const HWND hTreeView, const HTREEITEM root, const 
 
 		pItem = TreeView_GetParent(hTreeView, pItem);
 	}
-	// w’è‚Ì•¶š—ñ‚ÆŒ‹‡
+	// æŒ‡å®šã®æ–‡å­—åˆ—ã¨çµåˆ
 	wsprintf(ret, TEXT("\\%s"), buf);
 }
 
 /*
- * treeview_path_to_item - ƒpƒX‚©‚çƒAƒCƒeƒ€‚ğŒŸõ
+ * treeview_path_to_item - ãƒ‘ã‚¹ã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã‚’æ¤œç´¢
  */
 static HTREEITEM treeview_path_to_item(const HWND hTreeView, const HTREEITEM hItem, TCHAR *path)
 {
@@ -221,7 +221,7 @@ static HTREEITEM treeview_path_to_item(const HWND hTreeView, const HTREEITEM hIt
 	if (*p == '\0') {
 		return hItem;
 	}
-	// ƒpƒX‚ğ“WŠJ
+	// ãƒ‘ã‚¹ã‚’å±•é–‹
 	for (r = buf; *p != TEXT('\0'); p++, r++) {
 #ifndef UNICODE
 		if (IsDBCSLeadByte((BYTE)*p) == TRUE) {
@@ -237,7 +237,7 @@ static HTREEITEM treeview_path_to_item(const HWND hTreeView, const HTREEITEM hIt
 	}
 	*r = TEXT('\0');
 
-	// –¼‘O‚©‚çƒAƒCƒeƒ€‚ğæ“¾
+	// åå‰ã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—
 	cItem = TreeView_GetChild(hTreeView, hItem);
 	while (cItem != NULL) {
 		treeview_get_text(hTreeView, cItem, name);
@@ -251,14 +251,14 @@ static HTREEITEM treeview_path_to_item(const HWND hTreeView, const HTREEITEM hIt
 	}
 
 	if (*p != TEXT('\0')) {
-		// Ä‹A
+		// å†å¸°
 		return treeview_path_to_item(hTreeView, cItem, p);
 	}
 	return cItem;
 }
 
 /*
- * select_folder_proc - ƒtƒHƒ‹ƒ_‘I‘ğƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+ * select_folder_proc - ãƒ•ã‚©ãƒ«ãƒ€é¸æŠã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -266,16 +266,16 @@ static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
-		// ƒCƒ[ƒWƒŠƒXƒg‚Ìİ’è
+		// ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã®è¨­å®š
 		TreeView_SetImageList(GetDlgItem(hDlg, IDC_TREE), create_imagelist(hInst), TVSIL_NORMAL);
-		// ƒAƒCƒeƒ€‚Ìì¬
+		// ã‚¢ã‚¤ãƒ†ãƒ ã®ä½œæˆ
 		regist_treeitem = treeview_set_item(GetDlgItem(hDlg, IDC_TREE),  message_get_res(IDS_TREEITEM_REGIST),
 			(HTREEITEM)TVI_ROOT, (HTREEITEM)TVI_LAST, ICON_REGIST, ICON_REGIST, 0);
 		treeview_datainfo_to_treeitem(GetDlgItem(hDlg, IDC_TREE), regist_treeitem, (DATA_INFO *)lParam);
 		TreeView_Expand(GetDlgItem(hDlg, IDC_TREE),
 			TreeView_GetRoot(GetDlgItem(hDlg, IDC_TREE)), TVE_EXPAND);
 
-		// ƒpƒX‚©‚çƒAƒCƒeƒ€‚ğŒŸõ
+		// ãƒ‘ã‚¹ã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã‚’æ¤œç´¢
 		if ((hItem = treeview_path_to_item(GetDlgItem(hDlg, IDC_TREE), regist_treeitem, ret_str)) != NULL) {
 			TreeView_SelectItem(GetDlgItem(hDlg, IDC_TREE), hItem);
 		}
@@ -292,7 +292,7 @@ static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 			break;
 
 		case IDOK:
-			// ‘I‘ğƒAƒCƒeƒ€‚ÌƒpƒXæ“¾
+			// é¸æŠã‚¢ã‚¤ãƒ†ãƒ ã®ãƒ‘ã‚¹å–å¾—
 			treeview_get_path(GetDlgItem(hDlg, IDC_TREE), regist_treeitem,
 				TreeView_GetSelection(GetDlgItem(hDlg, IDC_TREE)), ret_str);
 			EndDialog(hDlg, TRUE);
@@ -307,7 +307,7 @@ static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 }
 
 /*
- * select_path - ƒpƒX‚Ì‘I‘ğ
+ * select_path - ãƒ‘ã‚¹ã®é¸æŠ
  */
 BOOL select_path(const HINSTANCE hInstance, const HWND hWnd, const DATA_INFO *di, TCHAR *ret)
 {

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CLCLSet
  *
  * SelectIcon.h

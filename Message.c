@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Message.c
@@ -27,7 +27,7 @@ extern HINSTANCE hInst;
 /* Local Function Prototypes */
 
 /*
- * message_get_error - ƒGƒ‰[’l‚©‚çƒƒbƒZ[ƒW‚ğæ“¾
+ * message_get_error - ã‚¨ãƒ©ãƒ¼å€¤ã‹ã‚‰ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å–å¾—
  */
 BOOL message_get_error(const int err_code, TCHAR *err_str)
 {
@@ -40,7 +40,7 @@ BOOL message_get_error(const int err_code, TCHAR *err_str)
 }
 
 /*
- * message_get_res - ƒŠƒ\[ƒX‚©‚çƒƒbƒZ[ƒW‚ğæ“¾
+ * message_get_res - ãƒªã‚½ãƒ¼ã‚¹ã‹ã‚‰ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å–å¾—
  */
 TCHAR *message_get_res(const UINT id)
 {

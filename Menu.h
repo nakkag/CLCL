@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Menu.h
@@ -35,53 +35,53 @@
 /* Struct */
 // menu item
 typedef struct _MENU_ITEM_INFO {
-	UINT id;							// ƒƒjƒ…[ID
-	UINT flag;							// ƒƒjƒ…[ƒtƒ‰ƒO
-	LPCTSTR item;						// ƒƒjƒ…[€–Ú‚Ì“à—e
+	UINT id;							// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ID
+	UINT flag;							// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒ•ãƒ©ã‚°
+	LPCTSTR item;						// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®ã®å†…å®¹
 
-	TCHAR *text;						// ƒƒjƒ…[‚É•\Ž¦‚·‚éƒeƒLƒXƒg
-	int text_x;							// ƒeƒLƒXƒg‚ÌˆÊ’u
+	TCHAR *text;						// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ãƒ†ã‚­ã‚¹ãƒˆ
+	int text_x;							// ãƒ†ã‚­ã‚¹ãƒˆã®ä½ç½®
 	int text_y;
 
-	HICON icon;							// ƒƒjƒ…[‚É•\Ž¦‚·‚éƒAƒCƒRƒ“
+	HICON icon;							// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ã‚¢ã‚¤ã‚³ãƒ³
 	BOOL free_icon;
 
 	TCHAR *hkey;
 
-	BOOL show_format;					// Œ`Ž®•\Ž¦
-	BOOL show_bitmap;					// ƒrƒbƒgƒ}ƒbƒv•\Ž¦
+	BOOL show_format;					// å½¢å¼è¡¨ç¤º
+	BOOL show_bitmap;					// ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—è¡¨ç¤º
 
-	DATA_INFO *set_di;					// ƒf[ƒ^î•ñ
-	DATA_INFO *show_di;					// •\Ž¦‚·‚éƒf[ƒ^î•ñ
+	DATA_INFO *set_di;					// ãƒ‡ãƒ¼ã‚¿æƒ…å ±
+	DATA_INFO *show_di;					// è¡¨ç¤ºã™ã‚‹ãƒ‡ãƒ¼ã‚¿æƒ…å ±
 
-	TOOL_INFO *ti;						// ƒc[ƒ‹î•ñ
+	TOOL_INFO *ti;						// ãƒ„ãƒ¼ãƒ«æƒ…å ±
 
-	struct _MENU_INFO *mi;				// Œ³‚Æ‚È‚éMENU_INFO\‘¢‘Ì
+	struct _MENU_INFO *mi;				// å…ƒã¨ãªã‚‹MENU_INFOæ§‹é€ ä½“
 
 	// popup
-	struct _MENU_ITEM_INFO *mii;		// ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[‚ÌŽqƒAƒCƒeƒ€ 
-	int mii_cnt;						// ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[‚ÌŽqƒAƒCƒeƒ€‚Ì”
+	struct _MENU_ITEM_INFO *mii;		// ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®å­ã‚¢ã‚¤ãƒ†ãƒ  
+	int mii_cnt;						// ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®å­ã‚¢ã‚¤ãƒ†ãƒ ã®æ•°
 } MENU_ITEM_INFO;
 
 // menu info
 typedef struct _MENU_INFO {
 	int content;						// MENU_CONTENT_
-	TCHAR *title;						// ƒƒjƒ…[‚É•\Ž¦‚·‚éƒ^ƒCƒgƒ‹
+	TCHAR *title;						// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ã‚¿ã‚¤ãƒˆãƒ«
 
 	// icon
-	TCHAR *icon_path;					// ƒƒjƒ…[‚É•\Ž¦‚·‚éƒAƒCƒRƒ“‚ÌƒpƒX (‹ó‚Ìê‡‚Í–{‘Ì)
-	int icon_index;						// ƒƒjƒ…[‚É•\Ž¦‚·‚éƒAƒCƒRƒ“‚ÌƒCƒ“ƒfƒbƒNƒX
+	TCHAR *icon_path;					// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ã‚¢ã‚¤ã‚³ãƒ³ã®ãƒ‘ã‚¹ (ç©ºã®å ´åˆã¯æœ¬ä½“)
+	int icon_index;						// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ã‚¢ã‚¤ã‚³ãƒ³ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 
 	// path
-	TCHAR *path;						// ƒpƒX (MENU_CONTENT_REGIST, MENU_CONTENT_APP)
-	TCHAR *cmd;							// ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ (MENU_CONTENT_APP)
+	TCHAR *path;						// ãƒ‘ã‚¹ (MENU_CONTENT_REGIST, MENU_CONTENT_APP)
+	TCHAR *cmd;							// ã‚³ãƒžãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ (MENU_CONTENT_APP)
 
-	int min;							// —š—ð‚Ì•\Ž¦ŠJŽn’l (MENU_CONTENT_HISTORY)
-	int max;							// —š—ð‚Ì•\Ž¦I—¹’l (MENU_CONTENT_HISTORY)
+	int min;							// å±¥æ­´ã®è¡¨ç¤ºé–‹å§‹å€¤ (MENU_CONTENT_HISTORY)
+	int max;							// å±¥æ­´ã®è¡¨ç¤ºçµ‚äº†å€¤ (MENU_CONTENT_HISTORY)
 
 	// popup
-	struct _MENU_INFO *mi;				// ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[‚ÌŽqƒAƒCƒeƒ€ (MENU_CONTENT_POPUP)
-	int mi_cnt;							// ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[‚ÌŽqƒAƒCƒeƒ€‚Ì”
+	struct _MENU_INFO *mi;				// ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®å­ã‚¢ã‚¤ãƒ†ãƒ  (MENU_CONTENT_POPUP)
+	int mi_cnt;							// ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®å­ã‚¢ã‚¤ãƒ†ãƒ ã®æ•°
 } MENU_INFO;
 
 /* Function Prototypes */

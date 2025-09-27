@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Filter.h
@@ -22,7 +22,7 @@
 #define FILTER_SAVE_SAVE				1
 
 /* Struct */
-// Œ`®ƒtƒBƒ‹ƒ^
+// å½¢å¼ãƒ•ã‚£ãƒ«ã‚¿
 typedef struct _FILTER_INFO {
 	TCHAR *format_name;
 

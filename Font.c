@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Font.c
@@ -20,7 +20,7 @@
 /* Local Function Prototypes */
 
 /*
- * font_create - ƒtƒHƒ“ƒg‚ğì¬‚·‚é
+ * font_create - ãƒ•ã‚©ãƒ³ãƒˆã‚’ä½œæˆã™ã‚‹
  */
 HFONT font_create(const TCHAR *FontName, const int FontSize, const int Charset, const int weight, const BOOL italic, const BOOL fixed)
 {

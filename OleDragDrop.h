@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CLCL
  *
  * OleDragDrop.h
@@ -19,11 +19,11 @@
 
 /* Struct */
 typedef struct _IDROPTARGET_NOTIFY{
-	POINTL *ppt;						// �}�E�X�̈ʒu
-	DWORD dwEffect;						// �h���b�O����ŁA�h���b�O�����Ώۂŋ���������
-	DWORD grfKeyState;					// �L�[�̏��
-	UINT cfFormat;						// �h���b�v�����f�[�^�̃N���b�v�{�[�h�t�H�[�}�b�g
-	HANDLE hMem;						// �h���b�v�����f�[�^
+	POINTL *ppt;						// マウスの位置
+	DWORD dwEffect;						// ドラッグ操作で、ドラッグされる対象で許される効果
+	DWORD grfKeyState;					// キーの状態
+	UINT cfFormat;						// ドロップされるデータのクリップボードフォーマット
+	HANDLE hMem;						// ドロップされるデータ
 	LPVOID pdo;							// IDataObject
 } IDROPTARGET_NOTIFY, *LPIDROPTARGET_NOTIFY;
 

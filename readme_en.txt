@@ -1,4 +1,4 @@
-CLCL Ver 2.1.3
+﻿CLCL Ver 2.1.3
 --
 
 CLCL is clipboard caching utility.
