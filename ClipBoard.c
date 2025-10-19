@@ -23,10 +23,13 @@
 #include "Format.h"
 #include "Filter.h"
 #include "Bitmap.h"
+#include "Ini.h"
 
 /* Define */
 
 /* Global Variables */
+extern OPTION_INFO option;
+
 typedef struct _FORMAT_NAME_INFO {
 	UINT format;
 	TCHAR *name;
@@ -200,7 +203,7 @@ BOOL clipboard_set_datainfo(const HWND hWnd, DATA_INFO *set_di, TCHAR *err_str)
 	}
 	// クリップボードが利用可能かどうかを事前にチェック
 	// 短い遅延を追加して他のアプリケーションのクリップボード操作を待つ
-	Sleep(10);
+	Sleep(option.main_clipboard_access_delay);
 
 	// クリップボードの初期化
 	if (OpenClipboard(hWnd) == FALSE) {

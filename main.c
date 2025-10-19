@@ -776,7 +776,7 @@ static BOOL clipboard_to_history(const HWND hWnd)
 
 	// クリップボードが利用可能かどうかを事前にチェック
 	// 短い遅延を追加して他のアプリケーションのクリップボード操作を待つ
-	Sleep(10);
+	Sleep(option.main_clipboard_access_delay);
 
 	if (OpenClipboard(hWnd) == FALSE) {
 		// クリップボードが利用可能になるまで待機

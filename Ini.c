@@ -174,6 +174,7 @@ BOOL ini_get_option(TCHAR *err_str)
 	version = profile_get_int(TEXT("main"), TEXT("version"), 0, ini_path);
 	option.main_clipboard_watch = profile_get_int(TEXT("main"), TEXT("clipboard_watch"), 1, ini_path);
 	option.main_clipboard_rechain_minute = profile_get_int(TEXT("main"), TEXT("clipboard_rechain_minute"), 1, ini_path);
+	option.main_clipboard_access_delay = profile_get_int(TEXT("main"), TEXT("clipboard_access_delay"), 10, ini_path);
 	option.main_show_trayicon = profile_get_int(TEXT("main"), TEXT("show_trayicon"), 1, ini_path);
 	option.main_show_viewer = profile_get_int(TEXT("main"), TEXT("show_viewer"), 0, ini_path);
 
@@ -793,6 +794,7 @@ BOOL ini_put_option(void)
 	profile_write_int(TEXT("main"), TEXT("clipboard_watch"), option.main_clipboard_watch, ini_path);
 #endif	// OPTION_SET
 	profile_write_int(TEXT("main"), TEXT("clipboard_rechain_minute"), option.main_clipboard_rechain_minute, ini_path);
+	profile_write_int(TEXT("main"), TEXT("clipboard_access_delay"), option.main_clipboard_access_delay, ini_path);
 	profile_write_int(TEXT("main"), TEXT("show_trayicon"), option.main_show_trayicon, ini_path);
 	profile_write_int(TEXT("main"), TEXT("show_viewer"), option.main_show_viewer, ini_path);
 

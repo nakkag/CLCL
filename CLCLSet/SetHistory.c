@@ -42,9 +42,11 @@ BOOL CALLBACK set_histroy_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		// スピンコントロールの設定
 		SendDlgItemMessage(hDlg, IDC_SPIN_MAX, UDM_SETRANGE, 0, (LPARAM)MAKELONG(UD_MAXVAL, 1));
 		SendDlgItemMessage(hDlg, IDC_SPIN_ADD_INTERVAL, UDM_SETRANGE, 0, (LPARAM)MAKELONG(UD_MAXVAL, 0));
+		SendDlgItemMessage(hDlg, IDC_SPIN_CLIPBOARD_DELAY, UDM_SETRANGE, 0, (LPARAM)MAKELONG(1000, 0));
 
 		SetDlgItemInt(hDlg, IDC_EDIT_MAX, option.history_max, FALSE);
 		SetDlgItemInt(hDlg, IDC_EDIT_ADD_INTERVAL, option.history_add_interval, FALSE);
+		SetDlgItemInt(hDlg, IDC_EDIT_CLIPBOARD_DELAY, option.main_clipboard_access_delay, FALSE);
 
 		CheckDlgButton(hDlg, IDC_CHECK_SAVE, option.history_save);
 		CheckDlgButton(hDlg, IDC_CHECK_ALWAYS_SAVE, option.history_always_save);
@@ -84,6 +86,7 @@ BOOL CALLBACK set_histroy_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		case IDOK:
 			option.history_max = GetDlgItemInt(hDlg, IDC_EDIT_MAX, NULL, FALSE);
 			option.history_add_interval = GetDlgItemInt(hDlg, IDC_EDIT_ADD_INTERVAL, NULL, FALSE);
+			option.main_clipboard_access_delay = GetDlgItemInt(hDlg, IDC_EDIT_CLIPBOARD_DELAY, NULL, FALSE);
 
 			option.history_save = IsDlgButtonChecked(hDlg, IDC_CHECK_SAVE);
 			option.history_always_save = IsDlgButtonChecked(hDlg, IDC_CHECK_ALWAYS_SAVE);

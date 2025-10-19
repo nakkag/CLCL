@@ -63,16 +63,20 @@ BEGIN
     EDITTEXT        IDC_EDIT_ADD_INTERVAL,111,24,40,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin2",IDC_SPIN_ADD_INTERVAL,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,201,25,11,15
     LTEXT           "ミリ秒",IDC_STATIC,155,28,41,8
-    CONTROL         "終了時に履歴を保存する(&X)",IDC_CHECK_SAVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,41,160,10
-    CONTROL         "履歴に変更があれば常に保存する(&P)",IDC_CHECK_ALWAYS_SAVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,55,145,10
-    CONTROL         "履歴をクリップボードに送ると削除する(&S)",IDC_CHECK_DELETE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,69,160,10
-    CONTROL         "登録アイテムは履歴に残さない(&E)",IDC_CHECK_IGNORE_REGIST_ITEM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,83,160,10
-    GROUPBOX        "履歴の重複チェック",IDC_STATIC,9,102,222,70
-    CONTROL         "チェックしない(&N)",IDC_RADIO_CHECK_NO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,17,114,190,10
-    CONTROL         "最新の１件のみチェックする(&O)",IDC_RADIO_CHECK_ONE,"Button",BS_AUTORADIOBUTTON,17,127,190,10
-    CONTROL         "全ての履歴をチェックする(&A)",IDC_RADIO_CHECK_ALL,"Button",BS_AUTORADIOBUTTON,17,140,190,10
+    LTEXT           "クリップボードアクセス遅延(&D):",IDC_STATIC,11,42,100,8
+    EDITTEXT        IDC_EDIT_CLIPBOARD_DELAY,111,40,40,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin3",IDC_SPIN_CLIPBOARD_DELAY,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,201,41,11,15
+    LTEXT           "ミリ秒",IDC_STATIC,155,44,41,8
+    CONTROL         "終了時に履歴を保存する(&X)",IDC_CHECK_SAVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,57,160,10
+    CONTROL         "履歴に変更があれば常に保存する(&P)",IDC_CHECK_ALWAYS_SAVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,71,145,10
+    CONTROL         "履歴をクリップボードに送ると削除する(&S)",IDC_CHECK_DELETE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,85,160,10
+    CONTROL         "登録アイテムは履歴に残さない(&E)",IDC_CHECK_IGNORE_REGIST_ITEM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,99,160,10
+    GROUPBOX        "履歴の重複チェック",IDC_STATIC,9,118,222,70
+    CONTROL         "チェックしない(&N)",IDC_RADIO_CHECK_NO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,17,130,190,10
+    CONTROL         "最新の１件のみチェックする(&O)",IDC_RADIO_CHECK_ONE,"Button",BS_AUTORADIOBUTTON,17,143,190,10
+    CONTROL         "全ての履歴をチェックする(&A)",IDC_RADIO_CHECK_ALL,"Button",BS_AUTORADIOBUTTON,17,156,190,10
     CONTROL         "全ての履歴をチェックし重複する履歴を削除する(&D)",IDC_RADIO_CHECK_ALL_DELETE,
-                    "Button",BS_AUTORADIOBUTTON,17,153,190,10
+                    "Button",BS_AUTORADIOBUTTON,17,169,190,10
 END
 
 IDD_DIALOG_ACTION DIALOG 0, 0, 241, 209
@@ -898,21 +902,25 @@ BEGIN
     EDITTEXT        IDC_EDIT_ADD_INTERVAL,112,25,40,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin2",IDC_SPIN_ADD_INTERVAL,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,203,26,13,15
     LTEXT           "msec",IDC_STATIC,156,28,41,8
+    LTEXT           "Clipboard access &delay:",IDC_STATIC,12,44,95,8
+    EDITTEXT        IDC_EDIT_CLIPBOARD_DELAY,112,41,40,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin3",IDC_SPIN_CLIPBOARD_DELAY,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,203,42,13,15
+    LTEXT           "msec",IDC_STATIC,156,44,41,8
     CONTROL         "History will be saved when you e&xit",IDC_CHECK_SAVE,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,43,160,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,59,160,10
     CONTROL         "History will always be u&pdated and saved",IDC_CHECK_ALWAYS_SAVE,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,56,175,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,73,175,10
     CONTROL         "History will be deleted if &send to clipboard",IDC_CHECK_DELETE,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,69,160,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,87,160,10
     CONTROL         "&Except from Template",IDC_CHECK_IGNORE_REGIST_ITEM,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,83,187,11
-    GROUPBOX        "Duplication check of History",IDC_STATIC,9,103,253,70
-    CONTROL         "&No check",IDC_RADIO_CHECK_NO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,16,115,218,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,101,187,11
+    GROUPBOX        "Duplication check of History",IDC_STATIC,9,119,253,70
+    CONTROL         "&No check",IDC_RADIO_CHECK_NO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,16,131,218,10
     CONTROL         "&Only last History will be checked",IDC_RADIO_CHECK_ONE,
-                    "Button",BS_AUTORADIOBUTTON,16,128,218,10
-    CONTROL         "&All History will be cheked",IDC_RADIO_CHECK_ALL,"Button",BS_AUTORADIOBUTTON,16,141,218,10
+                    "Button",BS_AUTORADIOBUTTON,16,144,218,10
+    CONTROL         "&All History will be cheked",IDC_RADIO_CHECK_ALL,"Button",BS_AUTORADIOBUTTON,16,157,218,10
     CONTROL         "All History will be cheked and &deleted duplicate History",IDC_RADIO_CHECK_ALL_DELETE,
-                    "Button",BS_AUTORADIOBUTTON,16,154,218,10
+                    "Button",BS_AUTORADIOBUTTON,16,170,218,10
 END
 
 IDD_DIALOG_ACTION DIALOGEX 0, 0, 273, 228
