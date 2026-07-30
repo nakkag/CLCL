@@ -435,6 +435,10 @@ Continue so with as many pop-up menus as you like. You can even cascade the popu
 
 
 ## Update History
+- Ver 2.1.6 -> 2.1.7
+	- Added call types "When connect to session" and "When disconnect from session" to the tool conmfiguration
+	- Added Help Viewer to action menus
+
 - Ver 2.1.5 -> 2.1.6
 	- Integration of CHM help (Issue [nakkag#26](https://github.com/nakkag/CLCL/issues/26)) and invocation of MS Help Viewer
 	- Integration of Ohno Tomoaki's Rich Text Format plugin
