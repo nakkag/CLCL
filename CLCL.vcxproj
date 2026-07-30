@@ -164,6 +164,7 @@
     <ClCompile Include="OleDragDrop.c" />
     <ClCompile Include="Profile.c" />
     <ClCompile Include="Regist.c" />
+    <ClCompile Include="Search.c" />
     <ClCompile Include="SelectFolder.c" />
     <ClCompile Include="SelectFormat.c" />
     <ClCompile Include="SendKey.c" />
@@ -217,6 +218,7 @@
     <ClInclude Include="Profile.h" />
     <ClInclude Include="Regist.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Search.h" />
     <ClInclude Include="SelectFolder.h" />
     <ClInclude Include="SelectFormat.h" />
     <ClInclude Include="SendKey.h" />
