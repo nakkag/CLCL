@@ -45,6 +45,7 @@ static HWND hListBox;
 static WNDPROC origListBoxProc;
 static WNDPROC origEditProc;
 static HFONT hSearchFont;
+static BOOL search_closing;
 
 // Dynamic array mapping listbox index to DATA_INFO*
 static DATA_INFO **search_items;
@@ -60,6 +61,7 @@ static void search_collect(DATA_INFO *di, const TCHAR *filter);
 static void search_add_item(DATA_INFO *di, const TCHAR *title);
 static TCHAR *search_get_title(DATA_INFO *di);
 static void search_select_item(void);
+static void search_close(void);
 static HFONT search_create_font(void);
 
 /*
@@ -206,6 +208,22 @@ static void search_populate(const TCHAR *filter)
 }
 
 /*
+ * search_close - close the popup, keeping the result already decided
+ *
+ * DestroyWindow deactivates the popup first, so WM_ACTIVATE / WA_INACTIVE
+ * arrives before WM_DESTROY. The flag keeps that handler from treating our
+ * own teardown as a click-away and clearing search_result.
+ */
+static void search_close(void)
+{
+	if (search_closing == TRUE) {
+		return;
+	}
+	search_closing = TRUE;
+	DestroyWindow(hSearchWnd);
+}
+
+/*
  * search_select_item - select the current listbox item and close
  */
 static void search_select_item(void)
@@ -218,7 +236,7 @@ static void search_select_item(void)
 	} else {
 		search_result = NULL;
 	}
-	DestroyWindow(hSearchWnd);
+	search_close();
 }
 
 /*
@@ -237,7 +255,7 @@ static LRESULT CALLBACK listbox_subproc(HWND hWnd, UINT msg, WPARAM wParam, LPAR
 
 		case VK_ESCAPE:
 			search_result = NULL;
-			DestroyWindow(hSearchWnd);
+			search_close();
 			return 0;
 
 		case VK_OEM_2:
@@ -308,7 +326,7 @@ static LRESULT CALLBACK edit_subproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 		case VK_ESCAPE:
 			search_result = NULL;
-			DestroyWindow(hSearchWnd);
+			search_close();
 			return 0;
 
 		case VK_DOWN:
@@ -400,10 +418,10 @@ static LRESULT CALLBACK search_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 		break;
 
 	case WM_ACTIVATE:
-		if (LOWORD(wParam) == WA_INACTIVE) {
+		if (LOWORD(wParam) == WA_INACTIVE && search_closing == FALSE) {
 			// Lost focus - close like a menu
 			search_result = NULL;
-			DestroyWindow(hWnd);
+			search_close();
 		}
 		break;
 
@@ -451,6 +469,7 @@ DATA_INFO *search_popup_show(const HWND hWnd, DATA_INFO *history_root)
 
 	search_history_root = history_root;
 	search_result = NULL;
+	search_closing = FALSE;
 
 	// Position at cursor
 	GetCursorPos(&pos);
