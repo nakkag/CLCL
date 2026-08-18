@@ -100,6 +100,7 @@ static int menu_sel_top;
 
 static BOOL accel_flag = TRUE;
 static BOOL clip_flag;
+static BOOL session_ending = FALSE;
 static int rechain_cnt;
 
 DATA_INFO history_data;
@@ -974,8 +975,10 @@ static BOOL save_history(const HWND hWnd, const int save_flag)
 		// 保存フィルタをかけたアイテムリストを作成
 		if ((di = filter_list_copy(history_data.child, err_str)) == NULL) {
 			if (*err_str != TEXT('\0')) {
-				_SetForegroundWindow(hWnd);
-				MessageBox(hWnd, err_str, ERROR_TITLE, MB_ICONERROR);
+				if (session_ending == FALSE) {
+					_SetForegroundWindow(hWnd);
+					MessageBox(hWnd, err_str, ERROR_TITLE, MB_ICONERROR);
+				}
 				return FALSE;
 			}
 		}
@@ -985,7 +988,7 @@ static BOOL save_history(const HWND hWnd, const int save_flag)
 	wsprintf(path, TEXT("%s\\%s"), work_path, HISTORY_FILENAME);
 	*err_str = TEXT('\0');
 	if (file_write_data(path, di, err_str) == FALSE) {
-		if (*err_str != TEXT('\0')) {
+		if (*err_str != TEXT('\0') && session_ending == FALSE) {
 			_SetForegroundWindow(hWnd);
 			lstrcat(err_str, TEXT("\r\n"));
 			lstrcat(err_str, path);
@@ -1014,7 +1017,7 @@ static BOOL save_regist(const HWND hWnd)
 	wsprintf(path, TEXT("%s\\%s"), work_path, REGIST_FILENAME);
 	*err_str = TEXT('\0');
 	if (file_write_data(path, regist_data.child, err_str) == FALSE) {
-		if (*err_str != TEXT('\0')) {
+		if (*err_str != TEXT('\0') && session_ending == FALSE) {
 			_SetForegroundWindow(hWnd);
 			lstrcat(err_str, TEXT("\r\n"));
 			lstrcat(err_str, path);
@@ -1297,16 +1300,18 @@ static BOOL winodw_reset(const HWND hWnd)
  */
 static BOOL winodw_save(const HWND hWnd)
 {
-	// 終了時に実行するツール
-	tool_execute_all(hWnd, CALLTYPE_END, NULL);
-
 	// 履歴の保存
-	if (save_history(hWnd, 0) == FALSE &&
+	if (save_history(hWnd, 0) == FALSE && session_ending == FALSE &&
 		MessageBox(hWnd, message_get_res(IDS_ERROR_END), ERROR_TITLE, MB_ICONQUESTION | MB_YESNO) == IDNO) {
 		return FALSE;
 	}
 	// 設定の保存
 	ini_put_option();
+
+	// 終了時に実行するツール
+	if (tool_execute_all(hWnd, CALLTYPE_END, NULL) & TOOL_DATA_MODIFIED) {
+		save_history(hWnd, 0);
+	}
 	return TRUE;
 }
 
@@ -1378,18 +1383,19 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 	case WM_QUERYENDSESSION:
 		// Windows終了
-		if (winodw_save(hWnd) == FALSE) {
-			return FALSE;
-		}
+		session_ending = TRUE;
+		winodw_save(hWnd);
 		save_flag = TRUE;
 		return TRUE;
 
 	case WM_ENDSESSION:
 		// Windows終了
 		if (wParam == FALSE) {
+			session_ending = FALSE;
 			save_flag = FALSE;
 			return 0;
 		}
+		session_ending = TRUE;
 		if (save_flag == FALSE) {
 			winodw_save(hWnd);
 		}
