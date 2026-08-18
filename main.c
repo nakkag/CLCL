@@ -1300,11 +1300,6 @@ static BOOL winodw_save(const HWND hWnd)
 	// 終了時に実行するツール
 	tool_execute_all(hWnd, CALLTYPE_END, NULL);
 
-	// 登録アイテムの保存
-	if (save_regist(hWnd) == FALSE &&
-		MessageBox(hWnd, message_get_res(IDS_ERROR_END), ERROR_TITLE, MB_ICONQUESTION | MB_YESNO) == IDNO) {
-		return FALSE;
-	}
 	// 履歴の保存
 	if (save_history(hWnd, 0) == FALSE &&
 		MessageBox(hWnd, message_get_res(IDS_ERROR_END), ERROR_TITLE, MB_ICONQUESTION | MB_YESNO) == IDNO) {
@@ -1342,7 +1337,9 @@ static BOOL winodw_end(const HWND hWnd)
 
 	// 履歴の解放
 	data_free(history_data.child);
+	history_data.child = NULL;
 	data_free(regist_data.child);
+	regist_data.child = NULL;
 	// 形式情報の解放
 	format_free();
 
@@ -1389,6 +1386,14 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 	case WM_ENDSESSION:
 		// Windows終了
+		if (wParam == FALSE) {
+			save_flag = FALSE;
+			return 0;
+		}
+		if (save_flag == FALSE) {
+			winodw_save(hWnd);
+		}
+		save_flag = TRUE;
 		winodw_end(hWnd);
 		DestroyWindow(hWnd);
 		return 0;
@@ -1859,12 +1864,17 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 	case WM_REGIST_CHANGED:
 		// 登録アイテムの内容変化
-		if (hViewerWnd != NULL) {
-			return SendMessage(hViewerWnd, msg, wParam, lParam);
-		} else {
-			data_adjust(&regist_data.child);
+		{
+			LRESULT ret = 0;
+
+			if (hViewerWnd != NULL) {
+				ret = SendMessage(hViewerWnd, msg, wParam, lParam);
+			} else {
+				data_adjust(&regist_data.child);
+			}
+			save_regist(hWnd);
+			return ret;
 		}
-		break;
 
 	case WM_REGIST_GET_ROOT:
 		// 登録アイテムの取得
