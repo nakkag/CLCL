@@ -3,7 +3,7 @@
  *
  * main.c
  *
- * Copyright (C) 1996-2019 by Ohno Tomoaki. All rights reserved.
+ * Copyright (C) 1996-2026 by Ohno Tomoaki. All rights reserved.
  *		https://www.nakka.com/
  *		nakka@nakka.com
  */

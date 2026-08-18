@@ -664,8 +664,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,1,3,0
- PRODUCTVERSION 2,1,3,0
+ FILEVERSION 2,1,4,0
+ PRODUCTVERSION 2,1,4,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -681,12 +681,12 @@ BEGIN
         BLOCK "041104b0"
         BEGIN
             VALUE "FileDescription", "CLCLSet"
-            VALUE "FileVersion", "2.1.3.0"
+            VALUE "FileVersion", "2.1.4.0"
             VALUE "InternalName", "CLCLSet.exe"
-            VALUE "LegalCopyright", "Copyright (C) 1996-2022 by Ohno Tomoaki. All rights reserved."
+            VALUE "LegalCopyright", "Copyright (C) 1996-2026 by Ohno Tomoaki. All rights reserved."
             VALUE "OriginalFilename", "CLCLSet.exe"
             VALUE "ProductName", "CLCL"
-            VALUE "ProductVersion", "2.1.3.0"
+            VALUE "ProductVersion", "2.1.4.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -910,7 +910,8 @@ BEGIN
     CONTROL         "&No check",IDC_RADIO_CHECK_NO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,16,115,218,10
     CONTROL         "&Only last History will be checked",IDC_RADIO_CHECK_ONE,
                     "Button",BS_AUTORADIOBUTTON,16,128,218,10
-    CONTROL         "&All History will be checked",IDC_RADIO_CHECK_ALL,"Button",BS_AUTORADIOBUTTON,16,141,218,10
+    CONTROL         "&All History will be checked",IDC_RADIO_CHECK_ALL,
+                    "Button",BS_AUTORADIOBUTTON,16,141,218,10
     CONTROL         "All History will be checked and duplicates &deleted",IDC_RADIO_CHECK_ALL_DELETE,
                     "Button",BS_AUTORADIOBUTTON,16,154,218,10
 END
