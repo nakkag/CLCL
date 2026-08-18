@@ -783,9 +783,14 @@ static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 BOOL file_write_data(const TCHAR *path, DATA_INFO *di, TCHAR *err_str)
 {
 	HANDLE hFile;
+	DWORD err;
 
 	TCHAR tmp_path[MAX_PATH];
 
+	if (lstrlen(path) + 4 >= MAX_PATH) {
+		message_get_error(ERROR_BUFFER_OVERFLOW, err_str);
+		return FALSE;
+	}
 	wsprintf(tmp_path, TEXT("%s.tmp"), path);
 	DeleteFile(tmp_path);
 
@@ -800,11 +805,26 @@ BOOL file_write_data(const TCHAR *path, DATA_INFO *di, TCHAR *err_str)
 		DeleteFile(tmp_path);
 		return FALSE;
 	}
+	if (FlushFileBuffers(hFile) == FALSE) {
+		message_get_error(GetLastError(), err_str);
+		CloseHandle(hFile);
+		DeleteFile(tmp_path);
+		return FALSE;
+	}
 	CloseHandle(hFile);
 
-	CopyFile(tmp_path, path, FALSE);
-	DeleteFile(tmp_path);
-	return TRUE;
+	if (ReplaceFile(path, tmp_path, NULL, REPLACEFILE_IGNORE_MERGE_ERRORS, NULL, NULL) != FALSE) {
+		return TRUE;
+	}
+	err = GetLastError();
+	if (err == ERROR_FILE_NOT_FOUND) {
+		if (MoveFileEx(tmp_path, path, MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) != FALSE) {
+			return TRUE;
+		}
+		err = GetLastError();
+	}
+	message_get_error(err, err_str);
+	return FALSE;
 }
 
 /*
