@@ -35,6 +35,45 @@ typedef struct _FORMAT_NAME_INFO {
 /* Local Function Prototypes */
 static BOOL clipboard_set_data(const UINT format, const TCHAR *name, const HANDLE data, TCHAR *err_str);
 
+static BOOL should_ignore()
+{
+	static UINT clipboard_viewer_ignore = 0;
+	static UINT exclude_monitoring = 0;
+	static UINT can_record = 0;
+	static UINT can_upload = 0;
+
+	if (exclude_monitoring == 0) {
+		clipboard_viewer_ignore = RegisterClipboardFormatW(L"Clipboard Viewer Ignore");
+		exclude_monitoring = RegisterClipboardFormatW(L"ExcludeClipboardContentFromMonitorProcessing");
+		can_record = RegisterClipboardFormatW(L"CanIncludeInClipboardHistory");
+		can_upload = RegisterClipboardFormatW(L"CanUploadToCloudClipboard");
+	}
+
+	for (UINT fmt = EnumClipboardFormats(0); fmt != 0; fmt = EnumClipboardFormats(fmt)) {
+		if (fmt == exclude_monitoring || fmt == clipboard_viewer_ignore) {
+			HANDLE h = GetClipboardData(fmt);
+			// フォーマットが ExcludeClipboardContentFromMonitorProcessing のデータが存在する場合は無視する。
+			if (h != 0)
+				return TRUE;
+		}
+		else if (fmt == can_record || fmt == can_upload) {
+			HANDLE h = GetClipboardData(fmt);
+			if (h == 0)
+				continue;
+
+			PVOID m = GlobalLock(h);
+			DWORD val = 0;
+			if (m != 0)
+				val = *(DWORD*)m;
+			GlobalUnlock(h);
+			
+			if (val == 0 || val == 1)
+				return TRUE;
+		}
+	}
+	return FALSE;
+}
+
 /*
  * clipboard_get_format - クリップボード形式名の取得
  */
@@ -110,6 +149,9 @@ DATA_INFO *clipboard_get_datainfo(const BOOL use_filter, const BOOL get_data, TC
 	TCHAR buf[BUF_SIZE];
 	HANDLE data;
 	UINT format;
+
+	if (should_ignore())
+		return NULL;
 
 	format = 0;
 	while ((format = EnumClipboardFormats(format)) != 0) {

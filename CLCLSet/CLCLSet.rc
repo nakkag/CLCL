@@ -910,8 +910,8 @@ BEGIN
     CONTROL         "&No check",IDC_RADIO_CHECK_NO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,16,115,218,10
     CONTROL         "&Only last History will be checked",IDC_RADIO_CHECK_ONE,
                     "Button",BS_AUTORADIOBUTTON,16,128,218,10
-    CONTROL         "&All History will be cheked",IDC_RADIO_CHECK_ALL,"Button",BS_AUTORADIOBUTTON,16,141,218,10
-    CONTROL         "All History will be cheked and &deleted duplicate History",IDC_RADIO_CHECK_ALL_DELETE,
+    CONTROL         "&All History will be checked",IDC_RADIO_CHECK_ALL,"Button",BS_AUTORADIOBUTTON,16,141,218,10
+    CONTROL         "All History will be checked and duplicates &deleted",IDC_RADIO_CHECK_ALL_DELETE,
                     "Button",BS_AUTORADIOBUTTON,16,154,218,10
 END
 

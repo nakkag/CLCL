@@ -166,8 +166,14 @@ static HICON menu_read_icon(const TCHAR *file_name, const int index, const int i
 	if (file_name == NULL || *file_name == TEXT('\0')) {
 		return NULL;
 	}
+	// expand environment variables in file_name
+	TCHAR expanded_name[MAX_PATH + 1];
+	DWORD ret = 0;
+	if ((ret = ExpandEnvironmentStrings(file_name, expanded_name, MAX_PATH)) == 0 || ret > MAX_PATH)
+		return NULL;
 	// ファイルからアイコン取得
-	ExtractIconEx(file_name, index, &hIcon, &hsIcon, 1);
+	// get icon from file
+	ExtractIconEx(expanded_name, index, &hIcon, &hsIcon, 1);
 	if (icon_size >= LICONSIZE) {
 		DestroyIcon(hsIcon);
 	} else {
@@ -176,8 +182,9 @@ static HICON menu_read_icon(const TCHAR *file_name, const int index, const int i
 	}
 	if (hIcon == NULL) {
 		// 関連付けからアイコン取得
+		// get icon from file association
 		icon_flag = SHGFI_ICON | ((icon_size == SICONSIZE) ? SHGFI_SMALLICON : SHGFI_LARGEICON);
-		SHGetFileInfo(file_name, SHGFI_USEFILEATTRIBUTES, &shfi, sizeof(SHFILEINFO), icon_flag);
+		SHGetFileInfo(expanded_name, SHGFI_USEFILEATTRIBUTES, &shfi, sizeof(SHFILEINFO), icon_flag);
 		hIcon = shfi.hIcon;
 	}
 	return hIcon;
