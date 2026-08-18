@@ -20,6 +20,8 @@
 #include <tchar.h>
 #include <shlobj.h>
 #include <shlwapi.h>
+#include <wtsapi32.h>
+#include <HtmlHelp.h>
 
 #pragma comment(lib, "shlwapi.lib")
 
@@ -51,14 +53,14 @@
 #define ERROR_TITLE						TEXT("CLCL - Error")
 #define MUTEX							TEXT("_CLCL_Mutex_")
 
-#define WM_TRAY_NOTIFY					(WM_APP + 1000)		// ƒ^ƒXƒNƒgƒŒƒC
-#define WM_KEY_HOOK						(WM_APP + 1001)		// ƒtƒbƒN
+#define WM_TRAY_NOTIFY					(WM_APP + 1000)		// ã‚¿ã‚¹ã‚¯ãƒˆãƒ¬ã‚¤
+#define WM_KEY_HOOK						(WM_APP + 1001)		// ãƒ•ãƒƒã‚¯
 
 #define SICONSIZE						Scale(16)
 
-#define TRAY_ID							1					// ƒ^ƒXƒNƒgƒŒƒCID
+#define TRAY_ID							1					// ã‚¿ã‚¹ã‚¯ãƒˆãƒ¬ã‚¤ID
 
-#define ID_HISTORY_TIMER				1					// ƒ^ƒCƒ}[ID
+#define ID_HISTORY_TIMER				1					// ã‚¿ã‚¤ãƒãƒ¼ID
 #define ID_RECHAIN_TIMER				2
 #define ID_TOOL_TIMER					3
 #define ID_PASTE_TIMER					4
@@ -80,7 +82,7 @@
 
 /* Global Variables */
 HINSTANCE hInst;
-static TCHAR app_path[MAX_PATH];
+TCHAR app_path[MAX_PATH];
 TCHAR work_path[MAX_PATH];
 
 static HWND hViewerWnd;
@@ -106,7 +108,8 @@ DATA_INFO history_data;
 DATA_INFO regist_data;
 static DATA_INFO *paste_di;
 
-// ƒc[ƒ‹ƒƒjƒ…[î•ñ
+// ãƒ„ãƒ¼ãƒ«ãƒ¡ãƒ‹ãƒ¥ãƒ¼æƒ…å ±
+// Tool menu information
 typedef struct _TOOL_MENU_INFO {
 	BOOL enable;
 	TOOL_INFO *ti;
@@ -114,7 +117,8 @@ typedef struct _TOOL_MENU_INFO {
 } TOOL_MENU_INFO;
 static TOOL_MENU_INFO tmi;
 
-// ƒtƒH[ƒJƒXî•ñ
+// ãƒ•ã‚©ãƒ¼ã‚«ã‚¹æƒ…å ±
+// focus information
 typedef struct _FOCUS_INFO {
 	HWND active_wnd;
 	HWND focus_wnd;
@@ -123,8 +127,10 @@ typedef struct _FOCUS_INFO {
 } FOCUS_INFO;
 static FOCUS_INFO focus_info;
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
+// option information
 extern OPTION_INFO option;
+extern TCHAR help_path[];
 
 /* Local Function Prototypes */
 static void get_focus_info(FOCUS_INFO *fi);
@@ -158,7 +164,7 @@ static BOOL init_application(const HINSTANCE hInstance);
 static HWND init_instance(const HINSTANCE hInstance, const int CmdShow);
 
 /*
- * theme_open - XPƒe[ƒ}‚ğŠJ‚­
+ * theme_open - XPãƒ†ãƒ¼ãƒã‚’é–‹ã
  */
 #ifdef OP_XP_STYLE
 HTHEME theme_open(const HWND hWnd)
@@ -180,7 +186,7 @@ HTHEME theme_open(const HWND hWnd)
 #endif
 
 /*
- * theme_close - XPƒe[ƒ}‚ğ•Â‚¶‚é
+ * theme_close - XPãƒ†ãƒ¼ãƒã‚’é–‰ã˜ã‚‹
  */
 #ifdef OP_XP_STYLE
 void theme_close(const HTHEME hTheme)
@@ -200,7 +206,7 @@ void theme_close(const HTHEME hTheme)
 #endif
 
 /*
- * theme_free - XPƒe[ƒ}‚Ì‰ğ•ú
+ * theme_free - XPãƒ†ãƒ¼ãƒã®è§£æ”¾
  */
 #ifdef OP_XP_STYLE
 void theme_free(void)
@@ -213,7 +219,7 @@ void theme_free(void)
 #endif
 
 /*
- * theme_draw - XPƒe[ƒ}‚Å•`‰æ
+ * theme_draw - XPãƒ†ãƒ¼ãƒã§æç”»
  */
 #ifdef OP_XP_STYLE
 BOOL theme_draw(const HWND hWnd, const HRGN draw_hrgn, const HTHEME hTheme)
@@ -233,7 +239,8 @@ BOOL theme_draw(const HWND hWnd, const HRGN draw_hrgn, const HTHEME hTheme)
 	if (_DrawThemeBackground == NULL) {
 		return FALSE;
 	}
-	// ó‘Ô‚Ìİ’è
+	// çŠ¶æ…‹ã®è¨­å®š
+	// set the state
 	if (IsWindowEnabled(hWnd) == 0) {
 		stats = ETS_DISABLED;
 	} else if (GetFocus() == hWnd) {
@@ -241,7 +248,8 @@ BOOL theme_draw(const HWND hWnd, const HRGN draw_hrgn, const HTHEME hTheme)
 	} else {
 		stats = ETS_NORMAL;
 	}
-	// ƒEƒBƒ“ƒhƒE˜g‚Ì•`‰æ
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦æ ã®æç”»
+	// draw window frame
 	hdc = GetDCEx(hWnd, draw_hrgn, DCX_WINDOW | DCX_INTERSECTRGN);
 	if (hdc == NULL) {
 		hdc = GetWindowDC(hWnd);
@@ -254,7 +262,8 @@ BOOL theme_draw(const HWND hWnd, const HRGN draw_hrgn, const HTHEME hTheme)
 	_DrawThemeBackground(hTheme, hdc, EP_EDITTEXT, stats, &rect, &clip_rect);
 	ReleaseDC(hWnd, hdc);
 
-	// ƒXƒNƒ[ƒ‹ƒo[‚Ì•`‰æ
+	// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã®æç”»
+	// draw the scrollbar
 	GetWindowRect(hWnd, (LPRECT)&rect);
 	hrgn = CreateRectRgn(rect.left + GetSystemMetrics(SM_CXEDGE), rect.top + GetSystemMetrics(SM_CYEDGE),
 		rect.right - GetSystemMetrics(SM_CXEDGE), rect.bottom - GetSystemMetrics(SM_CYEDGE));
@@ -266,7 +275,7 @@ BOOL theme_draw(const HWND hWnd, const HRGN draw_hrgn, const HTHEME hTheme)
 #endif
 
 /*
- * set_menu_layerer - ƒƒjƒ…[‚ğ”¼“§–¾‚É‚·‚é (Windows2000`)
+ * set_menu_layerer - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’åŠé€æ˜ã«ã™ã‚‹ - Make menu semi-transparent (Windows2000ï½)
  */
 #ifdef MENU_LAYERER
 static BOOL set_menu_layerer(const HWND hWnd, const int alpha)
@@ -288,7 +297,8 @@ static BOOL set_menu_layerer(const HWND hWnd, const int alpha)
 		return TRUE;
 	}
 
-	// ”¼“§–¾—pAPIæ“¾
+	// åŠé€æ˜ç”¨APIå–å¾—
+	// Get translucent API
 	user32_lib = LoadLibrary(TEXT("user32.dll"));
 	if (user32_lib == NULL) {
 		return FALSE;
@@ -301,14 +311,16 @@ static BOOL set_menu_layerer(const HWND hWnd, const int alpha)
 
 	lStyle = GetWindowLong(hWnd, GWL_EXSTYLE);
 	if (lStyle & WS_EX_LAYERED) {
-		// Šù‚É”¼“§–¾Ï‚İ
+		// æ—¢ã«åŠé€æ˜æ¸ˆã¿
+		// Already semi-transparent
 		FreeLibrary(user32_lib);
 		return TRUE;
 	}
 	lStyle |= WS_EX_LAYERED;
 	SetWindowLong(hWnd, GWL_EXSTYLE, lStyle);
 
-	// ”¼“§–¾
+	// åŠé€æ˜
+	// translucent
 	SetLayeredWindowAttributes(hWnd, 0, alpha, LWA_ALPHA);
 	FreeLibrary(user32_lib);
 	return TRUE;
@@ -316,7 +328,8 @@ static BOOL set_menu_layerer(const HWND hWnd, const int alpha)
 #endif
 
 /*
- * _SetForegroundWindow - ƒEƒBƒ“ƒhƒE‚ğƒAƒNƒeƒBƒu‚É‚·‚é
+ * _SetForegroundWindow - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ã™ã‚‹
+ * Activate window
  */
 BOOL _SetForegroundWindow(const HWND hWnd)
 {
@@ -346,15 +359,17 @@ BOOL _SetForegroundWindow(const HWND hWnd)
 }
 
 /*
- * get_focus_info - ƒtƒH[ƒJƒXî•ñ‚ğæ“¾
+ * get_focus_info - ãƒ•ã‚©ãƒ¼ã‚«ã‚¹æƒ…å ±ã‚’å–å¾—
  */
 static void get_focus_info(FOCUS_INFO *fi)
 {
-	// ƒtƒH[ƒJƒX‚ğ‚ÂƒEƒBƒ“ƒhƒE‚Ìæ“¾
+	// ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’æŒã¤ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å–å¾—
+	// get the window with focus
 	fi->active_wnd = GetForegroundWindow();
 	AttachThreadInput(GetWindowThreadProcessId(fi->active_wnd, NULL), GetCurrentThreadId(), TRUE);
 	fi->focus_wnd = GetFocus();
-	// ƒLƒƒƒŒƒbƒgˆÊ’uæ“¾
+	// ã‚­ãƒ£ãƒ¬ãƒƒãƒˆä½ç½®å–å¾—
+	// get caret position
 	if (GetCaretPos(&fi->cpos) == TRUE && (fi->cpos.x > 0 || fi->cpos.y > 0)) {
 		ClientToScreen(fi->focus_wnd, &fi->cpos);
 		fi->caret = TRUE;
@@ -365,7 +380,7 @@ static void get_focus_info(FOCUS_INFO *fi)
 }
 
 /*
- * set_focus_info - ƒEƒBƒ“ƒhƒE‚ÌƒtƒH[ƒJƒX‚ğİ’è
+ * set_focus_info - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¨­å®š
  */
 static void set_focus(const HWND active_wnd, const HWND focus_wnd)
 {
@@ -379,17 +394,19 @@ static void set_focus(const HWND active_wnd, const HWND focus_wnd)
 }
 static void set_focus_info(const FOCUS_INFO *fi)
 {
-	// ƒAƒNƒeƒBƒuƒEƒBƒ“ƒhƒE‚Ìİ’è
+	// ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®è¨­å®š
+	// set the active window
 	_SetForegroundWindow(fi->active_wnd);
 	SendMessage(fi->active_wnd, WM_NCACTIVATE, (WPARAM)TRUE, 0);
-	// ƒtƒH[ƒJƒX‚Ìİ’è
+	// ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã®è¨­å®š
+	// set the focus
 	if (window_focus_check(fi->active_wnd) == TRUE) {
 		set_focus(fi->active_wnd, fi->focus_wnd);
 	}
 }
 
 /*
- * tray_message - ƒ^ƒXƒNƒgƒŒƒC‚ÌƒAƒCƒRƒ“‚Ìİ’è
+ * tray_message - ã‚¿ã‚¹ã‚¯ãƒˆãƒ¬ã‚¤ã®ã‚¢ã‚¤ã‚³ãƒ³ã®è¨­å®š
  */
 static BOOL tray_message(const HWND hWnd, const DWORD dwMessage, const UINT uID, const HICON hIcon, const TCHAR *pszTip)
 {
@@ -406,7 +423,7 @@ static BOOL tray_message(const HWND hWnd, const DWORD dwMessage, const UINT uID,
 }
 
 /*
- * set_tray_icon - ƒ^ƒXƒNƒgƒŒƒC‚ÉƒAƒCƒRƒ“‚ğİ’è‚·‚é
+ * set_tray_icon - ã‚¿ã‚¹ã‚¯ãƒˆãƒ¬ã‚¤ã«ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¨­å®šã™ã‚‹
  */
 static void set_tray_icon(const HWND hWnd, const HICON hIcon, const TCHAR *buf)
 {
@@ -414,10 +431,12 @@ static void set_tray_icon(const HWND hWnd, const HICON hIcon, const TCHAR *buf)
 		return;
 	}
 	if (tray_message(hWnd, NIM_MODIFY, TRAY_ID, hIcon, buf) == FALSE) {
-		// •ÏX‚Å‚«‚È‚©‚Á‚½ê‡‚Í’Ç‰Á‚ğs‚¤
+		// å¤‰æ›´ã§ããªã‹ã£ãŸå ´åˆã¯è¿½åŠ ã‚’è¡Œã†
+		// if modification failed, add it
 		int i;
 		for (i = 0; i < 5; i++) {
-			// ’Ç‰Á‚Å‚«‚È‚©‚Á‚½ê‡‚ÍƒŠƒgƒ‰ƒC‚·‚é
+			// è¿½åŠ ã§ããªã‹ã£ãŸå ´åˆã¯ãƒªãƒˆãƒ©ã‚¤ã™ã‚‹
+			// if add failed, retry
 			if (tray_message(hWnd, NIM_ADD, TRAY_ID, hIcon, buf)) {
 				break;
 			}
@@ -427,7 +446,7 @@ static void set_tray_icon(const HWND hWnd, const HICON hIcon, const TCHAR *buf)
 }
 
 /*
- * set_tray_tooltip - ƒ^ƒXƒNƒgƒŒƒC‚Ìƒc[ƒ‹ƒ`ƒbƒv‚ğİ’è
+ * set_tray_tooltip - ã‚¿ã‚¹ã‚¯ãƒˆãƒ¬ã‚¤ã®ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã‚’è¨­å®š
  */
 static void set_tray_tooltip(const HWND hWnd)
 {
@@ -442,7 +461,7 @@ static void set_tray_tooltip(const HWND hWnd)
 }
 
 /*
- * show_menu_tooltip - ƒƒjƒ…[‚Ìƒc[ƒ‹ƒ`ƒbƒv•\¦
+ * show_menu_tooltip - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—è¡¨ç¤º
  */
 static BOOL show_menu_tooltip(const HWND tooltip_wnd, const HMENU hMenu, const UINT id, const BOOL mouse)
 {
@@ -450,7 +469,7 @@ static BOOL show_menu_tooltip(const HWND tooltip_wnd, const HMENU hMenu, const U
 	DATA_INFO *di;
 	TCHAR *buf;
 
-	// ID‚©‚çƒƒjƒ…[î•ñ‚ğæ“¾
+	// IDã‹ã‚‰ãƒ¡ãƒ‹ãƒ¥ãƒ¼æƒ…å ±ã‚’å–å¾—
 	mii = menu_get_info(id);
 	if (mii == NULL) {
 		tooltip_hide(tooltip_wnd);
@@ -461,25 +480,26 @@ static BOOL show_menu_tooltip(const HWND tooltip_wnd, const HMENU hMenu, const U
 		tooltip_hide(tooltip_wnd);
 		return FALSE;
 	}
-	// ƒc[ƒ‹ƒ`ƒbƒv‚É•\¦‚·‚éƒeƒLƒXƒg‚ğæ“¾
+	// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã«è¡¨ç¤ºã™ã‚‹ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—
 	buf = format_get_tooltip_text(di);
 	if (buf == NULL) {
 		tooltip_hide(tooltip_wnd);
 		return FALSE;
 	}
 	if (mouse == TRUE) {
-		// ƒ}ƒEƒXˆÊ’u
+		// ãƒã‚¦ã‚¹ä½ç½®
 		menu_sel_pt.x = menu_sel_pt.y = 0;
 		menu_sel_top = 0;
 	}
-	// ƒc[ƒ‹ƒ`ƒbƒv•\¦
+	// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—è¡¨ç¤º
 	tooltip_show(tooltip_wnd, buf, menu_sel_pt.x, menu_sel_pt.y, menu_sel_top);
 	mem_free(&buf);
 	return TRUE;
 }
 
 /*
- * show_tool_menu - ƒc[ƒ‹ƒƒjƒ…[‚ğ•\¦
+ * show_tool_menu - ãƒ„ãƒ¼ãƒ«ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’è¡¨ç¤º
+ * Show Tools menu
  */
 static BOOL show_tool_menu(const HWND hWnd, DATA_INFO *di, const int paste)
 {
@@ -490,7 +510,8 @@ static BOOL show_tool_menu(const HWND hWnd, DATA_INFO *di, const int paste)
 	if (popup_menu != NULL) {
 		return FALSE;
 	}
-	// ƒƒjƒ…[ì¬
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ä½œæˆ
+	// create menu
 	ZeroMemory(&mi, sizeof(MENU_INFO));
 	mi.content = MENU_CONTENT_TOOL;
 	popup_menu = menu_create(hWnd, &mi, 1, NULL, NULL);
@@ -504,7 +525,8 @@ static BOOL show_tool_menu(const HWND hWnd, DATA_INFO *di, const int paste)
 		menu_free();
 		return FALSE;
 	}
-	// ƒƒjƒ…[•\¦
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¡¨ç¤º
+	// show menu
 	_SetForegroundWindow(hWnd);
 	ret = menu_show(hWnd, popup_menu, NULL);
 	menu_destory(popup_menu);
@@ -516,14 +538,16 @@ static BOOL show_tool_menu(const HWND hWnd, DATA_INFO *di, const int paste)
 		return FALSE;
 	}
 	if (mii->ti->copy_paste == 1) {
-		// ƒNƒŠƒbƒvƒ{[ƒh‚É‘—‚Á‚Ä‚©‚çƒc[ƒ‹‚ğÀs
+		// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«é€ã£ã¦ã‹ã‚‰ãƒ„ãƒ¼ãƒ«ã‚’å®Ÿè¡Œ
+		// send to clipboard and execute tool
 		tmi.enable = TRUE;
 		tmi.ti = mii->ti;
 		tmi.paste = (GetKeyState(VK_SHIFT) >= 0) ? paste : 0;
 		menu_free();
 		return TRUE;
 	}
-	// ƒc[ƒ‹‚ÌÀs
+	// ãƒ„ãƒ¼ãƒ«ã®å®Ÿè¡Œ
+	// execute tool
 	if (tool_execute(hWnd, mii->ti, CALLTYPE_MENU, di, NULL) & TOOL_DATA_MODIFIED) {
 		if (data_check(&history_data, di) != NULL) {
 			SendMessage(hWnd, WM_HISTORY_CHANGED, 0, 0);
@@ -536,7 +560,7 @@ static BOOL show_tool_menu(const HWND hWnd, DATA_INFO *di, const int paste)
 }
 
 /*
- * show_popup_menu - ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[‚ğ•\¦
+ * show_popup_menu - ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’è¡¨ç¤º
  */
 static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL caret)
 {
@@ -546,23 +570,27 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 	BOOL caret_flag = caret;
 
 	if (popup_menu != NULL) {
-		// ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[•\¦’†
+		// ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¡¨ç¤ºä¸­
+		// Pop-up menu is displayed
 		_SetForegroundWindow(hWnd);
 		return FALSE;
 	}
 	CopyMemory(&fi, &focus_info, sizeof(FOCUS_INFO));
 	if (caret == TRUE || fi.active_wnd == NULL) {
-		// ƒtƒH[ƒJƒXî•ñæ“¾
+		// ãƒ•ã‚©ãƒ¼ã‚«ã‚¹æƒ…å ±å–å¾—
+		// Get focus information
 		get_focus_info(&fi);
 	}
 	if (ai->caret == 0 || fi.caret == FALSE) {
 		caret_flag = FALSE;
 	}
 
-	// ƒL[‰Šú‰»
+	// ã‚­ãƒ¼åˆæœŸåŒ–
+	// key initialization
 	GetAsyncKeyState(VK_RBUTTON);
 
-	// ƒƒjƒ…[ì¬
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ä½œæˆ
+	// Create menu
 	popup_menu = menu_create(hWnd, ai->menu_info, ai->menu_cnt, history_data.child, regist_data.child);
 	if (popup_menu == NULL) {
 		menu_free();
@@ -574,7 +602,8 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 		menu_free();
 		return FALSE;
 	}
-	// ƒƒjƒ…[•\¦
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¡¨ç¤º
+	// Display menu
 	_SetForegroundWindow(hWnd);
 	ShowWindow(hWnd, SW_HIDE);
 	ret = menu_show(hWnd, popup_menu, (caret_flag == TRUE) ? &fi.cpos : NULL);
@@ -583,18 +612,21 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 
 	mii = menu_get_info(ret);
 	if (ret <= 0 || ret == IDCANCEL || mii == NULL) {
-		// ƒLƒƒƒ“ƒZƒ‹
+		// ã‚­ãƒ£ãƒ³ã‚»ãƒ«
+		// cancel
 		if (GetForegroundWindow() == hWnd) {
 			set_focus_info(&fi);
 		}
 
 	} else if (mii->set_di != NULL) {
-		// ƒAƒCƒeƒ€
+		// ã‚¢ã‚¤ãƒ†ãƒ 
+		// item
 		if ((GetAsyncKeyState(VK_RBUTTON) == 1 || GetKeyState(VK_CONTROL) < 0) &&
 			option.menu_show_tool_menu == 1) {
 			DATA_INFO *di = mii->set_di;
 			menu_free();
-			// ƒc[ƒ‹ƒƒjƒ…[•\¦
+			// ãƒ„ãƒ¼ãƒ«ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¡¨ç¤º
+			// Display tool menu
 			if (show_tool_menu(hWnd, di, ai->paste) == TRUE) {
 				set_focus_info(&fi);
 				SendMessage(hWnd, WM_ITEM_TO_CLIPBOARD, 0, (LPARAM)di);
@@ -603,34 +635,43 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 			}
 			return TRUE;
 		}
-		// ƒNƒŠƒbƒvƒ{[ƒh‚Éƒf[ƒ^‚ğİ’è
+		// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«ãƒ‡ãƒ¼ã‚¿ã‚’è¨­å®š
+		// Set the data on the clipboard
 		set_focus_info(&fi);
 		SendMessage(hWnd, WM_ITEM_TO_CLIPBOARD, 0, (LPARAM)mii->set_di);
 		if (ai->paste == 1 && GetKeyState(VK_SHIFT) >= 0) {
-			// ƒL[‚ğ—£‚·‚Ü‚Å‘Ò‹@
+			// ã‚­ãƒ¼ã‚’é›¢ã™ã¾ã§å¾…æ©Ÿ
+			// Wait until key is released
 			key_wait();
-			// ƒzƒbƒgƒL[‚Ì‰ğœ
+			// ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®è§£é™¤
+			// Cancel hotkey
 			unregist_hotkey(hWnd);
-			// “\‚è•t‚¯
+			// è²¼ã‚Šä»˜ã‘
+			// paste
 			sendkey_paste(fi.active_wnd);
-			// ƒzƒbƒgƒL[‚Ì“o˜^
+			// ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®ç™»éŒ²
+			// Register the hotkey
 			regist_hotkey(hWnd, FALSE);
 		}
 
 	} else if (mii->ti != NULL) {
-		// ƒc[ƒ‹
+		// ãƒ„ãƒ¼ãƒ«
+		// tool
 		set_focus_info(&fi);
 		if (mii->ti->copy_paste == 1) {
 			tmi.enable = TRUE;
 			tmi.ti = mii->ti;
 			tmi.paste = (GetKeyState(VK_SHIFT) >= 0) ? ai->paste : 0;
-			// ƒL[‚ğ—£‚·‚Ü‚Å‘Ò‹@
+			// ã‚­ãƒ¼ã‚’é›¢ã™ã¾ã§å¾…æ©Ÿ
+			// Wait until key is released
 			key_wait();
 			SetTimer(hWnd, ID_TOOL_TIMER, option.tool_valid_interval, NULL);
-			// ƒRƒs[
+			// ã‚³ãƒ”ãƒ¼
+			// Copy
 			sendkey_copy(fi.active_wnd);
 		} else {
-			// ƒc[ƒ‹Às
+			// ãƒ„ãƒ¼ãƒ«å®Ÿè¡Œ
+			// Execute the tool
 			if (tool_execute(hWnd, mii->ti, CALLTYPE_MENU, history_data.child, NULL) & TOOL_DATA_MODIFIED) {
 				SendMessage(hWnd, WM_HISTORY_CHANGED, 0, 0);
 				SendMessage(hWnd, WM_ITEM_TO_CLIPBOARD, 0, (LPARAM)history_data.child);
@@ -638,20 +679,44 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 		}
 
 	} else if (mii->mi != NULL) {
-		// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ì‹N“®
-		shell_open(mii->mi->path, mii->mi->cmd);
+		// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®èµ·å‹•
+		// launch the application
+		TCHAR expanded_name[MAX_PATH + 1];
+		TCHAR expanded_cmd[MAX_PATH + 1];
+		DWORD ret = 0;
+		// expand environment variables in file_name
+		if (mii->mi->path != NULL && (ret = ExpandEnvironmentStrings(mii->mi->path, expanded_name, MAX_PATH)) > 0 
+			&& ret <= MAX_PATH) 
+		{
+			// try expand environment variables in parameters
+			if (mii->mi->cmd && (ret = ExpandEnvironmentStrings(mii->mi->cmd, expanded_cmd, MAX_PATH)) > 0 
+				&& ret <= MAX_PATH) 
+			{
+				// launch the application with expanded path and parameters
+				shell_open(expanded_name, expanded_cmd);
+			} else {
+				// launch the application with expanded path and unexpanded parameters
+				shell_open(expanded_name, mii->mi->cmd);
+			}
+		}
+		else {
+			// launch the application with unexpanded path and parameters
+			shell_open(mii->mi->path, mii->mi->cmd);
+		}
 
 	} else {
-		// ƒRƒ}ƒ“ƒh
+		// ã‚³ãƒãƒ³ãƒ‰
+		// command
 		SendMessage(hWnd, WM_COMMAND, ret, 0);
 	}
-	// ƒƒjƒ…[î•ñ‚Ì‰ğ•ú
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼æƒ…å ±ã®è§£æ”¾
+	// Release menu information
 	menu_free();
 	return TRUE;
 }
 
 /*
- * action_execute - Action‚ÌÀs
+ * action_execute - Actionã®å®Ÿè¡Œ
  */
 static BOOL action_execute(const HWND hWnd, const int type, const int id, const BOOL caret)
 {
@@ -661,7 +726,8 @@ static BOOL action_execute(const HWND hWnd, const int type, const int id, const 
 
 	ZeroMemory(&tmi, sizeof(TOOL_MENU_INFO));
 
-	// “®ì‚ÌŒŸõ
+	// å‹•ä½œã®æ¤œç´¢
+	// Search for behavior
 	for (i = 0; i < option.action_cnt; i++) {
 		if (type == (option.action_info + i)->type && (option.action_info + i)->enable != 0) {
 			if (type == ACTION_TYPE_HOTKEY && id != (option.action_info + i)->id) {
@@ -670,7 +736,8 @@ static BOOL action_execute(const HWND hWnd, const int type, const int id, const 
 			break;
 		}
 	}
-	// ƒc[ƒ‹‚ÌŒŸõ
+	// ãƒ„ãƒ¼ãƒ«ã®æ¤œç´¢
+	//Search for tools
 	if (i >= option.action_cnt && type == ACTION_TYPE_HOTKEY) {
 		for (i = 0; i < option.tool_cnt; i++) {
 			if (id != (option.tool_info + i)->id) {
@@ -680,13 +747,15 @@ static BOOL action_execute(const HWND hWnd, const int type, const int id, const 
 				tmi.enable = TRUE;
 				tmi.ti = option.tool_info + i;
 				tmi.paste = 1;
-				// ƒL[‚ğ—£‚·‚Ü‚Å‘Ò‹@
+				// ã‚­ãƒ¼ã‚’é›¢ã™ã¾ã§å¾…æ©Ÿ
+				// Wait until key is released
 				key_wait();
 				SetTimer(hWnd, ID_TOOL_TIMER, option.tool_valid_interval, NULL);
-				// ƒRƒs[
+				// ã‚³ãƒ”ãƒ¼
 				sendkey_copy(GetForegroundWindow());
 			} else {
-				// ƒc[ƒ‹Às
+				// ãƒ„ãƒ¼ãƒ«å®Ÿè¡Œ
+				// Execute the tool
 				if (tool_execute(hWnd, option.tool_info + i, CALLTYPE_MENU, history_data.child, NULL) & TOOL_DATA_MODIFIED) {
 					SendMessage(hWnd, WM_HISTORY_CHANGED, 0, 0);
 					SendMessage(hWnd, WM_ITEM_TO_CLIPBOARD, 0, (LPARAM)history_data.child);
@@ -695,7 +764,8 @@ static BOOL action_execute(const HWND hWnd, const int type, const int id, const 
 			return TRUE;
 		}
 		if (i >= option.tool_cnt) {
-			// “o˜^ƒAƒCƒeƒ€‚ğ’¼Ú“\‚è•t‚¯
+			// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã‚’ç›´æ¥è²¼ã‚Šä»˜ã‘
+			// Paste registered items directly
 			di = regist_hotkey_to_item(regist_data.child, id);
 			if (di != NULL) {
 				paste_di = di;
@@ -708,31 +778,37 @@ static BOOL action_execute(const HWND hWnd, const int type, const int id, const 
 		return TRUE;
 	}
 
-	// “®ì‚ğÀs
+	// å‹•ä½œã‚’å®Ÿè¡Œ
+	// Perform the action
 	switch ((option.action_info + i)->action) {
 	case ACTION_POPUPMEMU:
-		// ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[
+		// ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼
+		// popup menu
 		ret = show_popup_menu(hWnd, option.action_info + i, caret);
 		ZeroMemory(&focus_info, sizeof(FOCUS_INFO));
 		return ret;
 
 	case ACTION_VIEWER:
-		// ƒrƒ…[ƒA•\¦
+		// ãƒ“ãƒ¥ãƒ¼ã‚¢è¡¨ç¤º
+		// Display Viewer
 		SendMessage(hWnd, WM_COMMAND, ID_MENUITEM_VIEWER, 0);
 		break;
 
 	case ACTION_OPTION:
-		// ƒIƒvƒVƒ‡ƒ“
+		// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
+		// Options
 		SendMessage(hWnd, WM_COMMAND, ID_MENUITEM_OPTION, 0);
 		break;
 
 	case ACTION_CLIPBOARD_WATCH:
-		// ƒNƒŠƒbƒvƒ{[ƒhŠÄ‹Ø‚è‘Ö‚¦
+		// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ç›£è¦–åˆ‡ã‚Šæ›¿ãˆ
+		// Toggle clipboard monitoring
 		SendMessage(hWnd, WM_COMMAND, ID_MENUITEM_CLIPBOARD_WATCH, 0);
 		break;
 
 	case ACTION_EXIT:
-		// I—¹
+		// çµ‚äº†
+		// EXIT
 		SendMessage(hWnd, WM_COMMAND, ID_MENUITEM_EXIT, 0);
 		break;
 	}
@@ -740,13 +816,14 @@ static BOOL action_execute(const HWND hWnd, const int type, const int id, const 
 }
 
 /*
- * action_check - Action‚Ìƒ`ƒFƒbƒN
+ * action_check - Actionã®ãƒã‚§ãƒƒã‚¯
  */
 static BOOL action_check(const int type)
 {
 	int i;
 
-	// “®ì‚ÌŒŸõ
+	// å‹•ä½œã®æ¤œç´¢
+	// Search for behavior
 	for (i = 0; i < option.action_cnt; i++) {
 		if (type == (option.action_info + i)->type && (option.action_info + i)->enable != 0) {
 			return TRUE;
@@ -756,7 +833,7 @@ static BOOL action_check(const int type)
 }
 
 /*
- * clipboard_to_history - ƒNƒŠƒbƒvƒ{[ƒh‚Ì“à—e‚ğ—š—ğ‚É’Ç‰Á
+ * clipboard_to_history - ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã®å†…å®¹ã‚’å±¥æ­´ã«è¿½åŠ 
  */
 static BOOL clipboard_to_history(const HWND hWnd)
 {
@@ -766,7 +843,8 @@ static BOOL clipboard_to_history(const HWND hWnd)
 
 	CopyMemory(&cp_tmi, &tmi, sizeof(TOOL_MENU_INFO));
 
-	// œŠOƒEƒBƒ“ƒhƒE‚Ìƒ`ƒFƒbƒN
+	// é™¤å¤–ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒã‚§ãƒƒã‚¯
+	// check for windows to be excluded
 	if (window_ignore_check(GetForegroundWindow()) == FALSE) {
 		KillTimer(hWnd, ID_HISTORY_TIMER);
 		KillTimer(hWnd, ID_TOOL_TIMER);
@@ -774,8 +852,15 @@ static BOOL clipboard_to_history(const HWND hWnd)
 		return TRUE;
 	}
 
+	// çŸ­ã„é…å»¶ã‚’è¿½åŠ ã—ã¦ä»–ã®ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰æ“ä½œã‚’å¾…ã¤
+	// Add a short delay to wait for other applications' clipboard operations
+	Sleep(option.main_clipboard_access_delay);
+
+	// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ãŒåˆ©ç”¨å¯èƒ½ã‹ã©ã†ã‹ã‚’äº‹å‰ã«ãƒã‚§ãƒƒã‚¯
+	// Check if the clipboard is available
 	if (OpenClipboard(hWnd) == FALSE) {
-		// ƒNƒŠƒbƒvƒ{[ƒh‚ª—˜—p‰Â”\‚É‚È‚é‚Ü‚Å‘Ò‹@
+		// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ãŒåˆ©ç”¨å¯èƒ½ã«ãªã‚‹ã¾ã§å¾…æ©Ÿ
+		// wait until the clipboard is available
 		SetTimer(hWnd, ID_HISTORY_TIMER, RECLIP_INTERVAL, NULL);
 		if (tmi.enable == TRUE) {
 			SetTimer(hWnd, ID_TOOL_TIMER, option.tool_valid_interval, NULL);
@@ -786,7 +871,8 @@ static BOOL clipboard_to_history(const HWND hWnd)
 	KillTimer(hWnd, ID_TOOL_TIMER);
 	ZeroMemory(&tmi, sizeof(TOOL_MENU_INFO));
 
-	// ƒNƒŠƒbƒvƒ{[ƒh‚©‚çƒAƒCƒeƒ€‚ğì¬
+	// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã‚’ä½œæˆ
+	// create an item from the clipboard
 	*err_str = TEXT('\0');
 	if ((di = clipboard_to_item(err_str)) == NULL) {
 		CloseClipboard();
@@ -798,49 +884,61 @@ static BOOL clipboard_to_history(const HWND hWnd)
 	}
 	CloseClipboard();
 
-	// —š—ğ‚É’Ç‰Á
+	// å±¥æ­´ã«è¿½åŠ 
+	// add to history
 	if (history_add(&history_data.child, di, (cp_tmi.enable == TRUE) ? FALSE : TRUE) == FALSE) {
 		data_free(di);
 		return TRUE;
 	}
-	// —š—ğ‚É’Ç‰Á‚³‚ê‚½‚ÉÀs‚·‚éƒc[ƒ‹
+	// å±¥æ­´ã«è¿½åŠ ã•ã‚ŒãŸæ™‚ã«å®Ÿè¡Œã™ã‚‹ãƒ„ãƒ¼ãƒ«
+	// tools to be executed when added to history
 	tool_execute_all(hWnd, CALLTYPE_ADD_HISTORY, di);
 
-	// ƒƒjƒ…[‚©‚çƒc[ƒ‹Às
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‹ã‚‰ãƒ„ãƒ¼ãƒ«å®Ÿè¡Œ
+	// execute tool from menu
 	if (cp_tmi.enable == TRUE &&
 		(!(tool_execute(hWnd, cp_tmi.ti, CALLTYPE_MENU, di, NULL) & TOOL_CANCEL) ||
 		window_paste_check(GetForegroundWindow()) == TRUE) &&
 		data_check(&history_data, di) != NULL) {
 
 		data_delete(&history_data.child, di, FALSE);
-		// ƒNƒŠƒbƒvƒ{[ƒh‚Éƒf[ƒ^‚ğ‘—‚é
+		// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«ãƒ‡ãƒ¼ã‚¿ã‚’é€ã‚‹
+		// send data to clipboard
 		SendMessage(hWnd, WM_ITEM_TO_CLIPBOARD, 0, (LPARAM)di);
 		data_free(di);
 		if (cp_tmi.paste != 0 && cp_tmi.ti != NULL && cp_tmi.ti->copy_paste == 1) {
-			// ƒL[‚ğ—£‚·‚Ü‚Å‘Ò‹@
+			// ã‚­ãƒ¼ã‚’é›¢ã™ã¾ã§å¾…æ©Ÿ
+			// wait until the key is released
 			key_wait();
-			// ƒzƒbƒgƒL[‚Ì‰ğœ
+			// ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®è§£é™¤
+			// unregister hotkey
 			unregist_hotkey(hWnd);
-			// “\‚è•t‚¯
+			// è²¼ã‚Šä»˜ã‘
+			// paste
 			sendkey_paste(GetForegroundWindow());
-			// ƒzƒbƒgƒL[‚Ì“o˜^
+			// ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®ç™»éŒ²
+			// register hotkey
 			regist_hotkey(hWnd, FALSE);
 		}
 	}
 
-	// ƒ^ƒXƒNƒgƒŒƒC‚Ìƒc[ƒ‹ƒ`ƒbƒvİ’è
+	// ã‚¿ã‚¹ã‚¯ãƒˆãƒ¬ã‚¤ã®ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—è¨­å®š
+	// Tooltip tray settings
 	set_tray_tooltip(hWnd);
 	if (option.history_save == 1 && option.history_always_save == 1) {
-		// —š—ğ‚Ì•Û‘¶
+		// å±¥æ­´ã®ä¿å­˜
+		// Save history
 		SendMessage(hWnd, WM_HISTORY_SAVE, 0, 0);
 	}
-	// —š—ğ‚Ì•Ï‰»‚ğ’Ê’m
+	// å±¥æ­´ã®å¤‰åŒ–ã‚’é€šçŸ¥
+	// Notify history has changed
 	SendMessage(hWnd, WM_HISTORY_CHANGED, 0, 0);
 	return TRUE;
 }
 
 /*
- * item_to_clipboard - ƒAƒCƒeƒ€‚ğƒNƒŠƒbƒvƒ{[ƒh‚É‘—‚é
+ * item_to_clipboard - ã‚¢ã‚¤ãƒ†ãƒ ã‚’ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«é€ã‚‹
+ * Send an item to the clipboard
  */
 static BOOL item_to_clipboard(const HWND hWnd, DATA_INFO *from_di, const BOOL delete_flag)
 {
@@ -848,7 +946,8 @@ static BOOL item_to_clipboard(const HWND hWnd, DATA_INFO *from_di, const BOOL de
 	TCHAR err_str[BUF_SIZE];
 	int call_type = CALLTYPE_ITEM_TO_CLIPBOARD;
 
-	// ƒf[ƒ^‚ÌƒRƒs[
+	// ãƒ‡ãƒ¼ã‚¿ã®ã‚³ãƒ”ãƒ¼
+	// Copy data
 	if ((di = data_item_copy(from_di, FALSE, FALSE, err_str)) == NULL) {
 		if (*err_str != TEXT('\0')) {
 			_SetForegroundWindow(hWnd);
@@ -861,18 +960,18 @@ static BOOL item_to_clipboard(const HWND hWnd, DATA_INFO *from_di, const BOOL de
 		call_type |= CALLTYPE_HISTORY;
 	} else if (data_check(&regist_data, from_di) != NULL) {
 		call_type |= CALLTYPE_REGIST;
-		// “o˜^ƒAƒCƒeƒ€‚ğ—š—ğ‚É“ü‚ê‚È‚¢
+		// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã‚’å±¥æ­´ã«å…¥ã‚Œãªã„
 		if (option.history_ignore_regist_item == 1) {
 			clip_flag = TRUE;
 		}
 	}
-	// ƒf[ƒ^‚ğƒNƒŠƒbƒvƒ{[ƒh‚É‘—‚é‚ÉÀs‚·‚éƒc[ƒ‹
+	// ãƒ‡ãƒ¼ã‚¿ã‚’ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«é€ã‚‹æ™‚ã«å®Ÿè¡Œã™ã‚‹ãƒ„ãƒ¼ãƒ«
 	if (tool_execute_all(hWnd, call_type, di) & TOOL_CANCEL) {
 		data_free(di);
 		return FALSE;
 	}
 
-	// ƒNƒŠƒbƒvƒ{[ƒh‚É‘—‚é
+	// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«é€ã‚‹
 	*err_str = TEXT('\0');
 	if (clipboard_set_datainfo(hWnd, di, err_str) == FALSE &&
 		*err_str != TEXT('\0')) {
@@ -887,16 +986,16 @@ static BOOL item_to_clipboard(const HWND hWnd, DATA_INFO *from_di, const BOOL de
 	if (clip_flag == TRUE) {
 		clip_flag = FALSE;
 		if (hViewerWnd != NULL) {
-			// ƒNƒŠƒbƒvƒ{[ƒh‚Ì•Ï‰»‚ğ’Ê’m
+			// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã®å¤‰åŒ–ã‚’é€šçŸ¥
 			SendMessage(hViewerWnd, WM_VIEWER_CHANGE_CLIPBOARD, 0, 0);
 		}
 	}
 	if ((call_type & CALLTYPE_HISTORY) &&
 		delete_flag == TRUE && option.history_delete == 1 && from_di->type == TYPE_ITEM &&
 		window_ignore_check(GetForegroundWindow()) == TRUE) {
-		// —š—ğíœ
+		// å±¥æ­´å‰Šé™¤
 		if (data_delete(&history_data.child, from_di, TRUE) == TRUE) {
-			// —š—ğ‚Ì•Ï‰»‚ğ’Ê’m
+			// å±¥æ­´ã®å¤‰åŒ–ã‚’é€šçŸ¥
 			SendMessage(hWnd, WM_HISTORY_CHANGED, 0, 0);
 		}
 	}
@@ -904,7 +1003,7 @@ static BOOL item_to_clipboard(const HWND hWnd, DATA_INFO *from_di, const BOOL de
 }
 
 /*
- * load_history - —š—ğ‚Ì“Ç‚İ‚İ
+ * load_history - å±¥æ­´ã®èª­ã¿è¾¼ã¿
  */
 static BOOL load_history(const HWND hWnd, const int load_flag)
 {
@@ -913,7 +1012,7 @@ static BOOL load_history(const HWND hWnd, const int load_flag)
 
 	history_data.type = TYPE_ROOT;
 
-	// —š—ğ‚Ì“Ç‚İ‚İ
+	// å±¥æ­´ã®èª­ã¿è¾¼ã¿
 	if (load_flag != 0 || option.history_save == 1) {
 		wsprintf(path, TEXT("%s\\%s"), work_path, HISTORY_FILENAME);
 		*err_str = TEXT('\0');
@@ -929,7 +1028,7 @@ static BOOL load_history(const HWND hWnd, const int load_flag)
 }
 
 /*
- * load_regist - “o˜^ƒAƒCƒeƒ€‚Ì“Ç‚İ‚İ
+ * load_regist - ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã®èª­ã¿è¾¼ã¿
  */
 static BOOL load_regist(const HWND hWnd)
 {
@@ -938,7 +1037,7 @@ static BOOL load_regist(const HWND hWnd)
 
 	regist_data.type = TYPE_ROOT;
 
-	// “o˜^ƒAƒCƒeƒ€‚Ì“Ç‚İ‚İ
+	// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã®èª­ã¿è¾¼ã¿
 	wsprintf(path, TEXT("%s\\%s"), work_path, REGIST_FILENAME);
 	*err_str = TEXT('\0');
 	if (file_read_data(path, &regist_data.child, err_str) == FALSE && *err_str != TEXT('\0')) {
@@ -952,7 +1051,7 @@ static BOOL load_regist(const HWND hWnd)
 }
 
 /*
- * save_history - —š—ğ‚Ì•Û‘¶
+ * save_history - å±¥æ­´ã®ä¿å­˜
  */
 static BOOL save_history(const HWND hWnd, const int save_flag)
 {
@@ -961,17 +1060,17 @@ static BOOL save_history(const HWND hWnd, const int save_flag)
 	TCHAR err_str[BUF_SIZE + MAX_PATH];
 
 	if (save_flag == 0 && option.history_save == 0) {
-		// —š—ğ‚ğ•Û‘¶‚µ‚È‚¢
+		// å±¥æ­´ã‚’ä¿å­˜ã—ãªã„
 		wsprintf(path, TEXT("%s\\%s"), work_path, HISTORY_FILENAME);
 		DeleteFile(path);
 		return TRUE;
 	}
 
-	// •Û‘¶ƒtƒBƒ‹ƒ^‚Ìƒ`ƒFƒbƒN
+	// ä¿å­˜ãƒ•ã‚£ãƒ«ã‚¿ã®ãƒã‚§ãƒƒã‚¯
 	if (filter_list_save_check(history_data.child) == FALSE) {
 		di = history_data.child;
 	} else {
-		// •Û‘¶ƒtƒBƒ‹ƒ^‚ğ‚©‚¯‚½ƒAƒCƒeƒ€ƒŠƒXƒg‚ğì¬
+		// ä¿å­˜ãƒ•ã‚£ãƒ«ã‚¿ã‚’ã‹ã‘ãŸã‚¢ã‚¤ãƒ†ãƒ ãƒªã‚¹ãƒˆã‚’ä½œæˆ
 		if ((di = filter_list_copy(history_data.child, err_str)) == NULL) {
 			if (*err_str != TEXT('\0')) {
 				_SetForegroundWindow(hWnd);
@@ -981,7 +1080,7 @@ static BOOL save_history(const HWND hWnd, const int save_flag)
 		}
 	}
 
-	// —š—ğ‚Ì•Û‘¶
+	// å±¥æ­´ã®ä¿å­˜
 	wsprintf(path, TEXT("%s\\%s"), work_path, HISTORY_FILENAME);
 	*err_str = TEXT('\0');
 	if (file_write_data(path, di, err_str) == FALSE) {
@@ -1003,14 +1102,14 @@ static BOOL save_history(const HWND hWnd, const int save_flag)
 }
 
 /*
- * save_regist - “o˜^ƒAƒCƒeƒ€‚Ì•Û‘¶
+ * save_regist - ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã®ä¿å­˜
  */
 static BOOL save_regist(const HWND hWnd)
 {
 	TCHAR path[MAX_PATH];
 	TCHAR err_str[BUF_SIZE + MAX_PATH];
 
-	// “o˜^ƒAƒCƒeƒ€‚Ì•Û‘¶
+	// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã®ä¿å­˜
 	wsprintf(path, TEXT("%s\\%s"), work_path, REGIST_FILENAME);
 	*err_str = TEXT('\0');
 	if (file_write_data(path, regist_data.child, err_str) == FALSE) {
@@ -1026,7 +1125,7 @@ static BOOL save_regist(const HWND hWnd)
 }
 
 /*
- * regist_hotkey - ƒzƒbƒgƒL[‚Ì“o˜^
+ * regist_hotkey - ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®ç™»éŒ²
  */
 static void regist_hotkey(const HWND hWnd, const BOOL show_err)
 {
@@ -1058,13 +1157,13 @@ static void regist_hotkey(const HWND hWnd, const BOOL show_err)
 	}
 
 	if (hk_err == TRUE && option.action_show_hotkey_error == 1 && show_err == TRUE) {
-		// “o˜^ƒGƒ‰[
+		// ç™»éŒ²ã‚¨ãƒ©ãƒ¼
 		MessageBox(hWnd, message_get_res(IDS_ERROR_HOTKEY), ERROR_TITLE, MB_ICONERROR);
 	}
 }
 
 /*
- * unregist_hotkey - ƒzƒbƒgƒL[‚Ì‰ğœ
+ * unregist_hotkey - ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®è§£é™¤
  */
 static void unregist_hotkey(const HWND hWnd)
 {
@@ -1087,7 +1186,7 @@ static void unregist_hotkey(const HWND hWnd)
 }
 
 /*
- * regist_hook - ƒtƒbƒN‚Ì“o˜^
+ * regist_hook - ãƒ•ãƒƒã‚¯ã®ç™»éŒ²
  */
 static void regist_hook(const HWND hWnd)
 {
@@ -1095,7 +1194,7 @@ static void regist_hook(const HWND hWnd)
 	TCHAR err_str[BUF_SIZE];
 	int i;
 
-	// ƒtƒbƒN‚Ì“o˜^
+	// ãƒ•ãƒƒã‚¯ã®ç™»éŒ²
 	for (i = 0; i < option.action_cnt; i++) {
 		if ((option.action_info + i)->enable != 0 &&
 			((option.action_info + i)->type == ACTION_TYPE_CTRL_CTRL ||
@@ -1128,13 +1227,13 @@ static void regist_hook(const HWND hWnd)
 }
 
 /*
- * unregist_hook - ƒtƒbƒN‚Ì‰ğœ
+ * unregist_hook - ãƒ•ãƒƒã‚¯ã®è§£é™¤
  */
 static void unregist_hook(void)
 {
 	FARPROC UnHook;
 
-	// ƒtƒbƒN‚Ì‰ğœ
+	// ãƒ•ãƒƒã‚¯ã®è§£é™¤
 	if (hook_lib != NULL) {
 		UnHook = GetProcAddress(hook_lib, "UnHook");
 		if (UnHook != NULL) {
@@ -1146,7 +1245,7 @@ static void unregist_hook(void)
 }
 
 /*
- * winodw_initialize - ƒEƒBƒ“ƒhƒE‚Ì‰Šú‰»
+ * winodw_initialize - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®åˆæœŸåŒ–
  */
 static BOOL winodw_initialize(const HWND hWnd)
 {
@@ -1154,29 +1253,29 @@ static BOOL winodw_initialize(const HWND hWnd)
 
 	*err_str = TEXT('\0');
 
-	// Œ`®î•ñ‚Ì‰Šú‰»
+	// å½¢å¼æƒ…å ±ã®åˆæœŸåŒ–
 	if (format_initialize(err_str) == FALSE && *err_str != TEXT('\0')) {
 		_SetForegroundWindow(hWnd);
 		MessageBox(hWnd, err_str, ERROR_TITLE, MB_ICONERROR);
 	}
-	// ƒc[ƒ‹î•ñ‚Ì‰Šú‰»
+	// ãƒ„ãƒ¼ãƒ«æƒ…å ±ã®åˆæœŸåŒ–
 	if (tool_initialize(err_str) == FALSE && *err_str != TEXT('\0')) {
 		_SetForegroundWindow(hWnd);
 		MessageBox(hWnd, err_str, ERROR_TITLE, MB_ICONERROR);
 	}
-	// —š—ğ‚Ì“Ç‚İ‚İ
+	// å±¥æ­´ã®èª­ã¿è¾¼ã¿
 	if (load_history(hWnd, 0) == FALSE) {
 		return FALSE;
 	}
-	// “o˜^ƒAƒCƒeƒ€‚Ì“Ç‚İ‚İ
+	// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã®èª­ã¿è¾¼ã¿
 	if (load_regist(hWnd) == FALSE) {
 		return FALSE;
 	}
 
-	// ƒc[ƒ‹ƒ`ƒbƒv‚Ìì¬
+	// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã®ä½œæˆ
 	hToolTip = tooltip_create(hInst);
 
-	// ƒ^ƒXƒNƒgƒŒƒC‚ÉƒAƒCƒRƒ“‚ğ“o˜^
+	// ã‚¿ã‚¹ã‚¯ãƒˆãƒ¬ã‚¤ã«ã‚¢ã‚¤ã‚³ãƒ³ã‚’ç™»éŒ²
 	if (GetAwareness() != PROCESS_DPI_UNAWARE && GetScale() >= 300) {
 		icon_clip = LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_CLIP),
 			IMAGE_ICON, 48, 48, 0);
@@ -1198,37 +1297,39 @@ static BOOL winodw_initialize(const HWND hWnd)
 	icon_tray = (option.main_clipboard_watch == 1) ? icon_clip : icon_clip_ban;
 	set_tray_icon(hWnd, icon_tray, MAIN_WINDOW_TITLE);
 
-	// ƒƒjƒ…[‚É•\¦‚·‚éƒAƒCƒRƒ“‚Ì“Ç‚İ‚İ
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ã‚¢ã‚¤ã‚³ãƒ³ã®èª­ã¿è¾¼ã¿
 	icon_menu_default = LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_DEFAULT),
 		IMAGE_ICON, SICONSIZE, SICONSIZE, 0);
 	icon_menu_folder = LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_FOLDER),
 		IMAGE_ICON, SICONSIZE, SICONSIZE, 0);
 
-	// ƒNƒŠƒbƒvƒ{[ƒhŠÄ‹ŠJn
+	// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ç›£è¦–é–‹å§‹
 	if (option.main_clipboard_watch == 1) {
 		hClipNextWnd = SetClipboardViewer(hWnd);
 		SetTimer(hWnd, ID_RECHAIN_TIMER, RECHAIN_INTERVAL, NULL);
 	}
 
-	// ƒzƒbƒgƒL[‚Ì“o˜^
+	// ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®ç™»éŒ²
 	regist_hotkey(hWnd, TRUE);
-	// ƒtƒbƒN‚Ì“o˜^
+	// ãƒ•ãƒƒã‚¯ã®ç™»éŒ²
 	regist_hook(hWnd);
 
-	// ‹N“®‚ÉÀs‚·‚éƒc[ƒ‹
+	// èµ·å‹•æ™‚ã«å®Ÿè¡Œã™ã‚‹ãƒ„ãƒ¼ãƒ«
 	tool_execute_all(hWnd, CALLTYPE_START, NULL);
 
-	// ƒrƒ…[ƒA•\¦
+	BOOL b = WTSRegisterSessionNotification(hWnd, NOTIFY_FOR_THIS_SESSION);
+
+	// ãƒ“ãƒ¥ãƒ¼ã‚¢è¡¨ç¤º
 	if (option.main_show_viewer == 1) {
 		SendMessage(hWnd, WM_COMMAND, ID_MENUITEM_VIEWER, 0);
 	}
-	// ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ˆ—
+	// ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³å‡¦ç†
 	commnad_line_func(FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE));
 	return TRUE;
 }
 
 /*
- * winodw_reset - İ’èÄ“Ç‚İ‚İ
+ * winodw_reset - è¨­å®šå†èª­ã¿è¾¼ã¿
  */
 static BOOL winodw_reset(const HWND hWnd)
 {
@@ -1246,40 +1347,40 @@ static BOOL winodw_reset(const HWND hWnd)
 		SendMessage(hViewerWnd, WM_CLOSE, 0, 0);
 	}
 
-	// ƒzƒbƒgƒL[‚Ì‰ğœ
+	// ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®è§£é™¤
 	unregist_hotkey(hWnd);
-	// ƒtƒbƒN‚Ì‰ğœ
+	// ãƒ•ãƒƒã‚¯ã®è§£é™¤
 	unregist_hook();
 
-	// ƒAƒCƒeƒ€‚Ìƒƒjƒ…[î•ñ‚ğ‰ğ•ú
+	// ã‚¢ã‚¤ãƒ†ãƒ ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼æƒ…å ±ã‚’è§£æ”¾
 	data_menu_free(history_data.child);
 	data_menu_free(regist_data.child);
-	// Œ`®î•ñ‚Ì‰ğ•ú
+	// å½¢å¼æƒ…å ±ã®è§£æ”¾
 	format_free();
 
-	// İ’è‚Ì‰ğ•ú
+	// è¨­å®šã®è§£æ”¾
 	ini_free();
-	// İ’è‚Ì“Ç‚İ‚İ
+	// è¨­å®šã®èª­ã¿è¾¼ã¿
 	get_work_path(hInst);
 	if (ini_get_option(err_str) == FALSE) {
 		MessageBox(hWnd, err_str, ERROR_TITLE, MB_ICONERROR);
 		return FALSE;
 	}
 
-	// Œ`®î•ñ‚Ì‰Šú‰»
+	// å½¢å¼æƒ…å ±ã®åˆæœŸåŒ–
 	if (format_initialize(err_str) == FALSE && *err_str != TEXT('\0')) {
 		_SetForegroundWindow(hWnd);
 		MessageBox(hWnd, err_str, ERROR_TITLE, MB_ICONERROR);
 	}
-	// ƒc[ƒ‹î•ñ‚Ì‰Šú‰»
+	// ãƒ„ãƒ¼ãƒ«æƒ…å ±ã®åˆæœŸåŒ–
 	if (tool_initialize(err_str) == FALSE && *err_str != TEXT('\0')) {
 		_SetForegroundWindow(hWnd);
 		MessageBox(hWnd, err_str, ERROR_TITLE, MB_ICONERROR);
 	}
 
-	// ƒzƒbƒgƒL[‚Ì“o˜^
+	// ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®ç™»éŒ²
 	regist_hotkey(hWnd, TRUE);
-	// ƒtƒbƒN‚Ì“o˜^
+	// ãƒ•ãƒƒã‚¯ã®ç™»éŒ²
 	regist_hook(hWnd);
 
 	SetTimer(hWnd, ID_RECHAIN_TIMER, RECHAIN_INTERVAL, NULL);
@@ -1293,30 +1394,34 @@ static BOOL winodw_reset(const HWND hWnd)
 }
 
 /*
- * winodw_save - ƒEƒBƒ“ƒhƒE‚Ì•Û‘¶ˆ—
+ * winodw_save - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä¿å­˜å‡¦ç†
  */
 static BOOL winodw_save(const HWND hWnd)
 {
-	// I—¹‚ÉÀs‚·‚éƒc[ƒ‹
+	// çµ‚äº†æ™‚ã«å®Ÿè¡Œã™ã‚‹ãƒ„ãƒ¼ãƒ«
+	// Tools to run on exit
 	tool_execute_all(hWnd, CALLTYPE_END, NULL);
 
-	// “o˜^ƒAƒCƒeƒ€‚Ì•Û‘¶
+	// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã®ä¿å­˜
+	// Save templates / registered items
 	if (save_regist(hWnd) == FALSE &&
 		MessageBox(hWnd, message_get_res(IDS_ERROR_END), ERROR_TITLE, MB_ICONQUESTION | MB_YESNO) == IDNO) {
 		return FALSE;
 	}
-	// —š—ğ‚Ì•Û‘¶
+	// å±¥æ­´ã®ä¿å­˜
+	// Save history items
 	if (save_history(hWnd, 0) == FALSE &&
 		MessageBox(hWnd, message_get_res(IDS_ERROR_END), ERROR_TITLE, MB_ICONQUESTION | MB_YESNO) == IDNO) {
 		return FALSE;
 	}
-	// İ’è‚Ì•Û‘¶
+	// è¨­å®šã®ä¿å­˜
+	// Save the configuration
 	ini_put_option();
 	return TRUE;
 }
 
 /*
- * winodw_end - ƒEƒBƒ“ƒhƒE‚ÌI—¹ˆ—
+ * winodw_end - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®çµ‚äº†å‡¦ç†
  */
 static BOOL winodw_end(const HWND hWnd)
 {
@@ -1328,22 +1433,24 @@ static BOOL winodw_end(const HWND hWnd)
 		hToolTip = NULL;
 	}
 
-	// ƒNƒŠƒbƒvƒ{[ƒhŠÄ‹‰ğœ
+	BOOL b = WTSUnRegisterSessionNotification(hWnd);
+
+	// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ç›£è¦–è§£é™¤
 	KillTimer(hWnd, ID_RECHAIN_TIMER);
 	if (option.main_clipboard_watch == 1) {
 		ChangeClipboardChain(hWnd, hClipNextWnd);
 		hClipNextWnd = NULL;
 	}
 
-	// ƒzƒbƒgƒL[‚Ì‰ğœ
+	// ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®è§£é™¤
 	unregist_hotkey(hWnd);
-	// ƒtƒbƒN‚Ì‰ğœ
+	// ãƒ•ãƒƒã‚¯ã®è§£é™¤
 	unregist_hook();
 
-	// —š—ğ‚Ì‰ğ•ú
+	// å±¥æ­´ã®è§£æ”¾
 	data_free(history_data.child);
 	data_free(regist_data.child);
-	// Œ`®î•ñ‚Ì‰ğ•ú
+	// å½¢å¼æƒ…å ±ã®è§£æ”¾
 	format_free();
 
 #ifdef OP_XP_STYLE
@@ -1361,7 +1468,7 @@ static BOOL winodw_end(const HWND hWnd)
 }
 
 /*
- * main_proc - ƒƒCƒ“ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+ * main_proc - ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -1373,14 +1480,14 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 	switch (msg) {
 	case WM_CREATE:
 		WM_TASKBARCREATED = RegisterWindowMessage(TEXT("TaskbarCreated"));
-		// ƒEƒBƒ“ƒhƒEì¬
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½œæˆ
 		if (winodw_initialize(hWnd) == FALSE) {
 			return -1;
 		}
 		break;
 
 	case WM_QUERYENDSESSION:
-		// WindowsI—¹
+		// Windowsçµ‚äº†
 		if (winodw_save(hWnd) == FALSE) {
 			return FALSE;
 		}
@@ -1388,13 +1495,13 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		return TRUE;
 
 	case WM_ENDSESSION:
-		// WindowsI—¹
+		// Windowsçµ‚äº†
 		winodw_end(hWnd);
 		DestroyWindow(hWnd);
 		return 0;
 
 	case WM_CLOSE:
-		// ƒEƒBƒ“ƒhƒE‚ğ•Â‚¶‚é
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’é–‰ã˜ã‚‹
 		if (winodw_save(hWnd) == FALSE) {
 			break;
 		}
@@ -1404,7 +1511,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_DESTROY:
-		// ƒEƒBƒ“ƒhƒE‚Ì”jŠü
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ç ´æ£„
 		if (save_flag == FALSE) {
 			winodw_save(hWnd);
 		}
@@ -1412,14 +1519,14 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_MEASUREITEM:
-		// ƒƒjƒ…[•`‰æİ’è
+		// ãƒ¡ãƒ‹ãƒ¥ãƒ¼æç”»è¨­å®š
 		if (wParam == 0) {
 			menu_set_drawitem((MEASUREITEMSTRUCT *)lParam);
 		}
 		break;
 
 	case WM_DRAWITEM:
-		// ƒƒjƒ…[•`‰æ
+		// ãƒ¡ãƒ‹ãƒ¥ãƒ¼æç”»
 		if (wParam == 0) {
 			HWND menu_wnd;
 
@@ -1428,7 +1535,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			set_menu_layerer(menu_wnd, option.menu_alpha);
 #endif
 			if (((DRAWITEMSTRUCT *)lParam)->itemState & ODS_SELECTED) {
-				// ƒc[ƒ‹ƒ`ƒbƒv‚Ì•\¦ˆÊ’u‚ğİ’è
+				// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã®è¡¨ç¤ºä½ç½®ã‚’è¨­å®š
 				menu_sel_pt.x = ((DRAWITEMSTRUCT *)lParam)->rcItem.left +
 					(((DRAWITEMSTRUCT *)lParam)->rcItem.right - ((DRAWITEMSTRUCT *)lParam)->rcItem.left) / 2;
 				menu_sel_pt.y = ((DRAWITEMSTRUCT *)lParam)->rcItem.top;
@@ -1446,32 +1553,32 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_MENUCHAR:
-		// ƒƒjƒ…[ƒAƒNƒZƒ‰ƒŒ[ƒ^
+		// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿
 		if (HIWORD(wParam) == MF_POPUP) {
 			return menu_accelerator((HMENU)lParam, (TCHAR)LOWORD(wParam));
 		}
 		break;
 
 	case WM_MENUSELECT:
-		// ‘I‘ğƒƒjƒ…[‚Ìƒc[ƒ‹ƒ`ƒbƒv•\¦
+		// é¸æŠãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—è¡¨ç¤º
 		if (option.menu_show_tooltip == 0 ||
 			(UINT)LOWORD(wParam) == 0xFFFF ||
 			(UINT)HIWORD(wParam) & MF_SEPARATOR) {
 			tooltip_hide(hToolTip);
 			break;
 		}
-		// ƒc[ƒ‹ƒ`ƒbƒv‚ğ•\¦
+		// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã‚’è¡¨ç¤º
 		show_menu_tooltip(hToolTip, (HMENU)lParam, (UINT)LOWORD(wParam),
 			((UINT)HIWORD(wParam) & MF_MOUSESELECT) ? TRUE : FALSE);
 		break;
 
 	case WM_EXITMENULOOP:
-		// ƒc[ƒ‹ƒ`ƒbƒv‚ğ”ñ•\¦
+		// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã‚’éè¡¨ç¤º
 		tooltip_hide(hToolTip);
 		break;
 
 	case WM_CHANGECBCHAIN:
-		// ƒNƒŠƒbƒvƒ{[ƒhƒ`ƒF[ƒ“‚Ì•ÏX
+		// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ãƒã‚§ãƒ¼ãƒ³ã®å¤‰æ›´
 		if ((HWND)wParam == hClipNextWnd && (HWND)lParam != hWnd) {
 			hClipNextWnd = (HWND)lParam;
 		} else if (hClipNextWnd != NULL && hClipNextWnd != hWnd) {
@@ -1480,16 +1587,17 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_DRAWCLIPBOARD:
-		// ƒNƒŠƒbƒvƒ{[ƒhŠÄ‹
+		// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ç›£è¦–
 		if (hClipNextWnd != NULL && hClipNextWnd != hWnd) {
 			SendMessage(hClipNextWnd, msg, wParam, lParam);
 		}
 		if (clip_flag == TRUE) {
-			// —š—ğ‚É“ü‚ê‚È‚¢
+			// å±¥æ­´ã«å…¥ã‚Œãªã„
 			break;
 		}
-		// —š—ğ‚É’Ç‰Á
-		SetTimer(hWnd, ID_HISTORY_TIMER, option.history_add_interval, NULL);
+		// å±¥æ­´ã«è¿½åŠ ï¼ˆå°‘ã—é…å»¶ã‚’è¿½åŠ ã—ã¦ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã®ãƒ­ãƒƒã‚¯ç«¶åˆã‚’å›é¿ï¼‰
+		// Add to history (adds a short delay to avoid clipboard lock contention)
+		SetTimer(hWnd, ID_HISTORY_TIMER, max(option.history_add_interval, 100), NULL);
 		SetTimer(hWnd, ID_RECHAIN_TIMER, RECHAIN_INTERVAL, NULL);
 		rechain_cnt = 0;
 		break;
@@ -1497,12 +1605,13 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case ID_MENUITEM_EXIT:
-			// I—¹
+			// çµ‚äº†
+			// exit
 			SendMessage(hWnd, WM_CLOSE, 0, 0);
 			break;
 
 		case ID_MENUITEM_VIEWER:
-			// ƒrƒ…[ƒA
+			// ãƒ“ãƒ¥ãƒ¼ã‚¢
 			if (hViewerWnd != NULL) {
 				if (option.viewer_toggle == 1) {
 					SendMessage(hViewerWnd, WM_CLOSE, 0, 0);
@@ -1521,30 +1630,49 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			break;
 
 		case ID_MENUITEM_OPTION:
-			// ƒIƒvƒVƒ‡ƒ“
+			// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 			SendMessage(hWnd, WM_OPTION_SHOW, 0, 0);
 			break;
 
 		case ID_MENUITEM_CLIPBOARD_WATCH:
-			// ƒNƒŠƒbƒvƒ{[ƒhŠÄ‹Ø‚è‘Ö‚¦
+			// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ç›£è¦–åˆ‡ã‚Šæ›¿ãˆ
 			SendMessage(hWnd, WM_SET_CLIPBOARD_WATCH, !option.main_clipboard_watch, 0);
 			break;
+
+		case ID_MENUITEM_HELP:
+		{
+			// english help as Compiled Help Module, generated from README.md
+
+			// Make it consistent througout solution:
+			// CLCLSet also uses this window handle by default
+			HWND hMainWnd = FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE);
+
+			// the external global variable help_path has already been initialized
+			// by ini_help_path()
+			if (lstrlen(help_path) > 0 && file_check_file(help_path)) {
+				//HtmlHelp(hMainWnd ? hMainWnd : hWnd, help_path, HH_DISPLAY_TOC, (DWORD_PTR)NULL);
+				HtmlHelp(hMainWnd ? hMainWnd : hWnd, help_path, HH_HELP_CONTEXT, IDH_VIEWER_HELP);
+				break;
+			}
+			break;
+		}
+
 		}
 		break;
 
 	case WM_TIMER:
-		// ƒ^ƒCƒ}[
+		// ã‚¿ã‚¤ãƒãƒ¼
 		switch (wParam) {
 		case ID_HISTORY_TIMER:
-			// ƒNƒŠƒbƒvƒ{[ƒh‚Ìƒf[ƒ^‚ğ—š—ğ‚É’Ç‰Á
+			// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã®ãƒ‡ãƒ¼ã‚¿ã‚’å±¥æ­´ã«è¿½åŠ 
 			if (clipboard_to_history(hWnd) == TRUE && hViewerWnd != NULL) {
-				// ƒNƒŠƒbƒvƒ{[ƒh‚Ì•Ï‰»‚ğ’Ê’m
+				// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã®å¤‰åŒ–ã‚’é€šçŸ¥
 				SendMessage(hViewerWnd, WM_VIEWER_CHANGE_CLIPBOARD, 0, 0);
 			}
 			break;
 
 		case ID_RECHAIN_TIMER:
-			// ƒNƒŠƒbƒvƒ{[ƒhÄŠÄ‹
+			// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰å†ç›£è¦–
 			if (option.main_clipboard_watch == 0 ||
 				option.main_clipboard_rechain_minute <= 0) {
 				KillTimer(hWnd, wParam);
@@ -1554,13 +1682,13 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			if (rechain_cnt >= option.main_clipboard_rechain_minute) {
 				rechain_cnt = 0;
 				if (GetClipboardViewer() == hWnd) {
-					// ÄŠÄ‹‚Ì•K—v‚È‚µ
+					// å†ç›£è¦–ã®å¿…è¦ãªã—
 					break;
 				}
-				// ƒNƒŠƒbƒvƒ{[ƒhŠÄ‹‰ğœ
+				// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ç›£è¦–è§£é™¤
 				ChangeClipboardChain(hWnd, hClipNextWnd);
 				hClipNextWnd = NULL;
-				// ƒNƒŠƒbƒvƒ{[ƒhŠÄ‹ŠJn
+				// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ç›£è¦–é–‹å§‹
 				clip_flag = TRUE;
 				hClipNextWnd = SetClipboardViewer(hWnd);
 				clip_flag = FALSE;
@@ -1568,13 +1696,13 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			break;
 
 		case ID_TOOL_TIMER:
-			// ƒc[ƒ‹ƒLƒƒƒ“ƒZƒ‹
+			// ãƒ„ãƒ¼ãƒ«ã‚­ãƒ£ãƒ³ã‚»ãƒ«
 			KillTimer(hWnd, wParam);
 			ZeroMemory(&tmi, sizeof(TOOL_MENU_INFO));
 			break;
 
 		case ID_PASTE_TIMER:
-			// “o˜^ƒAƒCƒeƒ€‚ğ’¼Ú“\‚è•t‚¯
+			// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã‚’ç›´æ¥è²¼ã‚Šä»˜ã‘
 			if (paste_di == NULL) {
 				KillTimer(hWnd, wParam);
 				break;
@@ -1588,24 +1716,24 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			}
 			KillTimer(hWnd, wParam);
 
-			// ƒf[ƒ^‚ğƒNƒŠƒbƒvƒ{[ƒh‚É‘—‚é
+			// ãƒ‡ãƒ¼ã‚¿ã‚’ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«é€ã‚‹
 			SendMessage(hWnd, WM_ITEM_TO_CLIPBOARD, 0, (LPARAM)paste_di);
 			if (paste_di->op_paste == 1) {
-				// ƒzƒbƒgƒL[‚Ì‰ğœ
+				// ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®è§£é™¤
 				unregist_hotkey(hWnd);
-				// “\‚è•t‚¯
+				// è²¼ã‚Šä»˜ã‘
 				sendkey_paste(GetForegroundWindow());
-				// ƒzƒbƒgƒL[‚Ì“o˜^
+				// ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®ç™»éŒ²
 				regist_hotkey(hWnd, FALSE);
 			}
 			paste_di = NULL;
 			break;
 
 		case ID_KEY_TIMER:
-			// ƒL[‚Q‰ñ‰Ÿ‚µ—p
+			// ã‚­ãƒ¼ï¼’å›æŠ¼ã—ç”¨
 			KillTimer(hWnd, wParam);
 			if (key_cnt > 1) {
-				// ƒL[‚ª‚Q‰ñ‰Ÿ‚³‚ê‚½‚Ì“®ìŒÄ‚Ño‚µ
+				// ã‚­ãƒ¼ãŒï¼’å›æŠ¼ã•ã‚ŒãŸæ™‚ã®å‹•ä½œå‘¼ã³å‡ºã—
 				switch (prev_key) {
 				case VK_CONTROL:
 					action_execute(hWnd, ACTION_TYPE_CTRL_CTRL, 0, TRUE);
@@ -1624,7 +1752,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			break;
 
 		case ID_LCLICK_TIMER:
-			// ƒ^ƒXƒNƒgƒŒƒC¶ƒNƒŠƒbƒN
+			// ã‚¿ã‚¹ã‚¯ãƒˆãƒ¬ã‚¤å·¦ã‚¯ãƒªãƒƒã‚¯
 			if (GetAsyncKeyState(VK_LBUTTON) < 0) {
 				SetTimer(hWnd, ID_LCLICK_TIMER, 1, NULL);
 				break;
@@ -1634,7 +1762,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			break;
 
 		case ID_RCLICK_TIMER:
-			// ƒ^ƒXƒNƒgƒŒƒC‰EƒNƒŠƒbƒN
+			// ã‚¿ã‚¹ã‚¯ãƒˆãƒ¬ã‚¤å³ã‚¯ãƒªãƒƒã‚¯
 			if (GetAsyncKeyState(VK_RBUTTON) < 0) {
 				SetTimer(hWnd, ID_RCLICK_TIMER, 1, NULL);
 				break;
@@ -1646,10 +1774,10 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_TRAY_NOTIFY:
-		// ƒ^ƒXƒNƒgƒŒƒCƒƒbƒZ[ƒW
+		// ã‚¿ã‚¹ã‚¯ãƒˆãƒ¬ã‚¤ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 		switch (LOWORD(lParam)) {
 		case WM_LBUTTONDOWN:
-			// ¶ƒ_ƒuƒ‹ƒNƒŠƒbƒN”»’è—p‚Ìƒ^ƒCƒ}[
+			// å·¦ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯åˆ¤å®šç”¨ã®ã‚¿ã‚¤ãƒãƒ¼
 			SetTimer(hWnd, ID_LCLICK_TIMER,
 				(action_check(ACTION_TYPE_TRAY_LEFT_DBLCLK) == TRUE) ? GetDoubleClickTime() : 1, NULL);
 			break;
@@ -1660,7 +1788,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			break;
 
 		case WM_RBUTTONDOWN:
-			// ‰Eƒ_ƒuƒ‹ƒNƒŠƒbƒN”»’è—p‚Ìƒ^ƒCƒ}[
+			// å³ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯åˆ¤å®šç”¨ã®ã‚¿ã‚¤ãƒãƒ¼
 			SetTimer(hWnd, ID_RCLICK_TIMER,
 				(action_check(ACTION_TYPE_TRAY_RIGHT_DBLCLK) == TRUE) ? GetDoubleClickTime() : 1, NULL);
 			break;
@@ -1676,12 +1804,12 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 				POINT pt;
 
 				active_wnd = GetForegroundWindow();
-				// ƒ^ƒXƒNƒo[‚Ì”»’è
+				// ã‚¿ã‚¹ã‚¯ãƒãƒ¼ã®åˆ¤å®š
 				GetCursorPos(&pt);
 				mouse_wnd = WindowFromPoint(pt);
 				while (mouse_wnd != NULL && mouse_wnd != active_wnd) mouse_wnd = GetParent(mouse_wnd);
 				if (active_wnd != focus_info.active_wnd && active_wnd != hWnd && active_wnd != mouse_wnd) {
-					// ƒtƒH[ƒJƒXî•ñæ“¾
+					// ãƒ•ã‚©ãƒ¼ã‚«ã‚¹æƒ…å ±å–å¾—
 					get_focus_info(&focus_info);
 				}
 			}
@@ -1690,7 +1818,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_KEY_HOOK:
-		// ƒL[ƒ{[ƒhƒtƒbƒN
+		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ•ãƒƒã‚¯
 		switch (wParam) {
 		case VK_CONTROL:
 		case VK_SHIFT:
@@ -1716,7 +1844,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			break;
 
 		default:
-			// ‘¼‚ÌƒL[‚ª‰Ÿ‚³‚ê‚½ê‡‚Í–³Œø‚É‚·‚é
+			// ä»–ã®ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸå ´åˆã¯ç„¡åŠ¹ã«ã™ã‚‹
 			if (key_flag == 1) {
 				key_flag = -1;
 			}
@@ -1726,21 +1854,21 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_HOTKEY:
-		// ƒzƒbƒgƒL[
+		// ãƒ›ãƒƒãƒˆã‚­ãƒ¼
 		action_execute(hWnd, ACTION_TYPE_HOTKEY, (int)wParam, TRUE);
 		break;
 
 	case WM_VIEWER_NOTIFY_CLOSE:
-		// ƒrƒ…[ƒAI—¹’Ê’m
+		// ãƒ“ãƒ¥ãƒ¼ã‚¢çµ‚äº†é€šçŸ¥
 		hViewerWnd = NULL;
 		break;
 
 	case WM_GET_VERSION:
-		// ƒo[ƒWƒ‡ƒ“æ“¾
+		// ãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
 		return APP_VAR;
 
 	case WM_GET_WORKPATH:
-		// ì‹ÆƒfƒBƒŒƒNƒgƒŠæ“¾
+		// ä½œæ¥­ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå–å¾—
 		if (lParam == 0) {
 			break;
 		}
@@ -1748,22 +1876,22 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_GET_CLIPBOARD_WATCH:
-		// ƒNƒŠƒbƒvƒ{[ƒhŠÄ‹ó‘Ô‚Ìæ“¾
+		// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ç›£è¦–çŠ¶æ…‹ã®å–å¾—
 		return option.main_clipboard_watch;
 
 	case WM_SET_CLIPBOARD_WATCH:
-		// ƒNƒŠƒbƒvƒ{[ƒhŠÄ‹Ø‚è‘Ö‚¦
+		// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ç›£è¦–åˆ‡ã‚Šæ›¿ãˆ
 		ZeroMemory(&tmi, sizeof(TOOL_MENU_INFO));
 		if (wParam != 0) {
 			option.main_clipboard_watch = 1;
 			icon_tray = icon_clip;
-			// ƒNƒŠƒbƒvƒ{[ƒhŠÄ‹ŠJn
+			// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ç›£è¦–é–‹å§‹
 			hClipNextWnd = SetClipboardViewer(hWnd);
 			SetTimer(hWnd, ID_RECHAIN_TIMER, RECHAIN_INTERVAL, NULL);
 		} else {
 			option.main_clipboard_watch = 0;
 			icon_tray = icon_clip_ban;
-			// ƒNƒŠƒbƒvƒ{[ƒhŠÄ‹‰ğœ
+			// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ç›£è¦–è§£é™¤
 			KillTimer(hWnd, ID_RECHAIN_TIMER);
 			ChangeClipboardChain(hWnd, hClipNextWnd);
 			hClipNextWnd = NULL;
@@ -1775,7 +1903,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_GET_FORMAT_ICON:
-		// Œ`®—pƒAƒCƒRƒ“‚Ìæ“¾
+		// å½¢å¼ç”¨ã‚¢ã‚¤ã‚³ãƒ³ã®å–å¾—
 		if (lParam != 0) {
 			HICON hIcon, ret;
 			BOOL free_icon = TRUE;
@@ -1793,22 +1921,22 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		return 0;
 
 	case WM_ENABLE_ACCELERATOR:
-		// ƒAƒNƒZƒ‰ƒŒ[ƒ^‚Ì—LŒøE–³Œø‚ÌØ‚è‘Ö‚¦
+		// ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ã®æœ‰åŠ¹ãƒ»ç„¡åŠ¹ã®åˆ‡ã‚Šæ›¿ãˆ
 		accel_flag = (BOOL)wParam;
 		break;
 
 	case WM_REGIST_HOTKEY:
-		// ƒzƒbƒgƒL[‚Ì“o˜^
+		// ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®ç™»éŒ²
 		regist_hotkey(hWnd, TRUE);
 		break;
 
 	case WM_UNREGIST_HOTKEY:
-		// ƒzƒbƒgƒL[‚Ì‰ğœ
+		// ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®è§£é™¤
 		unregist_hotkey(hWnd);
 		break;
 
 	case WM_OPTION_SHOW:
-		// ƒIƒvƒVƒ‡ƒ“•\¦
+		// ã‚ªãƒ—ã‚·ãƒ§ãƒ³è¡¨ç¤º
 		{
 			TCHAR buf[MAX_PATH];
 
@@ -1818,21 +1946,21 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_OPTION_GET:
-		// ƒIƒvƒVƒ‡ƒ“‚Ìæ“¾
+		// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®å–å¾—
 		return (LRESULT)&option;
 
 	case WM_OPTION_LOAD:
-		// İ’è‚Ì“Ç‚İ‚İ
+		// è¨­å®šã®èª­ã¿è¾¼ã¿
 		winodw_reset(hWnd);
 		break;
 
 	case WM_OPTION_SAVE:
-		// İ’è‚Ì•Û‘¶
+		// è¨­å®šã®ä¿å­˜
 		ini_put_option();
 		break;
 
 	case WM_HISTORY_CHANGED:
-		// —š—ğ‚Ì“à—e•Ï‰»
+		// å±¥æ­´ã®å†…å®¹å¤‰åŒ–
 		if (hViewerWnd != NULL) {
 			return SendMessage(hViewerWnd, msg, wParam, lParam);
 		} else {
@@ -1841,11 +1969,11 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_HISTORY_GET_ROOT:
-		// —š—ğƒAƒCƒeƒ€‚Ìæ“¾
+		// å±¥æ­´ã‚¢ã‚¤ãƒ†ãƒ ã®å–å¾—
 		return (LRESULT)&history_data;
 
 	case WM_HISTORY_LOAD:
-		// —š—ğ‚Ì“Ç‚İ‚İ
+		// å±¥æ­´ã®èª­ã¿è¾¼ã¿
 		if (wParam == 0 && option.history_save == 0) {
 			return TRUE;
 		}
@@ -1854,11 +1982,11 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		return load_history(hWnd, wParam);
 
 	case WM_HISTORY_SAVE:
-		// —š—ğ‚Ì•Û‘¶
+		// å±¥æ­´ã®ä¿å­˜
 		return save_history(hWnd, wParam);
 
 	case WM_REGIST_CHANGED:
-		// “o˜^ƒAƒCƒeƒ€‚Ì“à—e•Ï‰»
+		// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã®å†…å®¹å¤‰åŒ–
 		if (hViewerWnd != NULL) {
 			return SendMessage(hViewerWnd, msg, wParam, lParam);
 		} else {
@@ -1867,40 +1995,43 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_REGIST_GET_ROOT:
-		// “o˜^ƒAƒCƒeƒ€‚Ìæ“¾
+		// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã®å–å¾—
 		return (LRESULT)&regist_data;
 
 	case WM_REGIST_LOAD:
-		// “o˜^ƒAƒCƒeƒ€‚Ì“Ç‚İ‚İ
+		// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã®èª­ã¿è¾¼ã¿
 		data_free(regist_data.child);
 		regist_data.child = NULL;
 		return load_regist(hWnd);
 
 	case WM_REGIST_SAVE:
-		// “o˜^ƒAƒCƒeƒ€‚Ì•Û‘¶
+		// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã®ä¿å­˜
 		return save_regist(hWnd);
 
 	case WM_ITEM_TO_CLIPBOARD:
-		// ƒf[ƒ^‚ğƒNƒŠƒbƒvƒ{[ƒh‚Éİ’è
+		// ãƒ‡ãƒ¼ã‚¿ã‚’ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«è¨­å®š
 		if (lParam == 0) {
 			return FALSE;
 		}
 		return item_to_clipboard(hWnd, (DATA_INFO *)lParam, (wParam == 0) ? TRUE : FALSE);
 
 	case WM_ITEM_CREATE:
-		// ƒAƒCƒeƒ€‚Ìì¬
+		// ã‚¢ã‚¤ãƒ†ãƒ ã®ä½œæˆ / create an item
 		switch (wParam) {
 		case TYPE_DATA:
-			// ƒf[ƒ^‚Ìì¬
+			// ãƒ‡ãƒ¼ã‚¿ã®ä½œæˆ
+			// create data with format_name specified in lParam
 			if (lParam == 0) {
 				return 0;
 			}
 			return (LRESULT)data_create_data(0, (TCHAR *)lParam, NULL, 0, TRUE, NULL);
 		case TYPE_ITEM:
-			// ƒAƒCƒeƒ€‚Ìì¬
+			// ã‚¢ã‚¤ãƒ†ãƒ ã®ä½œæˆ
+			// create an item with title specified in lParam
 			return (LRESULT)data_create_item((TCHAR *)lParam, TRUE, NULL);
 		case TYPE_FOLDER:
-			// ƒtƒHƒ‹ƒ_‚Ìì¬
+			// ãƒ•ã‚©ãƒ«ãƒ€ã®ä½œæˆ
+			// create a folder with title specified in lParam
 			if (lParam == 0) {
 				return 0;
 			}
@@ -1909,14 +2040,14 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		return 0;
 
 	case WM_ITEM_COPY:
-		// ƒAƒCƒeƒ€‚ÌƒRƒs[
+		// ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚³ãƒ”ãƒ¼
 		if (lParam == 0) {
 			return 0;
 		}
 		return (LRESULT)data_item_copy((DATA_INFO *)lParam, (BOOL)wParam, FALSE, NULL);
 
 	case WM_ITEM_FREE:
-		// ƒAƒCƒeƒ€‚Ì‰ğ•ú
+		// ã‚¢ã‚¤ãƒ†ãƒ ã®è§£æ”¾
 		if ((DATA_INFO *)lParam == &history_data ||
 			(DATA_INFO *)lParam == &regist_data) {
 			break;
@@ -1925,7 +2056,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_ITEM_FREE_DATA:
-		// ƒf[ƒ^‚Ì‰ğ•ú
+		// ãƒ‡ãƒ¼ã‚¿ã®è§£æ”¾
 		if (wParam == 0 || lParam == 0) {
 			break;
 		}
@@ -1935,7 +2066,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_ITEM_CHECK:
-		// ƒAƒCƒeƒ€‚Ì‘¶İƒ`ƒFƒbƒN
+		// ã‚¢ã‚¤ãƒ†ãƒ ã®å­˜åœ¨ãƒã‚§ãƒƒã‚¯
 		if (data_check(&history_data, (DATA_INFO *)lParam) != NULL) {
 			return 0;
 		}
@@ -1945,7 +2076,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		return -1;
 
 	case WM_ITEM_TO_BYTES:
-		// ƒAƒCƒeƒ€‚©‚çƒoƒCƒg—ñ‚ğæ“¾
+		// ã‚¢ã‚¤ãƒ†ãƒ ã‹ã‚‰ãƒã‚¤ãƒˆåˆ—ã‚’å–å¾—
 		if (lParam != 0) {
 			BYTE *ret;
 
@@ -1957,7 +2088,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_ITEM_FROM_BYTES:
-		// ƒoƒCƒg—ñ‚©‚çƒf[ƒ^‚ğì¬‚µƒAƒCƒeƒ€‚Éİ’è
+		// ãƒã‚¤ãƒˆåˆ—ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’ä½œæˆã—ã‚¢ã‚¤ãƒ†ãƒ ã«è¨­å®š
 		if (lParam == 0) {
 			break;
 		}
@@ -1975,7 +2106,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_ITEM_TO_FILE:
-		// ƒAƒCƒeƒ€‚ğƒtƒ@ƒCƒ‹‚É•Û‘¶
+		// ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜
 		if (lParam != 0) {
 			TCHAR err_str[BUF_SIZE];
 
@@ -1993,7 +2124,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		return FALSE;
 
 	case WM_ITEM_FROM_FILE:
-		// ƒtƒ@ƒCƒ‹‚©‚çƒf[ƒ^‚ğì¬‚µ‚ÄƒAƒCƒeƒ€‚Éİ’è
+		// ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’ä½œæˆã—ã¦ã‚¢ã‚¤ãƒ†ãƒ ã«è¨­å®š
 		if (lParam != 0) {
 			TCHAR err_str[BUF_SIZE];
 
@@ -2020,7 +2151,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		return FALSE;
 
 	case WM_ITEM_GET_PARENT:
-		// eƒAƒCƒeƒ€‚Ìæ“¾
+		// è¦ªã‚¢ã‚¤ãƒ†ãƒ ã®å–å¾—
 		{
 			DATA_INFO *di;
 
@@ -2034,7 +2165,8 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		return (LRESULT)NULL;
 
 	case WM_ITEM_GET_FORMAT_TO_ITEM:
-		// Œ`®–¼‚©‚çƒAƒCƒeƒ€‚ğæ“¾
+		// å½¢å¼åã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—
+		// get item by format name
 		if (lParam != 0 && wParam != 0) {
 			DATA_INFO *di = (DATA_INFO *)lParam;
 
@@ -2052,21 +2184,21 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		return (LRESULT)NULL;
 
 	case WM_ITEM_GET_PRIORITY_HIGHEST:
-		// —Dæ‡ˆÊ‚Ì‚‚¢Œ`®‚ÌƒAƒCƒeƒ€‚ğ‘I‘ğ
+		// å„ªå…ˆé †ä½ã®é«˜ã„å½¢å¼ã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’é¸æŠ
 		return (LRESULT)format_get_priority_highest((DATA_INFO *)lParam);
 
 	case WM_ITEM_GET_TITLE:
-		// ƒAƒCƒeƒ€‚Ìƒ^ƒCƒgƒ‹æ“¾
+		// ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚¿ã‚¤ãƒˆãƒ«å–å¾—
 		if (lParam != 0) {
 			DATA_INFO *di;
 
 			di = format_get_priority_highest((DATA_INFO *)lParam);
 			data_menu_free_item(di);
-			// ƒƒjƒ…[‚É•\¦‚·‚éƒ^ƒCƒgƒ‹‚ğæ“¾
+			// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ã‚¿ã‚¤ãƒˆãƒ«ã‚’å–å¾—
 			format_get_menu_title(di);
-			// ƒƒjƒ…[‚É•\¦‚·‚éƒAƒCƒRƒ“‚ğæ“¾
+			// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ã‚¢ã‚¤ã‚³ãƒ³ã‚’å–å¾—
 			format_get_menu_icon(di);
-			// ƒƒjƒ…[‚É•\¦‚·‚éƒrƒbƒgƒ}ƒbƒv‚ğæ“¾
+			// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’å–å¾—
 			format_get_menu_bitmap(di);
 
 			if ((TCHAR *)wParam != NULL) {
@@ -2076,40 +2208,63 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		break;
 
 	case WM_ITEM_GET_OPEN_INFO:
-		// ƒAƒCƒeƒ€‚ğŠJ‚­î•ñ
+		// ã‚¢ã‚¤ãƒ†ãƒ ã‚’é–‹ãæƒ…å ±
 		return format_get_file_info((TCHAR *)lParam, NULL, (OPENFILENAME *)wParam, TRUE);
 
 	case WM_ITEM_GET_SAVE_INFO:
-		// ƒAƒCƒeƒ€‚Ì•Û‘¶î•ñ
+		// ã‚¢ã‚¤ãƒ†ãƒ ã®ä¿å­˜æƒ…å ±
 		return format_get_file_info(((DATA_INFO *)lParam)->format_name, (DATA_INFO *)lParam,
 			(OPENFILENAME *)wParam, FALSE);
 
 	case WM_VIEWER_SHOW:
-		// ƒrƒ…[ƒA•\¦
+		// ãƒ“ãƒ¥ãƒ¼ã‚¢è¡¨ç¤º
 		SendMessage(hWnd, WM_COMMAND, ID_MENUITEM_VIEWER, 0);
 		break;
 
 	case WM_VIEWER_GET_HWND:
-		// ƒrƒ…[ƒA‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹‚ğæ“¾
+		// ãƒ“ãƒ¥ãƒ¼ã‚¢ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 		return (LRESULT)hViewerWnd;
 
 	case WM_VIEWER_GET_MAIN_HWND:
-		// –{‘Ì‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹‚ğæ“¾
+		// æœ¬ä½“ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 		return (LRESULT)hWnd;
 
 	case WM_VIEWER_GET_SELECTION:
-		// ‘I‘ğƒAƒCƒeƒ€‚ğæ“¾
+		// é¸æŠã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—
 		if (hViewerWnd != NULL) {
 			return SendMessage(hViewerWnd, msg, wParam, lParam);
 		}
 		return (LRESULT)NULL;
 
 	case WM_VIEWER_SELECT_ITEM:
-		// ƒcƒŠ[ƒAƒCƒeƒ€‚ğ‘I‘ğ
+		// ãƒ„ãƒªãƒ¼ã‚¢ã‚¤ãƒ†ãƒ ã‚’é¸æŠ
 		if (hViewerWnd != NULL) {
 			return SendMessage(hViewerWnd, msg, wParam, lParam);
 		}
 		return FALSE;
+
+	case WM_WTSSESSION_CHANGE:
+		// ã‚»ãƒƒã‚·ãƒ§ãƒ³ã®å¤‰æ›´
+		// Session changes
+		switch (wParam) {
+		case WTS_SESSION_LOGON:
+			// tools to be executed when user re_enters session
+			tool_execute_all(hWnd, CALLTYPE_ENTER_SESSION, NULL);
+			break;
+		case WTS_SESSION_LOGOFF:
+			// tools to be executed when user leaves session
+			tool_execute_all(hWnd, CALLTYPE_LEAVE_SESSION, NULL);
+			break;
+		case WTS_SESSION_LOCK:
+			// tools to be executed when user leaves session
+			tool_execute_all(hWnd, CALLTYPE_LEAVE_SESSION, NULL);
+			break;
+		case WTS_SESSION_UNLOCK:
+			// tools to be executed when user re_enters session
+			tool_execute_all(hWnd, CALLTYPE_ENTER_SESSION, NULL);
+			break;
+		}
+		break;
 
 	default:
 		if (msg == WM_TASKBARCREATED) {
@@ -2121,7 +2276,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 }
 
 /*
- * copy_old_file - ‹Œƒo[ƒWƒ‡ƒ“‚Ìƒtƒ@ƒCƒ‹‚ğˆÚs
+ * copy_old_file - æ—§ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç§»è¡Œ
  */
 static void copy_old_file()
 {
@@ -2133,13 +2288,13 @@ static void copy_old_file()
 
 	lstrcpy(tmp_path, app_path);
 
-	// Œ»İ‚ÌƒƒOƒCƒ“ƒ†[ƒU–¼‚Ìæ“¾
+	// ç¾åœ¨ã®ãƒ­ã‚°ã‚¤ãƒ³ãƒ¦ãƒ¼ã‚¶åã®å–å¾—
 	i = BUF_SIZE - 1;
 	if (GetUserName(user_name, &i) == FALSE) {
 		lstrcpy(user_name, DEFAULT_USER);
 	}
 
-	// ‹¤’Ê‚Ìİ’è‚ğg—p‚·‚éê‡‚Ìƒ†[ƒU–¼‚Ìæ“¾
+	// å…±é€šã®è¨­å®šã‚’ä½¿ç”¨ã™ã‚‹å ´åˆã®ãƒ¦ãƒ¼ã‚¶åã®å–å¾—
 	wsprintf(general_ini_path, TEXT("%s\\%s"), app_path, GENERAL_INI);
 	if (PathFileExists(general_ini_path) == FALSE) {
 		if (!SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0, tmp_path))) {
@@ -2188,13 +2343,13 @@ static void copy_old_file()
 }
 
 /*
- * get_work_path - ì‹ÆƒfƒBƒŒƒNƒgƒŠ‚Ìì¬
+ * get_work_path - ä½œæ¥­ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ä½œæˆ
  */
 static void get_work_path(const HINSTANCE hInstance)
 {
 	TCHAR *p, *r;
 
-	// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒpƒX‚ğæ“¾
+	// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ‘ã‚¹ã‚’å–å¾—
 	GetModuleFileName(hInstance, app_path, MAX_PATH - 1);
 	for (p = r = app_path; *p != TEXT('\0'); p++) {
 #ifndef UNICODE
@@ -2236,7 +2391,7 @@ static void get_work_path(const HINSTANCE hInstance)
 }
 
 /*
- * commnad_line_func - ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ˆ—
+ * commnad_line_func - ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³å‡¦ç†
  */
 static void commnad_line_func(const HWND hWnd)
 {
@@ -2248,7 +2403,7 @@ static void commnad_line_func(const HWND hWnd)
 	}
 
 	p = GetCommandLine();
-	// Àsƒtƒ@ƒCƒ‹–¼‚Ìœ‹
+	// å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«åã®é™¤å»
     if (*p == TEXT('"')) {
 		for (p++; *p != TEXT('\0') && *p != TEXT('"'); p++)
 			;
@@ -2275,7 +2430,7 @@ static void commnad_line_func(const HWND hWnd)
 		}
 		switch (*p) {
 		case TEXT('v'): case TEXT('V'):
-			// ƒrƒ…[ƒA•\¦
+			// ãƒ“ãƒ¥ãƒ¼ã‚¢è¡¨ç¤º
 			vWnd = (HWND)SendMessage(hWnd, WM_VIEWER_GET_HWND, 0, 0);
 			if (vWnd == NULL) {
 				SendMessage(hWnd, WM_VIEWER_SHOW, 0, 0);
@@ -2288,17 +2443,17 @@ static void commnad_line_func(const HWND hWnd)
 			break;
 
 		case TEXT('w'): case TEXT('W'):
-			// ƒNƒŠƒbƒvƒ{[ƒhŠÄ‹
+			// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ç›£è¦–
 			SendMessage(hWnd, WM_SET_CLIPBOARD_WATCH, 1, 0);
 			break;
 
 		case TEXT('n'): case TEXT('N'):
-			// ƒNƒŠƒbƒvƒ{[ƒhŠÄ‹‰ğœ
+			// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ç›£è¦–è§£é™¤
 			SendMessage(hWnd, WM_SET_CLIPBOARD_WATCH, 0, 0);
 			break;
 
 		case TEXT('x'): case TEXT('X'):
-			// I—¹
+			// çµ‚äº†
 			SendMessage(hWnd, WM_CLOSE, 0, 0);
 			break;
 		}
@@ -2306,7 +2461,7 @@ static void commnad_line_func(const HWND hWnd)
 }
 
 /*
- * init_application - ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì“o˜^
+ * init_application - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ç™»éŒ²
  */
 static BOOL init_application(const HINSTANCE hInstance)
 {
@@ -2322,18 +2477,18 @@ static BOOL init_application(const HINSTANCE hInstance)
 	wc.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
 	wc.lpszMenuName = NULL;
 	wc.lpszClassName = MAIN_WND_CLASS;
-	// ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì“o˜^
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ç™»éŒ²
 	return RegisterClass(&wc);
 }
 
 /*
- * init_instance - ƒEƒBƒ“ƒhƒE‚Ìì¬
+ * init_instance - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½œæˆ
  */
 static HWND init_instance(const HINSTANCE hInstance, const int CmdShow)
 {
 	HWND hWnd;
 
-	// ƒEƒBƒ“ƒhƒE‚Ìì¬
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½œæˆ
 	hWnd = CreateWindow(MAIN_WND_CLASS,
 		MAIN_WINDOW_TITLE,
 		WS_OVERLAPPEDWINDOW,
@@ -2346,7 +2501,7 @@ static HWND init_instance(const HINSTANCE hInstance, const int CmdShow)
 }
 
 /*
- * WinMain - ƒƒCƒ“
+ * WinMain - ãƒ¡ã‚¤ãƒ³
  */
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
 {
@@ -2362,7 +2517,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 	hInst = hInstance;
 
 #ifndef _DEBUG
-	// 2d‹N“®ƒ`ƒFƒbƒN
+	// 2é‡èµ·å‹•ãƒã‚§ãƒƒã‚¯
 	InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
 	SetSecurityDescriptorDacl(&sd, TRUE, 0, FALSE);	    
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -2370,7 +2525,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 	sa.bInheritHandle = TRUE; 
 	hMutex = CreateMutex(&sa, FALSE, MUTEX);
 	if (GetLastError() == ERROR_ALREADY_EXISTS) {
-		// ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ˆ—
+		// ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³å‡¦ç†
 		commnad_line_func(FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE));
 		if (hMutex != NULL) {
 			CloseHandle(hMutex);
@@ -2379,13 +2534,13 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 	}
 #endif
 
-	// DPI‚Ì‰Šú‰»
+	// DPIã®åˆæœŸåŒ–
 	InitDpi();
-	// CommonControl‚Ì‰Šú‰»
+	// CommonControlã®åˆæœŸåŒ–
 	InitCommonControls();
-	// OLE‚Ì‰Šú‰»
+	// OLEã®åˆæœŸåŒ–
 	OleInitialize(NULL);
-	// İ’èæ“¾
+	// è¨­å®šå–å¾—
 	get_work_path(hInstance);
 	if (ini_get_option(err_str) == FALSE) {
 		MessageBox(NULL, err_str, ERROR_TITLE, MB_ICONERROR);
@@ -2395,7 +2550,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 		return 0;
 	}
 
-	// ƒrƒ…[ƒA‚Ì“o˜^
+	// ãƒ“ãƒ¥ãƒ¼ã‚¢ã®ç™»éŒ²
 	if (viewer_regist(hInstance) == FALSE ||
 		container_regist(hInstance) == FALSE || binview_regist(hInstance) == FALSE) {
 		MessageBox(NULL, message_get_res(IDS_ERROR_WINDOW_INIT), ERROR_TITLE, MB_ICONERROR);
@@ -2404,7 +2559,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 		}
 		return 0;
 	}
-	// ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Ìì¬
+	// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½œæˆ
 	if (tooltip_regist(hInstance) == FALSE ||
 		init_application(hInstance) == FALSE || init_instance(hInstance, nCmdShow) == NULL) {
 		MessageBox(NULL, message_get_res(IDS_ERROR_WINDOW_INIT), ERROR_TITLE, MB_ICONERROR);
@@ -2414,7 +2569,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 		return 0;
 	}
 	hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDR_ACCELERATOR));
-	// ƒEƒBƒ“ƒhƒEƒƒbƒZ[ƒWˆ—
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†
 	while (GetMessage(&msg, NULL, 0, 0) == TRUE) {
 		if (accel_flag == TRUE && hViewerWnd != NULL && hViewerWnd == GetForegroundWindow() &&
 			(TranslateAccelerator(hViewerWnd, hAccel, &msg) == TRUE)) {
@@ -2424,7 +2579,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 		DispatchMessage(&msg);
 	}
 
-	// İ’è‚Ì‰ğ•ú
+	// è¨­å®šã®è§£æ”¾
 	ini_free();
 	OleUninitialize();
 	if (hMutex != NULL) {

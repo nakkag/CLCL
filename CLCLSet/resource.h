@@ -8,6 +8,7 @@
 #define IDS_MENU_VIEWER                 4
 #define IDS_MENU_OPTION                 5
 #define IDS_MENU_CLIPBOARD_WATCH        6
+#define IDS_MENU_HELP                   7
 #define IDS_TREEITEM_REGIST             12
 #define IDD_DIALOG_HISTORY              101
 #define IDD_DIALOG_ACTION               102
@@ -129,6 +130,8 @@
 #define IDC_HOTKEY_TOOL                 1088
 #define IDC_CHECK_COPY_PATE             1089
 #define IDC_CHECK_VIEWER_CLOSE          1090
+#define IDC_CHECK_ENTER_SESSION         1091
+#define IDC_CHECK_LEAVE_SESSION         1092
 #define IDC_STATIC_PATH                 1095
 #define IDC_CHECK_IGNORE                1097
 #define IDC_CHECK_FOCUS                 1098
@@ -150,6 +153,9 @@
 #define IDC_RADIO_DEF_SAVE              1116
 #define IDC_LIST_ICON                   1127
 #define IDC_EDIT_FILE                   1128
+#define IDC_EDIT_CLIPBOARD_DELAY        1129
+#define IDC_SPIN_CLIPBOARD_DELAY        1130
+#define IDC_UI_LANGUAGE                 1131
 #define IDS_MENU_FORMAT_1               2001
 #define IDS_MENU_FORMAT_2               2002
 #define IDS_MENU_FORMAT_3               2003
@@ -161,6 +167,11 @@
 #define IDS_MENU_FORMAT_9               2009
 #define IDS_MENU_FORMAT_10              2010
 #define IDS_MENU_FORMAT_11              2011
+#define IDS_MAIN_JAPANESE               2049
+#define IDS_MAIN_ENGLISH                2050
+#define IDS_MAIN_GERMAN                 2051
+#define IDS_MAIN_UKRAINIAN              2052
+#define IDS_MAIN_SIMP_CHINESE           2053
 #define IDS_VIEWER_CLIPBOARD            3000
 #define IDS_VIEWER_HISTORY              3001
 #define IDS_VIEWER_REGIST               3002
@@ -201,6 +212,7 @@
 #define IDS_ACTION_TOOL_ALL             4034
 #define IDS_ACTION_TITLE_PATH           4035
 #define IDS_ACTION_TITLE_TOOL           4036
+#define IDS_ACTION_CONTENT_HELP         4037
 #define IDS_FORMAT_LIST_NAME            5000
 #define IDS_FORMAT_LIST_DLL             5001
 #define IDS_FORMAT_LIST_HEADER          5002
@@ -248,14 +260,16 @@
 #define IDS_TOOL_SELECT_MSG             9006
 #define IDS_TOOL_NON_PROP               9007
 #define IDS_TOOL_ERR_TITLE              9008
+#define IDH_VIEWER_HELP                 30000
+#define IDH_OPTIONS_HELP                30001
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        126
+#define _APS_NEXT_RESOURCE_VALUE        127
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1117
+#define _APS_NEXT_CONTROL_VALUE         1132
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

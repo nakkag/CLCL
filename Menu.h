@@ -31,57 +31,77 @@
 #define MENU_CONTENT_APP				10
 #define MENU_CONTENT_CANCEL				11
 #define MENU_CONTENT_EXIT				12
+#define MENU_CONTENT_HELP				13
 
 /* Struct */
 // menu item
 typedef struct _MENU_ITEM_INFO {
-	UINT id;							// ƒƒjƒ…[ID
-	UINT flag;							// ƒƒjƒ…[ƒtƒ‰ƒO
-	LPCTSTR item;						// ƒƒjƒ…[€–Ú‚Ì“à—e
+	UINT id;						// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ID         / MenuID
+	UINT flag;						// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒ•ãƒ©ã‚°     / MenuFlag
+	LPCTSTR item;					// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®ã®å†…å®¹ / Menu item content
 
-	TCHAR *text;						// ƒƒjƒ…[‚É•\¦‚·‚éƒeƒLƒXƒg
-	int text_x;							// ƒeƒLƒXƒg‚ÌˆÊ’u
+	TCHAR *text;					// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ãƒ†ã‚­ã‚¹ãƒˆ / menu item text
+	int text_x;						// ãƒ†ã‚­ã‚¹ãƒˆã®ä½ç½®             / text position
 	int text_y;
 
-	HICON icon;							// ƒƒjƒ…[‚É•\¦‚·‚éƒAƒCƒRƒ“
+	HICON icon;						// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ã‚¢ã‚¤ã‚³ãƒ³ / menu item icon
 	BOOL free_icon;
 
 	TCHAR *hkey;
 
-	BOOL show_format;					// Œ`®•\¦
-	BOOL show_bitmap;					// ƒrƒbƒgƒ}ƒbƒv•\¦
+	BOOL show_format;				// å½¢å¼è¡¨ç¤º           / whether to show format
+	BOOL show_bitmap;				// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—è¡¨ç¤º   / wether to show bitmap
 
-	DATA_INFO *set_di;					// ƒf[ƒ^î•ñ
-	DATA_INFO *show_di;					// •\¦‚·‚éƒf[ƒ^î•ñ
+	DATA_INFO *set_di;				// ãƒ‡ãƒ¼ã‚¿æƒ…å ±         / data information
+	DATA_INFO *show_di;				// è¡¨ç¤ºã™ã‚‹ãƒ‡ãƒ¼ã‚¿æƒ…å ± / data information to display
 
-	TOOL_INFO *ti;						// ƒc[ƒ‹î•ñ
+	TOOL_INFO *ti;					// ãƒ„ãƒ¼ãƒ«æƒ…å ±         / tool information
 
-	struct _MENU_INFO *mi;				// Œ³‚Æ‚È‚éMENU_INFO\‘¢‘Ì
+	struct _MENU_INFO *mi;			// å…ƒã¨ãªã‚‹MENU_INFOæ§‹é€ ä½“  / original MENU_INFO structure
 
 	// popup
-	struct _MENU_ITEM_INFO *mii;		// ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[‚ÌqƒAƒCƒeƒ€ 
-	int mii_cnt;						// ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[‚ÌqƒAƒCƒeƒ€‚Ì”
+	struct _MENU_ITEM_INFO *mii;	// ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®å­ã‚¢ã‚¤ãƒ†ãƒ      / Popup menu child items
+	int mii_cnt;					// ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®å­ã‚¢ã‚¤ãƒ†ãƒ ã®æ•° / Number of child items in popup menu
 } MENU_ITEM_INFO;
 
 // menu info
 typedef struct _MENU_INFO {
-	int content;						// MENU_CONTENT_
-	TCHAR *title;						// ƒƒjƒ…[‚É•\¦‚·‚éƒ^ƒCƒgƒ‹
+	// MENU_CONTENT_
+	int content;
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ã‚¿ã‚¤ãƒˆãƒ« 
+	// menu title 
+	TCHAR *title;
 
 	// icon
-	TCHAR *icon_path;					// ƒƒjƒ…[‚É•\¦‚·‚éƒAƒCƒRƒ“‚ÌƒpƒX (‹ó‚Ìê‡‚Í–{‘Ì)
-	int icon_index;						// ƒƒjƒ…[‚É•\¦‚·‚éƒAƒCƒRƒ“‚ÌƒCƒ“ƒfƒbƒNƒX
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ã‚¢ã‚¤ã‚³ãƒ³ã®ãƒ‘ã‚¹ (ç©ºã®å ´åˆã¯æœ¬ä½“)
+	// Path of icon to be displayed in menu (body if empty)
+	TCHAR *icon_path;
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ã‚¢ã‚¤ã‚³ãƒ³ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	// index of the icon to be displayed in the menu
+	int icon_index;
 
-	// path
-	TCHAR *path;						// ƒpƒX (MENU_CONTENT_REGIST, MENU_CONTENT_APP)
-	TCHAR *cmd;							// ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ (MENU_CONTENT_APP)
+	// content
+	// ãƒ‘ã‚¹ (MENU_CONTENT_REGIST, MENU_CONTENT_APP)
+	// Path (MENU_CONTENT_REGIST, MENU_CONTENT_APP)
+	TCHAR *path;
+	// ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ (MENU_CONTENT_APP)
+	// Command line (MENU_CONTENT_APP) 
+	TCHAR *cmd;
 
-	int min;							// —š—ğ‚Ì•\¦ŠJn’l (MENU_CONTENT_HISTORY)
-	int max;							// —š—ğ‚Ì•\¦I—¹’l (MENU_CONTENT_HISTORY)
+	// å±¥æ­´ã®è¡¨ç¤ºé–‹å§‹å€¤ (MENU_CONTENT_HISTORY)
+	// Value of first history display (MENU_CONTENT_HISTORY)
+	int min;
+	// å±¥æ­´ã®è¡¨ç¤ºçµ‚äº†å€¤ (MENU_CONTENT_HISTORY)
+	// Value of last history display (MENU_CONTENT_HISTORY)
+	int max;
 
 	// popup
-	struct _MENU_INFO *mi;				// ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[‚ÌqƒAƒCƒeƒ€ (MENU_CONTENT_POPUP)
-	int mi_cnt;							// ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[‚ÌqƒAƒCƒeƒ€‚Ì”
+	// ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®å­ã‚¢ã‚¤ãƒ†ãƒ  (MENU_CONTENT_POPUP)
+	// Popup menu child items (MENU_CONTENT_POPUP)
+	struct _MENU_INFO *mi;
+	// ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®å­ã‚¢ã‚¤ãƒ†ãƒ ã®æ•°
+	// Number of child items in the popup menu
+	int mi_cnt;
 } MENU_INFO;
 
 /* Function Prototypes */

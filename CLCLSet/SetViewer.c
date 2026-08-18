@@ -29,13 +29,19 @@
 extern HINSTANCE hInst;
 extern int prop_ret;
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
+
+const TCHAR jpn_locale[] = TEXT("ja");
+const TCHAR eng_locale[] = TEXT("en");
+const TCHAR ger_locale[] = TEXT("de");
+const TCHAR ukr_locale[] = TEXT("uk");
+const TCHAR chs_locale[] = TEXT("zh-Hans");
 
 /* Local Function Prototypes */
 
 /*
- * set_viewer_proc - ƒrƒ…[ƒAÝ’è‚ÌƒvƒƒV[ƒWƒƒ
+ * set_viewer_proc - ãƒ“ãƒ¥ãƒ¼ã‚¢è¨­å®šã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 BOOL CALLBACK set_viewer_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -61,15 +67,15 @@ BOOL CALLBACK set_viewer_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 		for (p = option.tree_root_order; *p != TEXT('\0'); p++) {
 			switch (*p) {
-			// ƒNƒŠƒbƒvƒ{[ƒh
+			// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰
 			case TEXT('0'):
 				r = message_get_res(IDS_VIEWER_CLIPBOARD);
 				break;
-			// —š—ð
+			// å±¥æ­´
 			case TEXT('1'):
 				r = message_get_res(IDS_VIEWER_HISTORY);
 				break;
-			// “o˜^ƒAƒCƒeƒ€
+			// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ 
 			case TEXT('2'):
 				r = message_get_res(IDS_VIEWER_REGIST);
 				break;
@@ -99,10 +105,45 @@ BOOL CALLBACK set_viewer_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 			CheckDlgButton(hDlg, IDC_RADIO_DEF_SAVE, 1);
 			break;
 		}
+
+		// fill combobox with languages
+		int index = 0;
+		// at first empty row => do not set language
+		index = (int)SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_ADDSTRING, 0, (LPARAM)TEXT(""));
+		SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_SETITEMDATA, index, (LPARAM)NULL);
+		// now the available languages
+		index = (int)SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_ADDSTRING, 0, (LPARAM)message_get_res(IDS_MAIN_JAPANESE));
+		SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_SETITEMDATA, index, (LPARAM)jpn_locale);
+		index = (int)SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_ADDSTRING, 0, (LPARAM)message_get_res(IDS_MAIN_ENGLISH));
+		SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_SETITEMDATA, index, (LPARAM)eng_locale);
+		index = (int)SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_ADDSTRING, 0, (LPARAM)message_get_res(IDS_MAIN_GERMAN));
+		SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_SETITEMDATA, index, (LPARAM)ger_locale);
+		index = (int)SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_ADDSTRING, 0, (LPARAM)message_get_res(IDS_MAIN_UKRAINIAN));
+		SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_SETITEMDATA, index, (LPARAM)ukr_locale);
+		index = (int)SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_ADDSTRING, 0, (LPARAM)message_get_res(IDS_MAIN_SIMP_CHINESE));
+		SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_SETITEMDATA, index, (LPARAM)chs_locale);
+
+		// init with no selection
+		SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_SETCURSEL, -1, 0);
+		// select language in the combobox according to option.main_language
+		int count = (int)SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_GETCOUNT, 0, 0);
+		for (int i = 0; i < count; i++) {
+			TCHAR* lang = (TCHAR*)SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_GETITEMDATA, i, 0);
+			if (lang != NULL && lstrcmp(lang, option.main_language) == 0) {
+				SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_SETCURSEL, i, 0);
+				break; // exit for-loop
+			}
+		}
+
 		break;
 
 	case WM_NOTIFY:
 		return OptionNotifyProc(hDlg, uMsg, wParam, lParam);
+
+	case WM_HELP:
+		if (show_help(IDD_DIALOG_VIEWER, (LPHELPINFO)lParam))
+			return TRUE;
+		break;
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
@@ -166,6 +207,19 @@ BOOL CALLBACK set_viewer_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 			} else {
 				option.list_default_action = 0;
 			}
+
+			// get the currently selected language from combobox
+			int index = (int)SendDlgItemMessage(hDlg, IDC_UI_LANGUAGE, CB_GETCURSEL, 0, 0);
+			TCHAR* lang = NULL;
+			if (index >= 0 && (lang = (TCHAR*)SendDlgItemMessage(
+				hDlg, IDC_UI_LANGUAGE, CB_GETITEMDATA, index, 0)) != NULL) {
+				lstrcpyn(option.main_language, lang, LOCALE_NAME_MAX_LENGTH);
+			}
+			else {
+				// nothing found, clear language option
+				option.main_language[0] = '\0';
+			}
+
 			prop_ret = 1;
 			break;
 

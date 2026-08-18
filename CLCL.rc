@@ -134,6 +134,8 @@ BEGIN
     END
     POPUP "ヘルプ(&H)"
     BEGIN
+        MENUITEM "ヘルプ (プレーンテキスト)",          ID_MENUITEM_HELP_JP
+        MENUITEM "ヘルプ (英語)",                      ID_MENUITEM_HELP
         MENUITEM "バージョン情報(&A)...",              ID_MENUITEM_ABOUT
     END
 END
@@ -144,6 +146,7 @@ BEGIN
     BEGIN
         MENUITEM "登録アイテムに追加(&R)...\tCtrl+R",    ID_MENUITEM_REGIST_ADD
         MENUITEM "名前を付けて保存(&S)...\tCtrl+S",     ID_MENUITEM_DATA_SAVE
+        MENUITEM "バイナリとして表示",              ID_MENUITEM_SHOWBINARY
         MENUITEM SEPARATOR
         POPUP "設定(&O)"
         BEGIN
@@ -156,6 +159,7 @@ BEGIN
         MENUITEM "クリップボードに送る(&C)\tCtrl+C",      ID_MENUITEM_CLIPBOARD
         MENUITEM "クリップボードから貼り付け(&P)\tCtrl+V",   ID_MENUITEM_PASTE
         MENUITEM "登録アイテムに追加(&R)...\tCtrl+R",    ID_MENUITEM_REGIST_ADD
+        MENUITEM "バイナリとして表示",              ID_MENUITEM_SHOWBINARY
         MENUITEM "ツール(&T)",                     ID_MENUITEM_TOOL_MENU
         MENUITEM SEPARATOR
         MENUITEM "上へ(&U)\tAlt+↑",               ID_MENUITEM_UP
@@ -178,6 +182,7 @@ BEGIN
         MENUITEM "クリップボードに送る(&C)\tCtrl+C",      ID_MENUITEM_CLIPBOARD
         MENUITEM "クリップボードから貼り付け(&P)\tCtrl+V",   ID_MENUITEM_PASTE
         MENUITEM "登録アイテムに追加(&R)...\tCtrl+R",    ID_MENUITEM_REGIST_ADD
+        MENUITEM "バイナリとして表示",              ID_MENUITEM_SHOWBINARY
         MENUITEM "ツール(&T)",                     ID_MENUITEM_TOOL_MENU
         MENUITEM SEPARATOR
         MENUITEM "上へ(&U)\tAlt+↑",               ID_MENUITEM_UP
@@ -192,6 +197,7 @@ BEGIN
     BEGIN
         MENUITEM "クリップボードに送る(&C)\tCtrl+C",      ID_MENUITEM_CLIPBOARD
         MENUITEM "クリップボードから貼り付け(&P)\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "バイナリとして表示",              ID_MENUITEM_SHOWBINARY
         MENUITEM "ツール(&T)",                     ID_MENUITEM_TOOL_MENU
         MENUITEM SEPARATOR
         MENUITEM "上へ(&U)\tAlt+↑",               ID_MENUITEM_UP
@@ -221,6 +227,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "クリップボードに送る(&C)\tCtrl+C",      ID_MENUITEM_CLIPBOARD
         MENUITEM "クリップボードから貼り付け(&P)\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "バイナリとして表示",              ID_MENUITEM_SHOWBINARY
         MENUITEM "ツール(&T)",                     ID_MENUITEM_TOOL_MENU
         MENUITEM SEPARATOR
         MENUITEM "上へ(&U)\tAlt+↑",               ID_MENUITEM_UP
@@ -277,6 +284,7 @@ BEGIN
     VK_ESCAPE,      ID_MENUITEM_CLOSE,      VIRTKEY, NOINVERT
     VK_TAB,         ID_ACCEL_CTRL_TAB,      VIRTKEY, CONTROL, NOINVERT
     VK_UP,          ID_MENUITEM_UP,         VIRTKEY, ALT, NOINVERT
+    VK_F1,          ID_MENUITEM_HELP,       VIRTKEY, NOINVERT
 END
 
 
@@ -288,7 +296,7 @@ END
 IDD_DIALOG_SELECT_FOLDER DIALOG 0, 0, 211, 195
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "フォルダの選択"
-FONT 9, "ＭＳ Ｐゴシック"
+FONT 9, "MS Shell Dlg"
 BEGIN
     LTEXT           "msg",IDC_STATIC_MSG,5,5,203,15
     CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,25,200,145
@@ -300,7 +308,7 @@ IDD_DIALOG_SELECT_FORMAT DIALOGEX 0, 0, 202, 105
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_ACCEPTFILES
 CAPTION "新規作成"
-FONT 9, "ＭＳ Ｐゴシック", 0, 0, 0x1
+FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     LTEXT           "追加する形式(&A):",IDC_STATIC,5,5,115,10
     COMBOBOX        IDC_COMBO_FORMAT,5,15,190,145,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
@@ -315,7 +323,7 @@ END
 IDD_DIALOG_SET_HOTKEY DIALOG 0, 0, 127, 73
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "ホットキー設定"
-FONT 9, "ＭＳ Ｐゴシック"
+FONT 9, "MS Shell Dlg"
 BEGIN
     LTEXT           "ホットキー(&H):",IDC_STATIC,10,5,75,10
     CONTROL         "HotKey1",IDC_HOTKEY_ITEM,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,10,15,75,15
@@ -323,6 +331,26 @@ BEGIN
     CONTROL         "貼り付け(&P)",IDC_CHECK_PASTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,35,75,10
     DEFPUSHBUTTON   "OK",IDOK,10,50,50,14
     PUSHBUTTON      "キャンセル",IDCANCEL,65,50,50,14
+END
+
+IDD_SEARCH_ITEM DIALOGEX 0, 0, 209, 141
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Search Item"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Search text",IDC_STATIC,12,14,66,8
+    EDITTEXT        IDC_SEARCHTEXT,84,12,114,12,ES_AUTOHSCROLL
+    CONTROL         "Search for date",IDC_CHK_SRCHDATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,30,78,10
+    LTEXT           "from",IDC_STATIC,12,51,42,8
+    CONTROL         "",IDC_DATEFROM,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_SHORTDATECENTURYFORMAT | WS_DISABLED | WS_TABSTOP,54,48,54,15
+    CONTROL         "",IDC_TIMEFROM,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_DISABLED | WS_TABSTOP | 0x8,108,48,54,15,WS_EX_STATICEDGE
+    LTEXT           "until",IDC_STATIC,12,75,42,8
+    CONTROL         "",IDC_DATEUNTIL,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_SHORTDATECENTURYFORMAT | WS_DISABLED | WS_TABSTOP,54,72,54,15
+    CONTROL         "",IDC_TIMEUNTIL,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_DISABLED | WS_TABSTOP | 0x8,108,72,54,15
+    LTEXT           "from application",IDC_STATIC,12,98,66,8
+    EDITTEXT        IDC_FROM_APPLICATION,84,96,114,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,96,120,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,150,120,50,14
 END
 
 
@@ -357,8 +385,27 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 66
     END
+
+    IDD_SEARCH_ITEM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 202
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_SEARCH_ITEM AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -418,8 +465,8 @@ IDR_TOOLBAR48           BITMAP                  "res\\toolbar48.bmp"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,1,3,0
- PRODUCTVERSION 2,1,3,0
+ FILEVERSION 2,1,7,0
+ PRODUCTVERSION 2,1,7,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -434,13 +481,13 @@ BEGIN
     BEGIN
         BLOCK "041104b0"
         BEGIN
-            VALUE "FileDescription", "CLCL"
-            VALUE "FileVersion", "2.1.3.0"
+            VALUE "FileDescription", "CLCL Clipboard Manager"
+            VALUE "FileVersion", "2.1.7.0"
             VALUE "InternalName", "CLCL.exe"
-            VALUE "LegalCopyright", "Copyright (C) 1996-2022 by Ohno Tomoaki. All rights reserved."
+            VALUE "LegalCopyright", "Copyright (C) 1996-2024 by Ohno Tomoaki. 2024-2026 MIT license."
             VALUE "OriginalFilename", "CLCL.exe"
             VALUE "ProductName", "CLCL"
-            VALUE "ProductVersion", "2.1.3.0"
+            VALUE "ProductVersion", "2.1.7"
         END
     END
     BLOCK "VarFileInfo"
@@ -463,6 +510,7 @@ BEGIN
     IDS_MENU_VIEWER         "ビューア(&V)..."
     IDS_MENU_OPTION         "オプション(&O)..."
     IDS_MENU_CLIPBOARD_WATCH "クリップボード監視(&W)"
+    IDS_MENU_HELP           "ヘルプ(&H)"
     IDS_TREEITEM_CLIPBOARD  "クリップボード"
     IDS_TREEITEM_HISTORY    "履歴"
     IDS_TREEITEM_REGIST     "登録アイテム"
@@ -582,7 +630,1330 @@ END
 
 
 /////////////////////////////////////////////////////////////////////////////
-// 英語 (米国) resources
+// Chinese (Simplified, China) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU_POPUP MENU
+BEGIN
+    POPUP "剪贴板"
+    BEGIN
+        MENUITEM "添加到模板(&A)...\tCtrl+R",        ID_MENUITEM_REGIST_ADD
+        MENUITEM "另存为(&S)...\tCtrl+S",          ID_MENUITEM_DATA_SAVE
+        MENUITEM "以二进制形式显示",                    ID_MENUITEM_SHOWBINARY
+        MENUITEM SEPARATOR
+        POPUP "选项(&O)"
+        BEGIN
+            MENUITEM "格式设置(&F)...",                   ID_MENUITEM_SET_FORMAT
+            MENUITEM "筛选设置(&l)...",                   ID_MENUITEM_SET_FILTER
+        END
+    END
+    POPUP "历史(TV)"
+    BEGIN
+        MENUITEM "发送到剪贴板(&C)\tCtrl+C",          ID_MENUITEM_CLIPBOARD
+        MENUITEM "从剪贴板粘贴(&P)\tCtrl+V",          ID_MENUITEM_PASTE
+        MENUITEM "添加到模板(&A)...\tCtrl+R",        ID_MENUITEM_REGIST_ADD
+        MENUITEM "以二进制形式显示",                    ID_MENUITEM_SHOWBINARY
+        MENUITEM "工具(&T)",                      ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "向上移动(&U)\tAlt+Up",            ID_MENUITEM_UP
+        MENUITEM "向下移动(&w)\tAlt+Down",          ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "新项目(&N)...\tCtrl+N",          ID_MENUITEM_NEW_ITEM
+        MENUITEM "另存为(&S)...\tCtrl+S",          ID_MENUITEM_DATA_SAVE
+        POPUP "选项(&O)"
+        BEGIN
+            MENUITEM "格式设置(&F)...",                   ID_MENUITEM_SET_FORMAT
+            MENUITEM "筛选设置(&l)...",                   ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "删除(&D)",                      ID_MENUITEM_DELETE
+    END
+    POPUP "历史(LV)"
+    BEGIN
+        MENUITEM "打开(&O)",                      ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "发送到剪贴板(&C)\tCtrl+C",          ID_MENUITEM_CLIPBOARD
+        MENUITEM "从剪贴板粘贴(&P)\tCtrl+V",          ID_MENUITEM_PASTE
+        MENUITEM "添加到模板(&A)...\tCtrl+R",        ID_MENUITEM_REGIST_ADD
+        MENUITEM "以二进制形式显示",                    ID_MENUITEM_SHOWBINARY
+        MENUITEM "工具(&T)",                      ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "向上移动(&U)\tAlt+Up",            ID_MENUITEM_UP
+        MENUITEM "向下移动(&w)\tAlt+Down",          ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "新项目(&N)...\tCtrl+N",          ID_MENUITEM_NEW_ITEM
+        MENUITEM "另存为(&S)...\tCtrl+S",          ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "删除(&D)",                      ID_MENUITEM_DELETE
+    END
+    POPUP "注册(TV)"
+    BEGIN
+        MENUITEM "发送到剪贴板(&C)\tCtrl+C",          ID_MENUITEM_CLIPBOARD
+        MENUITEM "从剪贴板粘贴(&P)\tCtrl+V",          ID_MENUITEM_PASTE
+        MENUITEM "以二进制形式显示",                    ID_MENUITEM_SHOWBINARY
+        MENUITEM "工具(&T)",                      ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "向上移动(&U)\tAlt+Up",            ID_MENUITEM_UP
+        MENUITEM "向下移动(&w)\tAlt+Down",          ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "新项目(&N)...\tCtrl+N",          ID_MENUITEM_NEW_ITEM
+        MENUITEM "创建目录(&F)",                     ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "另存为(&S)...\tCtrl+S",          ID_MENUITEM_DATA_SAVE
+        MENUITEM "热键设置(&H)...",                 ID_MENUITEM_SET_HOTKEY
+        POPUP "选项(&O)"
+        BEGIN
+            MENUITEM "格式设置(&F)...",                   ID_MENUITEM_SET_FORMAT
+            MENUITEM "筛选设置(&l)...",                   ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "创建副本(C&)...\tCtrl+R",         ID_MENUITEM_REGIST_ADD
+        MENUITEM "挪动到(&e)...\tSCtrl+R",         ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "重命名(&m)",                     ID_MENUITEM_RENAME
+        MENUITEM "重置成原始名称(&a)",                    ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "删除(&D)",                      ID_MENUITEM_DELETE
+    END
+    POPUP "注册(LV)"
+    BEGIN
+        MENUITEM "打开(&O)",                      ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "发送到剪贴板(&C)\tCtrl+C",          ID_MENUITEM_CLIPBOARD
+        MENUITEM "从剪贴板粘贴(&P)\tCtrl+V",          ID_MENUITEM_PASTE
+        MENUITEM "以二进制形式显示",                    ID_MENUITEM_SHOWBINARY
+        MENUITEM "工具(&T)",                      ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "向上移动(&U)\tAlt+Up",            ID_MENUITEM_UP
+        MENUITEM "向下移动(&w)\tAlt+Down",          ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "新项目(&N)...\tCtrl+N",          ID_MENUITEM_NEW_ITEM
+        MENUITEM "创建目录",                         ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "另存为(&S)...\tCtrl+S",          ID_MENUITEM_DATA_SAVE
+        MENUITEM "热键设置(&H)...",                 ID_MENUITEM_SET_HOTKEY
+        MENUITEM SEPARATOR
+        MENUITEM "创建副本(C&)...\tCtrl+R",         ID_MENUITEM_REGIST_ADD
+        MENUITEM "挪动到(&e)...\tSCtrl+R",         ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "重命名(&m)",                     ID_MENUITEM_RENAME
+        MENUITEM "重置成原始名称(&a)",                    ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "删除(&D)",                      ID_MENUITEM_DELETE
+    END
+    POPUP "D&&D"
+    BEGIN
+        MENUITEM "复制到这里(&C)",                   ID_MENU_DGDP_COPY
+        MENUITEM "移动到这里(&M)",                   ID_MENU_DGDP_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "取消(&l)",                      IDCANCEL
+    END
+END
+
+IDR_MENU_VIEWER MENU
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "新项目(&N)...\tCtrl+N",          ID_MENUITEM_NEW_ITEM
+        MENUITEM "另存为(&S)...\tCtrl+S",          ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "保存状态(&t)\tSCtrl+S",           ID_MENUITEM_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "导入(&I)...",                   ID_MENUITEM_IMPORT
+        MENUITEM "导出(&E)...",                   ID_MENUITEM_EXPORT
+        MENUITEM SEPARATOR
+        MENUITEM "监视剪贴板(&W)",                   ID_MENUITEM_WATCH
+        MENUITEM SEPARATOR
+        MENUITEM "关闭窗口(&C)",                    ID_MENUITEM_CLOSE
+        MENUITEM "退出程序(&x)",                      ID_MENUITEM_EXIT
+    END
+    POPUP "编辑(&E)"
+    BEGIN
+        MENUITEM "发送到剪贴板(&C)\tCtrl+C",          ID_MENUITEM_CLIPBOARD
+        MENUITEM "从剪贴板粘贴(&P)\tCtrl+V",          ID_MENUITEM_PASTE
+        MENUITEM "添加到模板(&T)...\tCtrl+R",        ID_MENUITEM_REGIST_ADD
+        MENUITEM SEPARATOR
+        MENUITEM "向上移动(&U)\tAlt+Up",            ID_MENUITEM_UP
+        MENUITEM "向下移动(&w)\tAlt+Down",          ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "删除(&D)",                      ID_MENUITEM_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "全部选择(&A)\tCtrl+A",            ID_MENUITEM_SELECT_ALL
+    END
+    POPUP "视图(&V)"
+    BEGIN
+        MENUITEM "工具栏(&T)",                     ID_MENUITEM_SHOW_TOOLBAR
+        MENUITEM "状态栏(&S)",                     ID_MENUITEM_SHOW_STATUSBAR
+        MENUITEM SEPARATOR
+        MENUITEM "格式(&F)",                      ID_MENUITEM_SHOW_FORMAT
+        MENUITEM "二进制形式显示(&D)",                       ID_MENUITEM_SHOW_BIN
+        MENUITEM SEPARATOR
+        MENUITEM "选项(&O)...",                   ID_MENUITEM_OPTION
+    END
+    POPUP "工具(&T)"
+    BEGIN
+        MENUITEM "工具设置(&T)...",                 ID_MENUITEM_TOOL_SET
+        MENUITEM SEPARATOR
+    END
+    POPUP "帮助(&H)"
+    BEGIN
+        MENUITEM "帮助",                          ID_MENUITEM_HELP
+        MENUITEM "关于(&A)...",                   ID_MENUITEM_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_SELECT_FOLDER DIALOGEX 0, 0, 232, 192
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "浏览目录"
+FONT 9, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    LTEXT           "msg",IDC_STATIC_MSG,5,5,220,19
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_HSCROLL | WS_TABSTOP,5,25,220,145
+    DEFPUSHBUTTON   "确定",IDOK,120,175,50,14
+    PUSHBUTTON      "取消",IDCANCEL,175,175,50,14
+END
+
+IDD_DIALOG_SELECT_FORMAT DIALOGEX 0, 0, 227, 108
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_ACCEPTFILES
+CAPTION "新项目"
+FONT 9, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    LTEXT           "格式(&A):",IDC_STATIC,5,5,115,10
+    COMBOBOX        IDC_COMBO_FORMAT,5,15,215,145,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "文件已加载(&l)",IDC_CHECK_FILE_READ,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,40,185,10
+    LTEXT           "文件名(&F):",IDC_STATIC_FILE,5,55,115,9
+    EDITTEXT        IDC_EDIT_FILE,5,65,195,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_FILE_SELECT,203,65,15,13
+    DEFPUSHBUTTON   "确定",IDOK,115,85,50,14
+    PUSHBUTTON      "取消",IDCANCEL,171,85,50,14
+END
+
+IDD_DIALOG_SET_HOTKEY DIALOGEX 0, 0, 125, 72
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "热键设置"
+FONT 9, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    LTEXT           "热键(&H):",IDC_STATIC,10,5,75,10
+    CONTROL         "HotKey1",IDC_HOTKEY_ITEM,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,10,15,70,15
+    CONTROL         "+ Win",IDC_CHECK_WIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,85,17,31,11
+    CONTROL         "粘贴(&P)",IDC_CHECK_PASTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,35,75,10
+    DEFPUSHBUTTON   "确定",IDOK,10,50,50,14
+    PUSHBUTTON      "取消",IDCANCEL,65,50,50,14
+END
+
+IDD_SEARCH_ITEM DIALOGEX 0, 0, 209, 141
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Search Item"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Search text",IDC_STATIC,12,14,66,8
+    EDITTEXT        IDC_SEARCHTEXT,84,12,114,12,ES_AUTOHSCROLL
+    CONTROL         "Search for date",IDC_CHK_SRCHDATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,30,78,10
+    LTEXT           "from",IDC_STATIC,12,51,42,8
+    CONTROL         "",IDC_DATEFROM,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_SHORTDATECENTURYFORMAT | WS_DISABLED | WS_TABSTOP,54,48,54,15
+    CONTROL         "",IDC_TIMEFROM,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_DISABLED | WS_TABSTOP | 0x8,108,48,54,15,WS_EX_STATICEDGE
+    LTEXT           "until",IDC_STATIC,12,75,42,8
+    CONTROL         "",IDC_DATEUNTIL,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_SHORTDATECENTURYFORMAT | WS_DISABLED | WS_TABSTOP,54,72,54,15
+    CONTROL         "",IDC_TIMEUNTIL,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_DISABLED | WS_TABSTOP | 0x8,108,72,54,15
+    LTEXT           "from application",IDC_STATIC,12,98,66,8
+    EDITTEXT        IDC_FROM_APPLICATION,84,96,114,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,96,120,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,150,120,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_SELECT_FOLDER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 225
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 185
+    END
+
+    IDD_DIALOG_SELECT_FORMAT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 220
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 101
+    END
+
+    IDD_DIALOG_SET_HOTKEY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 118
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 65
+    END
+
+    IDD_SEARCH_ITEM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 202
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_SELECT_FOLDER AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_SELECT_FORMAT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_SET_HOTKEY AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SEARCH_ITEM AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_MENU_REGIST         "模板(&T)"
+    IDS_MENU_CANCEL         "取消(&C)"
+    IDS_MENU_EXIT           "退出程序(&x)"
+    IDS_MENU_VIEWER         "主窗口(&V)..."
+    IDS_MENU_OPTION         "选项(&O)..."
+    IDS_MENU_CLIPBOARD_WATCH "监视剪贴板(&W)"
+    IDS_MENU_HELP           "帮助(&H)"
+    IDS_TREEITEM_CLIPBOARD  "剪贴板"
+    IDS_TREEITEM_HISTORY    "历史"
+    IDS_TREEITEM_REGIST     "模板"
+    IDS_TREEITEM_NEWFOLDER  "创建目录"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ERROR_END           "保存失败，是否终止？"
+    IDS_ERROR_HOTKEY        "注册热键失败。"
+    IDS_ERROR_WINDOW_INIT   "初始化失败。"
+    IDS_ERROR_FILENAME      "文件名不能包含以下任何字符:\n\t\\ / : , ; * ? "" < > |"
+    IDS_ERROR_FOLDERNAME    "您指定的目录已存在，请更改目录名称。"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_LISTCOLUMN_DATA     "数据"
+    IDS_LISTCOLUMN_SIZE     "大小"
+    IDS_LISTCOLUMN_DATE     "修改时间"
+    IDS_LISTCOLUMN_WINDOW   "窗口"
+    IDS_LISTCOLUMN_HOTKEY   "热键"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_QUESTION_DELETE     "您确定要删除这个项目吗?"
+    IDS_QUESTION_REPLACE    "您想替换现有项目吗?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_ADDPOS       "请选择目录，您可以将此项目添加到该目录。"
+    IDS_DIALOG_COPYPOS      "请选择要将副本保存到的目录。"
+    IDS_DIALOG_MOVEPOS      "请选择要将模板移动到的目录。"
+    IDS_DIALOG_IMPORT       "请选择目录，您可将导入的项目，添加到该目录。"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_VIEWER_COPYNAME     "%s 副本"
+    IDS_VIEWER_COPYNAME_NUM "%s 副本 (%d)"
+    IDS_VIEWER_MENU_TOOL_NOTHING "(None)"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STATUSBAR_ITEM_CNT  "%d 项目"
+    IDS_STATUSBAR_BYTES     "%d 字节"
+    IDS_STATUSBAR_KB        "%d KB"
+END
+
+STRINGTABLE
+BEGIN
+    ID_MENUITEM_CLIPBOARD_TB "发送到剪贴板"
+    ID_MENUITEM_PASTE_TB    "从剪贴板粘贴"
+    ID_MENUITEM_REGIST_ADD_TB "添加到模板"
+    ID_MENUITEM_NEW_ITEM_TB "新项目"
+    ID_MENUITEM_DELETE_TB   "删除"
+    ID_MENUITEM_UP_TB       "向上挪动"
+    ID_MENUITEM_DOWN_TB     "向下挪动"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_UNDO      "撤销(&U)"
+    IDS_TEXT_MENU_REDO      "重做(&R)"
+    IDS_TEXT_MENU_CUT       "剪切(&t)"
+    IDS_TEXT_MENU_COPY      "复制(&C)"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_PASTE     "粘贴(&P)"
+    IDS_TEXT_MENU_DELETE    "删除(&D)"
+    IDS_TEXT_MENU_SELECT_ALL "全部选择(&A)"
+    IDS_TEXT_MENU_WORDWRAP  "自动换行(&W)"
+    IDS_TEXT_MENU_SELECT_FONT "字体(&F)..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BITMAP_MENU_STRETCH "图片拉伸(&S)"
+    IDS_BITMAP_MENU_ZOOM_IN "放大(&I)\tCtrl+Up"
+    IDS_BITMAP_MENU_ZOOM_OUT "缩小(&O)\tCtrl+Down"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_FILE_LIST_NAME      "名称"
+    IDS_FILE_LIST_FOLDER    "目录"
+    IDS_FILE_LIST_TYPE      "类型"
+    IDS_FILE_LIST_TYPE_DEF  "文件"
+    IDS_FILE_MENU_OPEN      "打开(&O)"
+    IDS_FILE_MENU_ADD       "添加(&A)...\tCtrl+D"
+    IDS_FILE_MENU_DELETE    "取消链接(&U)"
+    IDS_FILE_DELETE_MSG     "取消与所选文件的链接？"
+    IDS_FILE_MENU_COPY_FILE "复制文件名(&F)\tCtrl+C"
+    IDS_FILE_MENU_COPY_PATH "复制路径(&P)\tSCtrl+C"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BIN_MENU_UNDO       "撤销(&U)"
+    IDS_BIN_MENU_REDO       "重做(&R)"
+    IDS_BIN_MENU_LOCK       "锁定(&L)"
+    IDS_BIN_MENU_FONT       "字体(&F)..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_EXPORT       "请选择要导出的目录。"
+END
+
+#endif    // Chinese (Simplified, China) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Ukrainian (Ukraine) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_UKR)
+LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU_POPUP MENU
+BEGIN
+    POPUP "Буфер обміну"
+    BEGIN
+        MENUITEM "Додати до шаблону...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "Зберегти як...\tCtrl+S",      ID_MENUITEM_DATA_SAVE
+        MENUITEM "Показати як шістнадцятковий", ID_MENUITEM_SHOWBINARY
+        MENUITEM SEPARATOR
+        POPUP "Параметри"
+        BEGIN
+            MENUITEM "Формат...",                   ID_MENUITEM_SET_FORMAT
+            MENUITEM "Фільтр...",                   ID_MENUITEM_SET_FILTER
+        END
+    END
+    POPUP "Історія(TV)"
+    BEGIN
+        MENUITEM "Відправити в буфер обміну\tCtrl+C", ID_MENUITEM_CLIPBOARD
+        MENUITEM "Вставити з буфера\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "Додати до шаблону...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "Показати як шістнадцятковий", ID_MENUITEM_SHOWBINARY
+        MENUITEM "Інструменти",                 ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Перемістити вгору\tAlt+Up",   ID_MENUITEM_UP
+        MENUITEM "Перемістити вниз\tAlt+Down",  ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "Новий елемент...\tCtrl+N",    ID_MENUITEM_NEW_ITEM
+        MENUITEM "Зберегти як...\tCtrl+S",      ID_MENUITEM_DATA_SAVE
+        POPUP "Параметри"
+        BEGIN
+            MENUITEM "Формат...",                   ID_MENUITEM_SET_FORMAT
+            MENUITEM "Фільтр...",                   ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Видалити",                    ID_MENUITEM_DELETE
+    END
+    POPUP "Історія(LV)"
+    BEGIN
+        MENUITEM "Відкрити",                    ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "Відправити в буфер обміну\tCtrl+C", ID_MENUITEM_CLIPBOARD
+        MENUITEM "Вставити з буфера\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "Додати до шаблону...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "Показати як шістнадцятковий", ID_MENUITEM_SHOWBINARY
+        MENUITEM "Інструменти",                 ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Перемістити вгору\tAlt+Up",   ID_MENUITEM_UP
+        MENUITEM "Перемістити вниз\tAlt+Down",  ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "Новий елемент...\tCtrl+N",    ID_MENUITEM_NEW_ITEM
+        MENUITEM "Зберегти як...\tCtrl+S",      ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "Видалити",                    ID_MENUITEM_DELETE
+    END
+    POPUP "Шаблон(TV)"
+    BEGIN
+        MENUITEM "Відправити в буфер обміну\tCtrl+C", ID_MENUITEM_CLIPBOARD
+        MENUITEM "Вставити з буфера\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "Показати як шістнадцятковий", ID_MENUITEM_SHOWBINARY
+        MENUITEM "Інструменти",                 ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Перемістити вгору\tAlt+Up",   ID_MENUITEM_UP
+        MENUITEM "Перемістити вниз\tAlt+Down",  ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "Новий елемент...\tCtrl+N",    ID_MENUITEM_NEW_ITEM
+        MENUITEM "Нова папка",                  ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "Зберегти як...\tCtrl+S",      ID_MENUITEM_DATA_SAVE
+        MENUITEM "Встановити гарячу клавішу...", ID_MENUITEM_SET_HOTKEY
+        POPUP "Параметри"
+        BEGIN
+            MENUITEM "Формат...",                   ID_MENUITEM_SET_FORMAT
+            MENUITEM "Фільтр...",                   ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Створити копію...\tCtrl+R",   ID_MENUITEM_REGIST_ADD
+        MENUITEM "Перемістити в...\tSCtrl+R",   ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "Перейменувати",               ID_MENUITEM_RENAME
+        MENUITEM "Очистити ім'я",               ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Видалити",                    ID_MENUITEM_DELETE
+    END
+    POPUP "Шаблон(LV)"
+    BEGIN
+        MENUITEM "Відкрити",                    ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "Відправити в буфер обміну\tCtrl+C", ID_MENUITEM_CLIPBOARD
+        MENUITEM "Вставити з буфера\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "Показати як шістнадцятковий", ID_MENUITEM_SHOWBINARY
+        MENUITEM "Інструменти",                 ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Перемістити вгору\tAlt+Up",   ID_MENUITEM_UP
+        MENUITEM "Перемістити вниз\tAlt+Down",  ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "Новий елемент...\tCtrl+N",    ID_MENUITEM_NEW_ITEM
+        MENUITEM "Нова папка",                  ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "Зберегти як...\tCtrl+S",      ID_MENUITEM_DATA_SAVE
+        MENUITEM "Встановити гарячу клавішу...", ID_MENUITEM_SET_HOTKEY
+        MENUITEM SEPARATOR
+        MENUITEM "Створити копію...\tCtrl+R",   ID_MENUITEM_REGIST_ADD
+        MENUITEM "Перемістити в...\tSCtrl+R",   ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "Перейменувати",               ID_MENUITEM_RENAME
+        MENUITEM "Очистити ім'я",               ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Видалити",                    ID_MENUITEM_DELETE
+    END
+    POPUP "Перетягування && Відпускання"
+    BEGIN
+        MENUITEM "Копіювати сюди",              ID_MENU_DGDP_COPY
+        MENUITEM "Перемістити сюди",            ID_MENU_DGDP_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "Скасувати",                   IDCANCEL
+    END
+END
+
+IDR_MENU_VIEWER MENU
+BEGIN
+    POPUP "Файл"
+    BEGIN
+        MENUITEM "Новий елемент...\tCtrl+N",    ID_MENUITEM_NEW_ITEM
+        MENUITEM "Зберегти як...\tCtrl+S",      ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "Зберегти стан\tSCtrl+S",      ID_MENUITEM_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "Імпорт...",                   ID_MENUITEM_IMPORT
+        MENUITEM "Експорт...",                  ID_MENUITEM_EXPORT
+        MENUITEM SEPARATOR
+        MENUITEM "Спостереження за буфером",    ID_MENUITEM_WATCH
+        MENUITEM SEPARATOR
+        MENUITEM "Закрити вікно",               ID_MENUITEM_CLOSE
+        MENUITEM "Вихід",                       ID_MENUITEM_EXIT
+    END
+    POPUP "Правка"
+    BEGIN
+        MENUITEM "Відправити в буфер обміну\tCtrl+C", ID_MENUITEM_CLIPBOARD
+        MENUITEM "Вставити з буфера\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "Додати до шаблону...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM SEPARATOR
+        MENUITEM "Перемістити вгору\tAlt+Up",   ID_MENUITEM_UP
+        MENUITEM "Перемістити вниз\tAlt+Down",  ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "Видалити",                    ID_MENUITEM_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "Вибрати все\tCtrl+A",         ID_MENUITEM_SELECT_ALL
+    END
+    POPUP "Вид"
+    BEGIN
+        MENUITEM "Панель інструментів",         ID_MENUITEM_SHOW_TOOLBAR
+        MENUITEM "Рядок стану",                 ID_MENUITEM_SHOW_STATUSBAR
+        MENUITEM SEPARATOR
+        MENUITEM "Формат",                      ID_MENUITEM_SHOW_FORMAT
+        MENUITEM "Дамп",                        ID_MENUITEM_SHOW_BIN
+        MENUITEM SEPARATOR
+        MENUITEM "Параметри...",                ID_MENUITEM_OPTION
+    END
+    POPUP "Інструменти"
+    BEGIN
+        MENUITEM "Налаштування інструментів...", ID_MENUITEM_TOOL_SET
+        MENUITEM SEPARATOR
+    END
+    POPUP "Довідка"
+    BEGIN
+        MENUITEM "Довідка",                     ID_MENUITEM_HELP
+        MENUITEM "Про програму...",             ID_MENUITEM_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_SELECT_FOLDER DIALOGEX 0, 0, 232, 195
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Вибрати папку"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "msg",IDC_STATIC_MSG,5,5,220,19
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,25,220,145
+    DEFPUSHBUTTON   "OK",IDOK,120,175,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,175,175,50,14
+END
+
+IDD_DIALOG_SELECT_FORMAT DIALOGEX 0, 0, 227, 105
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_ACCEPTFILES
+CAPTION "Новий елемент"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "Формат для додавання:",IDC_STATIC,5,5,211,10
+    COMBOBOX        IDC_COMBO_FORMAT,5,15,215,145,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Завантажити файл",IDC_CHECK_FILE_READ,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,40,185,10
+    LTEXT           "Ім'я файлу:",IDC_STATIC_FILE,5,55,193,9
+    EDITTEXT        IDC_EDIT_FILE,5,65,195,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_FILE_SELECT,203,65,15,13
+    DEFPUSHBUTTON   "OK",IDOK,115,85,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,171,85,50,14
+END
+
+IDD_DIALOG_SET_HOTKEY DIALOGEX 0, 0, 125, 72
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Встановити гарячу клавішу"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "Гаряча клавіша:",IDC_STATIC,10,5,104,10
+    CONTROL         "HotKey1",IDC_HOTKEY_ITEM,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,10,15,70,15
+    CONTROL         "+ Win",IDC_CHECK_WIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,85,17,31,11
+    CONTROL         "Вставити",IDC_CHECK_PASTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,35,75,10
+    DEFPUSHBUTTON   "OK",IDOK,10,50,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,65,50,50,14
+END
+
+IDD_SEARCH_ITEM DIALOGEX 0, 0, 209, 141
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Search Item"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Search text",IDC_STATIC,12,14,66,8
+    EDITTEXT        IDC_SEARCHTEXT,84,12,114,12,ES_AUTOHSCROLL
+    CONTROL         "Search for date",IDC_CHK_SRCHDATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,30,78,10
+    LTEXT           "from",IDC_STATIC,12,51,42,8
+    CONTROL         "",IDC_DATEFROM,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_SHORTDATECENTURYFORMAT | WS_DISABLED | WS_TABSTOP,54,48,54,15
+    CONTROL         "",IDC_TIMEFROM,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_DISABLED | WS_TABSTOP | 0x8,108,48,54,15,WS_EX_STATICEDGE
+    LTEXT           "until",IDC_STATIC,12,75,42,8
+    CONTROL         "",IDC_DATEUNTIL,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_SHORTDATECENTURYFORMAT | WS_DISABLED | WS_TABSTOP,54,72,54,15
+    CONTROL         "",IDC_TIMEUNTIL,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_DISABLED | WS_TABSTOP | 0x8,108,72,54,15
+    LTEXT           "from application",IDC_STATIC,12,98,66,8
+    EDITTEXT        IDC_FROM_APPLICATION,84,96,114,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,96,120,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,150,120,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_SELECT_FOLDER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 225
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 188
+    END
+
+    IDD_DIALOG_SELECT_FORMAT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 220
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 98
+    END
+
+    IDD_DIALOG_SET_HOTKEY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 118
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 65
+    END
+
+    IDD_SEARCH_ITEM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 202
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_SELECT_FORMAT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_SET_HOTKEY AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_SELECT_FOLDER AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SEARCH_ITEM AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_MENU_REGIST         "Шаблон"
+    IDS_MENU_CANCEL         "Скасувати"
+    IDS_MENU_EXIT           "Вихід"
+    IDS_MENU_VIEWER         "Переглядач..."
+    IDS_MENU_OPTION         "Параметри..."
+    IDS_MENU_CLIPBOARD_WATCH "Спостереження за буфером"
+    IDS_MENU_HELP           "Довідка"
+    IDS_TREEITEM_CLIPBOARD  "Буфер обміну"
+    IDS_TREEITEM_HISTORY    "Історія"
+    IDS_TREEITEM_REGIST     "Шаблон"
+    IDS_TREEITEM_NEWFOLDER  "Нова папка"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ERROR_END           "Під час збереження файлу сталася помилка.\nПродовжити завершення?"
+    IDS_ERROR_HOTKEY        "Не вдалося зареєструвати гарячу клавішу."
+    IDS_ERROR_WINDOW_INIT   "Не вдалося ініціалізувати вікно."
+    IDS_ERROR_FILENAME      "Ім'я файлу не може містити жодного з наведених символів:\n\t\\ / : , ; * ? "" < > |"
+    IDS_ERROR_FOLDERNAME    "Папка з вказаним ім'ям вже існує. Вкажіть інше ім'я."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_LISTCOLUMN_DATA     "Дані"
+    IDS_LISTCOLUMN_SIZE     "Розмір"
+    IDS_LISTCOLUMN_DATE     "Змінено"
+    IDS_LISTCOLUMN_WINDOW   "Вікно"
+    IDS_LISTCOLUMN_HOTKEY   "Гаряча клавіша"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_QUESTION_DELETE     "Ви впевнені, що хочете видалити цей елемент(и)?"
+    IDS_QUESTION_REPLACE    "Існує формат з таким самим ім'ям.\nЗамінити дані?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_ADDPOS       "Виберіть папку, до якої додати елементи."
+    IDS_DIALOG_COPYPOS      "Виберіть папку, до якої буде скопійовано шаблон."
+    IDS_DIALOG_MOVEPOS      "Виберіть папку, до якої перемістити шаблон."
+    IDS_DIALOG_IMPORT       "Виберіть папку, до якої додати імпортовані елементи."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_VIEWER_COPYNAME     "Копія %s"
+    IDS_VIEWER_COPYNAME_NUM "Копія (%d) %s"
+    IDS_VIEWER_MENU_TOOL_NOTHING "(Немає)"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STATUSBAR_ITEM_CNT  "%d елементів"
+    IDS_STATUSBAR_BYTES     "%d байт"
+    IDS_STATUSBAR_KB        "%d КБ"
+END
+
+STRINGTABLE
+BEGIN
+    ID_MENUITEM_CLIPBOARD_TB "Відправити в буфер обміну"
+    ID_MENUITEM_PASTE_TB    "Вставити з буфера"
+    ID_MENUITEM_REGIST_ADD_TB "Додати до шаблону"
+    ID_MENUITEM_NEW_ITEM_TB "Новий елемент"
+    ID_MENUITEM_DELETE_TB   "Видалити"
+    ID_MENUITEM_UP_TB       "Перемістити вгору"
+    ID_MENUITEM_DOWN_TB     "Перемістити вниз"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_UNDO      "Скасувати"
+    IDS_TEXT_MENU_REDO      "Повторити"
+    IDS_TEXT_MENU_CUT       "Вирізати"
+    IDS_TEXT_MENU_COPY      "Копіювати"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_PASTE     "Вставити"
+    IDS_TEXT_MENU_DELETE    "Видалити"
+    IDS_TEXT_MENU_SELECT_ALL "Вибрати все"
+    IDS_TEXT_MENU_WORDWRAP  "Перенос по словах"
+    IDS_TEXT_MENU_SELECT_FONT "Шрифт..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BITMAP_MENU_STRETCH "Розтягнути зображення"
+    IDS_BITMAP_MENU_ZOOM_IN "Збільшити\tCtrl+Up"
+    IDS_BITMAP_MENU_ZOOM_OUT "Зменшити\tCtrl+Down"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_FILE_LIST_NAME      "Ім'я"
+    IDS_FILE_LIST_FOLDER    "Папка"
+    IDS_FILE_LIST_TYPE      "Тип"
+    IDS_FILE_LIST_TYPE_DEF  "Файл"
+    IDS_FILE_MENU_OPEN      "Відкрити"
+    IDS_FILE_MENU_ADD       "Додати файл до списку...\tCtrl+D"
+    IDS_FILE_MENU_DELETE    "Від'єднати"
+    IDS_FILE_DELETE_MSG     "Від'єднати посилання на вибраний файл?"
+    IDS_FILE_MENU_COPY_FILE "Копіювати ім'я файлу\tCtrl+C"
+    IDS_FILE_MENU_COPY_PATH "Копіювати шлях\tSCtrl+C"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BIN_MENU_UNDO       "Скасувати"
+    IDS_BIN_MENU_REDO       "Повторити"
+    IDS_BIN_MENU_LOCK       "Тільки читання"
+    IDS_BIN_MENU_FONT       "Шрифт..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_EXPORT       "Виберіть папку для експорту."
+END
+
+#endif    // Ukrainian (Ukraine) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// German (Germany) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU_POPUP MENU
+BEGIN
+    POPUP "Zwischenablage"
+    BEGIN
+        MENUITEM "Zu &Vorlagen hinzufügen...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "Speichern &unter...\tCtrl+S",        ID_MENUITEM_DATA_SAVE
+        MENUITEM "Hexadezimal anzeigen",               ID_MENUITEM_SHOWBINARY
+        MENUITEM SEPARATOR
+        POPUP "&Einstellugen"
+        BEGIN
+            MENUITEM "&Format...",                     ID_MENUITEM_SET_FORMAT
+            MENUITEM "Fi&lter...",                     ID_MENUITEM_SET_FILTER
+        END
+    END
+    POPUP "Verlauf(TV)"
+    BEGIN
+        MENUITEM "An Zwischenablage &senden\tCtrl+C",  ID_MENUITEM_CLIPBOARD
+        MENUITEM "&Aus Zwischenablage einfügen\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "Zu &Vorlagen hinzufügen...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "Hexadezimal anzeigen",               ID_MENUITEM_SHOWBINARY
+        MENUITEM "&Werkzeuge",                         ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Nach &oben\tAlt+Up",                 ID_MENUITEM_UP
+        MENUITEM "Nach &unten\tAlt+Down",              ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "&Neu...\tCtrl+N",                    ID_MENUITEM_NEW_ITEM
+        MENUITEM "Speichern &unter...\tCtrl+S",        ID_MENUITEM_DATA_SAVE
+        POPUP "&Einstellugen"
+        BEGIN
+            MENUITEM "&Format...",                     ID_MENUITEM_SET_FORMAT
+            MENUITEM "Fi&lter...",                     ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "&Löschen",                           ID_MENUITEM_DELETE
+    END
+    POPUP "Verlauf(LV)"
+    BEGIN
+        MENUITEM "&Öffnen",                            ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "An Zwischenablage &senden\tCtrl+C",  ID_MENUITEM_CLIPBOARD
+        MENUITEM "&Aus Zwischenablage einfügen\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "Zu &Vorlagen hinzufügen...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "Hexadezimal anzeigen",               ID_MENUITEM_SHOWBINARY
+        MENUITEM "&Werkzeuge",                         ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Nach &oben\tAlt+Up",                 ID_MENUITEM_UP
+        MENUITEM "Nach &unten\tAlt+Down",              ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "&Neu...\tCtrl+N",                    ID_MENUITEM_NEW_ITEM
+        MENUITEM "Speichern &unter...\tCtrl+S",        ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "&Löschen",                           ID_MENUITEM_DELETE
+    END
+    POPUP "Vorlage(TV)"
+    BEGIN
+        MENUITEM "An Zwischenablage &senden\tCtrl+C",  ID_MENUITEM_CLIPBOARD
+        MENUITEM "&Aus Zwischenablage einfügen\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "Hexadezimal anzeigen",               ID_MENUITEM_SHOWBINARY
+        MENUITEM "&Werkzeuge",                         ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Nach &oben\tAlt+Up",                 ID_MENUITEM_UP
+        MENUITEM "Nach &unten\tAlt+Down",              ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "&Neu...\tCtrl+N",                    ID_MENUITEM_NEW_ITEM
+        MENUITEM "Neuer &Ordner",                      ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "Speichern &unter...\tCtrl+S",        ID_MENUITEM_DATA_SAVE
+        MENUITEM "Hotkey &setzen...",                  ID_MENUITEM_SET_HOTKEY
+        POPUP "&Einstellugen"
+        BEGIN
+            MENUITEM "&Format...",                     ID_MENUITEM_SET_FORMAT
+            MENUITEM "Fi&lter...",                     ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Kop&ie erstellen...\tCtrl+R",        ID_MENUITEM_REGIST_ADD
+        MENUITEM "&Verschieben nach...\tSCtrl+R",     ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "Umbenennen",                         ID_MENUITEM_RENAME
+        MENUITEM "Name &zurücksetzen",                 ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "&Löschen",                           ID_MENUITEM_DELETE
+    END
+    POPUP "Vorlage(LV)"
+    BEGIN
+        MENUITEM "&Öffnen",                            ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "An Zwischenablage &senden\tCtrl+C",  ID_MENUITEM_CLIPBOARD
+        MENUITEM "&Aus Zwischenablage einfügen\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "Hexadezimal anzeigen",               ID_MENUITEM_SHOWBINARY
+        MENUITEM "&Werkzeuge",                         ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Nach &oben\tAlt+Up",                 ID_MENUITEM_UP
+        MENUITEM "Nach &unten\tAlt+Down",              ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "&Neu...\tCtrl+N",                    ID_MENUITEM_NEW_ITEM
+        MENUITEM "Neuer &Ordner",                      ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "Speichern &unter...\tCtrl+S",        ID_MENUITEM_DATA_SAVE
+        MENUITEM "Hotkey &setzen...",                  ID_MENUITEM_SET_HOTKEY
+        MENUITEM SEPARATOR
+        MENUITEM "Kop&ie erstellen...\tCtrl+R",        ID_MENUITEM_REGIST_ADD
+        MENUITEM "&Verschieben nach...\tSCtrl+R",     ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "Umbenennen",                         ID_MENUITEM_RENAME
+        MENUITEM "Name &zurücksetzen",                 ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "&Löschen",                           ID_MENUITEM_DELETE
+    END
+    POPUP "Ziehen && Ablegen"
+    BEGIN
+        MENUITEM "&Hierher kopieren",                  ID_MENU_DGDP_COPY
+        MENUITEM "&Hierher verschieben",               ID_MENU_DGDP_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "A&bbrechen",                        IDCANCEL
+    END
+END
+
+IDR_MENU_VIEWER MENU
+BEGIN
+    POPUP "&Datei"
+    BEGIN
+        MENUITEM "&Neu...\tCtrl+N",                    ID_MENUITEM_NEW_ITEM
+        MENUITEM "Speichern &unter...\tCtrl+S",        ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "Status &speichern\tSCtrl+S",         ID_MENUITEM_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "&Import...",                         ID_MENUITEM_IMPORT
+        MENUITEM "&Export...",                         ID_MENUITEM_EXPORT
+        MENUITEM SEPARATOR
+        MENUITEM "Zwischenablage-&Überwachung",        ID_MENUITEM_WATCH
+        MENUITEM SEPARATOR
+        MENUITEM "&Fenster schließen",                 ID_MENUITEM_CLOSE
+        MENUITEM "&Beenden",                           ID_MENUITEM_EXIT
+    END
+    POPUP "&Bearbeiten"
+    BEGIN
+        MENUITEM "An Zwischenablage &senden\tCtrl+C",  ID_MENUITEM_CLIPBOARD
+        MENUITEM "&Aus Zwischenablage einfügen\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "Zu &Vorlagen hinzufügen...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM SEPARATOR
+        MENUITEM "Nach &oben\tAlt+Up",                 ID_MENUITEM_UP
+        MENUITEM "Nach &unten\tAlt+Down",              ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "&Löschen",                           ID_MENUITEM_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "Alles &auswählen\tCtrl+A",          ID_MENUITEM_SELECT_ALL
+    END
+    POPUP "&Ansicht"
+    BEGIN
+        MENUITEM "&Symbolleiste",                      ID_MENUITEM_SHOW_TOOLBAR
+        MENUITEM "&Statusleiste",                      ID_MENUITEM_SHOW_STATUSBAR
+        MENUITEM SEPARATOR
+        MENUITEM "&Format",                            ID_MENUITEM_SHOW_FORMAT
+        MENUITEM "&Dump",                              ID_MENUITEM_SHOW_BIN
+        MENUITEM SEPARATOR
+        MENUITEM "&Einstellugen...",                       ID_MENUITEM_OPTION
+    END
+    POPUP "&Werkzeuge"
+    BEGIN
+        MENUITEM "&Werkzeuge konfigurieren...",       ID_MENUITEM_TOOL_SET
+        MENUITEM SEPARATOR
+    END
+    POPUP "&Hilfe"
+    BEGIN
+        MENUITEM "Hilfe",                       ID_MENUITEM_HELP
+        MENUITEM "&Über...",                    ID_MENUITEM_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_SELECT_FOLDER DIALOG 0, 0, 232, 195
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Ordner auswählen"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "msg",IDC_STATIC_MSG,5,5,220,19
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,25,220,145
+    DEFPUSHBUTTON   "OK",IDOK,120,175,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,175,175,50,14
+END
+
+IDD_DIALOG_SELECT_FORMAT DIALOGEX 0, 0, 227, 105
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_ACCEPTFILES
+CAPTION "Neues Element"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    LTEXT           "Format zum &Hinzufügen:",IDC_STATIC,5,5,115,10
+    COMBOBOX        IDC_COMBO_FORMAT,5,15,215,145,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Datei wird &geladen",IDC_CHECK_FILE_READ,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,40,185,10
+    LTEXT           "&Dateiname:",IDC_STATIC_FILE,5,55,115,9
+    EDITTEXT        IDC_EDIT_FILE,5,65,195,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_FILE_SELECT,203,65,15,13
+    DEFPUSHBUTTON   "OK",IDOK,115,85,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,171,85,50,14
+END
+
+IDD_DIALOG_SET_HOTKEY DIALOG 0, 0, 125, 72
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Hotkey setzen"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "&Hotkey:",IDC_STATIC,10,5,75,10
+    CONTROL         "HotKey1",IDC_HOTKEY_ITEM,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,10,15,70,15
+    CONTROL         "+ Win",IDC_CHECK_WIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,85,17,31,11
+    CONTROL         "&Einfügen",IDC_CHECK_PASTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,35,75,10
+    DEFPUSHBUTTON   "OK",IDOK,10,50,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,65,50,50,14
+END
+
+IDD_SEARCH_ITEM DIALOGEX 0, 0, 209, 141
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Suche Element"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Suchtext",IDC_STATIC,12,14,66,8
+    EDITTEXT        IDC_SEARCHTEXT,84,12,114,12,ES_AUTOHSCROLL
+    CONTROL         "mit Datum suchen",IDC_CHK_SRCHDATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,30,78,10
+    LTEXT           "von",IDC_STATIC,12,51,42,8
+    CONTROL         "",IDC_DATEFROM,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_SHORTDATECENTURYFORMAT | WS_DISABLED | WS_TABSTOP,54,48,54,15
+    CONTROL         "",IDC_TIMEFROM,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_DISABLED | WS_TABSTOP | 0x8,108,48,54,15,WS_EX_STATICEDGE
+    LTEXT           "bis",IDC_STATIC,12,75,42,8
+    CONTROL         "",IDC_DATEUNTIL,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_SHORTDATECENTURYFORMAT | WS_DISABLED | WS_TABSTOP,54,72,54,15
+    CONTROL         "",IDC_TIMEUNTIL,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_DISABLED | WS_TABSTOP | 0x8,108,72,54,15
+    LTEXT           "aus Anwendung",IDC_STATIC,12,98,66,8
+    EDITTEXT        IDC_FROM_APPLICATION,84,96,114,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,96,120,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,150,120,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_SELECT_FOLDER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 225
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 188
+    END
+
+    IDD_DIALOG_SELECT_FORMAT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 220
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 98
+    END
+
+    IDD_DIALOG_SET_HOTKEY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 118
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 65
+    END
+
+    IDD_SEARCH_ITEM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 202
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_SEARCH_ITEM AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_MENU_REGIST         "&Vorlagen"
+    IDS_MENU_CANCEL         "&Abbrechen"
+    IDS_MENU_EXIT           "&Beenden"
+    IDS_MENU_VIEWER         "An&zeige..."
+    IDS_MENU_OPTION         "&Einstellugen..."
+    IDS_MENU_CLIPBOARD_WATCH "Zwischenablage-&Überwachung"
+    IDS_MENU_HELP           "&Hilfe"
+    IDS_TREEITEM_CLIPBOARD  "Zwischenablage"
+    IDS_TREEITEM_HISTORY    "Verlauf"
+    IDS_TREEITEM_REGIST     "Vorlagen"
+    IDS_TREEITEM_NEWFOLDER  "Neuer Ordner"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ERROR_END           "Beim Speichern der Datei ist ein Fehler aufgetreten.\nMöchten Sie den Beendigungsvorgang fortsetzen?"
+    IDS_ERROR_HOTKEY        "Hotkey-Registrierung fehlgeschlagen.\nBitte überprüfen Sie die Einstellungen."
+    IDS_ERROR_WINDOW_INIT   "Initialisierung des Fensters fehlgeschlagen."
+    IDS_ERROR_FILENAME      "Ein Dateiname darf keines der folgenden Zeichen enthalten:\n\t\\ / : , ; * ? "" < > |"
+    IDS_ERROR_FOLDERNAME    "Ein Ordner mit dem angegebenen Namen existiert bereits. Bitte geben Sie einen anderen Ordnernamen an."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_LISTCOLUMN_DATA     "Daten"
+    IDS_LISTCOLUMN_SIZE     "Größe"
+    IDS_LISTCOLUMN_DATE     "Änderungsdatum"
+    IDS_LISTCOLUMN_WINDOW   "Fenster"
+    IDS_LISTCOLUMN_HOTKEY   "Hotkey"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_QUESTION_DELETE     "Möchten Sie das ausgewählte Element wirklich löschen?"
+    IDS_QUESTION_REPLACE    "Ein Format mit demselben Namen existiert bereits.\nMöchten Sie die Daten ersetzen?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_ADDPOS       "Bitte wählen Sie einen Ordner, in den Elemente hinzugefügt werden sollen."
+    IDS_DIALOG_COPYPOS      "Bitte wählen Sie einen Ordner, in den die Vorlage kopiert werden soll."
+    IDS_DIALOG_MOVEPOS      "Bitte wählen Sie einen Ordner, in den die Vorlage verschoben werden soll."
+    IDS_DIALOG_IMPORT       "Bitte wählen Sie einen Ordner, in den die importierten Elemente hinzugefügt werden sollen."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_VIEWER_COPYNAME     "Kopie von %s"
+    IDS_VIEWER_COPYNAME_NUM "Kopie (%d) von %s"
+    IDS_VIEWER_MENU_TOOL_NOTHING "(Keine)"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STATUSBAR_ITEM_CNT  "%d Elemente"
+    IDS_STATUSBAR_BYTES     "%d Bytes"
+    IDS_STATUSBAR_KB        "%d KB"
+END
+
+STRINGTABLE
+BEGIN
+    ID_MENUITEM_CLIPBOARD_TB "An Zwischenablage senden"
+    ID_MENUITEM_PASTE_TB    "Aus Zwischenablage einfügen"
+    ID_MENUITEM_REGIST_ADD_TB "Zu Vorlagen hinzufügen"
+    ID_MENUITEM_NEW_ITEM_TB "Neu"
+    ID_MENUITEM_DELETE_TB   "Löschen"
+    ID_MENUITEM_UP_TB       "Nach oben"
+    ID_MENUITEM_DOWN_TB     "Nach unten"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_UNDO      "&Rückgängig"
+    IDS_TEXT_MENU_REDO      "&Wiederholen"
+    IDS_TEXT_MENU_CUT       "A&usschneiden"
+    IDS_TEXT_MENU_COPY      "&Kopieren"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_PASTE     "&Einfügen"
+    IDS_TEXT_MENU_DELETE    "&Löschen"
+    IDS_TEXT_MENU_SELECT_ALL "Alles &auswählen"
+    IDS_TEXT_MENU_WORDWRAP  "Zeilenumbruch (&W)"
+    IDS_TEXT_MENU_SELECT_FONT "Schriftart (&F)..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BITMAP_MENU_STRETCH "Bild an Fenstergröße anpassen (&S)"
+    IDS_BITMAP_MENU_ZOOM_IN "Vergrößern (&I)\tCtrl+Up"
+    IDS_BITMAP_MENU_ZOOM_OUT "Verkleinern (&O)\tCtrl+Down"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_FILE_LIST_NAME      "Name"
+    IDS_FILE_LIST_FOLDER    "Ordner"
+    IDS_FILE_LIST_TYPE      "Typ"
+    IDS_FILE_LIST_TYPE_DEF  "Datei"
+    IDS_FILE_MENU_OPEN      "&Öffnen"
+    IDS_FILE_MENU_ADD       "&Hinzufügen...\tCtrl+D"
+    IDS_FILE_MENU_DELETE    "Verknüpfung &aufheben"
+    IDS_FILE_DELETE_MSG     "Möchten Sie die Verknüpfung zur ausgewählten Datei aufheben?"
+    IDS_FILE_MENU_COPY_FILE "Dateiname &kopieren\tCtrl+C"
+    IDS_FILE_MENU_COPY_PATH "Pfad &kopieren\tSCtrl+C"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BIN_MENU_UNDO       "&Rückgängig"
+    IDS_BIN_MENU_REDO       "&Wiederholen"
+    IDS_BIN_MENU_LOCK       "Bearbeitung &sperren"
+    IDS_BIN_MENU_FONT       "Schriftart (&F)..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_EXPORT       "Bitte wählen Sie einen Ordner zum Exportieren."
+END
+
+#endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
@@ -598,6 +1969,7 @@ BEGIN
     BEGIN
         MENUITEM "&Add to Template...\tCtrl+R", ID_MENUITEM_REGIST_ADD
         MENUITEM "&Save As...\tCtrl+S",         ID_MENUITEM_DATA_SAVE
+        MENUITEM "Show as Binary",              ID_MENUITEM_SHOWBINARY
         MENUITEM SEPARATOR
         POPUP "&Options"
         BEGIN
@@ -610,6 +1982,7 @@ BEGIN
         MENUITEM "Send to &Clipboard\tCtrl+C",  ID_MENUITEM_CLIPBOARD
         MENUITEM "&Paste from Clipboard\tCtrl+V", ID_MENUITEM_PASTE
         MENUITEM "&Add to Template...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "Show as Binary",              ID_MENUITEM_SHOWBINARY
         MENUITEM "&Tools",                      ID_MENUITEM_TOOL_MENU
         MENUITEM SEPARATOR
         MENUITEM "Move &Up\tAlt+Up",            ID_MENUITEM_UP
@@ -632,6 +2005,7 @@ BEGIN
         MENUITEM "Send to &Clipboard\tCtrl+C",  ID_MENUITEM_CLIPBOARD
         MENUITEM "&Paste from Clipboard\tCtrl+V", ID_MENUITEM_PASTE
         MENUITEM "&Add to Template...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "Show as Binary",              ID_MENUITEM_SHOWBINARY
         MENUITEM "&Tools",                      ID_MENUITEM_TOOL_MENU
         MENUITEM SEPARATOR
         MENUITEM "Move &Up\tAlt+Up",            ID_MENUITEM_UP
@@ -646,6 +2020,7 @@ BEGIN
     BEGIN
         MENUITEM "Send to &Clipboard\tCtrl+C",  ID_MENUITEM_CLIPBOARD
         MENUITEM "&Paste from Clipboard\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "Show as Binary",              ID_MENUITEM_SHOWBINARY
         MENUITEM "&Tools",                      ID_MENUITEM_TOOL_MENU
         MENUITEM SEPARATOR
         MENUITEM "Move &Up\tAlt+Up",            ID_MENUITEM_UP
@@ -675,6 +2050,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Send to &Clipboard\tCtrl+C",  ID_MENUITEM_CLIPBOARD
         MENUITEM "&Paste from Clipboard\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "Show as Binary",              ID_MENUITEM_SHOWBINARY
         MENUITEM "&Tools",                      ID_MENUITEM_TOOL_MENU
         MENUITEM SEPARATOR
         MENUITEM "Move &Up\tAlt+Up",            ID_MENUITEM_UP
@@ -749,6 +2125,7 @@ BEGIN
     END
     POPUP "&Help"
     BEGIN
+        MENUITEM "Help",                        ID_MENUITEM_HELP
         MENUITEM "&About...",                   ID_MENUITEM_ABOUT
     END
 END
@@ -759,22 +2136,22 @@ END
 // Dialog
 //
 
-IDD_DIALOG_SELECT_FOLDER DIALOG 0, 0, 232, 195
+IDD_DIALOG_SELECT_FOLDER DIALOGEX 0, 0, 232, 192
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Browse for Folder"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
     LTEXT           "msg",IDC_STATIC_MSG,5,5,220,19
-    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,25,220,145
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_HSCROLL | WS_TABSTOP,5,25,220,145
     DEFPUSHBUTTON   "OK",IDOK,120,175,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,175,175,50,14
 END
 
-IDD_DIALOG_SELECT_FORMAT DIALOGEX 0, 0, 227, 105
+IDD_DIALOG_SELECT_FORMAT DIALOGEX 0, 0, 227, 108
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_ACCEPTFILES
 CAPTION "New Item"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
     LTEXT           "Format to &Add:",IDC_STATIC,5,5,115,10
     COMBOBOX        IDC_COMBO_FORMAT,5,15,215,145,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
@@ -786,10 +2163,10 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,171,85,50,14
 END
 
-IDD_DIALOG_SET_HOTKEY DIALOG 0, 0, 125, 72
+IDD_DIALOG_SET_HOTKEY DIALOGEX 0, 0, 125, 72
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Set Hot key"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
     LTEXT           "&Hot key:",IDC_STATIC,10,5,75,10
     CONTROL         "HotKey1",IDC_HOTKEY_ITEM,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,10,15,70,15
@@ -797,6 +2174,26 @@ BEGIN
     CONTROL         "&Paste",IDC_CHECK_PASTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,35,75,10
     DEFPUSHBUTTON   "OK",IDOK,10,50,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,65,50,50,14
+END
+
+IDD_SEARCH_ITEM DIALOGEX 0, 0, 209, 141
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Search Item"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Search text",IDC_STATIC,12,14,66,8
+    EDITTEXT        IDC_SEARCHTEXT,84,12,114,12,ES_AUTOHSCROLL
+    CONTROL         "Search for date",IDC_CHK_SRCHDATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,30,78,10
+    LTEXT           "from",IDC_STATIC,12,51,42,8
+    CONTROL         "",IDC_DATEFROM,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_SHORTDATECENTURYFORMAT | WS_DISABLED | WS_TABSTOP,54,48,54,15
+    CONTROL         "",IDC_TIMEFROM,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_DISABLED | WS_TABSTOP | 0x8,108,48,54,15,WS_EX_STATICEDGE
+    LTEXT           "until",IDC_STATIC,12,75,42,8
+    CONTROL         "",IDC_DATEUNTIL,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_SHORTDATECENTURYFORMAT | WS_DISABLED | WS_TABSTOP,54,72,54,15
+    CONTROL         "",IDC_TIMEUNTIL,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_DISABLED | WS_TABSTOP | 0x8,108,72,54,15
+    LTEXT           "from application",IDC_STATIC,12,98,66,8
+    EDITTEXT        IDC_FROM_APPLICATION,84,96,114,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,96,120,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,150,120,50,14
 END
 
 
@@ -813,7 +2210,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 225
         TOPMARGIN, 7
-        BOTTOMMARGIN, 188
+        BOTTOMMARGIN, 185
     END
 
     IDD_DIALOG_SELECT_FORMAT, DIALOG
@@ -821,7 +2218,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 220
         TOPMARGIN, 7
-        BOTTOMMARGIN, 98
+        BOTTOMMARGIN, 101
     END
 
     IDD_DIALOG_SET_HOTKEY, DIALOG
@@ -831,8 +2228,42 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 65
     END
+
+    IDD_SEARCH_ITEM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 202
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_SELECT_FOLDER AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_SELECT_FORMAT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_SET_HOTKEY AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SEARCH_ITEM AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -848,6 +2279,7 @@ BEGIN
     IDS_MENU_VIEWER         "&Viewer..."
     IDS_MENU_OPTION         "&Options..."
     IDS_MENU_CLIPBOARD_WATCH "Clipboard &Watch"
+    IDS_MENU_HELP           "&Help"
     IDS_TREEITEM_CLIPBOARD  "Clipboard"
     IDS_TREEITEM_HISTORY    "History"
     IDS_TREEITEM_REGIST     "Template"
@@ -962,7 +2394,7 @@ BEGIN
     IDS_DIALOG_EXPORT       "Please select a folder to export."
 END
 
-#endif    // 英語 (米国) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

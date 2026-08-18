@@ -1,0 +1,805 @@
+// Microsoft Visual C++ generated resource script.
+//
+#pragma code_page(65001)
+
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Ukrainian (Ukraine) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_UKR)
+LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_HISTORY DIALOGEX 0, 0, 273, 225
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Історія"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "&Максимальна кількість елементів:",IDC_STATIC,12,11,134,8
+    EDITTEXT        IDC_EDIT_MAX,152,8,40,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_SPIN_MAX,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,218,6,13,15
+    LTEXT           "",IDC_STATIC,196,10,14,10
+    LTEXT           "Додавати в &історію після простою (мс):",IDC_STATIC,12,28,134,8
+    EDITTEXT        IDC_EDIT_ADD_INTERVAL,152,25,40,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin2",IDC_SPIN_ADD_INTERVAL,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,218,26,13,15
+    LTEXT           "мс",IDC_STATIC,196,28,14,8
+    LTEXT           "Затримка доступу до буфера (&D):",IDC_STATIC,12,44,134,8
+    EDITTEXT        IDC_EDIT_CLIPBOARD_DELAY,152,41,40,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin3",IDC_SPIN_CLIPBOARD_DELAY,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,218,42,13,15
+    LTEXT           "мс",IDC_STATIC,196,44,14,8
+    CONTROL         "Зберігати історію при ви&ході",IDC_CHECK_SAVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,59,160,10
+    CONTROL         "Завжди о&новлювати і зберігати історію",IDC_CHECK_ALWAYS_SAVE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,73,175,10
+    CONTROL         "Видаляти історію при відправці в буфер (&S)",IDC_CHECK_DELETE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,87,160,10
+    CONTROL         "&Окрім шаблону",IDC_CHECK_IGNORE_REGIST_ITEM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,101,187,11
+    GROUPBOX        "Перевірка дублювання історії",IDC_STATIC,9,119,253,70
+    CONTROL         "Без перевірки",IDC_RADIO_CHECK_NO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,16,131,218,10
+    CONTROL         "Перевіряти лише останню з історій",IDC_RADIO_CHECK_ONE,
+                    "Button",BS_AUTORADIOBUTTON,16,144,218,10
+    CONTROL         "Перевіряти ВСЮ історію",IDC_RADIO_CHECK_ALL,"Button",BS_AUTORADIOBUTTON,16,157,218,10
+    CONTROL         "Перевіряти ВСЮ історію та &видаляти дублікати",IDC_RADIO_CHECK_ALL_DELETE,
+                    "Button",BS_AUTORADIOBUTTON,16,170,218,10
+END
+
+IDD_DIALOG_ACTION DIALOGEX 0, 0, 273, 228
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Дія"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "Налаштування &дій:",IDC_STATIC,10,10,200,8
+    CONTROL         "List1",IDC_LIST_ACTION,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,5,20,240,165
+    CONTROL         "&Вгору",IDC_BUTTON_UP,"Button",BS_OWNERDRAW | WS_TABSTOP,249,71,17,14
+    CONTROL         "До&низу",IDC_BUTTON_DOWN,"Button",BS_OWNERDRAW | WS_TABSTOP,249,122,17,14
+    PUSHBUTTON      "&Додати...",IDC_BUTTON_ADD,50,190,50,14
+    PUSHBUTTON      "&Редагувати...",IDC_BUTTON_EDIT,105,190,50,14
+    PUSHBUTTON      "&Видалити",IDC_BUTTON_DELETE,160,190,50,14
+    PUSHBUTTON      "&Копіювати",IDC_BUTTON_COPY,216,190,50,14
+END
+
+IDD_DIALOG_ACTION_SET DIALOGEX 0, 0, 307, 279
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Редагування дії"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "&Дія:",IDC_STATIC,5,10,35,10
+    COMBOBOX        IDC_COMBO_ACTION,45,5,155,115,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Тип виклику:",IDC_STATIC,5,27,35,10
+    COMBOBOX        IDC_COMBO_TYPE,45,23,155,143,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Гаряча клавіша:",IDC_STATIC,5,44,35,10
+    CONTROL         "",IDC_HOTKEY,"select_key",WS_BORDER | WS_TABSTOP,45,41,155,12
+    CONTROL         "&Увімкнути",IDC_CHECK_ENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,209,7,85,10
+    CONTROL         "&Вставка",IDC_CHECK_PASTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,209,32,85,10
+    CONTROL         "Показувати на позиції каретки",IDC_CHECK_CARET,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,209,44,90,10
+    GROUPBOX        "&Меню",IDC_STATIC,5,60,295,195
+    CONTROL         "Tree1",IDC_TREE_MENU,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,10,70,110,165
+    CONTROL         "&Вгору",IDC_BUTTON_UP,"Button",BS_OWNERDRAW | WS_TABSTOP,10,237,15,13
+    CONTROL         "До&низу",IDC_BUTTON_DOWN,"Button",BS_OWNERDRAW | WS_TABSTOP,30,237,15,13
+    PUSHBUTTON      "&Видалити",IDC_BUTTON_DELETE,86,237,34,13
+    LTEXT           "З&міст:",IDC_STATIC,125,70,110,10
+    COMBOBOX        IDC_COMBO_CONTENT,125,80,150,185,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Заголовок:",IDC_STATIC,125,97,110,9
+    EDITTEXT        IDC_EDIT_TITLE,125,107,150,12,ES_AUTOHSCROLL
+    LTEXT           "Пат&ш:",IDC_STATIC_PATH,125,123,110,8
+    EDITTEXT        IDC_EDIT_PATH,125,133,150,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_PATH_SELECT,278,133,14,12
+    LTEXT           "Командний рядок:",IDC_STATIC,125,149,110,8
+    EDITTEXT        IDC_EDIT_CMD,125,159,150,12,ES_AUTOHSCROLL
+    LTEXT           "Шлях до &іконки:",IDC_STATIC,125,175,105,8
+    EDITTEXT        IDC_EDIT_ICON_FILE,125,185,150,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_ICON_FILE_SELECT,278,185,14,12
+    LTEXT           "Індекс і&конки:",IDC_STATIC,125,201,110,8
+    EDITTEXT        IDC_EDIT_ICON_INDEX,125,211,40,12,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_SPIN_ICON_INDEX,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,180,210,13,15
+    LTEXT           "Діапазон відображення(0 - без обмежень):",IDC_STATIC,125,227,110,8
+    EDITTEXT        IDC_EDIT_MIN,125,237,40,12,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin2",IDC_SPIN_MIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,235,235,13,15
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKRECT,170,242,5,1
+    EDITTEXT        IDC_EDIT_MAX,180,237,40,12,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin2",IDC_SPIN_MAX,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,255,235,13,15
+    DEFPUSHBUTTON   "OK",IDOK,195,260,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,251,260,50,14
+END
+
+IDD_DIALOG_SELECT_ICON DIALOGEX 0, 0, 231, 203
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Вибір іконки"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    CONTROL         "List1",IDC_LIST_ICON,"SysListView32",LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_AUTOARRANGE | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,5,25,220,155
+    DEFPUSHBUTTON   "OK",IDOK,120,185,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,175,185,50,14
+    EDITTEXT        IDC_EDIT_FILE,5,5,180,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Огляд...",IDC_BUTTON_BROWS,190,5,35,12
+END
+
+IDD_DIALOG_SELECT_FOLDER DIALOGEX 0, 0, 232, 195
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Огляд папок"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "Будь ласка, виберіть папку.",IDC_STATIC,5,5,220,10
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,20,220,150
+    DEFPUSHBUTTON   "OK",IDOK,120,175,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,175,175,50,14
+END
+
+IDD_DIALOG_MENU DIALOGEX 0, 0, 273, 228
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Меню"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    CONTROL         "Показувати &іконки",IDC_CHECK_SHOW_ICON,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,10,175,10
+    LTEXT           "Розмір &іконки:",IDC_STATIC,22,24,53,9
+    EDITTEXT        IDC_EDIT_ICON_SIZE,81,22,40,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_SPIN_ICON_SIZE,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,130,20,13,15
+    CONTROL         "Показувати &зображення",IDC_CHECK_SHOW_BITMAP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,36,175,10
+    LTEXT           "Розмір зо&браження:",IDC_STATIC,22,50,58,9
+    EDITTEXT        IDC_EDIT_BMP_WIDTH,81,47,40,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin2",IDC_SPIN_BMP_WIDTH,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,185,45,13,15
+    LTEXT           "x",IDC_STATIC,125,50,8,9
+    EDITTEXT        IDC_EDIT_BMP_HEIGHT,133,47,40,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin3",IDC_SPIN_BMP_HEIGHT,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,205,45,13,15
+    CONTROL         "Показувати підсказки (&T)",IDC_CHECK_SHOW_TOOLTIP,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,62,175,9
+    LTEXT           "Показувати підказку після (мс):",IDC_STATIC,22,74,108,10
+    EDITTEXT        IDC_EDIT_SHOW_DELAY,133,72,40,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin4",IDC_SPIN_SHOW_DELAY,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,225,70,13,15
+    LTEXT           "мс",IDC_STATIC,177,75,43,10
+    CONTROL         "Показувати &гарячі клавіші",IDC_CHECK_SHOW_HOTKEY,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,85,175,10
+    CONTROL         "Якщо меню ширше екрану - розбивати",IDC_CHECK_BREAK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,98,180,10
+    CONTROL         "Клік правою кнопкою по меню відкриває інструменти",IDC_CHECK_SHOW_TOOL_MENU,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,111,175,10
+    LTEXT           "Формат відображення тексту меню:",IDC_STATIC,10,131,175,9
+    EDITTEXT        IDC_EDIT_TEXT_FORMAT,10,140,235,13,ES_AUTOHSCROLL
+    CONTROL         "В&ибрати",IDC_BUTTON_FORMAT_SELECT,"Button",BS_OWNERDRAW | WS_TABSTOP,248,140,15,13
+    LTEXT           "Максимальна &ширина меню:",IDC_STATIC,10,161,175,8
+    EDITTEXT        IDC_EDIT_MAX_WIDTH,10,171,40,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin5",IDC_SPIN_MAX_WIDTH,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,60,170,13,15
+END
+
+IDD_DIALOG_VIEWER DIALOGEX 0, 0, 273, 228
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Переглядач"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    CONTROL         "&Перемикати вікно",IDC_CHECK_TOGGLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,10,145,10
+    CONTROL         "Розгортати &буфер",IDC_CHECK_CLIP_EXPAND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,23,145,10
+    CONTROL         "Розгортати &історію",IDC_CHECK_HISTORY_EXPAND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,36,145,10
+    CONTROL         "Розгортати &шаблон",IDC_CHECK_REGIST_EXPAND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,49,145,10
+    CONTROL         "Розгортати всі &папки",IDC_CHECK_FOLDER_EXPAND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,62,145,11
+    GROUPBOX        "Пункти дерева та порядок відображення",IDC_STATIC,10,77,250,68
+    LTEXT           "Доступні &пункти:",IDC_STATIC,20,88,95,8
+    LISTBOX         IDC_LIST_FROM,20,98,95,40,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "&>>",IDC_BUTTON_ADD,126,101,20,15
+    PUSHBUTTON      "&<<",IDC_BUTTON_DELETE,126,120,20,15
+    LTEXT           "Поточні &пункти:",IDC_STATIC,155,88,95,10
+    LISTBOX         IDC_LIST_TO,155,98,95,40,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Дія списку за замовчуванням",IDC_STATIC,10,150,250,52
+    CONTROL         "&Відкрити",IDC_RADIO_DEF_OPEN,"Button",BS_AUTORADIOBUTTON,20,160,105,11
+    CONTROL         "&Відправити в буфер",IDC_RADIO_DEF_CLIPBOARD,"Button",BS_AUTORADIOBUTTON,20,172,105,11
+    CONTROL         "Зберегти &як",IDC_RADIO_DEF_SAVE,"Button",BS_AUTORADIOBUTTON,20,185,105,11
+    LTEXT           "Мова",IDC_STATIC,12,205,54,8
+    COMBOBOX        IDC_UI_LANGUAGE,72,204,138,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_DIALOG_FORMAT DIALOGEX 0, 0, 273, 225
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Формат"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "Налаштування форматів буфера (&S):",IDC_STATIC,10,10,200,8
+    CONTROL         "List1",IDC_LIST_FORMAT,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,5,20,240,165
+    CONTROL         "&Вгору",IDC_BUTTON_UP,"Button",BS_OWNERDRAW | WS_TABSTOP,249,71,17,14
+    CONTROL         "До&низу",IDC_BUTTON_DOWN,"Button",BS_OWNERDRAW | WS_TABSTOP,249,122,17,14
+    PUSHBUTTON      "&Додати...",IDC_BUTTON_ADD,50,190,50,14
+    PUSHBUTTON      "&Редагувати...",IDC_BUTTON_EDIT,105,190,50,14
+    PUSHBUTTON      "&Видалити",IDC_BUTTON_DELETE,160,190,50,14
+    PUSHBUTTON      "&Властивості...",IDC_BUTTON_PROP,216,190,50,14
+END
+
+IDD_DIALOG_FORMAT_SET DIALOGEX 0, 0, 237, 129
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Редагування формату буфера"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "Ім'я фор&мату:",IDC_STATIC,10,10,150,10
+    EDITTEXT        IDC_EDIT_FORMAT_NAME,10,20,195,13,ES_AUTOHSCROLL
+    CONTROL         "&Формат",IDC_BUTTON_FORMAT,"Button",BS_OWNERDRAW | WS_TABSTOP,210,20,15,13
+    LTEXT           "&DLL:",IDC_STATIC,10,45,150,10
+    EDITTEXT        IDC_EDIT_LIB_PATH,10,55,175,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Огляд...",IDC_BUTTON_FILE_SELECT,190,55,35,13
+    LTEXT           "Заголовок фун&кції:",IDC_STATIC,10,72,150,10
+    EDITTEXT        IDC_EDIT_HEADER,10,82,175,13,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "&Вибрати...",IDC_BUTTON_FUNC_SELECT,190,82,35,13
+    DEFPUSHBUTTON   "OK",IDOK,120,106,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,175,106,50,14
+END
+
+IDD_DIALOG_SELECT_FUNC DIALOGEX 0, 0, 227, 179
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "",IDC_STATIC_MSG,5,5,215,10
+    CONTROL         "List1",IDC_LIST_HEADER,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,5,20,215,135
+    DEFPUSHBUTTON   "OK",IDOK,115,160,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,171,160,50,14
+END
+
+IDD_DIALOG_FORMAT_PROP DIALOGEX 0, 0, 227, 78
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Властивості"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    GROUPBOX        "Текст",IDC_STATIC,5,5,215,50
+    LTEXT           "&Максимальна кількість символів у підказці меню:",IDC_STATIC,15,20,195,8
+    EDITTEXT        IDC_EDIT_TOOLTIP_SIZE,15,30,45,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_SPIN_TOOLTIP_SIZE,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,65,30,13,15
+    DEFPUSHBUTTON   "OK",IDOK,115,60,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,170,60,50,14
+END
+
+IDD_DIALOG_FILTER DIALOGEX 0, 0, 272, 209
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Фільтр"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    CONTROL         "Додавати всі формати в історію",IDC_RADIO_ALL_ADD,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP,10,8,150,10
+    CONTROL         "Ігнорувати всі формати в історії",IDC_RADIO_ALL_IGNORE,
+                    "Button",BS_AUTORADIOBUTTON,10,22,150,10
+    LTEXT           "Налаштування &фільтрів:",IDC_STATIC,10,40,200,8
+    CONTROL         "List1",IDC_LIST_FILTER,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,5,50,240,135
+    CONTROL         "&Вгору",IDC_BUTTON_UP,"Button",BS_OWNERDRAW | WS_TABSTOP,249,85,17,14
+    CONTROL         "До&низу",IDC_BUTTON_DOWN,"Button",BS_OWNERDRAW | WS_TABSTOP,249,136,17,14
+    PUSHBUTTON      "&Додати...",IDC_BUTTON_ADD,105,190,50,14
+    PUSHBUTTON      "&Редагувати...",IDC_BUTTON_EDIT,160,190,50,14
+    PUSHBUTTON      "&Видалити",IDC_BUTTON_DELETE,215,190,50,14
+END
+
+IDD_DIALOG_FILTER_SET DIALOGEX 0, 0, 212, 139
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Редагування фільтра"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "Ім'я фор&мату:",IDC_STATIC,10,10,150,10
+    EDITTEXT        IDC_EDIT_FORMAT_NAME,10,20,173,13,ES_AUTOHSCROLL
+    CONTROL         "&Формат",IDC_BUTTON_FORMAT,"Button",BS_OWNERDRAW | WS_TABSTOP,187,20,15,13
+    GROUPBOX        "Дія",IDC_STATIC,10,40,193,65
+    CONTROL         "&Додавати в історію",IDC_RADIO_ADD,"Button",BS_AUTORADIOBUTTON | WS_GROUP,20,50,85,10
+    CONTROL         "&Ігнорувати формат",IDC_RADIO_IGNORE,"Button",BS_AUTORADIOBUTTON,20,65,85,10
+    CONTROL         "Не зберігати",IDC_CHECK_NOSAVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,118,50,80,10
+    LTEXT           "&Обмежити розмір:",IDC_STATIC,118,65,80,8
+    EDITTEXT        IDC_EDIT_SIZE,118,75,50,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_SPIN_SIZE,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,165,75,13,15
+    LTEXT           "байт",IDC_STATIC,174,79,24,10
+    LTEXT           "Нуль = без обмежень",IDC_STATIC,118,92,80,8
+    DEFPUSHBUTTON   "OK",IDOK,98,115,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,153,115,50,14
+END
+
+IDD_DIALOG_WINDOW DIALOGEX 0, 0, 273, 228
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Вікно"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "Налаштування &вікон:",IDC_STATIC,10,10,200,8
+    CONTROL         "List1",IDC_LIST_WINDOW,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,5,20,240,165
+    CONTROL         "&Вгору",IDC_BUTTON_UP,"Button",BS_OWNERDRAW | WS_TABSTOP,249,71,17,14
+    CONTROL         "До&низу",IDC_BUTTON_DOWN,"Button",BS_OWNERDRAW | WS_TABSTOP,249,122,17,14
+    PUSHBUTTON      "&Додати...",IDC_BUTTON_ADD,105,190,50,14
+    PUSHBUTTON      "&Редагувати...",IDC_BUTTON_EDIT,160,190,50,14
+    PUSHBUTTON      "&Видалити",IDC_BUTTON_DELETE,216,190,50,14
+END
+
+IDD_DIALOG_WINDOW_SET DIALOGEX 0, 0, 267, 248
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Налаштування для вікна"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "Поточний спи&сок вікон:",IDC_STATIC,5,10,170,8
+    CONTROL         "List1",IDC_LIST_WINDOW,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_SORTASCENDING | WS_BORDER | WS_TABSTOP,5,20,255,65
+    CONTROL         "&Вибрати",IDC_BUTTON_SELECT,"Button",BS_OWNERDRAW | WS_TABSTOP,120,90,35,13
+    GROUPBOX        "Редагувати",IDC_STATIC,5,105,255,120
+    LTEXT           "&Заголовок:",IDC_STATIC,14,117,90,8
+    EDITTEXT        IDC_EDIT_TITLE,14,127,236,11,ES_AUTOHSCROLL
+    LTEXT           "&Ім'я класу:",IDC_STATIC,14,141,90,8
+    EDITTEXT        IDC_EDIT_CLASSNAME,14,151,236,11,ES_AUTOHSCROLL
+    LTEXT           "(""*"" і ""?"" - маски)",IDC_STATIC,14,166,155,8
+    CONTROL         "Не додавати в історію",IDC_CHECK_IGNORE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,178,199,11
+    CONTROL         "Не встановлювати фокус",IDC_CHECK_FOCUS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,193,199,11
+    CONTROL         "Вставляти при скасуванні інструменту",IDC_CHECK_PASTE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,208,199,11
+    DEFPUSHBUTTON   "OK",IDOK,155,230,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,210,230,50,14
+    PUSHBUTTON      "&Оновити",IDC_BUTTON_RELOAD,219,8,40,12
+END
+
+IDD_DIALOG_SENDKEY DIALOGEX 0, 0, 272, 209
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Клавіші"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    GROUPBOX        "Налаштування клавіш за замовчуванням",IDC_STATIC,5,5,260,65
+    LTEXT           "&Копіювати:",IDC_STATIC,15,15,50,10
+    CONTROL         "",IDC_HOTKEY_COPY,"select_key",WS_BORDER | WS_TABSTOP,15,25,50,13
+    LTEXT           "Затримка к&опіювання:",IDC_STATIC,16,41,74,10
+    EDITTEXT        IDC_EDIT_COPY_WAIT,15,51,50,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_SPIN_COPY_WAIT,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,225,45,13,15
+    LTEXT           "мс",IDC_STATIC,69,54,41,10
+    LTEXT           "&Вставити:",IDC_STATIC,117,15,50,10
+    CONTROL         "",IDC_HOTKEY_PASTE,"select_key",WS_BORDER | WS_TABSTOP,115,25,50,13
+    LTEXT           "Затримка вставки (&Y):",IDC_STATIC,117,41,100,10
+    EDITTEXT        IDC_EDIT_PASTE_WAIT,115,51,50,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_SPIN_PASTE_WAIT,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,245,45,13,15
+    LTEXT           "мс",IDC_STATIC,169,54,44,10
+    LTEXT           "Налаштування к&лавіш:",IDC_STATIC,10,75,200,8
+    CONTROL         "List1",IDC_LIST_SENDKEY,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,5,85,240,100
+    CONTROL         "&Вгору",IDC_BUTTON_UP,"Button",BS_OWNERDRAW | WS_TABSTOP,249,103,17,14
+    CONTROL         "До&низу",IDC_BUTTON_DOWN,"Button",BS_OWNERDRAW | WS_TABSTOP,249,154,17,14
+    PUSHBUTTON      "&Додати...",IDC_BUTTON_ADD,105,190,50,14
+    PUSHBUTTON      "&Редагувати...",IDC_BUTTON_EDIT,160,190,50,14
+    PUSHBUTTON      "&Видалити",IDC_BUTTON_DELETE,215,190,50,14
+END
+
+IDD_DIALOG_SENDKEY_SET DIALOGEX 0, 0, 267, 264
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Налаштування клавіш для вікна"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "Поточний спи&сок вікон:",IDC_STATIC,5,10,170,8
+    CONTROL         "List1",IDC_LIST_WINDOW,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_SORTASCENDING | WS_BORDER | WS_TABSTOP,5,20,255,65
+    CONTROL         "&Вибрати",IDC_BUTTON_SELECT,"Button",BS_OWNERDRAW | WS_TABSTOP,120,90,35,13
+    GROUPBOX        "Редагувати",IDC_STATIC,5,105,255,135
+    LTEXT           "&Заголовок:",IDC_STATIC,14,117,90,8
+    EDITTEXT        IDC_EDIT_TITLE,14,127,236,11,ES_AUTOHSCROLL
+    LTEXT           "&Ім'я класу:",IDC_STATIC,14,141,90,8
+    EDITTEXT        IDC_EDIT_CLASSNAME,14,151,236,11,ES_AUTOHSCROLL
+    LTEXT           "(""*"" і ""?"" - маски)",IDC_STATIC,14,166,232,8
+    LTEXT           "&Копіювати:",IDC_STATIC,15,180,50,10
+    CONTROL         "",IDC_HOTKEY_COPY,"select_key",WS_BORDER | WS_TABSTOP,15,190,50,13
+    LTEXT           "Затримка к&опіювання:",IDC_STATIC,16,206,74,10
+    EDITTEXT        IDC_EDIT_COPY_WAIT,15,216,50,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_SPIN_COPY_WAIT,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,220,215,13,15
+    LTEXT           "мс",IDC_STATIC,69,219,41,10
+    LTEXT           "&Вставити:",IDC_STATIC,116,180,50,10
+    CONTROL         "",IDC_HOTKEY_PASTE,"select_key",WS_BORDER | WS_TABSTOP,115,190,50,13
+    LTEXT           "Затримка вста&вки:",IDC_STATIC,116,206,92,10
+    EDITTEXT        IDC_EDIT_PASTE_WAIT,115,216,50,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin2",IDC_SPIN_PASTE_WAIT,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,240,215,13,15
+    LTEXT           "мс",IDC_STATIC,169,219,47,10
+    DEFPUSHBUTTON   "OK",IDOK,155,245,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,210,245,50,14
+    PUSHBUTTON      "&Оновити",IDC_BUTTON_RELOAD,219,8,40,12
+END
+
+IDD_DIALOG_TOOL DIALOGEX 0, 0, 273, 227
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Інструмент"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "Налаштування &інструментів:",IDC_STATIC,10,10,200,8
+    CONTROL         "List1",IDC_LIST_TOOL,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,5,20,240,165
+    CONTROL         "&Вгору",IDC_BUTTON_UP,"Button",BS_OWNERDRAW | WS_TABSTOP,249,71,17,14
+    CONTROL         "До&низу",IDC_BUTTON_DOWN,"Button",BS_OWNERDRAW | WS_TABSTOP,249,122,17,14
+    PUSHBUTTON      "&Додати...",IDC_BUTTON_ADD,50,190,50,14
+    PUSHBUTTON      "&Редагувати...",IDC_BUTTON_EDIT,105,190,50,14
+    PUSHBUTTON      "&Видалити",IDC_BUTTON_DELETE,160,190,50,14
+    PUSHBUTTON      "&Властивості...",IDC_BUTTON_PROP,216,190,50,14
+END
+
+IDD_DIALOG_TOOL_SET DIALOGEX 0, 0, 247, 263
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Редагування інструмента"
+FONT 8, "MS Shell Dlg", 400, 0, 0xEE
+BEGIN
+    LTEXT           "&Назва:",IDC_STATIC,10,5,150,10
+    EDITTEXT        IDC_EDIT_TITLE,10,15,190,13,ES_AUTOHSCROLL
+    LTEXT           "(розділ "" - "")",IDC_STATIC,204,18,43,10
+    LTEXT           "&DLL:",IDC_STATIC,10,34,150,10
+    EDITTEXT        IDC_EDIT_LIB_PATH,10,44,190,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Огляд...",IDC_BUTTON_FILE_SELECT,205,44,35,13
+    LTEXT           "&Назва функції:",IDC_STATIC,10,62,150,10
+    EDITTEXT        IDC_EDIT_HEADER,10,72,190,13,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "&Вибрати...",IDC_BUTTON_FUNC_SELECT,205,72,35,13
+    LTEXT           "Ко&мандний рядок:",IDC_STATIC,10,88,150,10
+    EDITTEXT        IDC_EDIT_CMD_LINE,10,98,230,13,ES_AUTOHSCROLL
+    GROUPBOX        "Тип виклику",IDC_STATIC,10,115,230,125
+    CONTROL         "&Меню дій",IDC_CHECK_MENU,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,127,110,10
+    CONTROL         "Відправляти копію та &вставку",IDC_CHECK_COPY_PATE,
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,30,137,100,15
+    LTEXT           "Гаряча к&лавіша:",IDC_STATIC,135,125,50,10
+    CONTROL         "",IDC_HOTKEY_TOOL,"select_key",WS_BORDER | WS_TABSTOP,135,135,95,13
+    CONTROL         "&Меню переглядача",IDC_CHECK_VIEWER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,153,165,10
+    CONTROL         "При &відкритті переглядача",IDC_CHECK_VIEWER_OPEN,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,165,157,10
+    CONTROL         "При &закритті переглядача",IDC_CHECK_VIEWER_CLOSE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,177,157,10
+    CONTROL         "Коли додається д&ані в історію",IDC_CHECK_HISTORY,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,189,165,10
+    CONTROL         "Коли дані відправляються в &буфер",IDC_CHECK_CLIPBOARD,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,201,165,10
+    CONTROL         "Під час &запуску",IDC_CHECK_START,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,213,112,10
+    CONTROL         "Під час &виходу",IDC_CHECK_END,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,225,112,10
+    CONTROL         "When connect to Session",IDC_CHECK_ENTER_SESSION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,135,213,100,10
+    CONTROL         "When disconnect Session",IDC_CHECK_LEAVE_SESSION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,135,225,100,10
+    DEFPUSHBUTTON   "OK",IDOK,135,245,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,191,245,50,14
+    CONTROL         "old",IDC_CHECK_OLD,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,10,245,45,10
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_HISTORY, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_ACTION, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_ACTION_SET, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_SELECT_ICON, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_SELECT_FOLDER, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_MENU, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_VIEWER, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_FORMAT, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_FORMAT_SET, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_SELECT_FUNC, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_FORMAT_PROP, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_FILTER, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_FILTER_SET, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_WINDOW, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_WINDOW_SET, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_SENDKEY, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_SENDKEY_SET, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_TOOL, DIALOG
+    BEGIN
+    END
+
+    IDD_DIALOG_TOOL_SET, DIALOG
+    BEGIN
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_HISTORY AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_ACTION_SET AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_FILTER AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_FILTER_SET AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_FORMAT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_FORMAT_PROP AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_FORMAT_SET AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_MENU AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_SELECT_FOLDER AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_SELECT_FUNC AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_SELECT_ICON AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_TOOL_SET AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_VIEWER AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_MENU_REGIST         "Шаблон"
+    IDS_MENU_CANCEL         "Скасувати"
+    IDS_MENU_EXIT           "Вихід"
+    IDS_MENU_VIEWER         "Переглядач..."
+    IDS_MENU_OPTION         "Параметри..."
+    IDS_MENU_CLIPBOARD_WATCH "Спостереження за буфером"
+    IDS_TREEITEM_REGIST     "Шаблон"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_OPTION_TITLE        "CLCL - Параметри"
+    IDS_OPTION_START_ERROR  "Неможливо запустити через невідповідність версій CLCL та параметрів."
+    IDS_OPTION_DELETE       "Ви впевнені, що хочете видалити цей елемент?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_MENU_FORMAT_1       "%1d - Число (десяткове)"
+    IDS_MENU_FORMAT_2       "%1x - Число (шістнадцяткове, малі літери)"
+    IDS_MENU_FORMAT_3       "%1X - Число (шістнадцяткове)"
+    IDS_MENU_FORMAT_4       "%n - Повтор одиночних цифр"
+    IDS_MENU_FORMAT_5       "%a - Алфавіт (малі літери)"
+    IDS_MENU_FORMAT_6       "%A - Алфавіт"
+    IDS_MENU_FORMAT_7       "%b - Алфавіт + цифра (малі літери)"
+    IDS_MENU_FORMAT_8       "%B - Алфавіт + цифра"
+    IDS_MENU_FORMAT_9       "%c - Цифра + алфавіт (малі літери)"
+    IDS_MENU_FORMAT_10      "%C - Цифра + алфавіт"
+    IDS_MENU_FORMAT_11      "%t - Текст"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_VIEWER_CLIPBOARD    "Буфер обміну"
+    IDS_VIEWER_HISTORY      "Історія"
+    IDS_VIEWER_REGIST       "Шаблон"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_FORMAT_LIST_NAME    "Ім'я формату"
+    IDS_FORMAT_LIST_DLL     "DLL"
+    IDS_FORMAT_LIST_HEADER  "Заголовок функції"
+    IDS_FORMAT_LIST_COMMENT "Коментар"
+    IDS_FORMAT_LIST_FORMAT  "Формат"
+    IDS_FORMAT_NON_PROP     "Цей елемент не має параметрів для налаштування."
+    IDS_FORMAT_COMMENT_TEXT "Обробка тексту"
+    IDS_FORMAT_COMMENT_BITMAP "Обробка зображення"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ACTION_LIST_HEAD_ACTION "Дія"
+    IDS_ACTION_LIST_HEAD_TYPE "Тип виклику"
+    IDS_ACTION_POPUPMEMU    "Меню"
+    IDS_ACTION_VIEWER       "Переглядач"
+    IDS_ACTION_OPTION       "Параметри"
+    IDS_ACTION_CLIPBOARD_WATCH "Спостереження за буфером"
+    IDS_ACTION_EXIT         "Вихід"
+    IDS_ACTION_TYPE_HOTKEY  "Гаряча клавіша"
+    IDS_ACTION_TYPE_CTRL_CTRL "Ctrl + Ctrl"
+    IDS_ACTION_TYPE_SHIFT_SHIFT "Shift + Shift"
+    IDS_ACTION_TYPE_ALT_ALT "Alt + Alt"
+    IDS_ACTION_TYPE_TRAY_LEFT "Клік ліворуч по іконці в треї"
+    IDS_ACTION_TYPE_TRAY_LEFT_DBLCLK "Подвійний клік ліворуч по іконці в треї"
+    IDS_ACTION_TYPE_TRAY_RIGHT "Клік праворуч по іконці в треї"
+    IDS_ACTION_TYPE_TRAY_RIGHT_DBLCLK 
+                            "Подвійний клік праворуч по іконці в треї"
+    IDS_ACTION_CONTENT_SEPARATOR "Роздільник"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ACTION_CONTENT_HISTORY "Історія (за зростанням)"
+    IDS_ACTION_CONTENT_HISTORY_DESC "Історія (за спаданням)"
+    IDS_ACTION_CONTENT_REGIST "Шаблон (за зростанням)"
+    IDS_ACTION_CONTENT_REGIST_DESC "Шаблон (за спаданням)"
+    IDS_ACTION_CONTENT_POPUP "Вискакуюче меню"
+    IDS_ACTION_CONTENT_VIEWER "Переглядач"
+    IDS_ACTION_CONTENT_OPTION "Параметри"
+    IDS_ACTION_CONTENT_CLIPBOARD_WATCH "Спостереження за буфером"
+    IDS_ACTION_CONTENT_TOOL "Інструмент"
+    IDS_ACTION_CONTENT_APP  "Зовнішній додаток"
+    IDS_ACTION_CONTENT_CANCEL "Скасувати"
+    IDS_ACTION_CONTENT_EXIT "Вихід"
+    IDS_ACTION_TREE_MENU    "Меню"
+    IDS_ACTION_TREE_NEW     "(Новий вміст)"
+    IDS_ACTION_TREE_SEP     "-------------------------"
+    IDS_ACTION_ERR_ACTION   "Ви повинні вибрати ""Дію""."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_FILTER_LIST_NAME    "Ім'я формату"
+    IDS_FILTER_LIST_ACTION  "Дія"
+    IDS_FILTER_LIST_SIZE    "Обмеження розміру"
+    IDS_FILTER_ACTION_ADD   "Додати"
+    IDS_FILTER_ACTION_ADD_NOSAVE "Додати (не зберігати)"
+    IDS_FILTER_ACTION_IGNORE "Ігнорувати"
+    IDS_FILTER_ERR_NAME     "Ви повинні ввести ""Ім'я формату""."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_WINDOW_LIST_TITLE   "Заголовок"
+    IDS_WINDOW_LIST_CLASSNAME "Ім'я класу"
+    IDS_WINDOW_LIST_IGNORE  "Історія"
+    IDS_WINDOW_LIST_FOCUS   "Фокус"
+    IDS_WINDOW_LIST_PASTE   "Вставка"
+    IDS_WINDOW_LIST_IGNORE_ON "Ігнорувати"
+    IDS_WINDOW_LIST_IGNORE_OFF "Додавати"
+    IDS_WINDOW_LIST_FOCUS_ON "Не встановлювати"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SENDKEY_LIST_TITLE  "Заголовок"
+    IDS_SENDKEY_LIST_CLASSNAME "Ім'я класу"
+    IDS_SENDKEY_LIST_COPY   "Копіювати"
+    IDS_SENDKEY_LIST_PASTE  "Вставити"
+    IDS_SENDKEY_ERR_INPUT   "Ви повинні ввести ""Заголовок"" та ""Ім'я класу""."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ACTION_ERR_TYPE     "Ви повинні вибрати ""Тип виклику""."
+    IDS_ACTION_TYPE_NOTHING "Немає"
+    IDS_ACTION_TOOL_ALL     "(Всі інструменти)"
+    IDS_ACTION_TITLE_PATH   "Па&ть:"
+    IDS_ACTION_TITLE_TOOL   "Ін&струмент:"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_FORMAT_COMMENT_FILE "Обробка перетягнутих файлів"
+    IDS_FORMAT_SELECT_TITLE "Вибрати формат буфера"
+    IDS_FORMAT_SELECT_MSG   "Будь ласка, виберіть формат буфера обміну."
+    IDS_FORMAT_HEAD_SELECT_TITLE "Вибрати заголовок функції"
+    IDS_FORMAT_HEAD_SELECT_MSG "Будь ласка, виберіть заголовок функції."
+    IDS_FORMAT_ERR_NAME     "Ви повинні ввести ""Ім'я формату""."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TOOL_LIST_TITLE     "Назва"
+    IDS_TOOL_LIST_DLL       "DLL"
+    IDS_TOOL_LIST_FUNC      "Ім'я функції"
+    IDS_TOOL_LIST_CMD_LINE  "Командний рядок"
+    IDS_TOOL_LIST_HOTKEY    "Гаряча клавіша"
+    IDS_TOOL_SELECT_TITLE   "Вибрати інструмент"
+    IDS_TOOL_SELECT_MSG     "Будь ласка, виберіть інструмент."
+    IDS_TOOL_NON_PROP       "Цей елемент не має параметрів для налаштування."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TOOL_ERR_TITLE      "Ви повинні ввести ""Назву""."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_WINDOW_LIST_FOCUS_OFF "Встановити"
+    IDS_WINDOW_LIST_PASTE_ON "Так"
+    IDS_WINDOW_LIST_PASTE_OFF "Ні"
+    IDS_WINDOW_ERR_INPUT    "Ви повинні ввести ""Заголовок"" та ""Ім'я класу""."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_MAIN_JAPANESE       "Японська (日本語)"
+    IDS_MAIN_ENGLISH        "Англійська (English)"
+    IDS_MAIN_GERMAN         "Німецька (Deutsch)"
+    IDS_MAIN_UKRAINIAN      "Українська"
+    IDS_MAIN_SIMP_CHINESE   "Simplified Chinese (简体中文)"
+END
+
+#endif    // Ukrainian (Ukraine) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

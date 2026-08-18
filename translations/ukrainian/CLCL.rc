@@ -1,0 +1,440 @@
+// Microsoft Visual C++ generated resource script.
+//
+#pragma code_page(65001)
+
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Ukrainian (Ukraine) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_UKR)
+LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU_POPUP MENU
+BEGIN
+    POPUP "Буфер обміну"
+    BEGIN
+        MENUITEM "Додати до шаблону...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "Зберегти як...\tCtrl+S",      ID_MENUITEM_DATA_SAVE
+        MENUITEM "Показати як шістнадцятковий", ID_MENUITEM_SHOWBINARY
+        MENUITEM SEPARATOR
+        POPUP "Параметри"
+        BEGIN
+            MENUITEM "Формат...",                   ID_MENUITEM_SET_FORMAT
+            MENUITEM "Фільтр...",                   ID_MENUITEM_SET_FILTER
+        END
+    END
+    POPUP "Історія(TV)"
+    BEGIN
+        MENUITEM "Відправити в буфер обміну\tCtrl+C", ID_MENUITEM_CLIPBOARD
+        MENUITEM "Вставити з буфера\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "Додати до шаблону...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "Показати як шістнадцятковий", ID_MENUITEM_SHOWBINARY
+        MENUITEM "Інструменти",                 ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Перемістити вгору\tAlt+Up",   ID_MENUITEM_UP
+        MENUITEM "Перемістити вниз\tAlt+Down",  ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "Новий елемент...\tCtrl+N",    ID_MENUITEM_NEW_ITEM
+        MENUITEM "Зберегти як...\tCtrl+S",      ID_MENUITEM_DATA_SAVE
+        POPUP "Параметри"
+        BEGIN
+            MENUITEM "Формат...",                   ID_MENUITEM_SET_FORMAT
+            MENUITEM "Фільтр...",                   ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Видалити",                    ID_MENUITEM_DELETE
+    END
+    POPUP "Історія(LV)"
+    BEGIN
+        MENUITEM "Відкрити",                    ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "Відправити в буфер обміну\tCtrl+C", ID_MENUITEM_CLIPBOARD
+        MENUITEM "Вставити з буфера\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "Додати до шаблону...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "Показати як шістнадцятковий", ID_MENUITEM_SHOWBINARY
+        MENUITEM "Інструменти",                 ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Перемістити вгору\tAlt+Up",   ID_MENUITEM_UP
+        MENUITEM "Перемістити вниз\tAlt+Down",  ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "Новий елемент...\tCtrl+N",    ID_MENUITEM_NEW_ITEM
+        MENUITEM "Зберегти як...\tCtrl+S",      ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "Видалити",                    ID_MENUITEM_DELETE
+    END
+    POPUP "Шаблон(TV)"
+    BEGIN
+        MENUITEM "Відправити в буфер обміну\tCtrl+C", ID_MENUITEM_CLIPBOARD
+        MENUITEM "Вставити з буфера\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "Показати як шістнадцятковий", ID_MENUITEM_SHOWBINARY
+        MENUITEM "Інструменти",                 ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Перемістити вгору\tAlt+Up",   ID_MENUITEM_UP
+        MENUITEM "Перемістити вниз\tAlt+Down",  ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "Новий елемент...\tCtrl+N",    ID_MENUITEM_NEW_ITEM
+        MENUITEM "Нова папка",                  ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "Зберегти як...\tCtrl+S",      ID_MENUITEM_DATA_SAVE
+        MENUITEM "Встановити гарячу клавішу...", ID_MENUITEM_SET_HOTKEY
+        POPUP "Параметри"
+        BEGIN
+            MENUITEM "Формат...",                   ID_MENUITEM_SET_FORMAT
+            MENUITEM "Фільтр...",                   ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Створити копію...\tCtrl+R",   ID_MENUITEM_REGIST_ADD
+        MENUITEM "Перемістити в...\tSCtrl+R",   ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "Перейменувати",               ID_MENUITEM_RENAME
+        MENUITEM "Очистити ім'я",               ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Видалити",                    ID_MENUITEM_DELETE
+    END
+    POPUP "Шаблон(LV)"
+    BEGIN
+        MENUITEM "Відкрити",                    ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "Відправити в буфер обміну\tCtrl+C", ID_MENUITEM_CLIPBOARD
+        MENUITEM "Вставити з буфера\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "Показати як шістнадцятковий", ID_MENUITEM_SHOWBINARY
+        MENUITEM "Інструменти",                 ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Перемістити вгору\tAlt+Up",   ID_MENUITEM_UP
+        MENUITEM "Перемістити вниз\tAlt+Down",  ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "Новий елемент...\tCtrl+N",    ID_MENUITEM_NEW_ITEM
+        MENUITEM "Нова папка",                  ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "Зберегти як...\tCtrl+S",      ID_MENUITEM_DATA_SAVE
+        MENUITEM "Встановити гарячу клавішу...", ID_MENUITEM_SET_HOTKEY
+        MENUITEM SEPARATOR
+        MENUITEM "Створити копію...\tCtrl+R",   ID_MENUITEM_REGIST_ADD
+        MENUITEM "Перемістити в...\tSCtrl+R",   ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "Перейменувати",               ID_MENUITEM_RENAME
+        MENUITEM "Очистити ім'я",               ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "Видалити",                    ID_MENUITEM_DELETE
+    END
+    POPUP "Перетягування && Відпускання"
+    BEGIN
+        MENUITEM "Копіювати сюди",              ID_MENU_DGDP_COPY
+        MENUITEM "Перемістити сюди",            ID_MENU_DGDP_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "Скасувати",                   IDCANCEL
+    END
+END
+
+IDR_MENU_VIEWER MENU
+BEGIN
+    POPUP "Файл"
+    BEGIN
+        MENUITEM "Новий елемент...\tCtrl+N",    ID_MENUITEM_NEW_ITEM
+        MENUITEM "Зберегти як...\tCtrl+S",      ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "Зберегти стан\tSCtrl+S",      ID_MENUITEM_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "Імпорт...",                   ID_MENUITEM_IMPORT
+        MENUITEM "Експорт...",                  ID_MENUITEM_EXPORT
+        MENUITEM SEPARATOR
+        MENUITEM "Спостереження за буфером",    ID_MENUITEM_WATCH
+        MENUITEM SEPARATOR
+        MENUITEM "Закрити вікно",               ID_MENUITEM_CLOSE
+        MENUITEM "Вихід",                       ID_MENUITEM_EXIT
+    END
+    POPUP "Правка"
+    BEGIN
+        MENUITEM "Відправити в буфер обміну\tCtrl+C", ID_MENUITEM_CLIPBOARD
+        MENUITEM "Вставити з буфера\tCtrl+V",   ID_MENUITEM_PASTE
+        MENUITEM "Додати до шаблону...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM SEPARATOR
+        MENUITEM "Перемістити вгору\tAlt+Up",   ID_MENUITEM_UP
+        MENUITEM "Перемістити вниз\tAlt+Down",  ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "Видалити",                    ID_MENUITEM_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "Вибрати все\tCtrl+A",         ID_MENUITEM_SELECT_ALL
+    END
+    POPUP "Вид"
+    BEGIN
+        MENUITEM "Панель інструментів",         ID_MENUITEM_SHOW_TOOLBAR
+        MENUITEM "Рядок стану",                 ID_MENUITEM_SHOW_STATUSBAR
+        MENUITEM SEPARATOR
+        MENUITEM "Формат",                      ID_MENUITEM_SHOW_FORMAT
+        MENUITEM "Дамп",                        ID_MENUITEM_SHOW_BIN
+        MENUITEM SEPARATOR
+        MENUITEM "Параметри...",                ID_MENUITEM_OPTION
+    END
+    POPUP "Інструменти"
+    BEGIN
+        MENUITEM "Налаштування інструментів...", ID_MENUITEM_TOOL_SET
+        MENUITEM SEPARATOR
+    END
+    POPUP "Довідка"
+    BEGIN
+        MENUITEM "Довідка",                     ID_MENUITEM_HELP
+        MENUITEM "Про програму...",             ID_MENUITEM_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_SELECT_FOLDER DIALOGEX 0, 0, 232, 195
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Вибрати папку"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "msg",IDC_STATIC_MSG,5,5,220,19
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,25,220,145
+    DEFPUSHBUTTON   "OK",IDOK,120,175,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,175,175,50,14
+END
+
+IDD_DIALOG_SELECT_FORMAT DIALOGEX 0, 0, 227, 105
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_ACCEPTFILES
+CAPTION "Новий елемент"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "Формат для додавання:",IDC_STATIC,5,5,211,10
+    COMBOBOX        IDC_COMBO_FORMAT,5,15,215,145,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Завантажити файл",IDC_CHECK_FILE_READ,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,40,185,10
+    LTEXT           "Ім'я файлу:",IDC_STATIC_FILE,5,55,193,9
+    EDITTEXT        IDC_EDIT_FILE,5,65,195,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_FILE_SELECT,203,65,15,13
+    DEFPUSHBUTTON   "OK",IDOK,115,85,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,171,85,50,14
+END
+
+IDD_DIALOG_SET_HOTKEY DIALOGEX 0, 0, 125, 72
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Встановити гарячу клавішу"
+FONT 8, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    LTEXT           "Гаряча клавіша:",IDC_STATIC,10,5,104,10
+    CONTROL         "HotKey1",IDC_HOTKEY_ITEM,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,10,15,70,15
+    CONTROL         "+ Win",IDC_CHECK_WIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,85,17,31,11
+    CONTROL         "Вставити",IDC_CHECK_PASTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,35,75,10
+    DEFPUSHBUTTON   "OK",IDOK,10,50,50,14
+    PUSHBUTTON      "Скасувати",IDCANCEL,65,50,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_SELECT_FOLDER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 225
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 188
+    END
+
+    IDD_DIALOG_SELECT_FORMAT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 220
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 98
+    END
+
+    IDD_DIALOG_SET_HOTKEY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 118
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 65
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_SELECT_FORMAT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_SET_HOTKEY AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_SELECT_FOLDER AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_MENU_REGIST         "Шаблон"
+    IDS_MENU_CANCEL         "Скасувати"
+    IDS_MENU_EXIT           "Вихід"
+    IDS_MENU_VIEWER         "Переглядач..."
+    IDS_MENU_OPTION         "Параметри..."
+    IDS_MENU_CLIPBOARD_WATCH "Спостереження за буфером"
+    IDS_TREEITEM_CLIPBOARD  "Буфер обміну"
+    IDS_TREEITEM_HISTORY    "Історія"
+    IDS_TREEITEM_REGIST     "Шаблон"
+    IDS_TREEITEM_NEWFOLDER  "Нова папка"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ERROR_END           "Під час збереження файлу сталася помилка.\nПродовжити завершення?"
+    IDS_ERROR_HOTKEY        "Не вдалося зареєструвати гарячу клавішу."
+    IDS_ERROR_WINDOW_INIT   "Не вдалося ініціалізувати вікно."
+    IDS_ERROR_FILENAME      "Ім'я файлу не може містити жодного з наведених символів:\n\t\\ / : , ; * ? "" < > |"
+    IDS_ERROR_FOLDERNAME    "Папка з вказаним ім'ям вже існує. Вкажіть інше ім'я."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_LISTCOLUMN_DATA     "Дані"
+    IDS_LISTCOLUMN_SIZE     "Розмір"
+    IDS_LISTCOLUMN_DATE     "Змінено"
+    IDS_LISTCOLUMN_WINDOW   "Вікно"
+    IDS_LISTCOLUMN_HOTKEY   "Гаряча клавіша"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_QUESTION_DELETE     "Ви впевнені, що хочете видалити цей елемент(и)?"
+    IDS_QUESTION_REPLACE    "Існує формат з таким самим ім'ям.\nЗамінити дані?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_ADDPOS       "Виберіть папку, до якої додати елементи."
+    IDS_DIALOG_COPYPOS      "Виберіть папку, до якої буде скопійовано шаблон."
+    IDS_DIALOG_MOVEPOS      "Виберіть папку, до якої перемістити шаблон."
+    IDS_DIALOG_IMPORT       "Виберіть папку, до якої додати імпортовані елементи."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_VIEWER_COPYNAME     "Копія %s"
+    IDS_VIEWER_COPYNAME_NUM "Копія (%d) %s"
+    IDS_VIEWER_MENU_TOOL_NOTHING "(Немає)"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STATUSBAR_ITEM_CNT  "%d елементів"
+    IDS_STATUSBAR_BYTES     "%d байт"
+    IDS_STATUSBAR_KB        "%d КБ"
+END
+
+STRINGTABLE
+BEGIN
+    ID_MENUITEM_CLIPBOARD_TB "Відправити в буфер обміну"
+    ID_MENUITEM_PASTE_TB    "Вставити з буфера"
+    ID_MENUITEM_REGIST_ADD_TB "Додати до шаблону"
+    ID_MENUITEM_NEW_ITEM_TB "Новий елемент"
+    ID_MENUITEM_DELETE_TB   "Видалити"
+    ID_MENUITEM_UP_TB       "Перемістити вгору"
+    ID_MENUITEM_DOWN_TB     "Перемістити вниз"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_UNDO      "Скасувати"
+    IDS_TEXT_MENU_REDO      "Повторити"
+    IDS_TEXT_MENU_CUT       "Вирізати"
+    IDS_TEXT_MENU_COPY      "Копіювати"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_PASTE     "Вставити"
+    IDS_TEXT_MENU_DELETE    "Видалити"
+    IDS_TEXT_MENU_SELECT_ALL "Вибрати все"
+    IDS_TEXT_MENU_WORDWRAP  "Перенос по словах"
+    IDS_TEXT_MENU_SELECT_FONT "Шрифт..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BITMAP_MENU_STRETCH "Розтягнути зображення"
+    IDS_BITMAP_MENU_ZOOM_IN "Збільшити\tCtrl+Up"
+    IDS_BITMAP_MENU_ZOOM_OUT "Зменшити\tCtrl+Down"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_FILE_LIST_NAME      "Ім'я"
+    IDS_FILE_LIST_FOLDER    "Папка"
+    IDS_FILE_LIST_TYPE      "Тип"
+    IDS_FILE_LIST_TYPE_DEF  "Файл"
+    IDS_FILE_MENU_OPEN      "Відкрити"
+    IDS_FILE_MENU_ADD       "Додати файл до списку...\tCtrl+D"
+    IDS_FILE_MENU_DELETE    "Від'єднати"
+    IDS_FILE_DELETE_MSG     "Від'єднати посилання на вибраний файл?"
+    IDS_FILE_MENU_COPY_FILE "Копіювати ім'я файлу\tCtrl+C"
+    IDS_FILE_MENU_COPY_PATH "Копіювати шлях\tSCtrl+C"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BIN_MENU_UNDO       "Скасувати"
+    IDS_BIN_MENU_REDO       "Повторити"
+    IDS_BIN_MENU_LOCK       "Тільки читання"
+    IDS_BIN_MENU_FONT       "Шрифт..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_EXPORT       "Виберіть папку для експорту."
+END
+
+#endif    // Ukrainian (Ukraine) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

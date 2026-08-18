@@ -1,0 +1,4 @@
+[submodule "CLCLPlugin/tool_clip"]
+	path = CLCLPlugin/tool_clip
+	url = https://github.com/wilfz/CLCL-tool_clip.git
+	branch = main

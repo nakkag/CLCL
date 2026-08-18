@@ -1,7 +1,7 @@
 /*
  * CLCL
  *
- * CLCLPlugin.h Ver 0.0.1
+ * CLCLPlugin.h Ver 0.1.3
  *
  * Copyright (C) 1996-2003 by Nakashima Tomoaki. All rights reserved.
  *		http://www.nakka.com/
@@ -74,40 +74,46 @@
 #define TYPE_FOLDER						2
 #define TYPE_ROOT						3
 
-// ƒc[ƒ‹‚ğÀs‚·‚éƒ^ƒCƒ~ƒ“ƒO
-#define CALLTYPE_MENU					1				// “®ìƒƒjƒ…[
-#define CALLTYPE_VIEWER					2				// ƒrƒ…[ƒA‚Ìƒƒjƒ…[
-#define CALLTYPE_VIEWER_OPEN			4				// ƒrƒ…[ƒA‚ğŠJ‚¢‚½
-#define CALLTYPE_VIEWER_CLOSE			8				// ƒrƒ…[ƒA‚ğ•Â‚¶‚é
-#define CALLTYPE_ADD_HISTORY			16				// ƒf[ƒ^‚ª—š—ğ‚É’Ç‰Á‚³‚ê‚é
-#define CALLTYPE_ITEM_TO_CLIPBOARD		32				// ƒf[ƒ^‚ğƒNƒŠƒbƒvƒ{[ƒh‚É‘—‚é
-#define CALLTYPE_START					64				// ‹N“®
-#define CALLTYPE_END					128				// I—¹
+// ãƒ„ãƒ¼ãƒ«ã‚’å®Ÿè¡Œã™ã‚‹ã‚¿ã‚¤ãƒŸãƒ³ã‚°
+// When to run the tool
+#define CALLTYPE_MENU					1				// å‹•ä½œãƒ¡ãƒ‹ãƒ¥ãƒ¼ / Operation menu
+#define CALLTYPE_VIEWER					2				// ãƒ“ãƒ¥ãƒ¼ã‚¢ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼ / Viewer menu
+#define CALLTYPE_VIEWER_OPEN			4				// ãƒ“ãƒ¥ãƒ¼ã‚¢ã‚’é–‹ã„ãŸæ™‚ / when viewer is opened
+#define CALLTYPE_VIEWER_CLOSE			8				// ãƒ“ãƒ¥ãƒ¼ã‚¢ã‚’é–‰ã˜ã‚‹æ™‚ / when viewer is closed
+#define CALLTYPE_ADD_HISTORY			16				// ãƒ‡ãƒ¼ã‚¿ãŒå±¥æ­´ã«è¿½åŠ ã•ã‚Œã‚‹æ™‚ / when data is added to history
+#define CALLTYPE_ITEM_TO_CLIPBOARD		32				// ãƒ‡ãƒ¼ã‚¿ã‚’ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«é€ã‚‹æ™‚ / when sending data to the clipboard
+#define CALLTYPE_START					64				// èµ·å‹•æ™‚ / at startup
+#define CALLTYPE_END					128				// çµ‚äº†æ™‚ / when finished
 // option only
-#define CALLTYPE_MENU_COPY_PASTE		256				// ƒRƒs[‚Æ“\‚è•t‚¯‚ğ‘—‚é
+#define CALLTYPE_MENU_COPY_PASTE		256				// ã‚³ãƒ”ãƒ¼ã¨è²¼ã‚Šä»˜ã‘ã‚’é€ã‚‹ / send copy and paste
 // execute only
-#define CALLTYPE_HISTORY				512				// —š—ğ‚©‚ç‚ÌŒÄ‚Ño‚µ
-#define CALLTYPE_REGIST					1024			// “o˜^ƒAƒCƒeƒ€‚©‚ç‚ÌŒÄ‚Ño‚µ
-
-// ƒc[ƒ‹–ß‚è’l
-#define TOOL_ERROR						0				// ƒc[ƒ‹‚ÌƒGƒ‰[
-#define TOOL_SUCCEED					1				// ƒc[ƒ‹‚Ì³íI—¹
-#define TOOL_CANCEL						2				// ˆÈ~‚Ìˆ—‚ğƒLƒƒƒ“ƒZƒ‹
-#define TOOL_DATA_MODIFIED				4				// ƒf[ƒ^•ÏX‚ ‚è
+#define CALLTYPE_HISTORY				512				// å±¥æ­´ã‹ã‚‰ã®å‘¼ã³å‡ºã— / call from history
+#define CALLTYPE_REGIST					1024			// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã‹ã‚‰ã®å‘¼ã³å‡ºã— / call from registered item
+// session change
+#define CALLTYPE_ENTER_SESSION			2048			// enter windows session
+#define CALLTYPE_LEAVE_SESSION			4096			// leave windows session
+// ãƒ„ãƒ¼ãƒ«æˆ»ã‚Šå€¤
+// tool return value
+#define TOOL_ERROR						0				// ãƒ„ãƒ¼ãƒ«ã®ã‚¨ãƒ©ãƒ¼ / tool error
+#define TOOL_SUCCEED					1				// ãƒ„ãƒ¼ãƒ«ã®æ­£å¸¸çµ‚äº† / tool successfully completed
+#define TOOL_CANCEL						2				// ä»¥é™ã®å‡¦ç†ã‚’ã‚­ãƒ£ãƒ³ã‚»ãƒ« / cancel further processing
+#define TOOL_DATA_MODIFIED				4				// ãƒ‡ãƒ¼ã‚¿å¤‰æ›´ã‚ã‚Š / data changed
 
 /* Struct */
-// Œ`®æ“¾î•ñ
+// å½¢å¼å–å¾—æƒ…å ±
+// Format acquisition information
 typedef struct _FORMAT_GET_INFO {
-	DWORD struct_size;					// \‘¢‘Ì‚ÌƒTƒCƒY
+	DWORD struct_size;					// æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º / Structure size
 
 	TCHAR format_name[BUF_SIZE];
 	TCHAR func_header[BUF_SIZE];
 	TCHAR comment[BUF_SIZE];
 } FORMAT_GET_INFO;
 
-// ƒc[ƒ‹æ“¾î•ñ
+// ãƒ„ãƒ¼ãƒ«å–å¾—æƒ…å ±
+// Tool acquisition information
 typedef struct _TOOL_GET_INFO {
-	DWORD struct_size;					// \‘¢‘Ì‚ÌƒTƒCƒY
+	DWORD struct_size;					// æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º / Structure size
 
 	TCHAR title[BUF_SIZE];
 	TCHAR func_name[BUF_SIZE];
@@ -115,62 +121,66 @@ typedef struct _TOOL_GET_INFO {
 	int call_type;						// CALLTYPE_
 } TOOL_GET_INFO;
 
-// ƒc[ƒ‹Àsî•ñ
+// ãƒ„ãƒ¼ãƒ«å®Ÿè¡Œæƒ…å ±
+// Tool execution information
 typedef struct _TOOL_EXEC_INFO {
-	DWORD struct_size;					// \‘¢‘Ì‚ÌƒTƒCƒY
+	DWORD struct_size;					// æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º / Structure size
 
 	int call_type;						// CALLTYPE_
-	TCHAR *cmd_line;					// ƒc[ƒ‹İ’è‚Åw’è‚µ‚½ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“
-	LPARAM lParam;						// ƒc[ƒ‹‚É‘Î‰‚·‚élong’l
+	TCHAR *cmd_line;					// ãƒ„ãƒ¼ãƒ«è¨­å®šã§æŒ‡å®šã—ãŸã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ / Command line specified in tool settings
+	LPARAM lParam;						// ãƒ„ãƒ¼ãƒ«ã«å¯¾å¿œã™ã‚‹longå€¤ / long value corresponding to the tool
 } TOOL_EXEC_INFO;
 
-// ƒAƒCƒeƒ€î•ñ
+// ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±
+// Item information
 typedef struct _DATA_INFO {
-	DWORD struct_size;					// \‘¢‘Ì‚ÌƒTƒCƒY
+	DWORD struct_size;					// æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º / Structure size
 
 	int type;							// TYPE_
-	TCHAR *title;						// ƒ^ƒCƒgƒ‹
+	TCHAR *title;						// ã‚¿ã‚¤ãƒˆãƒ« / title
 
-	TCHAR *format_name;					// Œ`®–¼
-	int format_name_hash;				// Œ`®–¼‚ÌƒnƒbƒVƒ…
-	UINT format;						// Œ`®’l
+	TCHAR *format_name;					// å½¢å¼å / Format name
+	int format_name_hash;				// å½¢å¼åã®ãƒãƒƒã‚·ãƒ¥ / format name hash
+	UINT format;						// å½¢å¼å€¤ / Format value
 
-	HANDLE data;						// ƒf[ƒ^
-	DWORD size;							// ƒTƒCƒY
+	HANDLE data;						// ãƒ‡ãƒ¼ã‚¿ / data
+	DWORD size;							// ã‚µã‚¤ã‚º / size
 
-	FILETIME modified;					// XV“ú
-	TCHAR *window_name;					// ƒRƒs[‚µ‚½ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹
+	FILETIME modified;					// æ›´æ–°æ—¥æ™‚ / Update date and time
+	TCHAR *window_name;					// ã‚³ãƒ”ãƒ¼ã—ãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¿ã‚¤ãƒˆãƒ« / Copied window title
 
-	TCHAR *plugin_string;				// ƒvƒ‰ƒOƒCƒ“—pƒf[ƒ^
+	TCHAR *plugin_string;				// ãƒ—ãƒ©ã‚°ã‚¤ãƒ³ç”¨ãƒ‡ãƒ¼ã‚¿ / Data for plugins
 	LPARAM plugin_param;
 
-// ˆÈ‰º•Û‘¶‚µ‚È‚¢î•ñ
-	TCHAR *menu_title;					// ƒƒjƒ…[‚É•\¦‚·‚éƒ^ƒCƒgƒ‹ (–¢İ’è‚Ìê‡‚ÍŒ`®‚ğ•\¦)
-	BOOL free_title;					// ƒ^ƒCƒgƒ‹‚ğ TRUE-‰ğ•ú‚·‚é FALSE-‰ğ•ú‚µ‚È‚¢
-	HICON menu_icon;					// ƒƒjƒ…[‚É•\¦‚·‚éƒAƒCƒRƒ“ƒnƒ“ƒhƒ‹
-	BOOL free_icon;						// ƒAƒCƒRƒ“ƒnƒ“ƒhƒ‹‚ğ TRUE-‰ğ•ú‚·‚é FALSE-‰ğ•ú‚µ‚È‚¢
-	HBITMAP menu_bitmap;				// ƒƒjƒ…[‚É•\¦‚·‚éƒrƒbƒgƒ}ƒbƒv
-	BOOL free_bitmap;					// ƒrƒbƒgƒ}ƒbƒvƒnƒ“ƒhƒ‹‚ğ TRUE-‰ğ•ú‚·‚é FALSE-‰ğ•ú‚µ‚È‚¢
-	int menu_bmp_width;					// ƒƒjƒ…[‚É•\¦‚·‚éƒrƒbƒgƒ}ƒbƒv‚ÌŒÂ•ÊƒTƒCƒY
+// ä»¥ä¸‹ä¿å­˜ã—ãªã„æƒ…å ±
+// Information not saved below
+	TCHAR *menu_title;					// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ã‚¿ã‚¤ãƒˆãƒ« (æœªè¨­å®šã®å ´åˆã¯å½¢å¼ã‚’è¡¨ç¤º) / Title to display on menu (if not set, display format)
+	BOOL free_title;					// ã‚¿ã‚¤ãƒˆãƒ«ã‚’ TRUE-è§£æ”¾ã™ã‚‹ FALSE-è§£æ”¾ã—ãªã„ / Title TRUE-Release,  FALSE-Do not release
+	HICON menu_icon;					// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ã‚¢ã‚¤ã‚³ãƒ³ãƒãƒ³ãƒ‰ãƒ« / Icon handle to display in menu
+	BOOL free_icon;						// ã‚¢ã‚¤ã‚³ãƒ³ãƒãƒ³ãƒ‰ãƒ«ã‚’ TRUE-è§£æ”¾ã™ã‚‹ FALSE-è§£æ”¾ã—ãªã„ / TRUE - release the icon handle, FALSE - do not release the icon handle
+	HBITMAP menu_bitmap;				// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ãƒ“ãƒƒãƒˆãƒãƒƒãƒ— / Bitmap to display in menu
+	BOOL free_bitmap;					// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒãƒ³ãƒ‰ãƒ«ã‚’ TRUE-è§£æ”¾ã™ã‚‹ FALSE-è§£æ”¾ã—ãªã„ / TRUE - release bitmap handle, FALSE - do not release
+	int menu_bmp_width;					// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®å€‹åˆ¥ã‚µã‚¤ã‚º / Individual size of bitmap displayed in menu
 	int menu_bmp_height;
-	LPARAM param1;						// ƒvƒ‰ƒOƒCƒ“—pƒf[ƒ^
+	LPARAM param1;						// ãƒ—ãƒ©ã‚°ã‚¤ãƒ³ç”¨ãƒ‡ãƒ¼ã‚¿ / Data for plugins
 	LPARAM param2;
 
 	struct _DATA_INFO *child;
 	struct _DATA_INFO *next;
 
 // Ver 1.0.5
-	int hkey_id;						// ƒzƒbƒgƒL[
+	int hkey_id;						// ãƒ›ãƒƒãƒˆã‚­ãƒ¼ / hotkey
 	UINT op_modifiers;
 	UINT op_virtkey;
 	int op_paste;
 } DATA_INFO;
 
-// ƒc[ƒ‹—pƒAƒCƒeƒ€î•ñ
+// ãƒ„ãƒ¼ãƒ«ç”¨ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±
+// Tool item information
 typedef struct _TOOL_DATA_INFO {
-	DWORD struct_size;					// \‘¢‘Ì‚ÌƒTƒCƒY
+	DWORD struct_size;					// æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º / Structure size
 
-	struct _DATA_INFO *di;				// ƒAƒCƒeƒ€î•ñ
+	struct _DATA_INFO *di;				// ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ± / Item information
 
 	struct _TOOL_DATA_INFO *child;
 	struct _TOOL_DATA_INFO *next;

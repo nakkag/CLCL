@@ -25,6 +25,9 @@
 #include "Format.h"
 #include "SendKey.h"
 #include "dpi.h"
+#if (defined(_MSC_VER) && _MSC_VER >=  1930)
+#include <versionhelpers.h>
+#endif
 
 #include "resource.h"
 
@@ -33,16 +36,19 @@
 
 /* Global Variables */
 OPTION_INFO option;
+TCHAR help_path[MAX_PATH];
 
 extern TCHAR work_path[];
+extern TCHAR app_path[];
 
 /* Local Function Prototypes */
 static FORMAT_NAME *ini_get_format_name(TCHAR *format_name, int *cnt);
 static BOOL ini_get_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt, TCHAR *err_str);
 static BOOL ini_put_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt);
+void ini_set_language(const TCHAR* locale_name);
 
 /*
- * ini_get_format_name - Œ`Ž®–¼‚ÌŽæ“¾
+ * ini_get_format_name - å½¢å¼åã®å–å¾—
  */
 static FORMAT_NAME *ini_get_format_name(TCHAR *format_name, int *cnt)
 {
@@ -51,7 +57,7 @@ static FORMAT_NAME *ini_get_format_name(TCHAR *format_name, int *cnt)
 	TCHAR *p, *r;
 	int i;
 
-	// €–Ú”‚ÌŽæ“¾
+	// é …ç›®æ•°ã®å–å¾—
 	p = format_name;
 	*cnt = 0;
 	while (1) {
@@ -69,13 +75,13 @@ static FORMAT_NAME *ini_get_format_name(TCHAR *format_name, int *cnt)
 		}
 	}
 
-	// Šm•Û
+	// ç¢ºä¿
 	if ((ret = mem_calloc(sizeof(FORMAT_NAME) * (*cnt))) == NULL) {
 		*cnt = 0;
 		return NULL;
 	}
 
-	// €–Ú‚ðØ‚èo‚·
+	// é …ç›®ã‚’åˆ‡ã‚Šå‡ºã™
 	p = format_name;
 	r = buf;
 	i = 0;
@@ -103,7 +109,7 @@ static FORMAT_NAME *ini_get_format_name(TCHAR *format_name, int *cnt)
 }
 
 /*
- * ini_get_option - ƒƒjƒ…[ƒIƒvƒVƒ‡ƒ“‚ðŽæ“¾
+ * ini_get_option - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’å–å¾—
  */
 static BOOL ini_get_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt, TCHAR *err_str)
 {
@@ -145,7 +151,7 @@ static BOOL ini_get_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INF
 }
 
 /*
- * ini_get_option - ƒIƒvƒVƒ‡ƒ“‚ðŽæ“¾
+ * ini_get_option - ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’å–å¾—
  */
 BOOL ini_get_option(TCHAR *err_str)
 {
@@ -165,7 +171,7 @@ BOOL ini_get_option(TCHAR *err_str)
 	wsprintf(ini_path, TEXT("%s\\%s"), work_path, USER_INI);
 	wsprintf(ini_path_old, TEXT("%s\\%s"), work_path, USER_INI_OLD);
 	if (file_check_file(ini_path) == FALSE && file_check_file(ini_path_old) == TRUE) {
-		// INIƒtƒ@ƒCƒ‹–¼•ÏX (Ver 1.0.8)
+		// INIãƒ•ã‚¡ã‚¤ãƒ«åå¤‰æ›´ (Ver 1.0.8)
 		MoveFile(ini_path_old, ini_path);
 	}
 	profile_initialize(ini_path, TRUE);
@@ -174,8 +180,14 @@ BOOL ini_get_option(TCHAR *err_str)
 	version = profile_get_int(TEXT("main"), TEXT("version"), 0, ini_path);
 	option.main_clipboard_watch = profile_get_int(TEXT("main"), TEXT("clipboard_watch"), 1, ini_path);
 	option.main_clipboard_rechain_minute = profile_get_int(TEXT("main"), TEXT("clipboard_rechain_minute"), 1, ini_path);
+	option.main_clipboard_access_delay = profile_get_int(TEXT("main"), TEXT("clipboard_access_delay"), 10, ini_path);
 	option.main_show_trayicon = profile_get_int(TEXT("main"), TEXT("show_trayicon"), 1, ini_path);
 	option.main_show_viewer = profile_get_int(TEXT("main"), TEXT("show_viewer"), 0, ini_path);
+	int cnt = profile_get_string(TEXT("main"), TEXT("language"), TEXT(""), option.main_language, LOCALE_NAME_MAX_LENGTH, ini_path);
+	if (cnt > 0) {
+		ini_set_language(option.main_language);
+	}
+	ini_help_path();
 
 	// data
 	option.data_date_format = profile_alloc_string(TEXT("data"), TEXT("date_format"), TEXT(""), ini_path);
@@ -270,7 +282,7 @@ BOOL ini_get_option(TCHAR *err_str)
 	option.action_show_hotkey_error = profile_get_int(TEXT("action"), TEXT("show_hotkey_error"), 1, ini_path);
 	option.action_cnt = profile_get_int(TEXT("action"), TEXT("cnt"), -1, ini_path);
 	if (option.action_cnt < 0) {
-		// Default
+		// Default settings for actions, not yet saved in INI file
 		option.action_cnt = 4;
 		if ((option.action_info = mem_calloc(sizeof(ACTION_INFO) * option.action_cnt)) == NULL) {
 			message_get_error(GetLastError(), err_str);
@@ -296,7 +308,7 @@ BOOL ini_get_option(TCHAR *err_str)
 		(option.action_info + i)->virtkey = 0;
 		(option.action_info + i)->paste = 1;
 
-		(option.action_info + i)->menu_cnt = 8;
+		(option.action_info + i)->menu_cnt = 9; // number of items in ACTION_TYPE_TRAY_LEFT menu
 		(option.action_info + i)->menu_info = mem_calloc(sizeof(MENU_INFO) * (option.action_info + i)->menu_cnt);
 		if ((option.action_info + i)->menu_info == NULL) {
 			message_get_error(GetLastError(), err_str);
@@ -320,8 +332,9 @@ BOOL ini_get_option(TCHAR *err_str)
 		((option.action_info + i)->menu_info + 3)->content = MENU_CONTENT_SEPARATOR;
 		((option.action_info + i)->menu_info + 4)->content = MENU_CONTENT_VIEWER;
 		((option.action_info + i)->menu_info + 5)->content = MENU_CONTENT_OPTION;
-		((option.action_info + i)->menu_info + 6)->content = MENU_CONTENT_SEPARATOR;
-		((option.action_info + i)->menu_info + 7)->content = MENU_CONTENT_EXIT;
+		((option.action_info + i)->menu_info + 6)->content = MENU_CONTENT_HELP;
+		((option.action_info + i)->menu_info + 7)->content = MENU_CONTENT_SEPARATOR;
+		((option.action_info + i)->menu_info + 8)->content = MENU_CONTENT_EXIT;
 
 		// hotkey (Alt + C)
 		i++;
@@ -333,7 +346,7 @@ BOOL ini_get_option(TCHAR *err_str)
 		(option.action_info + i)->modifiers = MOD_ALT;
 		(option.action_info + i)->virtkey = 'C';
 		(option.action_info + i)->paste = 1;
-		(option.action_info + i)->menu_cnt = 5;
+		(option.action_info + i)->menu_cnt = 5; // number of items in Alt + C hotkey menu
 		(option.action_info + i)->menu_info = mem_calloc(sizeof(MENU_INFO) * (option.action_info + i)->menu_cnt);
 		if ((option.action_info + i)->menu_info == NULL) {
 			message_get_error(GetLastError(), err_str);
@@ -367,7 +380,7 @@ BOOL ini_get_option(TCHAR *err_str)
 		(option.action_info + i)->modifiers = MOD_ALT;
 		(option.action_info + i)->virtkey = 'T';
 		(option.action_info + i)->paste = 1;
-		(option.action_info + i)->menu_cnt = 3;
+		(option.action_info + i)->menu_cnt = 3; // number of items in Alt + T hotkey menu
 		(option.action_info + i)->menu_info = mem_calloc(sizeof(MENU_INFO) * (option.action_info + i)->menu_cnt);
 		if ((option.action_info + i)->menu_info == NULL) {
 			message_get_error(GetLastError(), err_str);
@@ -377,6 +390,7 @@ BOOL ini_get_option(TCHAR *err_str)
 		((option.action_info + i)->menu_info + 1)->content = MENU_CONTENT_SEPARATOR;
 		((option.action_info + i)->menu_info + 2)->content = MENU_CONTENT_CANCEL;
 	} else {
+		// Load settings for actions from INI file
 		if ((option.action_info = mem_calloc(sizeof(ACTION_INFO) * option.action_cnt)) == NULL) {
 			message_get_error(GetLastError(), err_str);
 			return FALSE;
@@ -435,7 +449,7 @@ BOOL ini_get_option(TCHAR *err_str)
 		(option.format_info + 3)->func_header = alloc_copy(TEXT("file_"));
 
 		for (i = 0; i < option.format_cnt; i++) {
-			// Œ`Ž®–¼‚ÌŽæ“¾
+			// å½¢å¼åã®å–å¾—
 			(option.format_info + i)->fn = ini_get_format_name((option.format_info + i)->format_name,
 				&(option.format_info + i)->fn_cnt);
 		}
@@ -452,7 +466,7 @@ BOOL ini_get_option(TCHAR *err_str)
 			wsprintf(buf, TEXT("func_header-%d"), i);
 			(option.format_info + i)->func_header = profile_alloc_string(TEXT("format"), buf, TEXT(""), ini_path);
 
-			// Œ`Ž®–¼‚ÌŽæ“¾
+			// å½¢å¼åã®å–å¾—
 			(option.format_info + i)->fn = ini_get_format_name((option.format_info + i)->format_name,
 				&(option.format_info + i)->fn_cnt);
 		}
@@ -507,7 +521,7 @@ BOOL ini_get_option(TCHAR *err_str)
 		(option.filter_info + 2)->limit_size = 0;
 
 		for (i = 0; i < option.filter_cnt; i++) {
-			// Œ`Ž®–¼‚ÌŽæ“¾
+			// å½¢å¼åã®å–å¾—
 			(option.filter_info + i)->fn = ini_get_format_name((option.filter_info + i)->format_name,
 				&(option.filter_info + i)->fn_cnt);
 		}
@@ -526,7 +540,7 @@ BOOL ini_get_option(TCHAR *err_str)
 			wsprintf(buf, TEXT("limit_size-%d"), i);
 			(option.filter_info + i)->limit_size = profile_get_int(TEXT("filter"), buf, 0, ini_path);
 
-			// Œ`Ž®–¼‚ÌŽæ“¾
+			// å½¢å¼åã®å–å¾—
 			(option.filter_info + i)->fn = ini_get_format_name((option.filter_info + i)->format_name,
 				&(option.filter_info + i)->fn_cnt);
 		}
@@ -734,7 +748,7 @@ BOOL ini_get_option(TCHAR *err_str)
 }
 
 /*
- * ini_put_menu - ƒƒjƒ…[ƒIƒvƒVƒ‡ƒ“‚ð‘‚«‚±‚Þ
+ * ini_put_menu - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’æ›¸ãã“ã‚€
  */
 static BOOL ini_put_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt)
 {
@@ -776,7 +790,7 @@ static BOOL ini_put_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INF
 }
 
 /*
- * ini_put_option - ƒIƒvƒVƒ‡ƒ“‚ð‘‚«‚±‚Þ
+ * ini_put_option - ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’æ›¸ãã“ã‚€
  */
 BOOL ini_put_option(void)
 {
@@ -793,8 +807,10 @@ BOOL ini_put_option(void)
 	profile_write_int(TEXT("main"), TEXT("clipboard_watch"), option.main_clipboard_watch, ini_path);
 #endif	// OPTION_SET
 	profile_write_int(TEXT("main"), TEXT("clipboard_rechain_minute"), option.main_clipboard_rechain_minute, ini_path);
+	profile_write_int(TEXT("main"), TEXT("clipboard_access_delay"), option.main_clipboard_access_delay, ini_path);
 	profile_write_int(TEXT("main"), TEXT("show_trayicon"), option.main_show_trayicon, ini_path);
 	profile_write_int(TEXT("main"), TEXT("show_viewer"), option.main_show_viewer, ini_path);
+	profile_write_string(TEXT("main"), TEXT("language"), option.main_language, ini_path);
 
 	// data
 	profile_write_string(TEXT("data"), TEXT("date_format"), option.data_date_format, ini_path);
@@ -1091,7 +1107,7 @@ BOOL ini_put_option(void)
 }
 
 /*
- * ini_free_format_name - Œ`Ž®–¼‚ð‰ð•ú
+ * ini_free_format_name - å½¢å¼åã‚’è§£æ”¾
  */
 void ini_free_format_name(FORMAT_NAME *fn, const int fn_cnt)
 {
@@ -1106,7 +1122,7 @@ void ini_free_format_name(FORMAT_NAME *fn, const int fn_cnt)
 }
 
 /*
- * ini_free_menu - ƒƒjƒ…[ƒIƒvƒVƒ‡ƒ“‚ð‰ð•ú
+ * ini_free_menu - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è§£æ”¾
  */
 void ini_free_menu(MENU_INFO *mi, const int mcnt)
 {
@@ -1130,7 +1146,7 @@ void ini_free_menu(MENU_INFO *mi, const int mcnt)
 }
 
 /*
- * ini_free - ƒIƒvƒVƒ‡ƒ“‚ð‰ð•ú
+ * ini_free - ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è§£æ”¾
  */
 BOOL ini_free(void)
 {
@@ -1233,4 +1249,104 @@ BOOL ini_free(void)
 	mem_free(&option.fmt_file_font_name);
 	return TRUE;
 }
+
+/*
+ * ini_set_language - set the ui language (if resource available)
+ */
+void ini_set_language(const TCHAR* locale_name)
+{
+	// According to Microsoft documentation 
+	// Ver 5.0 refers to Windows 2000, Ver 5.1 refers to Windows XP
+	// Ver 6.0 refers to Windows Vista
+	// OS version >= Vista?
+#if (defined(_MSC_VER) && _MSC_VER >=  1930)
+	BOOL bVistaOrGreater = IsWindowsVersionOrGreater(6, 0, 0);
+#else
+	OSVERSIONINFO osvi;
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	GetVersionEx(&osvi);
+	BOOL bVistaOrGreater = (osvi.dwMajorVersion >= 6);
+#endif
+	if (bVistaOrGreater && IsValidLocaleName(locale_name)) {
+		TCHAR language_name[3];
+		lstrcpyn(language_name, locale_name, 3);
+		LCID lcid = LocaleNameToLCID(language_name, 0);
+		LANGID langid = 0;
+		if (lcid > 0 && (langid = LANGIDFROMLCID(lcid)) > 0) {
+			switch (langid)
+			{
+			case 1031: // German (Germany)
+			case 1033: // English (United States)
+			case 1041: // Japanese
+			case 1049: // Russian
+			case 1058: // Ukrainian
+			case 0x0804: // Chinese (Simplified)
+				langid = SetThreadUILanguage(langid);
+				// TODO: error handling
+				break;
+			default:
+				// language specific resources not yet available
+				break;
+			}
+		}
+	}
+}
+
+/*
+ * ini_help_path - build and storelocalized help file name
+ */
+void ini_help_path()
+{
+	if (app_path[0] == TEXT('\0') || lstrlen(app_path) + 15 > MAX_PATH) {
+		// app path is not set, cannot determine help file path
+		help_path[0] = TEXT('\0');
+		return;
+	}
+
+	if (lstrlen(option.main_language) >= 2) {
+		option.main_language[2] = TEXT('\0');
+		lstrcpy(help_path, app_path);
+		if (lstrcmp(option.main_language, TEXT("en")) == 0) {
+			// for english, use the default help file name
+			lstrcat(help_path, TEXT("\\clcl.chm"));
+		}
+		else {
+			// for other languages, try the language specific help file name
+			lstrcat(help_path, TEXT("\\clcl_"));
+			lstrcat(help_path, option.main_language);
+			lstrcat(help_path, TEXT(".chm"));
+		}
+		if (file_check_file(help_path) == TRUE)
+			return;
+	}
+
+	// If language setting is empty, get the OS language and reflect it in the help file name
+	TCHAR os_language[LOCALE_NAME_MAX_LENGTH + 1];
+	if (GetUserDefaultLocaleName(os_language, LOCALE_NAME_MAX_LENGTH) >= 2) {
+		os_language[2] = TEXT('\0');
+		lstrcpy(help_path, app_path);
+		if (lstrcmp(os_language, TEXT("en")) == 0) {
+			// for english, use the default help file name
+			lstrcat(help_path, TEXT("\\clcl.chm"));
+		}
+		else {
+			// for other languages, try the language specific help file name
+			lstrcat(help_path, TEXT("\\clcl_"));
+			lstrcat(help_path, os_language);
+			lstrcat(help_path, TEXT(".chm"));
+		}
+		if (file_check_file(help_path) == TRUE)
+			return;
+	}
+
+	// fall back to english help file
+	lstrcpy(help_path, app_path);
+	lstrcat(help_path, TEXT("\\clcl.chm"));
+	if (file_check_file(help_path) != TRUE)
+	{
+		// no help file available
+		help_path[0] = TEXT('\0');
+	}
+}
+
 /* End of source */

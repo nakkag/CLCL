@@ -1,0 +1,27 @@
+EXETYPE WINDOWS
+
+EXPORTS
+	get_format_header
+
+	rtf_show_property
+	rtf_initialize
+	rtf_get_icon
+	rtf_free
+	rtf_initialize_item
+	rtf_copy_data
+	rtf_data_to_bytes
+	rtf_bytes_to_data
+	rtf_get_file_info
+	rtf_data_to_file
+	rtf_file_to_data
+	rtf_free_data
+	rtf_free_item
+	rtf_get_menu_title
+	rtf_get_menu_icon
+	rtf_get_menu_bitmap
+	rtf_get_tooltip_text
+	rtf_window_create
+	rtf_window_destroy
+	rtf_window_show_data
+	rtf_window_save_data
+	rtf_window_hide_data

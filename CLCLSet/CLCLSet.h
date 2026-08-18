@@ -12,6 +12,7 @@
 #define _INC_CLCLSET_H
 
 /* Include Files */
+#include <HtmlHelp.h>
 
 /* Define */
 #define WINDOW_TITLE					TEXT("CLCLSet")
@@ -42,6 +43,6 @@ LRESULT listview_notify_proc(const HWND hWnd, const LPARAM lParam, const HWND hL
 LRESULT listview_header_notify_proc(const HWND hListView, const LPARAM lParam);
 void get_keyname(const UINT modifiers, const UINT virtkey, TCHAR *ret);
 LRESULT OptionNotifyProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
+HWND show_help(UINT dlgid, LPHELPINFO lphi);
 #endif
 /* End of source */

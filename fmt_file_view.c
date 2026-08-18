@@ -15,6 +15,10 @@
 #include <shlobj.h>
 #include <commctrl.h>
 
+#if (defined(_MSC_VER) && _MSC_VER >=  1930)
+#include <versionhelpers.h>
+#endif
+
 #include "General.h"
 #include "Memory.h"
 #include "Message.h"
@@ -55,7 +59,7 @@ typedef struct _FILE_ITEM {
 
 static HINSTANCE hInst;
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
@@ -71,7 +75,7 @@ static BOOL lv_show_menu(const HWND hWnd, const HWND hListView, const BOOL lock)
 static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 /*
- * string_to_clipboard - •¶š—ñ‚ğƒNƒŠƒbƒvƒ{[ƒh‚Éİ’è
+ * string_to_clipboard - æ–‡å­—åˆ—ã‚’ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«è¨­å®š
  */
 static BOOL string_to_clipboard(const HWND hWnd, const TCHAR* str)
 {
@@ -107,13 +111,12 @@ static BOOL string_to_clipboard(const HWND hWnd, const TCHAR* str)
 }
 
 /*
- * create_dropfile - ƒhƒƒbƒvƒtƒ@ƒCƒ‹‚Ìì¬
+ * create_dropfile - ãƒ‰ãƒ­ãƒƒãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ã®ä½œæˆ
  */
 HDROP create_dropfile(const TCHAR **FileName, const int cnt, DWORD *ret_size)
 {
 	HDROP hDrop;
 	LPDROPFILES lpDropFile;
-	OSVERSIONINFO os_info;
 #ifndef UNICODE
 	wchar_t wbuf[BUF_SIZE];
 #endif
@@ -122,10 +125,22 @@ HDROP create_dropfile(const TCHAR **FileName, const int cnt, DWORD *ret_size)
 	int flen = 0;
 	int i;
 
-	// OS‚Ìƒo[ƒWƒ‡ƒ“æ“¾
-	os_info.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx(&os_info);
-	if (os_info.dwPlatformId == VER_PLATFORM_WIN32_NT) {
+	// OSã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
+	// Get OS version
+#if (defined(_MSC_VER) && _MSC_VER >=  1930)
+	// According to Microsoft documentation 
+	// Ver 5.0 refers to Windows 2000, Ver 5.1 refers to Windows XP
+	BOOL bWin32NT = IsWindowsVersionOrGreater(5, 0, 0);
+#else
+	OSVERSIONINFO osvi;
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	GetVersionEx(&osvi);
+	// According to Microsoft documentation 
+	// VER_PLATFORM_WIN32_NT indicates Windows XP / Windows 2000 or later.
+	BOOL bWin32NT = (osvi.dwPlatformId >= VER_PLATFORM_WIN32_NT);
+#endif
+
+	if (bWin32NT) {
 		fWide = TRUE;
 	}
 
@@ -137,14 +152,14 @@ HDROP create_dropfile(const TCHAR **FileName, const int cnt, DWORD *ret_size)
 	flen += sizeof(TCHAR);
 #else
 	if (fWide == TRUE) {
-		// ƒƒCƒhƒLƒƒƒ‰
+		// ãƒ¯ã‚¤ãƒ‰ã‚­ãƒ£ãƒ©
 		for (i = 0; i < cnt; i++) {
 			MultiByteToWideChar(CP_ACP, 0, *(FileName + i), -1, wbuf, BUF_SIZE);
 			flen += (wcslen(wbuf) + 1) * sizeof(wchar_t);
 		}
 		flen += sizeof(wchar_t);
 	} else {
-		// ƒ}ƒ‹ƒ`ƒoƒCƒg
+		// ãƒãƒ«ãƒãƒã‚¤ãƒˆ
 		for (i = 0; i < cnt; i++) {
 			flen += lstrlen(*(FileName + i)) + 1;
 		}
@@ -159,11 +174,11 @@ HDROP create_dropfile(const TCHAR **FileName, const int cnt, DWORD *ret_size)
 		*ret_size = sizeof(DROPFILES) + flen;
 	}
 	lpDropFile = (LPDROPFILES)GlobalLock(hDrop);
-	lpDropFile->pFiles = sizeof(DROPFILES);		// ƒtƒ@ƒCƒ‹–¼‚ÌƒŠƒXƒg‚Ü‚Å‚ÌƒIƒtƒZƒbƒg
+	lpDropFile->pFiles = sizeof(DROPFILES);		// ãƒ•ã‚¡ã‚¤ãƒ«åã®ãƒªã‚¹ãƒˆã¾ã§ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
 	lpDropFile->pt.x = 0;
 	lpDropFile->pt.y = 0;
 	lpDropFile->fNC = FALSE;
-	lpDropFile->fWide = fWide;					// ƒƒCƒhƒLƒƒƒ‰‚Ìê‡‚Í TRUE
+	lpDropFile->fWide = fWide;					// ãƒ¯ã‚¤ãƒ‰ã‚­ãƒ£ãƒ©ã®å ´åˆã¯ TRUE
 
 #ifdef UNICODE
 	buf = (TCHAR *)(lpDropFile + 1);
@@ -172,9 +187,9 @@ HDROP create_dropfile(const TCHAR **FileName, const int cnt, DWORD *ret_size)
 		buf += lstrlen(*(FileName + i)) + 1;
 	}
 #else
-	// \‘¢‘Ì‚ÌŒã‚ë‚Éƒtƒ@ƒCƒ‹–¼‚ÌƒŠƒXƒg‚ğƒRƒs[(ƒtƒ@ƒCƒ‹–¼\0ƒtƒ@ƒCƒ‹–¼\0ƒtƒ@ƒCƒ‹–¼\0\0)
+	// æ§‹é€ ä½“ã®å¾Œã‚ã«ãƒ•ã‚¡ã‚¤ãƒ«åã®ãƒªã‚¹ãƒˆã‚’ã‚³ãƒ”ãƒ¼(ãƒ•ã‚¡ã‚¤ãƒ«å\0ãƒ•ã‚¡ã‚¤ãƒ«å\0ãƒ•ã‚¡ã‚¤ãƒ«å\0\0)
 	if (fWide == TRUE) {
-		// ƒƒCƒhƒLƒƒƒ‰
+		// ãƒ¯ã‚¤ãƒ‰ã‚­ãƒ£ãƒ©
 		wchar_t *buf;
 
 		buf = (wchar_t *)(lpDropFile + 1);
@@ -184,7 +199,7 @@ HDROP create_dropfile(const TCHAR **FileName, const int cnt, DWORD *ret_size)
 			buf += wcslen(wbuf) + 1;
 		}
 	} else {
-		// ƒ}ƒ‹ƒ`ƒoƒCƒg
+		// ãƒãƒ«ãƒãƒã‚¤ãƒˆ
 		buf = (char *)(lpDropFile + 1);
 		for (i = 0; i < cnt; i++) {
 			lstrcpy(buf, *(FileName + i));
@@ -197,7 +212,7 @@ HDROP create_dropfile(const TCHAR **FileName, const int cnt, DWORD *ret_size)
 }
 
 /*
- * compare_func - ƒ\[ƒg—p•¶š—ñ”äŠr
+ * compare_func - ã‚½ãƒ¼ãƒˆç”¨æ–‡å­—åˆ—æ¯”è¼ƒ
  */
 static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 {
@@ -210,7 +225,7 @@ static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 	int header;
 	int ret = 0;
 
-	// ƒ\[ƒgî•ñ
+	// ã‚½ãƒ¼ãƒˆæƒ…å ±
 	order = (colum < 0) ? 1 : 0;
 	header = ABS(colum) - 1;
 
@@ -251,7 +266,7 @@ static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 }
 
 /*
- * lv_header_notify_proc - ƒŠƒXƒgƒrƒ…[ƒwƒbƒ_ƒƒbƒZ[ƒW
+ * lv_header_notify_proc - ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ãƒ˜ãƒƒãƒ€ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
  */
 static LRESULT lv_header_notify_proc(const HWND hListView, const LPARAM lParam)
 {
@@ -260,9 +275,9 @@ static LRESULT lv_header_notify_proc(const HWND hListView, const LPARAM lParam)
 
 	switch (hdn->hdr.code) {
 	case HDN_ITEMCLICK:
-		// ƒ\[ƒg‚Ìİ’è
+		// ã‚½ãƒ¼ãƒˆã®è¨­å®š
 		colum = (ABS(colum) == (hdn->iItem + 1)) ? (colum * -1) : (hdn->iItem + 1);
-		// ƒ\[ƒg
+		// ã‚½ãƒ¼ãƒˆ
 		ListView_SortItems(hListView, compare_func, colum);
 		break;
 	}
@@ -270,7 +285,7 @@ static LRESULT lv_header_notify_proc(const HWND hListView, const LPARAM lParam)
 }
 
 /*
- * lv_check_file - Šù‚Éİ’è‚³‚ê‚Ä‚¢‚éƒtƒ@ƒCƒ‹‚©ƒ`ƒFƒbƒN
+ * lv_check_file - æ—¢ã«è¨­å®šã•ã‚Œã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã‹ãƒã‚§ãƒƒã‚¯
  */
 static BOOL lv_check_file(const HWND hListView, const TCHAR *check_file)
 {
@@ -297,7 +312,7 @@ static BOOL lv_check_file(const HWND hListView, const TCHAR *check_file)
 }
 
 /*
- * lv_add_file - ListView‚ÉƒAƒCƒeƒ€‚ğ’Ç‰Á
+ * lv_add_file - ListViewã«ã‚¢ã‚¤ãƒ†ãƒ ã‚’è¿½åŠ 
  */
 static int lv_add_file(const HWND hListView, TCHAR *buf)
 {
@@ -305,7 +320,7 @@ static int lv_add_file(const HWND hListView, TCHAR *buf)
 	FILE_ITEM *fi;
 	TCHAR *p, *r;
 
-	// ƒpƒX‚Æƒ^ƒCƒgƒ‹‚Ìæ“¾
+	// ãƒ‘ã‚¹ã¨ã‚¿ã‚¤ãƒˆãƒ«ã®å–å¾—
 	for (r = p = buf; *p != TEXT('\0'); p++) {
 #ifndef UNICODE
 		if (IsDBCSLeadByte((BYTE)*p) == TRUE) {
@@ -322,7 +337,7 @@ static int lv_add_file(const HWND hListView, TCHAR *buf)
 		r++;
 	}
 
-	// ƒtƒ@ƒCƒ‹î•ñİ’è
+	// ãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±è¨­å®š
 	if ((fi = mem_calloc(sizeof(FILE_ITEM))) == NULL) {
 		return -1;
 	}
@@ -330,7 +345,7 @@ static int lv_add_file(const HWND hListView, TCHAR *buf)
 	lstrcpy(fi->name, r);
 	lstrcpy(fi->path, buf);
 
-	// ƒAƒCƒeƒ€‚Ì’Ç‰Á
+	// ã‚¢ã‚¤ãƒ†ãƒ ã®è¿½åŠ 
 	lvi.mask = LVIF_TEXT | TVIF_IMAGE | LVIF_PARAM;
 	lvi.iItem = ListView_GetItemCount(hListView);
 	lvi.iSubItem = 0;
@@ -342,7 +357,7 @@ static int lv_add_file(const HWND hListView, TCHAR *buf)
 }
 
 /*
- * lv_free_file - ListView‚ÌƒAƒCƒeƒ€‚ÉŠÖ˜A•t‚¯‚ç‚ê‚½î•ñ‚Ì‰ğ•ú
+ * lv_free_file - ListViewã®ã‚¢ã‚¤ãƒ†ãƒ ã«é–¢é€£ä»˜ã‘ã‚‰ã‚ŒãŸæƒ…å ±ã®è§£æ”¾
  */
 static void lv_free_file(const HWND hListView)
 {
@@ -360,7 +375,7 @@ static void lv_free_file(const HWND hListView)
 }
 
 /*
- * ListView_GetDispItem - ƒŠƒXƒgƒrƒ…[‚É•\¦‚·‚éƒAƒCƒeƒ€î•ñ‚Ìİ’è
+ * ListView_GetDispItem - ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã«è¡¨ç¤ºã™ã‚‹ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±ã®è¨­å®š
  */
 static void lv_get_disp_item(LV_ITEM *lvi)
 {
@@ -387,7 +402,7 @@ static void lv_get_disp_item(LV_ITEM *lvi)
 		SHGetFileInfo(buf, 0, &shfi, sizeof(SHFILEINFO), f);
 	}
 
-	// ƒAƒCƒRƒ“
+	// ã‚¢ã‚¤ã‚³ãƒ³
 	if (lvi->mask & LVIF_IMAGE) {
 		if (fi->icon == -1) {
 			fi->icon = shfi.iIcon;
@@ -395,7 +410,7 @@ static void lv_get_disp_item(LV_ITEM *lvi)
 		lvi->iImage = fi->icon;
 	}
 
-	// ƒeƒLƒXƒg
+	// ãƒ†ã‚­ã‚¹ãƒˆ
 	if (lvi->mask & LVIF_TEXT) {
 		switch (lvi->iSubItem) {
 		case 0:
@@ -420,7 +435,7 @@ static void lv_get_disp_item(LV_ITEM *lvi)
 }
 
 /*
- * lv_item_to_hdrop - ƒAƒCƒeƒ€‚©‚çƒhƒƒbƒvƒtƒ@ƒCƒ‹‚ğì¬
+ * lv_item_to_hdrop - ã‚¢ã‚¤ãƒ†ãƒ ã‹ã‚‰ãƒ‰ãƒ­ãƒƒãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆ
  */
 static HDROP lv_item_to_hdrop(const HWND hListView)
 {
@@ -454,7 +469,7 @@ static HDROP lv_item_to_hdrop(const HWND hListView)
 }
 
 /*
- * lv_shell_open - ƒtƒ@ƒCƒ‹‚ğÀs
+ * lv_shell_open - ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å®Ÿè¡Œ
  */
 static BOOL lv_shell_open(const HWND hListView)
 {
@@ -476,7 +491,7 @@ static BOOL lv_shell_open(const HWND hListView)
 }
 
 /*
- * lv_show_menu - ƒƒjƒ…[‚ğ•\¦
+ * lv_show_menu - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’è¡¨ç¤º
  */
 static BOOL lv_show_menu(const HWND hWnd, const HWND hListView, const BOOL lock)
 {
@@ -499,7 +514,7 @@ static BOOL lv_show_menu(const HWND hWnd, const HWND hListView, const BOOL lock)
 
 	SetMenuDefaultItem(hMenu, WM_LIST_OPEN, 0);
 
-	// ƒƒjƒ…[‚Ì•\¦
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®è¡¨ç¤º
 	GetCursorPos((LPPOINT)&apos);
 	ret = TrackPopupMenu(hMenu, TPM_TOPALIGN | TPM_RETURNCMD, apos.x, apos.y, 0, hWnd, NULL);
 	DestroyMenu(hMenu);
@@ -511,7 +526,7 @@ static BOOL lv_show_menu(const HWND hWnd, const HWND hListView, const BOOL lock)
 }
 
 /*
- * fileview_proc - ƒEƒBƒ“ƒhƒE‚ÌƒvƒƒV[ƒWƒƒ
+ * fileview_proc - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -534,7 +549,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 	case WM_CREATE:
 		hInst = ((LPCREATESTRUCT)lParam)->hInstance;
 
-		// ListView‚Ìì¬
+		// ListViewã®ä½œæˆ
 		if (CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE,
 			WC_LISTVIEW, NULL, WS_TABSTOP | WS_CHILD | WS_VISIBLE |
 			LVS_REPORT | LVS_AUTOARRANGE | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS,
@@ -543,7 +558,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 		}
 		ListView_SetExtendedListViewStyle(GetDlgItem(hWnd, IDC_LIST_FILE), LVS_EX_INFOTIP);
 
-		// ƒtƒHƒ“ƒgİ’è
+		// ãƒ•ã‚©ãƒ³ãƒˆè¨­å®š
 		if (*option.fmt_file_font_name != TEXT('\0')) {
 			if (lv_font == NULL) {
 				lv_font = font_create(option.fmt_file_font_name, option.fmt_file_font_size, option.fmt_file_font_charset,
@@ -554,7 +569,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 			}
 		}
 
-		// ImageList‚Ìæ“¾
+		// ImageListã®å–å¾—
 		icon_list = (HIMAGELIST)SHGetFileInfo(TEXT(""), 0,
 			&shfi, sizeof(SHFILEINFO), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_SYSICONINDEX);
 		ListView_SetImageList(GetDlgItem(hWnd, IDC_LIST_FILE), icon_list, LVSIL_SMALL);
@@ -581,35 +596,35 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 		break;
 
 	case WM_CLOSE:
-		// ƒEƒBƒ“ƒhƒE‚ğ•Â‚¶‚é
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’é–‰ã˜ã‚‹
 		DestroyWindow(hWnd);
 		break;
 
 	case WM_DESTROY:
-		// ƒJƒ‰ƒ€•æ“¾
+		// ã‚«ãƒ©ãƒ å¹…å–å¾—
 		option.fmt_file_column_name = ListView_GetColumnWidth(GetDlgItem(hWnd, IDC_LIST_FILE), 0);
 		option.fmt_file_column_folder = ListView_GetColumnWidth(GetDlgItem(hWnd, IDC_LIST_FILE), 1);
 		option.fmt_file_column_type = ListView_GetColumnWidth(GetDlgItem(hWnd, IDC_LIST_FILE), 2);
-		// ƒtƒHƒ“ƒg‰ğ•ú
+		// ãƒ•ã‚©ãƒ³ãƒˆè§£æ”¾
 		if (lv_font != NULL) {
 			DeleteObject(lv_font);
 			lv_font = NULL;
 		}
-		// ƒŠƒXƒgƒrƒ…[‚Ì”jŠü
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ç ´æ£„
 		if (GetDlgItem(hWnd, IDC_LIST_FILE) != NULL) {
 			DestroyWindow(GetDlgItem(hWnd, IDC_LIST_FILE));
 		}
-		// ƒEƒBƒ“ƒhƒE‚Ì”jŠü
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ç ´æ£„
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 
 	case WM_SIZE:
-		// ƒTƒCƒY•ÏX
+		// ã‚µã‚¤ã‚ºå¤‰æ›´
 		GetClientRect(hWnd, (LPRECT)&window_rect);
 		MoveWindow(GetDlgItem(hWnd, IDC_LIST_FILE), 0, 0, window_rect.right, window_rect.bottom, TRUE);
 		break;
 
 	case WM_EXITSIZEMOVE:
-		// ƒTƒCƒY•ÏXŠ®—¹
+		// ã‚µã‚¤ã‚ºå¤‰æ›´å®Œäº†
 		break;
 
 	case WM_SETFOCUS:
@@ -626,7 +641,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 		break;
 
 	case WM_LV_EVENT:
-		// ƒŠƒXƒgƒrƒ…[ƒCƒxƒ“ƒg
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆ
 		switch (wParam) {
 		case LVN_GETDISPINFO:
 			lv_get_disp_item(&(((LV_DISPINFO *)lParam)->item));
@@ -640,7 +655,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 			switch (((LV_KEYDOWN *)lParam)->wVKey) {
 			case 'A':
 				if (GetKeyState(VK_CONTROL) < 0) {
-					// ‚·‚×‚Ä‘I‘ğ
+					// ã™ã¹ã¦é¸æŠ
 					ListView_SetItemState(GetDlgItem(hWnd, IDC_LIST_FILE), -1, LVIS_SELECTED, LVIS_SELECTED);
 					return TRUE;
 				}
@@ -648,7 +663,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 
 			case 'D':
 				if (GetKeyState(VK_CONTROL) < 0) {
-					// ’Ç‰Á
+					// è¿½åŠ 
 					SendMessage(hWnd, WM_LIST_ADD, 0, 0);
 					return TRUE;
 				}
@@ -694,7 +709,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 		if (lock == TRUE) {
 			break;
 		}
-		// ƒtƒ@ƒCƒ‹‚Ì‘I‘ğ
+		// ãƒ•ã‚¡ã‚¤ãƒ«ã®é¸æŠ
 		ZeroMemory(&of, sizeof(OPENFILENAME));
 		of.lStructSize = sizeof(OPENFILENAME);
 		of.hInstance = NULL;
@@ -708,7 +723,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 		if (GetOpenFileName(&of) == FALSE) {
 			break;
 		}
-		// ƒAƒCƒeƒ€‚ğ’Ç‰Á
+		// ã‚¢ã‚¤ãƒ†ãƒ ã‚’è¿½åŠ 
 		if (lv_check_file(GetDlgItem(hWnd, IDC_LIST_FILE), buf) == FALSE) {
 			lv_add_file(GetDlgItem(hWnd, IDC_LIST_FILE), buf);
 			modify = TRUE;
@@ -722,7 +737,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 		if (ListView_GetSelectedCount(GetDlgItem(hWnd, IDC_LIST_FILE)) == 0) {
 			break;
 		}
-		// Šm”FƒƒbƒZ[ƒW
+		// ç¢ºèªãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 		if (MessageBox(hWnd, message_get_res(IDS_FILE_DELETE_MSG),
 			TEXT("Unlink"), MB_ICONQUESTION | MB_YESNO) == IDNO) {
 			break;
@@ -732,7 +747,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 			if (fi != NULL) {
 				mem_free(&fi);
 			}
-			// ƒŠƒXƒgƒrƒ…[‚©‚çƒAƒCƒeƒ€‚ğíœ
+			// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã‚’å‰Šé™¤
 			ListView_DeleteItem(GetDlgItem(hWnd, IDC_LIST_FILE), i);
 		}
 		modify = TRUE;
@@ -790,7 +805,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 		for (i = 0; i < cnt; i++) {
 			DragQueryFile((HANDLE)wParam, i, buf, MAX_PATH - 1);
 			if (lv_check_file(GetDlgItem(hWnd, IDC_LIST_FILE), buf) == FALSE) {
-				// ƒAƒCƒeƒ€‚ğ’Ç‰Á
+				// ã‚¢ã‚¤ãƒ†ãƒ ã‚’è¿½åŠ 
 				lv_add_file(GetDlgItem(hWnd, IDC_LIST_FILE), buf);
 			}
 		}
@@ -799,7 +814,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 		break;
 
 	case WM_SET_FILEDATA:
-		// ‰Šú‰»
+		// åˆæœŸåŒ–
 		lv_free_file(GetDlgItem(hWnd, IDC_LIST_FILE));
 		ListView_DeleteAllItems(GetDlgItem(hWnd, IDC_LIST_FILE));
 
@@ -809,11 +824,11 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 		if ((hDrop = (HDROP)lParam) == NULL) {
 			break;
 		}
-		// ƒtƒ@ƒCƒ‹‚Ìæ“¾
+		// ãƒ•ã‚¡ã‚¤ãƒ«ã®å–å¾—
 		cnt = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
 		for (i = 0; i < cnt; i++) {
 			DragQueryFile(hDrop, i, buf, MAX_PATH - 1);
-			// ƒAƒCƒeƒ€‚ğ’Ç‰Á
+			// ã‚¢ã‚¤ãƒ†ãƒ ã‚’è¿½åŠ 
 			lv_add_file(GetDlgItem(hWnd, IDC_LIST_FILE), buf);
 		}
 		ListView_SetItemState(GetDlgItem(hWnd, IDC_LIST_FILE), 0, LVIS_FOCUSED, LVIS_FOCUSED);
@@ -833,7 +848,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 }
 
 /*
- * fileview_regist - ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì“o˜^
+ * fileview_regist - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ç™»éŒ²
  */
 BOOL fileview_regist(const HINSTANCE hInstance)
 {
@@ -849,18 +864,18 @@ BOOL fileview_regist(const HINSTANCE hInstance)
 	wc.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
 	wc.lpszMenuName = NULL;
 	wc.lpszClassName = WINDOW_CLASS;
-	// ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì“o˜^
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ç™»éŒ²
 	return RegisterClass(&wc);
 }
 
 /*
- * fileview_create - ƒtƒ@ƒCƒ‹ƒrƒ…[ƒA‚Ìì¬
+ * fileview_create - ãƒ•ã‚¡ã‚¤ãƒ«ãƒ“ãƒ¥ãƒ¼ã‚¢ã®ä½œæˆ
  */
 HWND fileview_create(const HINSTANCE hInstance, const HWND pWnd, int id)
 {
 	HWND hWnd;
 
-	// ƒEƒBƒ“ƒhƒE‚Ìì¬
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½œæˆ
 	hWnd = CreateWindowEx(WS_EX_ACCEPTFILES, WINDOW_CLASS,
 		TEXT(""),
 		WS_TABSTOP | WS_CHILD,

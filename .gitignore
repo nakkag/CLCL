@@ -16,11 +16,22 @@
 # Mono auto generated files
 mono_crash.*
 
+# CVS
+CVS/
+.#*
+.cvsignore
+
+release.md
+
+# intermediate files from generating .chm
+clcl_help/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
+[Ss]etup/
 x64/
 x86/
 [Aa][Rr][Mm]/
@@ -348,3 +359,6 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# SpecStory auto-save files
+.specstory/

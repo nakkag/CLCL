@@ -25,19 +25,21 @@
 /* Define */
 
 /* Global Variables */
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
 
 /*
- * data_create_data - ƒf[ƒ^‚Ìì¬
+ * data_create_data - ãƒ‡ãƒ¼ã‚¿ã®ä½œæˆ
+ * Create data
  */
 DATA_INFO *data_create_data(const UINT format, TCHAR *format_name, const HANDLE data, const DWORD size, const BOOL init, TCHAR *err_str)
 {
 	DATA_INFO *new_item;
 
-	// ƒAƒCƒeƒ€‚ÌŠm•Û
+	// ã‚¢ã‚¤ãƒ†ãƒ ã®ç¢ºä¿
+	// Allocate item
 	if ((new_item = (DATA_INFO *)mem_calloc(sizeof(DATA_INFO))) == NULL) {
 		message_get_error(GetLastError(), err_str);
 		return NULL;
@@ -54,13 +56,15 @@ DATA_INFO *data_create_data(const UINT format, TCHAR *format_name, const HANDLE 
 }
 
 /*
- * data_create_item - ƒAƒCƒeƒ€‚Ìì¬
+ * data_create_item - ã‚¢ã‚¤ãƒ†ãƒ ã®ä½œæˆ
+ * Create an item
  */
 DATA_INFO *data_create_item(const TCHAR *title, const BOOL set_date, TCHAR *err_str)
 {
 	DATA_INFO *new_item;
 
-	// ƒAƒCƒeƒ€‚ÌŠm•Û
+	// ã‚¢ã‚¤ãƒ†ãƒ ã®ç¢ºä¿
+	// Allocate item
 	if ((new_item = (DATA_INFO *)mem_calloc(sizeof(DATA_INFO))) == NULL) {
 		message_get_error(GetLastError(), err_str);
 		return NULL;
@@ -75,13 +79,14 @@ DATA_INFO *data_create_item(const TCHAR *title, const BOOL set_date, TCHAR *err_
 }
 
 /*
- * data_create_folder - ƒtƒHƒ‹ƒ_‚Ìì¬
+ * data_create_folder - ãƒ•ã‚©ãƒ«ãƒ€ã®ä½œæˆ
+ * Create a folder
  */
 DATA_INFO *data_create_folder(const TCHAR *title, TCHAR *err_str)
 {
 	DATA_INFO *new_item;
 
-	// ƒAƒCƒeƒ€‚ÌŠm•Û
+	// ã‚¢ã‚¤ãƒ†ãƒ ã®ç¢ºä¿
 	if ((new_item = (DATA_INFO *)mem_calloc(sizeof(DATA_INFO))) == NULL) {
 		message_get_error(GetLastError(), err_str);
 		return NULL;
@@ -93,7 +98,8 @@ DATA_INFO *data_create_folder(const TCHAR *title, TCHAR *err_str)
 }
 
 /*
- * data_item_copy - ƒAƒCƒeƒ€‚ÌƒRƒs[‚ğì¬
+ * data_item_copy - ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚³ãƒ”ãƒ¼ã‚’ä½œæˆ
+ * Create a copy of an item
  */
 DATA_INFO *data_item_copy(const DATA_INFO *di, const BOOL next_copy, const BOOL move_flag, TCHAR *err_str)
 {
@@ -123,17 +129,20 @@ DATA_INFO *data_item_copy(const DATA_INFO *di, const BOOL next_copy, const BOOL 
 		new_di->op_virtkey = di->op_virtkey;
 		new_di->op_paste = di->op_paste;
 	}
-	// ƒf[ƒ^‚ÌƒRƒs[
+	// ãƒ‡ãƒ¼ã‚¿ã®ã‚³ãƒ”ãƒ¼
+	// copy data
 	if (di->data != NULL && (new_di->data = format_copy_data(di->format_name, di->data, &new_di->size)) == NULL) {
 		new_di->data = clipboard_copy_data(di->format, di->data, &new_di->size);
 	}
 
-	// qƒAƒCƒeƒ€‚ÌƒRƒs[
+	// å­ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚³ãƒ”ãƒ¼
+	// copy child item
 	if (di->child != NULL && (new_di->child = data_item_copy(di->child, TRUE, move_flag, err_str)) == NULL) {
 		data_free(new_di);
 		return NULL;
 	}
-	// ŸƒAƒCƒeƒ€‚ÌƒRƒs[
+	// æ¬¡ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚³ãƒ”ãƒ¼
+	// copy next item
 	if (next_copy == TRUE && di->next != NULL &&
 		(new_di->next = data_item_copy(di->next, TRUE, move_flag, err_str)) == NULL) {
 		data_free(new_di);
@@ -143,7 +152,8 @@ DATA_INFO *data_item_copy(const DATA_INFO *di, const BOOL next_copy, const BOOL 
 }
 
 /*
- * data_delete - ƒAƒCƒeƒ€‚Ìíœ
+ * data_delete - ã‚¢ã‚¤ãƒ†ãƒ ã®å‰Šé™¤
+ * Delete an item
  */
 BOOL data_delete(DATA_INFO **root, DATA_INFO *del_di, const BOOL free_item)
 {
@@ -162,7 +172,8 @@ BOOL data_delete(DATA_INFO **root, DATA_INFO *del_di, const BOOL free_item)
 	}
 	for (di = *root; di != NULL; di = di->next) {
 		if (di->next == del_di) {
-			// íœ
+			// å‰Šé™¤
+			// delete
 			di->next = del_di->next;
 			del_di->next = NULL;
 			if (free_item == TRUE) {
@@ -178,7 +189,7 @@ BOOL data_delete(DATA_INFO **root, DATA_INFO *del_di, const BOOL free_item)
 }
 
 /*
- * data_adjust - ƒAƒCƒeƒ€‚Ì®—
+ * data_adjust - ã‚¢ã‚¤ãƒ†ãƒ ã®æ•´ç†
  */
 void data_adjust(DATA_INFO **root)
 {
@@ -188,7 +199,8 @@ void data_adjust(DATA_INFO **root)
 	while (di != NULL) {
 		if (di->type == TYPE_ITEM && di->child == NULL) {
 			wk_di = di->next;
-			// íœ
+			// å‰Šé™¤
+			// delete
 			data_delete(root, di, TRUE);
 			di = wk_di;
 		} else {
@@ -201,25 +213,29 @@ void data_adjust(DATA_INFO **root)
 }
 
 /*
- * data_menu_free - ƒAƒCƒeƒ€‚ÉŠÖ˜A•t‚¯‚ç‚ê‚½ƒƒjƒ…[î•ñ‚ğ‰ğ•ú
+ * data_menu_free - ã‚¢ã‚¤ãƒ†ãƒ ã«é–¢é€£ä»˜ã‘ã‚‰ã‚ŒãŸãƒ¡ãƒ‹ãƒ¥ãƒ¼æƒ…å ±ã‚’è§£æ”¾
+ * Releases the menu information associated with the item.
  */
 void data_menu_free_item(DATA_INFO *di)
 {
-	// ƒeƒLƒXƒg‚Ì‰ğ•ú
+	// ãƒ†ã‚­ã‚¹ãƒˆã®è§£æ”¾
+	// text release
 	if (di->free_title == TRUE) {
 		mem_free(&di->menu_title);
 	}
 	di->menu_title = NULL;
 	di->free_title = FALSE;
 
-	// ƒAƒCƒRƒ“‚Ì‰ğ•ú
+	// ã‚¢ã‚¤ã‚³ãƒ³ã®è§£æ”¾
+	// release icon
 	if (di->free_icon == TRUE && di->menu_icon != NULL) {
 		DestroyIcon(di->menu_icon);
 	}
 	di->menu_icon = NULL;
 	di->free_icon = FALSE;
 
-	// ƒrƒbƒgƒ}ƒbƒv‚Ì‰ğ•ú
+	// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®è§£æ”¾
+	// free the bitmap
 	if (di->free_bitmap == TRUE && di->menu_bitmap != NULL) {
 		DeleteObject((HGDIOBJ)di->menu_bitmap);
 	}
@@ -239,7 +255,8 @@ void data_menu_free(DATA_INFO *di)
 }
 
 /*
- * data_free - ƒAƒCƒeƒ€‚Ì‰ğ•ú
+ * data_free - ã‚¢ã‚¤ãƒ†ãƒ ã®è§£æ”¾
+ * Release items.
  */
 void data_free(DATA_INFO *di)
 {
@@ -268,7 +285,8 @@ void data_free(DATA_INFO *di)
 }
 
 /*
- * data_check - ƒAƒCƒeƒ€‚Ì‘¶İƒ`ƒFƒbƒN
+ * data_check - ã‚¢ã‚¤ãƒ†ãƒ ã®å­˜åœ¨ãƒã‚§ãƒƒã‚¯
+ * Check for existence of item.
  */
 DATA_INFO *data_check(DATA_INFO *di, const DATA_INFO *check_di)
 {
@@ -290,7 +308,8 @@ DATA_INFO *data_check(DATA_INFO *di, const DATA_INFO *check_di)
 }
 
 /*
- * data_set_modified - XV“ú‚ğİ’è
+ * data_set_modified - æ›´æ–°æ—¥æ™‚ã‚’è¨­å®š
+ * Set update date and time.
  */
 void data_set_modified(DATA_INFO *di)
 {
@@ -305,7 +324,8 @@ void data_set_modified(DATA_INFO *di)
 }
 
 /*
- * data_get_modified_string - XV“ú•¶š—ñ‚ğæ“¾
+ * data_get_modified_string - æ›´æ–°æ—¥æ™‚æ–‡å­—åˆ—ã‚’å–å¾—
+ * Get the updated date string.
  */
 BOOL data_get_modified_string(const DATA_INFO *di, TCHAR *ret)
 {
@@ -318,18 +338,21 @@ BOOL data_get_modified_string(const DATA_INFO *di, TCHAR *ret)
 		*ret = TEXT('\0');
 		return FALSE;
 	}
-	// ƒtƒ@ƒCƒ‹ƒ^ƒCƒ€‚ğƒVƒXƒeƒ€ƒ^ƒCƒ€‚É•ÏŠ·
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚¿ã‚¤ãƒ ã‚’ã‚·ã‚¹ãƒ†ãƒ ã‚¿ã‚¤ãƒ ã«å¤‰æ›
+	// Convert file time to system time
 	if (FileTimeToSystemTime(&di->modified, &sys_time) == FALSE) {
 		*ret = TEXT('\0');
 		return FALSE;
 	}
-	// “ú•t•¶š—ñ‚Ìæ“¾
+	// æ—¥ä»˜æ–‡å­—åˆ—ã®å–å¾—
+	// Get date string
 	p = option.data_date_format;
 	if (p == NULL || *p == TEXT('\0')) {
 		p = NULL;
 	}
 	GetDateFormat(0, 0, &sys_time, p, str_day, BUF_SIZE - 1);
-	// ŠÔ•¶š—ñ‚Ìæ“¾
+	// æ™‚é–“æ–‡å­—åˆ—ã®å–å¾—
+	// Get time string
 	p = option.data_time_format;
 	if (p == NULL || *p == TEXT('\0')) {
 		p = NULL;
@@ -341,7 +364,8 @@ BOOL data_get_modified_string(const DATA_INFO *di, TCHAR *ret)
 }
 
 /*
- * data_get_title - ƒAƒCƒeƒ€‚Ìƒ^ƒCƒgƒ‹‚ğæ“¾
+ * data_get_title - ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚¿ã‚¤ãƒˆãƒ«ã‚’å–å¾—
+ * Get the title of the item
  */
 TCHAR *data_get_title(DATA_INFO *di)
 {

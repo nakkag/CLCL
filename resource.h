@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ で生成されたインクルード ファイル。
-// CLCL.rc で使用
+// Microsoft Visual C++ generated include file.
+// Used by CLCL.rc
 //
 #define IDS_MENU_REGIST                 1
 #define IDS_MENU_CANCEL                 2
@@ -8,6 +8,7 @@
 #define IDS_MENU_VIEWER                 4
 #define IDS_MENU_OPTION                 5
 #define IDS_MENU_CLIPBOARD_WATCH        6
+#define IDS_MENU_HELP                   7
 #define IDS_TREEITEM_CLIPBOARD          10
 #define IDS_TREEITEM_HISTORY            11
 #define IDS_TREEITEM_REGIST             12
@@ -42,11 +43,11 @@
 #define IDR_TOOLBAR                     126
 #define IDD_DIALOG_SELECT_FORMAT        128
 #define IDD_DIALOG_SET_HOTKEY           133
-#define IDI_ICON1                       135
 #define IDI_ICON_FOLDER                 135
 #define IDR_TOOLBAR32                   136
 #define IDR_TOOLBAR2                    138
 #define IDR_TOOLBAR48                   138
+#define IDD_SEARCH_ITEM                 139
 #define IDS_QUESTION_DELETE             200
 #define IDS_QUESTION_REPLACE            201
 #define IDS_DIALOG_ADDPOS               300
@@ -96,6 +97,15 @@
 #define IDC_HOTKEY_ITEM                 1007
 #define IDC_CHECK_PASTE                 1008
 #define IDC_CHECK_WIN                   1009
+#define IDC_CHK_SRCHDATE                1010
+#define IDC_SEARCHTEXT                  1011
+#define IDC_DATEFROM                    1012
+#define IDC_TIMEFROM                    1013
+#define IDC_DATEUNTIL                   1014
+#define IDC_TIMEUNTIL                   1015
+#define IDC_FROM_APPLICATION            1016
+#define IDH_VIEWER_HELP                 30000
+#define IDH_OPTIONS_HELP                30001
 #define ID_MENUITEM_EXIT                40001
 #define ID_MENUITEM_VIEWER              40002
 #define ID_MENUITEM_OPTION              40003
@@ -139,6 +149,11 @@
 #define ID_MENUITEM_OPEN                40054
 #define ID_MENU_DGDP_MOVE               40063
 #define ID_MENU_DGDP_COPY               40064
+#define ID_MENUITEM_HELP_JP             40065
+#define ID_MENUITEM_HELP                40066
+#define ID_MENUITEM_SHOWBINARY          40067
+#define ID_MENUITEM_SEARCH              40068
+#define ID_MENUITEM_FINDNEXT            40069
 #define ID_MENUITEM_CLIPBOARD_TB        50000
 #define ID_MENUITEM_PASTE_TB            50001
 #define ID_MENUITEM_REGIST_ADD_TB       50002
@@ -152,8 +167,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        140
-#define _APS_NEXT_COMMAND_VALUE         40055
-#define _APS_NEXT_CONTROL_VALUE         1010
+#define _APS_NEXT_COMMAND_VALUE         40070
+#define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

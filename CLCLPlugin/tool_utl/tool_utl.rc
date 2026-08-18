@@ -1,0 +1,247 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Japanese (Japan) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_MULTI_SAVE DIALOG 0, 0, 187, 149
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "保存情報設定"
+FONT 9, "MS Shell Dlg"
+BEGIN
+    LTEXT           "保存する形式(&F):",IDC_STATIC,10,10,165,8
+    COMBOBOX        IDC_COMBO_FORMAT,10,20,165,170,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "出力先(&O):",IDC_STATIC,10,45,165,8
+    EDITTEXT        IDC_EDIT_PATH,10,55,150,13,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "...",IDC_BUTTON_SELECT_PATH,162,55,13,13
+    LTEXT           "ファイル名(&F):",IDC_STATIC,10,75,165,8
+    EDITTEXT        IDC_EDIT_FILE_NAME,10,85,165,13,ES_AUTOHSCROLL
+    LTEXT           "%d で自動的にカウントアップする数字になります。\n%04d と指定すると4桁の数字になります。",IDC_STATIC,10,103,165,20
+    DEFPUSHBUTTON   "OK",IDOK,70,130,50,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,126,130,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_MULTI_SAVE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 142
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,1,5,3
+ PRODUCTVERSION 2,1,5,3
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040704b0"
+        BEGIN
+            VALUE "FileDescription", "tool_utl plugin for CLCL"
+            VALUE "FileVersion", "2.1.5.3"
+            VALUE "InternalName", "tool_utl.dll"
+            VALUE "LegalCopyright", "Copyright (C) 1996-2025 by Ohno Tomoaki. "
+            VALUE "OriginalFilename", "tool_utl.dll"
+            VALUE "ProductName", "CLCL"
+            VALUE "ProductVersion", "2.1.5.3"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x411, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_CLEAR_HISTORY       "履歴のクリア(&H)"
+    IDS_CLEAR_CLIPBOARD     "クリップボードのクリア(&E)"
+    IDS_PLAY_SOUND          "音を鳴らす(&P)"
+    IDS_ALWAYS_ON_TOP       "最前面に表示(&T)"
+    IDS_UN_TOP              "最前面に表示の解除(&Z)"
+    IDS_SAVE_SEVERAL        "複数アイテムの保存(&M)"
+    IDS_CLR_HIST_CAPTION    "CLCL - 履歴のクリア"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_CLR_HIST_QUESTION   "すべての履歴を削除してもよろしいですか？"
+    IDS_WAVE_FILE           "WAVEファイル選択"
+    IDS_SEL_OUTPUT_FOLDER   "出力先を選択してください"
+    IDS_CAPTION_OUTPUT      "複数アイテムの保存"
+    IDS_SAVE_FAILED         "保存に失敗しました。"
+END
+
+
+#endif    // Japanese (Japan) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_MULTI_SAVE DIALOG 0, 0, 187, 149
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Save Information"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "&Format:",IDC_STATIC,10,10,165,8
+    COMBOBOX        IDC_COMBO_FORMAT,10,20,165,170,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Output directory:",IDC_STATIC,10,45,165,8
+    EDITTEXT        IDC_EDIT_PATH,10,55,150,13,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "...",IDC_BUTTON_SELECT_PATH,162,55,13,13
+    LTEXT           "File &Name:",IDC_STATIC,10,75,165,8
+    EDITTEXT        IDC_EDIT_FILE_NAME,10,85,165,13,ES_AUTOHSCROLL
+    LTEXT           "%d - 1, 2, 3, 4...\n%04d - 0001, 0002, 0003, 0004...",IDC_STATIC,10,103,165,20
+    DEFPUSHBUTTON   "OK",IDOK,70,130,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,126,130,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_MULTI_SAVE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 142
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_CLEAR_HISTORY       "Clear &History"
+    IDS_CLEAR_CLIPBOARD     "Clear &Clipboard"
+    IDS_PLAY_SOUND          "&Play Sound"
+    IDS_ALWAYS_ON_TOP       "Always on &Top"
+    IDS_UN_TOP              "&Un Top"
+    IDS_SAVE_SEVERAL        "Save of &more items"
+    IDS_CLR_HIST_CAPTION    "CLCL - Clear History"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_CLR_HIST_QUESTION   "Are you sure you want to delete all items?"
+    IDS_WAVE_FILE           "WAVE file"
+    IDS_SEL_OUTPUT_FOLDER   "Please select a folder to output."
+    IDS_CAPTION_OUTPUT      "Output"
+    IDS_SAVE_FAILED         "Failed in save."
+END
+
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

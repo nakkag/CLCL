@@ -1,4 +1,4 @@
-/*
+Ôªø/*
  * CLCLSet
  *
  * SetHistory.c
@@ -27,24 +27,26 @@
 extern HINSTANCE hInst;
 extern int prop_ret;
 
-// ÉIÉvÉVÉáÉì
+// „Ç™„Éó„Ç∑„Éß„É≥
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
 
 /*
- * set_histroy_proc - óöóê›íËÇÃÉvÉçÉVÅ[ÉWÉÉ
+ * set_histroy_proc - Â±•Ê≠¥Ë®≠ÂÆö„ÅÆ„Éó„É≠„Ç∑„Éº„Ç∏„É£
  */
 BOOL CALLBACK set_histroy_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg) {
 	case WM_INITDIALOG:
-		// ÉXÉsÉìÉRÉìÉgÉçÅ[ÉãÇÃê›íË
+		// „Çπ„Éî„É≥„Ç≥„É≥„Éà„É≠„Éº„É´„ÅÆË®≠ÂÆö
 		SendDlgItemMessage(hDlg, IDC_SPIN_MAX, UDM_SETRANGE, 0, (LPARAM)MAKELONG(UD_MAXVAL, 1));
 		SendDlgItemMessage(hDlg, IDC_SPIN_ADD_INTERVAL, UDM_SETRANGE, 0, (LPARAM)MAKELONG(UD_MAXVAL, 0));
+		SendDlgItemMessage(hDlg, IDC_SPIN_CLIPBOARD_DELAY, UDM_SETRANGE, 0, (LPARAM)MAKELONG(1000, 0));
 
 		SetDlgItemInt(hDlg, IDC_EDIT_MAX, option.history_max, FALSE);
 		SetDlgItemInt(hDlg, IDC_EDIT_ADD_INTERVAL, option.history_add_interval, FALSE);
+		SetDlgItemInt(hDlg, IDC_EDIT_CLIPBOARD_DELAY, option.main_clipboard_access_delay, FALSE);
 
 		CheckDlgButton(hDlg, IDC_CHECK_SAVE, option.history_save);
 		CheckDlgButton(hDlg, IDC_CHECK_ALWAYS_SAVE, option.history_always_save);
@@ -74,6 +76,11 @@ BOOL CALLBACK set_histroy_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	case WM_NOTIFY:
 		return OptionNotifyProc(hDlg, uMsg, wParam, lParam);
 
+	case WM_HELP:
+		if (show_help(IDD_DIALOG_HISTORY, (LPHELPINFO)lParam))
+			return TRUE;
+		break;
+
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDC_CHECK_SAVE:
@@ -84,6 +91,7 @@ BOOL CALLBACK set_histroy_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		case IDOK:
 			option.history_max = GetDlgItemInt(hDlg, IDC_EDIT_MAX, NULL, FALSE);
 			option.history_add_interval = GetDlgItemInt(hDlg, IDC_EDIT_ADD_INTERVAL, NULL, FALSE);
+			option.main_clipboard_access_delay = GetDlgItemInt(hDlg, IDC_EDIT_CLIPBOARD_DELAY, NULL, FALSE);
 
 			option.history_save = IsDlgButtonChecked(hDlg, IDC_CHECK_SAVE);
 			option.history_always_save = IsDlgButtonChecked(hDlg, IDC_CHECK_ALWAYS_SAVE);

@@ -22,7 +22,7 @@
 /* Local Function Prototypes */
 
 /*
- * a2i - 数字の文字列を数値(int)に変換する
+ * a2i - 数字の文字列を数値(int)に変換する / convert a string of digits to a number (int)
  */
 int a2i(const char *str)
 {
@@ -43,7 +43,7 @@ int a2i(const char *str)
 }
 
 /*
- * x2i - 16進文字列を数値(int)に変換する
+ * x2i - 16進文字列を数値(int)に変換する / convert a hexadecimal string to a number
  */
 int x2i(const char *str)
 {
@@ -77,7 +77,7 @@ int x2i(const char *str)
 }
 
 /*
- * tx2i - 16進文字列(UNICODE)を数値(int)に変換する
+ * tx2i - 16進文字列(UNICODE)を数値(int)に変換する / convert hexadecimal UNICODE string to a number (int)
  */
 #ifdef UNICODE
 int tx2i(const TCHAR *str)
@@ -94,7 +94,7 @@ int tx2i(const TCHAR *str)
 #endif
 
 /*
- * str2hash - 文字列のハッシュ値を取得
+ * str2hash - 文字列のハッシュ値を取得 / get the hash value of a string
  */
 int str2hash(const TCHAR *str)
 {
@@ -109,7 +109,7 @@ int str2hash(const TCHAR *str)
 }
 
 /*
- * str_match - ２つの文字列をワイルドカード(*)を使って比較を行う
+ * str_match - ２つの文字列をワイルドカード(*)を使って比較を行う / compare two strings using wildcard (*)
  */
 BOOL str_match(const TCHAR *Ptn, const TCHAR *Str)
 {
@@ -132,14 +132,14 @@ BOOL Trim(TCHAR *buf)
 {
 	TCHAR *p, *r;
 
-	// 前後の空白を除いたポインタを取得
+	// 前後の空白を除いたポインタを取得 / get pointer without leading and trailing spaces
 	for (p = buf; (*p == TEXT(' ') || *p == TEXT('\t')) && *p != TEXT('\0'); p++)
 		;
 	for (r = buf + lstrlen(buf) - 1; r > p && (*r == TEXT(' ') || *r == TEXT('\t')); r--)
 		;
 	*(r + 1) = TEXT('\0');
 
-	// 元の文字列にコピー
+	// 元の文字列にコピー / copy to original string buffer
 	lstrcpy(buf, p);
 	return TRUE;
 }

@@ -104,11 +104,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="CLCLSet.rc">
-      <Filter>Source Files\CLCSet Source Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="CLCLSet.h">
       <Filter>Header Files\CLCLSet Header Files</Filter>
     </ClInclude>
@@ -193,6 +188,9 @@
     <ClInclude Include="..\dpi.h">
       <Filter>Header Files\CLCL Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files\CLCLSet Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\ico00002.ico">
@@ -215,5 +213,10 @@
     <Xml Include="res\manifest.xml">
       <Filter>Resource Files</Filter>
     </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CLCLSet.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

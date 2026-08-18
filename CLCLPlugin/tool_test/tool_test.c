@@ -14,6 +14,7 @@
 #undef  _INC_OLE
 
 #include "..\CLCLPlugin.h"
+#include "resource.h"
 
 /* Define */
 
@@ -42,55 +43,71 @@ int WINAPI DllMain(HINSTANCE hInstance, DWORD fdwReason, PVOID pvReserved)
 
 /*
  * get_tool_info_w - ツール情報取得
- * Get tool information 
+ * Get tool information
+ *
+ *	引数 / argument:
+ *		hWnd - 呼び出し元ウィンドウ / the calling window
+ *		index - 取得のインデックス (0～) / the index of the acquisition (from 0)
+ *		tgi - ツール取得情報 / tool retrieval information
+ *
+ *	戻り値 / Return value:
+ *		TRUE - 次に取得するツールあり / has tools to get next
+ *		FALSE - 取得の終了 / end of acquisition
  */
 __declspec(dllexport) BOOL CALLBACK get_tool_info_w(const HWND hWnd, const int index, TOOL_GET_INFO *tgi)
 {
 	switch (index) {
 	case 0:
-		lstrcpy(tgi->title, TEXT("テスト1"));
+		// Remove specific format in item
+		LoadString(hInst, IDS_TEST1, tgi->title, BUF_SIZE - 1);
 		lstrcpy(tgi->func_name, TEXT("test1"));
 		lstrcpy(tgi->cmd_line, TEXT(""));
 		tgi->call_type = CALLTYPE_MENU | CALLTYPE_VIEWER;
 		return TRUE;
 
 	case 1:
-		lstrcpy(tgi->title, TEXT("テスト2"));
+		// Delete item
+		LoadString(hInst, IDS_TEST2, tgi->title, BUF_SIZE - 1);
 		lstrcpy(tgi->func_name, TEXT("test2"));
 		lstrcpy(tgi->cmd_line, TEXT(""));
 		tgi->call_type = CALLTYPE_MENU | CALLTYPE_VIEWER;
 		return TRUE;
 
 	case 2:
-		lstrcpy(tgi->title, TEXT("テスト3"));
+		// Save item
+		LoadString(hInst, IDS_TEST3, tgi->title, BUF_SIZE - 1);
 		lstrcpy(tgi->func_name, TEXT("test3"));
 		lstrcpy(tgi->cmd_line, TEXT(""));
 		tgi->call_type = CALLTYPE_MENU | CALLTYPE_VIEWER;
 		return TRUE;
 
 	case 3:
-		lstrcpy(tgi->title, TEXT("テスト4"));
+		// Create a text item from a file
+		LoadString(hInst, IDS_TEST4, tgi->title, BUF_SIZE - 1);
 		lstrcpy(tgi->func_name, TEXT("test4"));
 		lstrcpy(tgi->cmd_line, TEXT(""));
 		tgi->call_type = CALLTYPE_MENU | CALLTYPE_VIEWER;
 		return TRUE;
 
 	case 4:
-		lstrcpy(tgi->title, TEXT("テスト5"));
+		// Show item title
+		LoadString(hInst, IDS_TEST5, tgi->title, BUF_SIZE - 1);
 		lstrcpy(tgi->func_name, TEXT("test5"));
 		lstrcpy(tgi->cmd_line, TEXT(""));
 		tgi->call_type = CALLTYPE_MENU | CALLTYPE_VIEWER;
 		return TRUE;
 
 	case 5:
-		lstrcpy(tgi->title, TEXT("テスト6"));
+		// Save the data in a separate file
+		LoadString(hInst, IDS_TEST6, tgi->title, BUF_SIZE - 1);
 		lstrcpy(tgi->func_name, TEXT("test6"));
 		lstrcpy(tgi->cmd_line, TEXT(""));
 		tgi->call_type = CALLTYPE_START | CALLTYPE_END;
 		return TRUE;
 
 	case 6:
-		lstrcpy(tgi->title, TEXT("テスト7"));
+		// Test7
+		LoadString(hInst, IDS_TEST7, tgi->title, BUF_SIZE - 1);
 		lstrcpy(tgi->func_name, TEXT("test7"));
 		lstrcpy(tgi->cmd_line, TEXT(""));
 		tgi->call_type = CALLTYPE_MENU | CALLTYPE_VIEWER;
@@ -102,6 +119,14 @@ __declspec(dllexport) BOOL CALLBACK get_tool_info_w(const HWND hWnd, const int i
 /*
  * test1 - アイテム内の特定形式を削除
  * test1 - Remove specific format in item 
+ *
+ *	引数 / argument:
+ *		hWnd - 呼び出し元ウィンドウ / the calling window
+ *		tei - ツール実行情報 / tool execution information
+ *		tdi - ツール用アイテム情報 / item information for tools
+ *
+ *	戻り値 / Return value:
+ *		TOOL_
  */
 __declspec(dllexport) int CALLBACK test1(const HWND hWnd, TOOL_EXEC_INFO *tei, TOOL_DATA_INFO *tdi)
 {

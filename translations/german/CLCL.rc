@@ -1,0 +1,418 @@
+// Microsoft Visual C++ generated resource script.
+//
+#pragma code_page(65001)
+
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// German (Germany) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU_POPUP MENU
+BEGIN
+    POPUP "Zwischenablage"
+    BEGIN
+        MENUITEM "Zu &Vorlagen hinzufügen...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "Speichern &unter...\tCtrl+S", ID_MENUITEM_DATA_SAVE
+        MENUITEM "Hexadezimal anzeigen",        ID_MENUITEM_SHOWBINARY
+        MENUITEM SEPARATOR
+        POPUP "&Einstellugen"
+        BEGIN
+            MENUITEM "&Format...",                  ID_MENUITEM_SET_FORMAT
+            MENUITEM "Fi&lter...",                  ID_MENUITEM_SET_FILTER
+        END
+    END
+    POPUP "Verlauf(TV)"
+    BEGIN
+        MENUITEM "An Zwischenablage &senden\tCtrl+C", ID_MENUITEM_CLIPBOARD
+        MENUITEM "&Aus Zwischenablage einfügen\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "Zu &Vorlagen hinzufügen...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "Hexadezimal anzeigen",        ID_MENUITEM_SHOWBINARY
+        MENUITEM "&Werkzeuge",                  ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Nach &oben\tAlt+Up",          ID_MENUITEM_UP
+        MENUITEM "Nach &unten\tAlt+Down",       ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "&Neu...\tCtrl+N",             ID_MENUITEM_NEW_ITEM
+        MENUITEM "Speichern &unter...\tCtrl+S", ID_MENUITEM_DATA_SAVE
+        POPUP "&Einstellugen"
+        BEGIN
+            MENUITEM "&Format...",                  ID_MENUITEM_SET_FORMAT
+            MENUITEM "Fi&lter...",                  ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "&Löschen",                    ID_MENUITEM_DELETE
+    END
+    POPUP "Verlauf(LV)"
+    BEGIN
+        MENUITEM "&Öffnen",                     ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "An Zwischenablage &senden\tCtrl+C", ID_MENUITEM_CLIPBOARD
+        MENUITEM "&Aus Zwischenablage einfügen\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "Zu &Vorlagen hinzufügen...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "Hexadezimal anzeigen",        ID_MENUITEM_SHOWBINARY
+        MENUITEM "&Werkzeuge",                  ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Nach &oben\tAlt+Up",          ID_MENUITEM_UP
+        MENUITEM "Nach &unten\tAlt+Down",       ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "&Neu...\tCtrl+N",             ID_MENUITEM_NEW_ITEM
+        MENUITEM "Speichern &unter...\tCtrl+S", ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "&Löschen",                    ID_MENUITEM_DELETE
+    END
+    POPUP "Vorlage(TV)"
+    BEGIN
+        MENUITEM "An Zwischenablage &senden\tCtrl+C", ID_MENUITEM_CLIPBOARD
+        MENUITEM "&Aus Zwischenablage einfügen\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "Hexadezimal anzeigen",        ID_MENUITEM_SHOWBINARY
+        MENUITEM "&Werkzeuge",                  ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Nach &oben\tAlt+Up",          ID_MENUITEM_UP
+        MENUITEM "Nach &unten\tAlt+Down",       ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "&Neu...\tCtrl+N",             ID_MENUITEM_NEW_ITEM
+        MENUITEM "Neuer &Ordner",               ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "Speichern &unter...\tCtrl+S", ID_MENUITEM_DATA_SAVE
+        MENUITEM "Hotkey &setzen...",           ID_MENUITEM_SET_HOTKEY
+        POPUP "&Einstellugen"
+        BEGIN
+            MENUITEM "&Format...",                  ID_MENUITEM_SET_FORMAT
+            MENUITEM "Fi&lter...",                  ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Kop&ie erstellen...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "&Verschieben nach...\tSCtrl+R", ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "Umbenennen",                  ID_MENUITEM_RENAME
+        MENUITEM "Name &zurücksetzen",          ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "&Löschen",                    ID_MENUITEM_DELETE
+    END
+    POPUP "Vorlage(LV)"
+    BEGIN
+        MENUITEM "&Öffnen",                     ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "An Zwischenablage &senden\tCtrl+C", ID_MENUITEM_CLIPBOARD
+        MENUITEM "&Aus Zwischenablage einfügen\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "Hexadezimal anzeigen",        ID_MENUITEM_SHOWBINARY
+        MENUITEM "&Werkzeuge",                  ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "Nach &oben\tAlt+Up",          ID_MENUITEM_UP
+        MENUITEM "Nach &unten\tAlt+Down",       ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "&Neu...\tCtrl+N",             ID_MENUITEM_NEW_ITEM
+        MENUITEM "Neuer &Ordner",               ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "Speichern &unter...\tCtrl+S", ID_MENUITEM_DATA_SAVE
+        MENUITEM "Hotkey &setzen...",           ID_MENUITEM_SET_HOTKEY
+        MENUITEM SEPARATOR
+        MENUITEM "Kop&ie erstellen...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM "&Verschieben nach...\tSCtrl+R", ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "Umbenennen",                  ID_MENUITEM_RENAME
+        MENUITEM "Name &zurücksetzen",          ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "&Löschen",                    ID_MENUITEM_DELETE
+    END
+    POPUP "Ziehen && Ablegen"
+    BEGIN
+        MENUITEM "&Hierher kopieren",           ID_MENU_DGDP_COPY
+        MENUITEM "&Hierher verschieben",        ID_MENU_DGDP_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "A&bbrechen",                  IDCANCEL
+    END
+END
+
+IDR_MENU_VIEWER MENU
+BEGIN
+    POPUP "&Datei"
+    BEGIN
+        MENUITEM "&Neu...\tCtrl+N",             ID_MENUITEM_NEW_ITEM
+        MENUITEM "Speichern &unter...\tCtrl+S", ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "Status &speichern\tSCtrl+S",  ID_MENUITEM_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "&Import...",                  ID_MENUITEM_IMPORT
+        MENUITEM "&Export...",                  ID_MENUITEM_EXPORT
+        MENUITEM SEPARATOR
+        MENUITEM "Zwischenablage-&Überwachung", ID_MENUITEM_WATCH
+        MENUITEM SEPARATOR
+        MENUITEM "&Fenster schließen",          ID_MENUITEM_CLOSE
+        MENUITEM "&Beenden",                    ID_MENUITEM_EXIT
+    END
+    POPUP "&Bearbeiten"
+    BEGIN
+        MENUITEM "An Zwischenablage &senden\tCtrl+C", ID_MENUITEM_CLIPBOARD
+        MENUITEM "&Aus Zwischenablage einfügen\tCtrl+V", ID_MENUITEM_PASTE
+        MENUITEM "Zu &Vorlagen hinzufügen...\tCtrl+R", ID_MENUITEM_REGIST_ADD
+        MENUITEM SEPARATOR
+        MENUITEM "Nach &oben\tAlt+Up",          ID_MENUITEM_UP
+        MENUITEM "Nach &unten\tAlt+Down",       ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "&Löschen",                    ID_MENUITEM_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "Alles &auswählen\tCtrl+A",    ID_MENUITEM_SELECT_ALL
+    END
+    POPUP "&Ansicht"
+    BEGIN
+        MENUITEM "&Symbolleiste",               ID_MENUITEM_SHOW_TOOLBAR
+        MENUITEM "&Statusleiste",               ID_MENUITEM_SHOW_STATUSBAR
+        MENUITEM SEPARATOR
+        MENUITEM "&Format",                     ID_MENUITEM_SHOW_FORMAT
+        MENUITEM "&Dump",                       ID_MENUITEM_SHOW_BIN
+        MENUITEM SEPARATOR
+        MENUITEM "&Einstellugen...",            ID_MENUITEM_OPTION
+    END
+    POPUP "&Werkzeuge"
+    BEGIN
+        MENUITEM "&Werkzeuge konfigurieren...", ID_MENUITEM_TOOL_SET
+        MENUITEM SEPARATOR
+    END
+    POPUP "&Hilfe"
+    BEGIN
+        MENUITEM "Hilfe",                       ID_MENUITEM_HELP
+        MENUITEM "&Über...",                    ID_MENUITEM_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_SELECT_FOLDER DIALOG 0, 0, 232, 195
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Ordner auswählen"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "msg",IDC_STATIC_MSG,5,5,220,19
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,25,220,145
+    DEFPUSHBUTTON   "OK",IDOK,120,175,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,175,175,50,14
+END
+
+IDD_DIALOG_SELECT_FORMAT DIALOGEX 0, 0, 227, 105
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_ACCEPTFILES
+CAPTION "Neues Element"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    LTEXT           "Format zum &Hinzufügen:",IDC_STATIC,5,5,115,10
+    COMBOBOX        IDC_COMBO_FORMAT,5,15,215,145,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Datei wird &geladen",IDC_CHECK_FILE_READ,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,40,185,10
+    LTEXT           "&Dateiname:",IDC_STATIC_FILE,5,55,115,9
+    EDITTEXT        IDC_EDIT_FILE,5,65,195,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_FILE_SELECT,203,65,15,13
+    DEFPUSHBUTTON   "OK",IDOK,115,85,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,171,85,50,14
+END
+
+IDD_DIALOG_SET_HOTKEY DIALOG 0, 0, 125, 72
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Hotkey setzen"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "&Hotkey:",IDC_STATIC,10,5,75,10
+    CONTROL         "HotKey1",IDC_HOTKEY_ITEM,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,10,15,70,15
+    CONTROL         "+ Win",IDC_CHECK_WIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,85,17,31,11
+    CONTROL         "&Einfügen",IDC_CHECK_PASTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,35,75,10
+    DEFPUSHBUTTON   "OK",IDOK,10,50,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,65,50,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_SELECT_FOLDER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 225
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 188
+    END
+
+    IDD_DIALOG_SELECT_FORMAT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 220
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 98
+    END
+
+    IDD_DIALOG_SET_HOTKEY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 118
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 65
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_MENU_REGIST         "&Vorlagen"
+    IDS_MENU_CANCEL         "&Abbrechen"
+    IDS_MENU_EXIT           "&Beenden"
+    IDS_MENU_VIEWER         "An&zeige..."
+    IDS_MENU_OPTION         "&Einstellugen..."
+    IDS_MENU_CLIPBOARD_WATCH "Zwischenablage-&Überwachung"
+    IDS_TREEITEM_CLIPBOARD  "Zwischenablage"
+    IDS_TREEITEM_HISTORY    "Verlauf"
+    IDS_TREEITEM_REGIST     "Vorlagen"
+    IDS_TREEITEM_NEWFOLDER  "Neuer Ordner"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ERROR_END           "Beim Speichern der Datei ist ein Fehler aufgetreten.\nMöchten Sie den Beendigungsvorgang fortsetzen?"
+    IDS_ERROR_HOTKEY        "Hotkey-Registrierung fehlgeschlagen.\nBitte überprüfen Sie die Einstellungen."
+    IDS_ERROR_WINDOW_INIT   "Initialisierung des Fensters fehlgeschlagen."
+    IDS_ERROR_FILENAME      "Ein Dateiname darf keines der folgenden Zeichen enthalten:\n\t\\ / : , ; * ? "" < > |"
+    IDS_ERROR_FOLDERNAME    "Ein Ordner mit dem angegebenen Namen existiert bereits. Bitte geben Sie einen anderen Ordnernamen an."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_LISTCOLUMN_DATA     "Daten"
+    IDS_LISTCOLUMN_SIZE     "Größe"
+    IDS_LISTCOLUMN_DATE     "Änderungsdatum"
+    IDS_LISTCOLUMN_WINDOW   "Fenster"
+    IDS_LISTCOLUMN_HOTKEY   "Hotkey"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_QUESTION_DELETE     "Möchten Sie das ausgewählte Element wirklich löschen?"
+    IDS_QUESTION_REPLACE    "Ein Format mit demselben Namen existiert bereits.\nMöchten Sie die Daten ersetzen?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_ADDPOS       "Bitte wählen Sie einen Ordner, in den Elemente hinzugefügt werden sollen."
+    IDS_DIALOG_COPYPOS      "Bitte wählen Sie einen Ordner, in den die Vorlage kopiert werden soll."
+    IDS_DIALOG_MOVEPOS      "Bitte wählen Sie einen Ordner, in den die Vorlage verschoben werden soll."
+    IDS_DIALOG_IMPORT       "Bitte wählen Sie einen Ordner, in den die importierten Elemente hinzugefügt werden sollen."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_VIEWER_COPYNAME     "Kopie von %s"
+    IDS_VIEWER_COPYNAME_NUM "Kopie (%d) von %s"
+    IDS_VIEWER_MENU_TOOL_NOTHING "(Keine)"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STATUSBAR_ITEM_CNT  "%d Elemente"
+    IDS_STATUSBAR_BYTES     "%d Bytes"
+    IDS_STATUSBAR_KB        "%d KB"
+END
+
+STRINGTABLE
+BEGIN
+    ID_MENUITEM_CLIPBOARD_TB "An Zwischenablage senden"
+    ID_MENUITEM_PASTE_TB    "Aus Zwischenablage einfügen"
+    ID_MENUITEM_REGIST_ADD_TB "Zu Vorlagen hinzufügen"
+    ID_MENUITEM_NEW_ITEM_TB "Neu"
+    ID_MENUITEM_DELETE_TB   "Löschen"
+    ID_MENUITEM_UP_TB       "Nach oben"
+    ID_MENUITEM_DOWN_TB     "Nach unten"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_UNDO      "&Rückgängig"
+    IDS_TEXT_MENU_REDO      "&Wiederholen"
+    IDS_TEXT_MENU_CUT       "A&usschneiden"
+    IDS_TEXT_MENU_COPY      "&Kopieren"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_PASTE     "&Einfügen"
+    IDS_TEXT_MENU_DELETE    "&Löschen"
+    IDS_TEXT_MENU_SELECT_ALL "Alles &auswählen"
+    IDS_TEXT_MENU_WORDWRAP  "Zeilenumbruch (&W)"
+    IDS_TEXT_MENU_SELECT_FONT "Schriftart (&F)..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BITMAP_MENU_STRETCH "Bild an Fenstergröße anpassen (&S)"
+    IDS_BITMAP_MENU_ZOOM_IN "Vergrößern (&I)\tCtrl+Up"
+    IDS_BITMAP_MENU_ZOOM_OUT "Verkleinern (&O)\tCtrl+Down"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_FILE_LIST_NAME      "Name"
+    IDS_FILE_LIST_FOLDER    "Ordner"
+    IDS_FILE_LIST_TYPE      "Typ"
+    IDS_FILE_LIST_TYPE_DEF  "Datei"
+    IDS_FILE_MENU_OPEN      "&Öffnen"
+    IDS_FILE_MENU_ADD       "&Hinzufügen...\tCtrl+D"
+    IDS_FILE_MENU_DELETE    "Verknüpfung &aufheben"
+    IDS_FILE_DELETE_MSG     "Möchten Sie die Verknüpfung zur ausgewählten Datei aufheben?"
+    IDS_FILE_MENU_COPY_FILE "Dateiname &kopieren\tCtrl+C"
+    IDS_FILE_MENU_COPY_PATH "Pfad &kopieren\tSCtrl+C"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BIN_MENU_UNDO       "&Rückgängig"
+    IDS_BIN_MENU_REDO       "&Wiederholen"
+    IDS_BIN_MENU_LOCK       "Bearbeitung &sperren"
+    IDS_BIN_MENU_FONT       "Schriftart (&F)..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_EXPORT       "Bitte wählen Sie einen Ordner zum Exportieren."
+END
+
+#endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

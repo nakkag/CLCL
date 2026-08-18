@@ -66,8 +66,9 @@ static HWND sort_listview;
 static HMODULE hModThemes;
 #endif	// OP_XP_STYLE
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
+extern TCHAR help_path[];
 
 /* Local Function Prototypes */
 #ifdef OP_XP_STYLE
@@ -79,7 +80,7 @@ static int show_option(const HWND hWnd, const TCHAR *cmd_line);
 static void get_work_path(const HINSTANCE hInstance);
 
 /*
- * init_themes - XP—pƒXƒ^ƒCƒ‹‚Ì‰Šú‰»
+ * init_themes - XPç”¨ã‚¹ã‚¿ã‚¤ãƒ«ã®åˆæœŸåŒ–
  */
 #ifdef OP_XP_STYLE
 static void init_themes(void)
@@ -89,7 +90,7 @@ static void init_themes(void)
 #endif	// OP_XP_STYLE
 
 /*
- * themes_free - XP—pƒXƒ^ƒCƒ‹‚Ì‰ğ•ú
+ * themes_free - XPç”¨ã‚¹ã‚¿ã‚¤ãƒ«ã®è§£æ”¾
  */
 #ifdef OP_XP_STYLE
 static void themes_free(void)
@@ -102,7 +103,7 @@ static void themes_free(void)
 #endif	// OP_XP_STYLE
 
 /*
- * open_theme - XP—pƒXƒ^ƒCƒ‹‚ğŠJ‚­
+ * open_theme - XPç”¨ã‚¹ã‚¿ã‚¤ãƒ«ã‚’é–‹ã
  */
 #ifdef OP_XP_STYLE
 long open_theme(const HWND hWnd, const WCHAR *class_name)
@@ -123,7 +124,7 @@ long open_theme(const HWND hWnd, const WCHAR *class_name)
 #endif	// OP_XP_STYLE
 
 /*
- * close_theme - XP—pƒXƒ^ƒCƒ‹‚ğ•Â‚¶‚é
+ * close_theme - XPç”¨ã‚¹ã‚¿ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹
  */
 #ifdef OP_XP_STYLE
 void close_theme(long hTheme)
@@ -144,7 +145,7 @@ void close_theme(long hTheme)
 #endif	// OP_XP_STYLE
 
 /*
- * close_theme - XP—pƒXƒ^ƒCƒ‹‚ÅƒXƒNƒ[ƒ‹ƒo[‚Ìƒ{ƒ^ƒ“‚Ì•`‰æ
+ * close_theme - XPç”¨ã‚¹ã‚¿ã‚¤ãƒ«ã§ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã®ãƒœã‚¿ãƒ³ã®æç”»
  */
 #ifdef OP_XP_STYLE
 BOOL draw_theme_scroll(LPDRAWITEMSTRUCT lpDrawItem, UINT i, long hTheme)
@@ -204,7 +205,7 @@ BOOL draw_theme_scroll(LPDRAWITEMSTRUCT lpDrawItem, UINT i, long hTheme)
 #endif	// OP_XP_STYLE
 
 /*
- * alloc_get_text - EDIT‚Éİ’è‚³‚ê‚Ä‚¢‚éƒTƒCƒY•ª‚Ìƒƒ‚ƒŠ‚ğŠm•Û‚µ‚ÄEDIT‚Ì“à—e‚ğİ’è‚·‚é
+ * alloc_get_text - EDITã«è¨­å®šã•ã‚Œã¦ã„ã‚‹ã‚µã‚¤ã‚ºåˆ†ã®ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã—ã¦EDITã®å†…å®¹ã‚’è¨­å®šã™ã‚‹
  */
 void alloc_get_text(const HWND hEdit, TCHAR **buf)
 {
@@ -221,7 +222,7 @@ void alloc_get_text(const HWND hEdit, TCHAR **buf)
 }
 
 /*
- * file_select - ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO‚Ì•\¦
+ * file_select - ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®è¡¨ç¤º
  */
 int file_select(const HWND hDlg, const TCHAR *oFilter, const int Index, TCHAR *ret)
 {
@@ -248,25 +249,26 @@ int file_select(const HWND hDlg, const TCHAR *oFilter, const int Index, TCHAR *r
 }
 
 /*
- * draw_scroll_sontrol - ƒXƒNƒ[ƒ‹ƒo[‚Ìƒ{ƒ^ƒ“‚Ì•`‰æ
+ * draw_scroll_sontrol - ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã®ãƒœã‚¿ãƒ³ã®æç”»
  */
 void draw_scroll_sontrol(LPDRAWITEMSTRUCT lpDrawItem, UINT i)
 {
 	#define FOCUSRECT_SIZE		3
 
 	if (lpDrawItem->itemState & ODS_DISABLED) {
-		// g—p•s”\
+		// ä½¿ç”¨ä¸èƒ½ 
+		// unavailable
 		i |= DFCS_INACTIVE;
 	}
 	if (lpDrawItem->itemState & ODS_SELECTED) {
-		// ‘I‘ğ
+		// é¸æŠ
 		i |= DFCS_PUSHED;
 	}
 
-	// ƒtƒŒ[ƒ€ƒRƒ“ƒgƒ[ƒ‹‚Ì•`‰æ
+	// ãƒ•ãƒ¬ãƒ¼ãƒ ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®æç”»
 	DrawFrameControl(lpDrawItem->hDC, &(lpDrawItem->rcItem), DFC_SCROLL, i);
 
-	// ƒtƒH[ƒJƒX
+	// ãƒ•ã‚©ãƒ¼ã‚«ã‚¹
 	if (lpDrawItem->itemState & ODS_FOCUS) {
 		lpDrawItem->rcItem.left += FOCUSRECT_SIZE;
 		lpDrawItem->rcItem.top += FOCUSRECT_SIZE;
@@ -277,7 +279,7 @@ void draw_scroll_sontrol(LPDRAWITEMSTRUCT lpDrawItem, UINT i)
 }
 
 /*
- * enum_windows_proc - ƒEƒBƒ“ƒhƒE—ñ‹“ƒvƒƒV[ƒWƒƒ
+ * enum_windows_proc - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦åˆ—æŒ™ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 BOOL CALLBACK enum_windows_proc(const HWND hWnd, const LPARAM lParam)
 {
@@ -288,11 +290,11 @@ BOOL CALLBACK enum_windows_proc(const HWND hWnd, const LPARAM lParam)
 	TCHAR buf[BUF_SIZE];
 	int i;
 
-	// î•ñæ“¾
+	// æƒ…å ±å–å¾—
 	GetWindowText(hWnd, title, BUF_SIZE - 1);
 	GetClassName(hWnd, class_name, BUF_SIZE - 1);
 
-	// Šù‚É’Ç‰ÁÏ‚İ‚©ƒ`ƒFƒbƒN
+	// æ—¢ã«è¿½åŠ æ¸ˆã¿ã‹ãƒã‚§ãƒƒã‚¯
 	for (i = 0; i < ListView_GetItemCount(hListView); i++) {
 		ListView_GetItemText(hListView, i, 0, buf, BUF_SIZE - 1);
 		if (lstrcmpi(buf, title) == 0) {
@@ -303,7 +305,7 @@ BOOL CALLBACK enum_windows_proc(const HWND hWnd, const LPARAM lParam)
 		}
 	}
 
-	// ƒAƒCƒeƒ€‚Ì’Ç‰Á
+	// ã‚¢ã‚¤ãƒ†ãƒ ã®è¿½åŠ 
 	lvi.mask = LVIF_TEXT;
 	lvi.iItem = ListView_GetItemCount(hListView);
 	lvi.iSubItem = 0;
@@ -317,7 +319,7 @@ BOOL CALLBACK enum_windows_proc(const HWND hWnd, const LPARAM lParam)
 }
 
 /*
- * listview_set_lparam - ƒAƒCƒeƒ€‚ÌLPARAM‚ğİ’è
+ * listview_set_lparam - ã‚¢ã‚¤ãƒ†ãƒ ã®LPARAMã‚’è¨­å®š
  */
 BOOL listview_set_lparam(const HWND hListView, const int i, const LPARAM lParam)
 {
@@ -331,7 +333,7 @@ BOOL listview_set_lparam(const HWND hListView, const int i, const LPARAM lParam)
 }
 
 /*
- * listview_get_lparam - ƒAƒCƒeƒ€‚ÌLPARAM‚ğæ“¾
+ * listview_get_lparam - ã‚¢ã‚¤ãƒ†ãƒ ã®LPARAMã‚’å–å¾—
  */
 LPARAM listview_get_lparam(const HWND hListView, const int i)
 {
@@ -345,7 +347,7 @@ LPARAM listview_get_lparam(const HWND hListView, const int i)
 }
 
 /*
- * listview_move_item - ƒŠƒXƒgƒrƒ…[‚ÌƒAƒCƒeƒ€‚ğˆÚ“®
+ * listview_move_item - ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’ç§»å‹•
  */
 void listview_move_item(const HWND hListView, int index, const int Move)
 {
@@ -356,24 +358,24 @@ void listview_move_item(const HWND hListView, int index, const int Move)
 	int i = 0;
 	LPARAM lp;
 
-	// LPARAM‚Ìæ“¾
+	// LPARAMã®å–å¾—
 	lp = listview_get_lparam(hListView, index);
-	// ƒwƒbƒ_‚Ìæ“¾
+	// ãƒ˜ãƒƒãƒ€ã®å–å¾—
 	if ((header_wnd = ListView_GetHeader(hListView)) == NULL) {
 		header_wnd = GetWindow(hListView, GW_CHILD);
 	}
-	// ƒeƒLƒXƒg‚Ìæ“¾
+	// ãƒ†ã‚­ã‚¹ãƒˆã®å–å¾—
 	column_cnt = Header_GetItemCount(header_wnd);
 	for (i = 0; i < column_cnt; i++) {
 		*(*(buf + i)) = TEXT('\0');
 		ListView_GetItemText(hListView, index, i, *(buf + i), BUF_SIZE - 1);
 	}
-	// ƒAƒCƒeƒ€‚Ìíœ
+	// ã‚¢ã‚¤ãƒ†ãƒ ã®å‰Šé™¤
 	ListView_DeleteItem(hListView, index);
 
 	index += Move;
 
-	// ˆÚ“®æ‚ÉƒAƒCƒeƒ€‚ğ’Ç‰Á
+	// ç§»å‹•å…ˆã«ã‚¢ã‚¤ãƒ†ãƒ ã‚’è¿½åŠ 
 	lvi.mask = LVIF_TEXT | LVIF_PARAM;
 	lvi.iItem = index;
 	lvi.iSubItem = 0;
@@ -390,7 +392,7 @@ void listview_move_item(const HWND hListView, int index, const int Move)
 }
 
 /*
- * listview_notify_proc - ƒŠƒXƒgƒrƒ…[ƒƒbƒZ[ƒW
+ * listview_notify_proc - ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
  */
 LRESULT listview_notify_proc(const HWND hWnd, const LPARAM lParam, const HWND hListView)
 {
@@ -403,19 +405,19 @@ LRESULT listview_notify_proc(const HWND hWnd, const LPARAM lParam, const HWND hL
 	}
 
 	switch (plv->hdr.code) {
-	case LVN_ITEMCHANGED:		// ƒAƒCƒeƒ€‚Ì‘I‘ğó‘Ô‚Ì•ÏX
+	case LVN_ITEMCHANGED:		// ã‚¢ã‚¤ãƒ†ãƒ ã®é¸æŠçŠ¶æ…‹ã®å¤‰æ›´
 	case NM_CUSTOMDRAW:
 		return SendMessage(hWnd, WM_LV_EVENT, plv->hdr.code, lParam);
 	}
 
 	switch (CForm->code) {
-	case NM_DBLCLK:				// ƒ_ƒuƒ‹ƒNƒŠƒbƒN
+	case NM_DBLCLK:				// ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯
 		SendMessage(hWnd, WM_COMMAND, IDC_BUTTON_EDIT, 0);
 		return 1;
 	}
 
 	switch (LKey->hdr.code) {
-	case LVN_KEYDOWN:			// ƒL[ƒ_ƒEƒ“
+	case LVN_KEYDOWN:			// ã‚­ãƒ¼ãƒ€ã‚¦ãƒ³
 		if (LKey->wVKey == VK_DELETE) {
 			SendMessage(hWnd, WM_COMMAND, IDC_BUTTON_DELETE, 0);
 			return 1;
@@ -425,7 +427,7 @@ LRESULT listview_notify_proc(const HWND hWnd, const LPARAM lParam, const HWND hL
 }
 
 /*
- * compare_func - ƒ\[ƒg—p•¶š—ñ”äŠr
+ * compare_func - ã‚½ãƒ¼ãƒˆç”¨æ–‡å­—åˆ—æ¯”è¼ƒ
  */
 static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 {
@@ -435,7 +437,7 @@ static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 	int header;
 	int ret;
 
-	// ƒ\[ƒgî•ñ
+	// ã‚½ãƒ¼ãƒˆæƒ…å ±
 	order = (colum < 0) ? 1 : 0;
 	header = ABS(colum) - 1;
 
@@ -448,7 +450,7 @@ static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 }
 
 /*
- * listview_header_notify_proc - ƒŠƒXƒgƒrƒ…[ƒwƒbƒ_ƒƒbƒZ[ƒW
+ * listview_header_notify_proc - ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ãƒ˜ãƒƒãƒ€ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
  */
 LRESULT listview_header_notify_proc(const HWND hListView, const LPARAM lParam)
 {
@@ -458,13 +460,13 @@ LRESULT listview_header_notify_proc(const HWND hListView, const LPARAM lParam)
 
 	switch (hdn->hdr.code) {
 	case HDN_ITEMCLICK:
-		// ƒ\[ƒg‚Ìİ’è
+		// ã‚½ãƒ¼ãƒˆã®è¨­å®š
 		sort_listview = hListView;
 		colum = (ABS(colum) == (hdn->iItem + 1)) ? (colum * -1) : (hdn->iItem + 1);
 		for (i = 0; i < ListView_GetItemCount(hListView); i++) {
 			listview_set_lparam(hListView, i, i);
 		}
-		// ƒ\[ƒg
+		// ã‚½ãƒ¼ãƒˆ
 		ListView_SortItems(hListView, compare_func, colum);
 		break;
 	}
@@ -472,7 +474,7 @@ LRESULT listview_header_notify_proc(const HWND hListView, const LPARAM lParam)
 }
 
 /*
- * get_keyname - ƒL[–¼‚ğæ“¾
+ * get_keyname - ã‚­ãƒ¼åã‚’å–å¾—
  */
 void get_keyname(const UINT modifiers, const UINT virtkey, TCHAR *ret)
 {
@@ -514,7 +516,7 @@ void get_keyname(const UINT modifiers, const UINT virtkey, TCHAR *ret)
 }
 
 /*
- * OptionNotifyProc - ƒvƒƒpƒeƒBƒV[ƒg‚ÌƒCƒxƒ“ƒg‚Ì’Ê’m
+ * OptionNotifyProc - ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚·ãƒ¼ãƒˆã®ã‚¤ãƒ™ãƒ³ãƒˆã®é€šçŸ¥
  */
 LRESULT OptionNotifyProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -526,7 +528,7 @@ LRESULT OptionNotifyProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		SendMessage(hDlg, WM_COMMAND, IDOK, 0);
 		break;
 
-	case PSN_QUERYCANCEL:		// ƒLƒƒƒ“ƒZƒ‹
+	case PSN_QUERYCANCEL:		// ã‚­ãƒ£ãƒ³ã‚»ãƒ«
 		SendMessage(hDlg, WM_COMMAND, IDPCANCEL, 0);
 		break;
 
@@ -537,11 +539,11 @@ LRESULT OptionNotifyProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /*
- * ViewProperties - ƒIƒvƒVƒ‡ƒ“‚Ì‰æ–Ê‚Ì•\¦
+ * ViewProperties - ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®ç”»é¢ã®è¡¨ç¤º
  */
 static int show_option(const HWND hWnd, const TCHAR *cmd_line)
 {
-#define sizeof_PROPSHEETHEADER		40	// ŒÃ‚¢ƒRƒ‚ƒ“ƒRƒ“ƒgƒ[ƒ‹‘Îô
+#define sizeof_PROPSHEETHEADER		40	// å¤ã„ã‚³ãƒ¢ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«å¯¾ç­–
 #define PROP_CNT_OPTION				9
 	PROPSHEETPAGE psp;
 	PROPSHEETHEADER psh;
@@ -551,47 +553,47 @@ static int show_option(const HWND hWnd, const TCHAR *cmd_line)
 	psp.dwFlags = PSP_DEFAULT;
 	psp.hInstance = hInst;
 
-	// —š—ğ
+	// å±¥æ­´
 	psp.pszTemplate = MAKEINTRESOURCE(IDD_DIALOG_HISTORY);
 	psp.pfnDlgProc = set_histroy_proc;
 	hpsp[0] = CreatePropertySheetPage(&psp);
 
-	// ƒƒjƒ…[
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼
 	psp.pszTemplate = MAKEINTRESOURCE(IDD_DIALOG_MENU);
 	psp.pfnDlgProc = set_menu_proc;
 	hpsp[1] = CreatePropertySheetPage(&psp);
 
-	// ƒrƒ…[ƒA
+	// ãƒ“ãƒ¥ãƒ¼ã‚¢
 	psp.pszTemplate = MAKEINTRESOURCE(IDD_DIALOG_VIEWER);
 	psp.pfnDlgProc = set_viewer_proc;
 	hpsp[2] = CreatePropertySheetPage(&psp);
 
-	// “®ì
+	// å‹•ä½œ
 	psp.pszTemplate = MAKEINTRESOURCE(IDD_DIALOG_ACTION);
 	psp.pfnDlgProc = set_action_proc;
 	hpsp[3] = CreatePropertySheetPage(&psp);
 
-	// Œ`®
+	// å½¢å¼
 	psp.pszTemplate = MAKEINTRESOURCE(IDD_DIALOG_FORMAT);
 	psp.pfnDlgProc = set_format_proc;
 	hpsp[4] = CreatePropertySheetPage(&psp);
 
-	// ƒtƒBƒ‹ƒ^
+	// ãƒ•ã‚£ãƒ«ã‚¿
 	psp.pszTemplate = MAKEINTRESOURCE(IDD_DIALOG_FILTER);
 	psp.pfnDlgProc = set_filter_proc;
 	hpsp[5] = CreatePropertySheetPage(&psp);
 
-	// ƒEƒBƒ“ƒhƒE
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
 	psp.pszTemplate = MAKEINTRESOURCE(IDD_DIALOG_WINDOW);
 	psp.pfnDlgProc = set_window_proc;
 	hpsp[6] = CreatePropertySheetPage(&psp);
 
-	// ƒL[İ’è
+	// ã‚­ãƒ¼è¨­å®š
 	psp.pszTemplate = MAKEINTRESOURCE(IDD_DIALOG_SENDKEY);
 	psp.pfnDlgProc = set_sendkey_proc;
 	hpsp[7] = CreatePropertySheetPage(&psp);
 
-	// ƒc[ƒ‹
+	// ãƒ„ãƒ¼ãƒ«
 	psp.pszTemplate = MAKEINTRESOURCE(IDD_DIALOG_TOOL);
 	psp.pfnDlgProc = set_tool_proc;
 	hpsp[8] = CreatePropertySheetPage(&psp);
@@ -626,13 +628,13 @@ static int show_option(const HWND hWnd, const TCHAR *cmd_line)
 }
 
 /*
- * get_work_path - ì‹ÆƒfƒBƒŒƒNƒgƒŠ‚Ìì¬
+ * get_work_path - ä½œæ¥­ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ä½œæˆ
  */
 static void get_work_path(const HINSTANCE hInstance)
 {
 	TCHAR *p, *r;
 
-	// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒpƒX‚ğæ“¾
+	// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ‘ã‚¹ã‚’å–å¾—
 	GetModuleFileName(hInstance, app_path, MAX_PATH - 1);
 	for (p = r = app_path; *p != TEXT('\0'); p++) {
 #ifndef UNICODE
@@ -666,8 +668,37 @@ static void get_work_path(const HINSTANCE hInstance)
 	}
 }
 
+HWND show_help(UINT dlgid, LPHELPINFO lphi)
+{
+	// main_wnd is CLCL Viewer (even, when in background)
+	HWND main_wnd = FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE);
+	// if clcl viewer app is not (yet) instantiated, main_wnd is CLCLSet 
+	if (!main_wnd) {
+		TCHAR options_title[BUF_SIZE];
+		if (LoadString(hInst, IDS_OPTION_TITLE, options_title, BUF_SIZE-1) > 0)
+			main_wnd = FindWindow(WINDOW_TITLE, options_title);
+	}
+
+	// no parent window, no help path => just exit
+	if (main_wnd == NULL || lstrlen(help_path) < 8)
+		return (HWND)NULL;
+
+	HWND hWnd = NULL;
+	// "What's this?" help for specific control available?
+	if (lphi && lphi->iCtrlId) {
+		hWnd = HtmlHelp(main_wnd, help_path, HH_HELP_CONTEXT, lphi->iCtrlId);
+	}
+	// otherwise help on dialog level:
+	if (!hWnd)
+		hWnd = HtmlHelp(main_wnd, help_path, HH_HELP_CONTEXT, dlgid);
+	if (!hWnd)
+		hWnd = HtmlHelp(main_wnd, help_path, HH_HELP_CONTEXT, IDH_OPTIONS_HELP);
+
+	return hWnd;
+}
+
 /*
- * WinMain - ƒƒCƒ“
+ * WinMain - ãƒ¡ã‚¤ãƒ³
  */
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
 {
@@ -680,7 +711,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
 	hInst = hInstance;
 
-	// 2d‹N“®ƒ`ƒFƒbƒN
+	// 2é‡èµ·å‹•ãƒã‚§ãƒƒã‚¯
 	InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
 	SetSecurityDescriptorDacl(&sd, TRUE, 0, FALSE);	    
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -695,9 +726,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 		return 0;
 	}
 	
-	// ƒƒCƒ“ƒEƒBƒ“ƒhƒEŒŸõ
+	// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦æ¤œç´¢
 	if ((CLCLWnd = FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE)) != NULL) {
-		// ƒo[ƒWƒ‡ƒ“ƒ`ƒFƒbƒN
+		// ãƒãƒ¼ã‚¸ãƒ§ãƒ³ãƒã‚§ãƒƒã‚¯
 		if (SendMessage(CLCLWnd, WM_GET_VERSION, 0, 0) != APP_VAR) {
 			MessageBox(NULL, message_get_res(IDS_OPTION_START_ERROR), ERROR_TITLE, MB_ICONERROR);
 			if (hMutex != NULL) {
@@ -705,16 +736,16 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 			}
 			return 0;
 		}
-		// İ’è•Û‘¶—v‹
+		// è¨­å®šä¿å­˜è¦æ±‚
 		SendMessage(CLCLWnd, WM_OPTION_SAVE, 0, 0);
-		// ƒzƒbƒgƒL[‰ğœ—v‹
+		// ãƒ›ãƒƒãƒˆã‚­ãƒ¼è§£é™¤è¦æ±‚
 		SendMessage(CLCLWnd, WM_UNREGIST_HOTKEY, 0, 0);
 	}
 
-	// DPI‚Ì‰Šú‰»
+	// DPIã®åˆæœŸåŒ–
 	InitDpi();
 
-	// İ’èæ“¾
+	// è¨­å®šå–å¾—
 	get_work_path(hInstance);
 	if (ini_get_option(err_str) == FALSE) {
 		MessageBox(NULL, err_str, ERROR_TITLE, MB_ICONERROR);
@@ -724,32 +755,32 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 		return 0;
 	}
 
-	// CommonControl‚Ì‰Šú‰»
+	// CommonControlã®åˆæœŸåŒ–
 	InitCommonControls();
-	// ƒL[‘I‘ğ‚Ì‰Šú‰»
+	// ã‚­ãƒ¼é¸æŠã®åˆæœŸåŒ–
 	init_selectkey(hInstance);
 #ifdef OP_XP_STYLE
-	// XPƒXƒ^ƒCƒ‹‚Ì‰Šú‰»
+	// XPã‚¹ã‚¿ã‚¤ãƒ«ã®åˆæœŸåŒ–
 	init_themes();
 #endif	// OP_XP_STYLE
 
 	p = lpCmdLine;
-	// ƒIƒvƒVƒ‡ƒ“‰æ–Ê‚ğ•\¦
+	// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ç”»é¢ã‚’è¡¨ç¤º
 	if (show_option(NULL, p) == 1) {
 		if ((CLCLWnd = FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE)) != NULL) {
-			// İ’è•Û‘¶—v‹
+			// è¨­å®šä¿å­˜è¦æ±‚
 			SendMessage(CLCLWnd, WM_OPTION_SAVE, 0, 0);
 		}
-		// İ’è‚Ì•Û‘¶
+		// è¨­å®šã®ä¿å­˜
 		ini_put_option();
 
 		if (CLCLWnd != NULL) {
-			// İ’è“Ç‚İ‚İ—v‹
+			// è¨­å®šèª­ã¿è¾¼ã¿è¦æ±‚
 			SendMessage(CLCLWnd, WM_OPTION_LOAD, 0, 0);
 		}
 	} else {
 		if ((CLCLWnd = FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE)) != NULL) {
-			// ƒzƒbƒgƒL[İ’è—v‹
+			// ãƒ›ãƒƒãƒˆã‚­ãƒ¼è¨­å®šè¦æ±‚
 			SendMessage(CLCLWnd, WM_REGIST_HOTKEY, 0, 0);
 		}
 	}

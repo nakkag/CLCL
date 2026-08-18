@@ -1,0 +1,440 @@
+// Microsoft Visual C++ generated resource script.
+//
+#pragma code_page(65001)
+
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (Simplified, China) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU_POPUP MENU
+BEGIN
+    POPUP "剪贴板"
+    BEGIN
+        MENUITEM "添加到模板(&A)...\tCtrl+R",        ID_MENUITEM_REGIST_ADD
+        MENUITEM "另存为(&S)...\tCtrl+S",          ID_MENUITEM_DATA_SAVE
+        MENUITEM "以二进制形式显示",                    ID_MENUITEM_SHOWBINARY
+        MENUITEM SEPARATOR
+        POPUP "选项(&O)"
+        BEGIN
+            MENUITEM "格式设置(&F)...",                 ID_MENUITEM_SET_FORMAT
+            MENUITEM "筛选设置(&l)...",                 ID_MENUITEM_SET_FILTER
+        END
+    END
+    POPUP "历史(TV)"
+    BEGIN
+        MENUITEM "发送到剪贴板(&C)\tCtrl+C",          ID_MENUITEM_CLIPBOARD
+        MENUITEM "从剪贴板粘贴(&P)\tCtrl+V",          ID_MENUITEM_PASTE
+        MENUITEM "添加到模板(&A)...\tCtrl+R",        ID_MENUITEM_REGIST_ADD
+        MENUITEM "以二进制形式显示",                    ID_MENUITEM_SHOWBINARY
+        MENUITEM "工具(&T)",                      ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "向上移动(&U)\tAlt+Up",            ID_MENUITEM_UP
+        MENUITEM "向下移动(&w)\tAlt+Down",          ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "新项目(&N)...\tCtrl+N",          ID_MENUITEM_NEW_ITEM
+        MENUITEM "另存为(&S)...\tCtrl+S",          ID_MENUITEM_DATA_SAVE
+        POPUP "选项(&O)"
+        BEGIN
+            MENUITEM "格式设置(&F)...",                 ID_MENUITEM_SET_FORMAT
+            MENUITEM "筛选设置(&l)...",                 ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "删除(&D)",                      ID_MENUITEM_DELETE
+    END
+    POPUP "历史(LV)"
+    BEGIN
+        MENUITEM "打开(&O)",                      ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "发送到剪贴板(&C)\tCtrl+C",          ID_MENUITEM_CLIPBOARD
+        MENUITEM "从剪贴板粘贴(&P)\tCtrl+V",          ID_MENUITEM_PASTE
+        MENUITEM "添加到模板(&A)...\tCtrl+R",        ID_MENUITEM_REGIST_ADD
+        MENUITEM "以二进制形式显示",                    ID_MENUITEM_SHOWBINARY
+        MENUITEM "工具(&T)",                      ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "向上移动(&U)\tAlt+Up",            ID_MENUITEM_UP
+        MENUITEM "向下移动(&w)\tAlt+Down",          ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "新项目(&N)...\tCtrl+N",          ID_MENUITEM_NEW_ITEM
+        MENUITEM "另存为(&S)...\tCtrl+S",          ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "删除(&D)",                      ID_MENUITEM_DELETE
+    END
+    POPUP "注册(TV)"
+    BEGIN
+        MENUITEM "发送到剪贴板(&C)\tCtrl+C",          ID_MENUITEM_CLIPBOARD
+        MENUITEM "从剪贴板粘贴(&P)\tCtrl+V",          ID_MENUITEM_PASTE
+        MENUITEM "以二进制形式显示",                    ID_MENUITEM_SHOWBINARY
+        MENUITEM "工具(&T)",                      ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "向上移动(&U)\tAlt+Up",            ID_MENUITEM_UP
+        MENUITEM "向下移动(&w)\tAlt+Down",          ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "新项目(&N)...\tCtrl+N",          ID_MENUITEM_NEW_ITEM
+        MENUITEM "创建目录(&F)",                    ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "另存为(&S)...\tCtrl+S",          ID_MENUITEM_DATA_SAVE
+        MENUITEM "热键设置(&H)...",                 ID_MENUITEM_SET_HOTKEY
+        POPUP "选项(&O)"
+        BEGIN
+            MENUITEM "格式设置(&F)...",                 ID_MENUITEM_SET_FORMAT
+            MENUITEM "筛选设置(&l)...",                 ID_MENUITEM_SET_FILTER
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "创建副本(C&)...\tCtrl+R",         ID_MENUITEM_REGIST_ADD
+        MENUITEM "挪动到(&e)...\tSCtrl+R",         ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "重命名(&m)",                     ID_MENUITEM_RENAME
+        MENUITEM "重置成原始名称(&a)",                 ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "删除(&D)",                      ID_MENUITEM_DELETE
+    END
+    POPUP "注册(LV)"
+    BEGIN
+        MENUITEM "打开(&O)",                      ID_MENUITEM_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "发送到剪贴板(&C)\tCtrl+C",          ID_MENUITEM_CLIPBOARD
+        MENUITEM "从剪贴板粘贴(&P)\tCtrl+V",          ID_MENUITEM_PASTE
+        MENUITEM "以二进制形式显示",                    ID_MENUITEM_SHOWBINARY
+        MENUITEM "工具(&T)",                      ID_MENUITEM_TOOL_MENU
+        MENUITEM SEPARATOR
+        MENUITEM "向上移动(&U)\tAlt+Up",            ID_MENUITEM_UP
+        MENUITEM "向下移动(&w)\tAlt+Down",          ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "新项目(&N)...\tCtrl+N",          ID_MENUITEM_NEW_ITEM
+        MENUITEM "创建目录",                        ID_MENUITEM_CREATE_FOLDER
+        MENUITEM "另存为(&S)...\tCtrl+S",          ID_MENUITEM_DATA_SAVE
+        MENUITEM "热键设置(&H)...",                 ID_MENUITEM_SET_HOTKEY
+        MENUITEM SEPARATOR
+        MENUITEM "创建副本(C&)...\tCtrl+R",         ID_MENUITEM_REGIST_ADD
+        MENUITEM "挪动到(&e)...\tSCtrl+R",         ID_MENUITEM_REGIST_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "重命名(&m)",                     ID_MENUITEM_RENAME
+        MENUITEM "重置成原始名称(&a)",                 ID_MENUITEM_CLEAR_NAME
+        MENUITEM SEPARATOR
+        MENUITEM "删除(&D)",                      ID_MENUITEM_DELETE
+    END
+    POPUP "D&&D"
+    BEGIN
+        MENUITEM "复制到这里(&C)",                   ID_MENU_DGDP_COPY
+        MENUITEM "移动到这里(&M)",                   ID_MENU_DGDP_MOVE
+        MENUITEM SEPARATOR
+        MENUITEM "取消(&l)",                      IDCANCEL
+    END
+END
+
+IDR_MENU_VIEWER MENU
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "新项目(&N)...\tCtrl+N",          ID_MENUITEM_NEW_ITEM
+        MENUITEM "另存为(&S)...\tCtrl+S",          ID_MENUITEM_DATA_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "保存状态(&t)\tSCtrl+S",           ID_MENUITEM_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "导入(&I)...",                   ID_MENUITEM_IMPORT
+        MENUITEM "导出(&E)...",                   ID_MENUITEM_EXPORT
+        MENUITEM SEPARATOR
+        MENUITEM "监视剪贴板(&W)",                   ID_MENUITEM_WATCH
+        MENUITEM SEPARATOR
+        MENUITEM "关闭窗口(&C)",                    ID_MENUITEM_CLOSE
+        MENUITEM "退出程序(&x)",                    ID_MENUITEM_EXIT
+    END
+    POPUP "编辑(&E)"
+    BEGIN
+        MENUITEM "发送到剪贴板(&C)\tCtrl+C",          ID_MENUITEM_CLIPBOARD
+        MENUITEM "从剪贴板粘贴(&P)\tCtrl+V",          ID_MENUITEM_PASTE
+        MENUITEM "添加到模板(&T)...\tCtrl+R",        ID_MENUITEM_REGIST_ADD
+        MENUITEM SEPARATOR
+        MENUITEM "向上移动(&U)\tAlt+Up",            ID_MENUITEM_UP
+        MENUITEM "向下移动(&w)\tAlt+Down",          ID_MENUITEM_DOWN
+        MENUITEM SEPARATOR
+        MENUITEM "删除(&D)",                      ID_MENUITEM_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "全部选择(&A)\tCtrl+A",            ID_MENUITEM_SELECT_ALL
+    END
+    POPUP "视图(&V)"
+    BEGIN
+        MENUITEM "工具栏(&T)",                     ID_MENUITEM_SHOW_TOOLBAR
+        MENUITEM "状态栏(&S)",                     ID_MENUITEM_SHOW_STATUSBAR
+        MENUITEM SEPARATOR
+        MENUITEM "格式(&F)",                      ID_MENUITEM_SHOW_FORMAT
+        MENUITEM "二进制形式显示(&D)",                 ID_MENUITEM_SHOW_BIN
+        MENUITEM SEPARATOR
+        MENUITEM "选项(&O)...",                   ID_MENUITEM_OPTION
+    END
+    POPUP "工具(&T)"
+    BEGIN
+        MENUITEM "工具设置(&T)...",                 ID_MENUITEM_TOOL_SET
+        MENUITEM SEPARATOR
+    END
+    POPUP "帮助(&H)"
+    BEGIN
+        MENUITEM "帮助",                          ID_MENUITEM_HELP
+        MENUITEM "关于(&A)...",                   ID_MENUITEM_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_SELECT_FOLDER DIALOGEX 0, 0, 232, 192
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "浏览目录"
+FONT 9, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    LTEXT           "msg",IDC_STATIC_MSG,5,5,220,19
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_HSCROLL | WS_TABSTOP,5,25,220,145
+    DEFPUSHBUTTON   "确定",IDOK,120,175,50,14
+    PUSHBUTTON      "取消",IDCANCEL,175,175,50,14
+END
+
+IDD_DIALOG_SELECT_FORMAT DIALOGEX 0, 0, 227, 108
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_ACCEPTFILES
+CAPTION "新项目"
+FONT 9, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    LTEXT           "格式(&A):",IDC_STATIC,5,5,115,10
+    COMBOBOX        IDC_COMBO_FORMAT,5,15,215,145,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "文件已加载(&l)",IDC_CHECK_FILE_READ,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,40,185,10
+    LTEXT           "文件名(&F):",IDC_STATIC_FILE,5,55,115,9
+    EDITTEXT        IDC_EDIT_FILE,5,65,195,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_FILE_SELECT,203,65,15,13
+    DEFPUSHBUTTON   "确定",IDOK,115,85,50,14
+    PUSHBUTTON      "取消",IDCANCEL,171,85,50,14
+END
+
+IDD_DIALOG_SET_HOTKEY DIALOGEX 0, 0, 125, 72
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "热键设置"
+FONT 9, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    LTEXT           "热键(&H):",IDC_STATIC,10,5,75,10
+    CONTROL         "HotKey1",IDC_HOTKEY_ITEM,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,10,15,70,15
+    CONTROL         "+ Win",IDC_CHECK_WIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,85,17,31,11
+    CONTROL         "粘贴(&P)",IDC_CHECK_PASTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,35,75,10
+    DEFPUSHBUTTON   "确定",IDOK,10,50,50,14
+    PUSHBUTTON      "取消",IDCANCEL,65,50,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_SELECT_FOLDER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 225
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 185
+    END
+
+    IDD_DIALOG_SELECT_FORMAT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 220
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 101
+    END
+
+    IDD_DIALOG_SET_HOTKEY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 118
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 65
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_SELECT_FOLDER AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_SELECT_FORMAT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_SET_HOTKEY AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_MENU_REGIST         "模板(&T)"
+    IDS_MENU_CANCEL         "取消(&C)"
+    IDS_MENU_EXIT           "退出程序(&x)"
+    IDS_MENU_VIEWER         "主窗口(&V)..."
+    IDS_MENU_OPTION         "选项(&O)..."
+    IDS_MENU_CLIPBOARD_WATCH "监视剪贴板(&W)"
+    IDS_TREEITEM_CLIPBOARD  "剪贴板"
+    IDS_TREEITEM_HISTORY    "历史"
+    IDS_TREEITEM_REGIST     "模板"
+    IDS_TREEITEM_NEWFOLDER  "创建目录"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ERROR_END           "保存失败，是否终止？"
+    IDS_ERROR_HOTKEY        "注册热键失败。"
+    IDS_ERROR_WINDOW_INIT   "初始化失败。"
+    IDS_ERROR_FILENAME      "文件名不能包含以下任何字符:\n\t\\ / : , ; * ? "" < > |"
+    IDS_ERROR_FOLDERNAME    "您指定的目录已存在，请更改目录名称。"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_LISTCOLUMN_DATA     "数据"
+    IDS_LISTCOLUMN_SIZE     "大小"
+    IDS_LISTCOLUMN_DATE     "修改时间"
+    IDS_LISTCOLUMN_WINDOW   "窗口"
+    IDS_LISTCOLUMN_HOTKEY   "热键"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_QUESTION_DELETE     "您确定要删除这个项目吗?"
+    IDS_QUESTION_REPLACE    "您想替换现有项目吗?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_ADDPOS       "请选择目录，您可以将此项目添加到该目录。"
+    IDS_DIALOG_COPYPOS      "请选择要将副本保存到的目录。"
+    IDS_DIALOG_MOVEPOS      "请选择要将模板移动到的目录。"
+    IDS_DIALOG_IMPORT       "请选择目录，您可将导入的项目，添加到该目录。"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_VIEWER_COPYNAME     "%s 副本"
+    IDS_VIEWER_COPYNAME_NUM "%s 副本 (%d)"
+    IDS_VIEWER_MENU_TOOL_NOTHING "(None)"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STATUSBAR_ITEM_CNT  "%d 项目"
+    IDS_STATUSBAR_BYTES     "%d 字节"
+    IDS_STATUSBAR_KB        "%d KB"
+END
+
+STRINGTABLE
+BEGIN
+    ID_MENUITEM_CLIPBOARD_TB "发送到剪贴板"
+    ID_MENUITEM_PASTE_TB    "从剪贴板粘贴"
+    ID_MENUITEM_REGIST_ADD_TB "添加到模板"
+    ID_MENUITEM_NEW_ITEM_TB "新项目"
+    ID_MENUITEM_DELETE_TB   "删除"
+    ID_MENUITEM_UP_TB       "向上挪动"
+    ID_MENUITEM_DOWN_TB     "向下挪动"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_UNDO      "撤销(&U)"
+    IDS_TEXT_MENU_REDO      "重做(&R)"
+    IDS_TEXT_MENU_CUT       "剪切(&t)"
+    IDS_TEXT_MENU_COPY      "复制(&C)"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TEXT_MENU_PASTE     "粘贴(&P)"
+    IDS_TEXT_MENU_DELETE    "删除(&D)"
+    IDS_TEXT_MENU_SELECT_ALL "全部选择(&A)"
+    IDS_TEXT_MENU_WORDWRAP  "自动换行(&W)"
+    IDS_TEXT_MENU_SELECT_FONT "字体(&F)..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BITMAP_MENU_STRETCH "图片拉伸(&S)"
+    IDS_BITMAP_MENU_ZOOM_IN "放大(&I)\tCtrl+Up"
+    IDS_BITMAP_MENU_ZOOM_OUT "缩小(&O)\tCtrl+Down"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_FILE_LIST_NAME      "名称"
+    IDS_FILE_LIST_FOLDER    "目录"
+    IDS_FILE_LIST_TYPE      "类型"
+    IDS_FILE_LIST_TYPE_DEF  "文件"
+    IDS_FILE_MENU_OPEN      "打开(&O)"
+    IDS_FILE_MENU_ADD       "添加(&A)...\tCtrl+D"
+    IDS_FILE_MENU_DELETE    "取消链接(&U)"
+    IDS_FILE_DELETE_MSG     "取消与所选文件的链接？"
+    IDS_FILE_MENU_COPY_FILE "复制文件名(&F)\tCtrl+C"
+    IDS_FILE_MENU_COPY_PATH "复制路径(&P)\tSCtrl+C"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BIN_MENU_UNDO       "撤销(&U)"
+    IDS_BIN_MENU_REDO       "重做(&R)"
+    IDS_BIN_MENU_LOCK       "锁定(&L)"
+    IDS_BIN_MENU_FONT       "字体(&F)..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DIALOG_EXPORT       "请选择要导出的目录。"
+END
+
+#endif    // Chinese (Simplified, China) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
