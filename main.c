@@ -639,7 +639,29 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 
 	} else if (mii->mi != NULL) {
 		// アプリケーションの起動
-		shell_open(mii->mi->path, mii->mi->cmd);
+		// launch the application
+		TCHAR expanded_name[MAX_PATH + 1];
+		TCHAR expanded_cmd[MAX_PATH + 1];
+		DWORD ret = 0;
+		// expand environment variables in file_name
+		if (mii->mi->path != NULL && (ret = ExpandEnvironmentStrings(mii->mi->path, expanded_name, MAX_PATH)) > 0 
+			&& ret <= MAX_PATH) 
+		{
+			// try expand environment variables in parameters
+			if (mii->mi->cmd && (ret = ExpandEnvironmentStrings(mii->mi->cmd, expanded_cmd, MAX_PATH)) > 0 
+				&& ret <= MAX_PATH) 
+			{
+				// launch the application with expanded path and parameters
+				shell_open(expanded_name, expanded_cmd);
+			} else {
+				// launch the application with expanded path and unexpanded parameters
+				shell_open(expanded_name, mii->mi->cmd);
+			}
+		}
+		else {
+				// launch the application with unexpanded path and parameters
+			shell_open(mii->mi->path, mii->mi->cmd);
+		}
 
 	} else {
 		// コマンド
