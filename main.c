@@ -44,6 +44,7 @@
 #include "BinView.h"
 #include "ToolTip.h"
 #include "dpi.h"
+#include "Search.h"
 
 #include "resource.h"
 
@@ -99,6 +100,7 @@ static POINT menu_sel_pt;
 static int menu_sel_top;
 
 static BOOL accel_flag = TRUE;
+static BOOL search_mode_requested = FALSE;
 static BOOL clip_flag;
 static int rechain_cnt;
 
@@ -580,6 +582,29 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 	ret = menu_show(hWnd, popup_menu, (caret_flag == TRUE) ? &fi.cpos : NULL);
 	menu_destory(popup_menu);
 	popup_menu = NULL;
+
+	// Search mode: '/' was pressed in menu
+	if (search_mode_requested) {
+		DATA_INFO *search_di;
+		search_mode_requested = FALSE;
+		menu_free();
+		search_di = search_popup_show(hWnd, history_data.child);
+		if (search_di != NULL) {
+			set_focus_info(&fi);
+			SendMessage(hWnd, WM_ITEM_TO_CLIPBOARD, 0, (LPARAM)search_di);
+			if (ai->paste == 1 && GetKeyState(VK_SHIFT) >= 0) {
+				key_wait();
+				unregist_hotkey(hWnd);
+				sendkey_paste(fi.active_wnd);
+				regist_hotkey(hWnd, FALSE);
+			}
+		} else {
+			if (GetForegroundWindow() == hWnd) {
+				set_focus_info(&fi);
+			}
+		}
+		return TRUE;
+	}
 
 	mii = menu_get_info(ret);
 	if (ret <= 0 || ret == IDCANCEL || mii == NULL) {
@@ -1470,6 +1495,11 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 	case WM_MENUCHAR:
 		// メニューアクセラレータ
 		if (HIWORD(wParam) == MF_POPUP) {
+			if ((TCHAR)LOWORD(wParam) == TEXT('/')) {
+				// Switch to search mode
+				search_mode_requested = TRUE;
+				return MAKELRESULT(0, MNC_CLOSE);
+			}
 			return menu_accelerator((HMENU)lParam, (TCHAR)LOWORD(wParam));
 		}
 		break;
@@ -2419,7 +2449,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
 	// ビューアの登録
 	if (viewer_regist(hInstance) == FALSE ||
-		container_regist(hInstance) == FALSE || binview_regist(hInstance) == FALSE) {
+		container_regist(hInstance) == FALSE || binview_regist(hInstance) == FALSE ||
+		search_regist(hInstance) == FALSE) {
 		MessageBox(NULL, message_get_res(IDS_ERROR_WINDOW_INIT), ERROR_TITLE, MB_ICONERROR);
 		if (hMutex != NULL) {
 			CloseHandle(hMutex);
