@@ -1,390 +1,382 @@
-
-CLCL Ver 2.1.3
+CLCL Ver 2.1.4
 --
 
-■ Introduction
-CLCL is a software that records clipboard history.
+* Introduction
+CLCL is software that keeps a history of the clipboard.
 
-■ Functions
-	・Supports multiple clipboard formats
-	・Frequently used standard phrases can be registered as templates in a hierarchical structure
-	・Freely customize the menu displayed with hotkeys
-	・History items and template items can be selected from menu and automatically pasted into the current window
-	・Display thumbprint images in the menu
-	・Display tooltips in the menu
-	・The format to leave and the format to save can be set up
-	・It can be configured for which windows to save or not to save history
-	・The paste key can be set up individually for every window
-	・History is automatically saved when the program is closed and restored the next time it is started
-	・No limit on the maximum number of items that can be saved in the history
-	・View and edit history and templates in an Explorer-style viewer
-	・Program is extensible by plug-ins
-	・Supports Unicode
+* Features
+- Multiple clipboard formats are supported.
+- Frequently used text can be registered as templates in a hierarchy.
+- The menu displayed by the hot key can be freely customized.
+- History and Template items chosen from the menu are pasted automatically
+  into the editor you are working in.
+- Pictures are displayed on the menu as thumbnails.
+- Tooltips are displayed on the menu.
+- The formats to keep in the history and the formats to save can be set up.
+- The windows to keep the history for and the windows to ignore can be set
+  up.
+- The paste key can be set up for each window.
+- The history is saved automatically on exit and restored at the next
+  start-up.
+- There is no limit on the number of items kept in the history.
+- The history and templates can be displayed and edited in an Explorer-like
+  viewer.
+- Functions can be extended by adding plug-ins.
+- Unicode support
 
-■ Installation
-Works on Windows XP and later OS.
+* Installation
+CLCL runs on Windows 7 and later.
 
-CLCL will be installed when you launch the downloaded file.
+Running the downloaded file installs CLCL.
+Uninstall CLCL from Control Panel.
+Exit CLCL before uninstalling it.
 
-Please uninstall from the Control Panel after closing CLCL.
+The data is saved in the following folder (on Windows 10):
+  C:\Users\(user name)\AppData\Local\CLCL
 
-Data will be saved in the following folder. (For Windows 10)
-C:\Users\(username)\AppData\Local\CLCL
-
-To save data in the same location as CLCL.exe, set clcl_app.ini as follows and then start CLCL.
+To save the data in the same place as CLCL.exe, set up clcl_app.ini as
+follows and then start CLCL.
 
 [GENERAL]
 portable=1
 
-■ Startup
-When you start CLCL, a clip icon will be displayed in the task tray (the area with the clock in the corner of the taskbar).
-Clicking on this task tray icon will display a menu.
-By default, the menu displays the history in ascending order.
-The menu can be customized in the settings.
+* Start-up
+When CLCL starts, a clip icon appears in the system tray (the area of the
+taskbar where the clock is).
+Clicking this system tray icon displays the menu.
+By default, the history is displayed in the menu in ascending order.
+The menu can be customized in the Options.
 
-Right-clicking on the task tray icon will display the viewer.
-The left side of the viewer is a tree that displays the history and template items.
-The right side of the viewer displays and edits the contents of the history and template items. The edited contents will be reflected in the item when you move the focus. Some formats cannot be edited. The contents of the current clipboard cannot be edited.
+Right-clicking the system tray icon displays the Viewer.
+The left side of the Viewer is a tree that shows the History and the
+Template.
+The right side of the Viewer displays and edits the contents of a History or
+Template item. What you edit is applied to the item when the focus moves
+away. Some formats cannot be edited. The current contents of the clipboard
+cannot be edited.
 
-The "Clipboard" at the top of the tree is the current clipboard contents.
-The "History" in the tree is a list of the history.
-"Templates" in the tree is a list of template items (such as standard phrases).
+"Clipboard" at the top of the tree is the current contents of the clipboard.
+"History" in the tree is the list of the history.
+"Template" in the tree is the list of the registered items (template text
+and so on).
 
-	┌─■ Clipboard - Current clipboard contents
-	│ ├─□ TEXT - Formats in the current clipboard
-	│ ├─□ LOCALE
-	│ └─□ OEM TEXT
-	│
-	├─■ History - Clipboard history
-	│ ├─□ (BITMAP) - History items
-	│ │ ├─□ BITMAP - Formats in history items
-	│ │ └─□ DIB
-	│ │
-	│ ├─□ Hello...
-	│ │ └─□ TEXT
-	│ │
-	│ ├─□ Today...
-	│ └─□ (BITMAP)
-	│
-	└─■ Templates - Template items
-	  │
-	  ├─■ Folder - Folder
-	  │ ├─□ Address...
-	  │ └─□ (BITMAP)
-	  │
-	  └─□ http://www... - Template item
-		└─□ TEXT - Format in template item
+    +--[+] Clipboard        - Contents of the current clipboard
+    |   +--- TEXT           - Format in the current clipboard
+    |   +--- LOCALE
+    |   +--- OEM TEXT
+    |
+    +--[+] History          - Clipboard history
+    |   +--- (BITMAP)       - History item
+    |   |   +--- BITMAP     - Format in the history item
+    |   |   +--- DIB
+    |   |
+    |   +--- Hello...
+    |   |   +--- TEXT
+    |   |
+    |   +--- Good morning...
+    |   +--- (BITMAP)
+    |
+    +--[+] Template         - Registered items
+        |
+        +--[+] Folder       - Folder
+        |   +--- Address...
+        |   +--- (BITMAP)
+        |
+        +--- http://www...  - Template item
+            +--- TEXT       - Format in the template item
 
-■ Clipboard
-・What is the clipboard?
-The clipboard is an area for exchanging information between different applications.
-For example, you can paste text copied in Notepad into Word, and this is because the clipboard is used.
+* Clipboard
+- What is the clipboard?
+	The clipboard is an area used to exchange information between
+	different applications.
+	For example, you can paste text copied in Notepad into Word; this
+	works because the area called the clipboard is used.
 
-・Clipboard format
-The clipboard can hold multiple formats at once.
-For example, if you copy text in Notepad, the following four formats will be stored in the clipboard (Windows 10):
-	・UNICODE TEXT
-	・LOCALE
-	・TEXT
-	・OEM TEXT
-If you copy in Excel or Access, even more formats will be sent to the clipboard.
+- Clipboard formats
+	The clipboard can hold several formats at the same time.
+	For example, when you copy text in Notepad, the following four
+	formats are placed on the clipboard (on Windows 10):
+		- UNICODE TEXT
+		- LOCALE
+		- TEXT
+		- OEM TEXT
+	When you copy in Excel or Access, many more formats are sent to the
+	clipboard.
 
-CLCL's default settings are:
-	・UNICODE TEXT - Text
-	・BITMAP - Bitmap
-	・DROP FILE LIST - File
-These formats will be saved in the history.
-You can also save other formats in the history by using the optional "Filter".
+	By default, CLCL keeps the following formats in the history:
+		- UNICODE TEXT		- Text
+		- BITMAP		- Bitmap
+		- DROP FILE LIST	- Files
+	Other formats can also be kept in the history with "Filter" in the
+	Options.
 
-■ History
-This is the history of data copied to the clipboard.
-Newly copied data is added to the top of the history.
+* History
+This is the history of the data copied to the clipboard.
+Newly copied data is added at the top of the history.
 
-A single history item contains multiple clipboard formats. The clipboard formats with the highest priority are displayed in the menu and viewer, which are registered in the optional "Format".
+One history item holds several clipboard formats. Of the formats registered
+in "Format" in the Options, the clipboard format with the highest priority
+is displayed in the menu and in the Viewer.
 
-The number of history items remains as set in the optional "History".
-Only clipboard formats set to add in the optional "Filter" are added to the history.
+The history keeps as many items as set in "History" in the Options.
+Only the clipboard formats set to Add in "Filter" in the Options are added
+to the history.
 
-■ Templates
-Templates can be used to register commonly used data such as standard phrases.
-You can add folders to organize them into hierarchical structures and give names to items.
+* Template
+Frequently used data such as template text can be registered in the
+Template.
+You can add folders to build a hierarchy, and you can give names to items.
 
-To add a template item, open the viewer, select the history item, and select "Add to Templates" from the menu.
-Select the folder you want to add in the tree, and select "Create New" from the menu to create an item by loading the contents of an empty item or file.
+To add a template item, open the Viewer, select an item in the history and
+choose "Add to Template" from the menu.
+If you select the folder you want to add to in the tree and choose
+"New Item" from the menu, you can create an empty item, or create an item
+by loading the contents from a file.
 
-To add a folder, open the viewer, right-click on the location in the templates where you want to add it, and select "Create Folder."
+To add a folder, open the Viewer, open the context menu at the position in
+the Template where you want to add it, and choose "New Folder".
 
-To rename a folder or item, open the viewer, select the item you want to rename, right-click on it, and select "Rename."
-"Initialize Name" erases the name you set and displays the item's contents as the name.
-If you name an item "-", it will be displayed as a separator in the menu. The format and data in the item will be ignored.
-If you add & to the name, the character following it will be used as the shortcut key in the menu. If you want to display & itself in the menu, use &&.
+To rename a folder or an item, open the Viewer, select the item you want to
+change, open the context menu and choose "Rename".
+"Clear Name" deletes the name you set, so that the contents of the item are
+displayed as its name.
+If you name an item "-", it is displayed as a separator in the menu. The
+formats and the data in the item are ignored.
+If you put & in a name, the character after it becomes the shortcut key in
+the menu. To display & itself in the menu, write it as &&.
 
-Right-click on a template item to display the menu and select "Hotkey Settings" to assign a hotkey to the template item. Pressing that key will send the template item directly to the clipboard without displaying the menu, and will paste it directly if "Paste" is enabled.
-You can check the registered hotkeys in the list display area of the viewer. If you select other template items, they will be displayed in the status bar.
+Right-click a template item to open the menu and choose "Set Hot key" to
+assign a hot key to the template item. Pressing that key sends the template
+item directly to the clipboard without displaying the menu, and pastes it
+directly if "Paste" is enabled.
+The assigned hot keys can be checked in the list view of the Viewer. They
+are also displayed in the status bar when a template item is selected.
 
-There is no limit to the number of template items or the clipboard format.
+There is no limit on the number of template items or on their clipboard
+formats.
 
-■ Send to Clipboard
-There are several ways to send history or template items to the clipboard.
+* Sending to the clipboard
+There are several ways to send a History or Template item to the clipboard.
+- Click the system tray icon to display the menu.
+  Choosing a History or Template entry sends the data to the clipboard and
+  pastes it automatically into the active window.
 
-・Click the task tray to bring up a menu.
-If you select a history or template item from the menu, the data will be sent to the clipboard and automatically pasted into the active window.
+- Press the hot key (Alt + C by default) to display the menu.
+  Choosing a History or Template entry sends the data to the clipboard and
+  pastes it automatically into the active window.
 
-・Press the hotkey (default is Alt + C) to bring up a menu.
-If you select a history or template item from the menu, the data will be sent to the clipboard and automatically pasted into the active window.
+- Select an item in the Viewer and open the context menu.
+  Choosing "Send to Clipboard" sends the selected item to the clipboard.
 
-・Select an item in the viewer and bring up a right-click menu.
-If you select "Send to Clipboard", the selected item will be sent to the clipboard.
+* Menu
+The entries of the menu displayed from the system tray or by the hot key are
+set in "Action" in the Options.
+The behavior and the appearance of the menu are set in "Menu" in the
+Options.
 
-■ Menu
-The menu items displayed in the task tray or hotkey are set in the "Action" option.
-You can customize the menu behavior and display in the "Menu" option.
+When you move the mouse over a History or Template entry in the menu, the
+detailed contents are displayed in a tooltip at the mouse position. When you
+select an entry with the keyboard, the tooltip is displayed below the menu
+entry.
 
-If you move the mouse over a history or template item in the menu, a tooltip with detailed information will be displayed at the mouse position. If you select an item with the keyboard, a tooltip will be displayed under the menu item.
+Right-clicking a History or Template entry in the menu displays the
+registered tools as a menu; the tool you choose is run on the item and the
+result is sent to the clipboard.
+To display the tool menu with the keyboard, select the entry with Enter
+while holding down Ctrl.
 
-Right-clicking on a menu history or template item will display the registered tools in a menu, and the selected tool will be executed and sent to the clipboard.
+History and Template entries are displayed in the menu according to
+"Display format of menu text" in the Options. The numbers displayed start
+from 0; to change the starting value, put the starting number between % and
+the character.
+    Example)
+         %0d -> 0,1,2,3...
+         %8x -> 8,9,a,b...
+         %1n -> 1,2,3...8,9,0,1,2...
+         %10B -> K,L,M,N...
 
-To display the tool menu with the keyboard, press Ctrl and Enter to select an item.
+* Action
+The action performed when a hot key is pressed, and the action performed
+when the system tray icon is clicked, are set in "Action" in the Options.
 
-History and template items display menu items according to the "Menu text display format" option. The displayed numbers start from 0, but if you want to change the starting value, set the starting number between the % and the character.
+If you specify "Menu" as the action in Edit Action, set the menu entries to
+be displayed in the menu settings at the bottom of the dialog.
 
-Examples:
-	%0d -> 0,1,2,3...
-	%8x -> 8,9,a,b...
-	%1n -> 1,2,3...8,9,0,1,2...
-	%10B -> K,L,M,N...
+"Call type" sets how the specified action is called.
+If you specify "Hot key", set the key that calls it.
+"Ctrl + Ctrl", "Shift + Shift" and "Alt + Alt" call the specified action
+when the key is pressed twice.
 
-■ Action
-The action when the hotkey is pressed or the task tray icon is clicked can be set in the "Action" option.
+When the action is a menu, "Paste" can be set.
+With "Paste", choosing an entry in the menu automatically sends a paste
+operation to the application you are working in.
+If you hold down Shift while choosing a menu entry, the data is only sent to
+the clipboard and is not pasted.
 
-When you specify "Menu" as the action in Edit Action, you can set the menu items to display in the menu settings at the bottom of the screen.
+When the action is a menu and the call type is "Hot key", "Ctrl + Ctrl",
+"Shift + Shift" or "Alt + Alt", "Show at caret position" can be set.
+With "Show at caret position", the menu is displayed at the position of the
+caret in the editor. If it is not set, the menu is displayed at the mouse
+position.
 
-Invoking method sets the method for invoking the specified action.
+When the action is a menu and the content is the history, the display range
+can be set. The display range is specified from 1 to the maximum number of
+items kept in the history. Specifying 0 as the start number means the same
+as specifying 1, and specifying 0 as the end number means the same as
+specifying the maximum number of items kept in the history.
+If the end number is smaller than the start number, nothing is displayed. If
+the end number is larger than the maximum number of items kept in the
+history, entries are displayed up to that maximum.
 
-When you specify "Hotkey", set the key to invoke.
-"Ctrl + Ctrl", "Shift + Shift", and "Alt + Alt" invoke the specified action when you press the key twice.
+* Clipboard Format
+CLCL can handle every clipboard format, but a clipboard format that is not
+registered is displayed as a binary dump in the Viewer.
 
-If you specify Menu as the action, you can set "Paste".
-When you select an item in the menu, the paste action is automatically sent to the application you are working in.
-If you hold down Shift when selecting a menu item, it will not be pasted but will only be sent to the clipboard.
+Clipboard formats are registered in "Format" in the Options. Formats
+registered higher in the list have priority, and the clipboard format with
+the highest priority in an item is displayed in the menu and in the Viewer.
 
-If you specify Menu as the action and Hotkey, Ctrl + Ctrl, Shift + Shift, or Alt + Alt as the invoking method, you can set "Show at caret position".
-"Show at caret position" displays the menu at the caret position of the editor.
-If you do not set it, the menu will be displayed at the mouse position.
-
-If you specify Menu as the action and select History as the item, you can set the display range. The display range is specified from 1 to the number of items to be left in the history. Specifying 0 as the start number is the same as specifying 1, and specifying 0 as the end number is the same as specifying the number of items to be left in the history.
-
-If the end number is smaller than the start number, nothing will be displayed. If the end number is larger than the number of items to be left in the history, only the number of items to be left in the history will be displayed.
-
-■ Clipboard format
-CLCL can process all clipboard formats, but clipboard formats that are not registered will be displayed as binary dumps in the viewer.
-
-Clipboard formats are registered in the options "Format". The registered format at the top takes priority, and the clipboard format with the highest priority among the items is displayed in the menu and viewer.
-
-To register, set the format name, the DLL to be processed, and the function header. If you omit the DLL and press the function header selection button, a list of built-in function headers will be displayed.
-For example, if you want to process the CSV clipboard format as text when copying in Excel, set it as follows:
+To register a format, set the format name, the DLL that processes it and the
+function header. If you leave the DLL empty and press the function header
+selection button, the list of the built-in function headers is displayed.
+For example, of the clipboard formats produced when you copy in Excel, to
+process CSV as text, set:
 	Format name: CSV
 	DLL:
 	Function header: text_
-The menu and viewer will process it as text.
+and it is then processed as text in the menu and in the Viewer.
 
-■ Filter
-To select the clipboard format, set it in the "Filter" option.
+* Filter
+The clipboard formats to be added to the history are set in "Filter" in the
+Options.
 
-If you select "Add all formats to history", all clipboard formats except those set to be excluded will be added to the history.
-If you select "Exclude all formats from history", only clipboard formats set to be added will be added to the history.
+If you choose "Add all formats to history", every clipboard format except
+the ones set to Ignore is added to the history.
+If you choose "Exclude all formats from history", only the clipboard formats
+set to Add are added to the history.
 
-For clipboard formats set to be added in the filter, you can further set the size limit when adding to the history. Data exceeding the limit size will not be added to the history.
+For a clipboard format set to Add in the filter, you can also set a limit
+size for adding it to the history. Data larger than the limit size is not
+added to the history.
 
-If you set the clipboard format set to be added in the filter to "Do not save", it will not be saved to a file when CLCL is closed.
-For example, you can set it to add text and bitmaps to the history and save only the text.
+For a clipboard format set to Add in the filter, setting "Do not save"
+prevents it from being saved to file when CLCL exits.
+For example, you can set CLCL up to add both text and bitmaps to the history
+but to save only the text.
 
-■ Window settings
-If you want to change the behavior of CLCL depending on the application you use, set the window and behavior in the "Window" option.
+* Window
+To change the behavior of CLCL depending on the application you use, set the
+window and the behavior in "Window" in the Options.
 
-Specify the window title and class name, and use "*" as any character.
-For example, for Notepad, set it as follows:
+Specify the title and the class name of the window; "*" can be used to match
+any characters.
+For example, for Notepad:
 	Title: * - Notepad
 	Class name: Notepad
-The behavior of CLCL will change when Notepad is active.
-Either the title or the class name needs to be entered, and if it is not entered, it is the same as specifying only "*".
+With this setting, the behavior of CLCL changes while Notepad is active.
+Only one of the title and the class name needs to be entered; leaving one of
+them empty means the same as specifying only "*".
 
-・Don't add to history
-	Copying in the set window will not be added to the history.
-	If you specify this option for an application that causes problems when added to the history, copying from that application will be ignored.
+- Do not add to history
+	Data copied in the specified window is not added to the history.
+	If an application does not work correctly when its data is put in
+	the history, specify this option so that copies from that
+	application are ignored.
 
-・Don't set focus
-	Focus will not be set after activating the set window.
-	If the focus goes somewhere when pasting the selected menu item and the pasting is not performed correctly, specifying this option may make it work correctly.
+- Do not set focus
+	The focus is not set after the specified window has been activated.
+	If the focus goes somewhere else when a selected menu entry is
+	pasted and the paste does not work correctly, specifying this option
+	may make it work.
 
-・Paste even if the tool is canceled
-	When canceling a cancelable tool, the subsequent pasting is usually not performed, but if this option is specified, the pasting will be performed even if it is canceled.
-	If you set the copy key as the cut key in the key settings for each window, specifying this option will prevent the characters from disappearing even if you cancel the tool.
+- Paste even if the tool is cancelled
+	Normally the paste that follows is not performed when you cancel a
+	tool that can be cancelled, but with this option the paste is
+	performed even if you cancel.
+	If you set the copy key to the cut key in the key settings for each
+	window, specifying this option keeps the characters from being lost
+	when you cancel the tool.
 
-■ Key settings for each window
-Select the history or template item from the hotkey, and the paste action will automatically send the paste key to the window.
-By default, Ctrl + V is sent to all windows, but depending on the window, the paste key may be a different key.
+* Key settings for each window
+When you choose a History or Template item from a hot key and it is pasted
+automatically, a paste key is sent to the window.
+By default Ctrl + V is sent to every window, but in some windows the paste
+key may be a different key.
 
-When the tool is called with a hotkey, the copy key (Ctrl + C) is sent to the window to perform the Copy -> Tool Processing -> Paste action.
+When a tool is called from a hot key, CLCL performs copy -> tool processing
+-> paste, so the copy key (Ctrl + C) is sent to the window.
 
-The copy and paste keys for each window are set in the "Key" option.
-Set the title and class name of the window to be set and set the copy and paste keys.
+The copy and paste keys for each window are set in "Key" in the Options.
+Set the title and the class name of the window to be configured, and set the
+copy and paste keys.
 
-If the copy and paste keys are not set, the default key settings will be used.
+If the copy and paste keys are not set, the default key settings are used.
 
-Multiple keys can be set for one window. If multiple keys are set, the keys will be sent in order from the top.
+Several keys can be set for one window. If several are set, the keys are
+sent in order from the top of the list.
 
-■ Tools (plug-ins)
-To process history or template item data or expand the functions of CLCL, set it in the "Tool" option.
+* Tool (plug-in)
+To process the data of History or Template items, or to extend the functions
+of CLCL, set them in "Tool" in the Options.
 
-When you select the DLL and function name, the tool name and call type will be automatically set.
-The call type "Action Menu" allows you to execute from the "Tools" popup menu.
-The call type "Viewer" allows you to execute from the viewer's tool menu.
+When you select a DLL and a function name, the tool name and the execution
+timing are set automatically.
+"Action menu" in the execution timing makes the tool available from the menu
+set in "Action" in the Options.
+"Viewer menu" in the execution timing makes the tool available from the
+Tools menu of the Viewer.
 
-The "Send copy and paste" option copies the marked data from the active window, executes a tool on the copied data, and afterwards pastes the modified data back into the active window.
-If this option is not checked, the tool is executed on the most recent history item and sent to the clipboard. In the tool menu that appears when you right-click an item in the action menu, the tool is executed on the selected item and sent to the clipboard.
-If "Paste" is not enabled in the action settings, pasting will not be performed after copying and executing the tool.
+"Send Copy and Paste" in the execution timing sends a copy to the active
+window, runs the tool on the copied data, and pastes the result into the
+active window.
+If this option is not checked, the tool is run on the newest history item
+and the result is sent to the clipboard. In the tool menu that appears when
+you right-click an item in the action menu, the tool is run on the selected
+item and the result is sent to the clipboard.
+If "Paste" is not enabled in the action settings, no paste is performed
+after copying and running the tool.
 
-Drag and drop a DLL into the tool list window to display a list of tools that can be registered, and you can select multiple tools to register them all at once.
+If you drag and drop a DLL onto the tool list window, the list of the tools
+that can be registered is displayed, and you can select several of them and
+register them all at once.
 
-■ Command Line
-When starting CLCL, you can specify a command line to specify the operation after startup.
-If CLCL is already running, the command will be sent to the already running CLCL.
+* Command line
+You can specify a command line when starting CLCL, to specify what it does
+after starting.
+If CLCL is already running, the command is sent to the running CLCL.
 
 [Format]
-CLCL.exe [/vownx]
-	/v Display viewer
-	/w Monitor clipboard
-	/n Cancel monitoring clipboard
+CLCL.exe [/vwnx]
+	/v Display the Viewer
+	/w Turn on Clipboard Watch
+	/n Turn off Clipboard Watch
 	/x Exit
 
-■ Special thanks
-K.Takata ( http://webs.to/ken/ )
+* Update history
 
-■ Update history
-・Ver 2.1.2 -> Ver 2.1.3
-	・Changed the system tray icon when not monitoring the clipboard.
-	・Improved the up and down movement buttons in the settings.
-	・Improved so that the main screen does not appear when displaying the menu.
+- Ver 2.1.3 -> Ver 2.1.4
+	- Added an option to show the menu without taking the focus away
+	  from the window you are working in. (Options - Menu - Attach to
+	  the process to show the menu)
+	- Improved the save processing performed on exit.
+	- Added UNICODE support to Binary View.
+	- Fixed CLCL so that data a password manager saves to the
+	  clipboard is not kept in the history. (kashima-eyetech)
+	- Improved the wording of the English version.
 
-・Ver 2.1.1 -> Ver 2.1.2
-	・Added the ability to scroll by dragging the mouse in image formats (BITMAP, DIB).
+- Ver 2.1.2 -> Ver 2.1.3
+	- Changed the system tray icon shown while the clipboard is not
+	  being watched.
+	- Improved the up and down buttons in the Options.
+	- Improved CLCL so that the main window is not shown when the menu
+	  is displayed.
 
-・Ver 2.1.0 -> Ver 2.1.1
-	・Added a function to copy file names and file paths in file formats.
-	・Added a setting to place settings and data in the same location as CLCL.exe.
+--
 
-・Ver 2.0.3 -> Ver 2.1.0
-	・High DPI support.
-	・Support for PNG and JPEG when saving image formats (BITMAP, DIB).
-	・Enlarge/reduce image formats (BITMAP, DIB).
-	 →Hold down Ctrl and use the mouse wheel, or Ctrl+↑↓ to change the magnification.
-	・Binaries are no longer separated into Japanese and English versions.
-	・Changed the settings save location to be saved in a separate area for each user.
-	 →	For Windows 10, "C:\Users\(username)\AppData\Local\CLCL"
-		(Automatically migrated on first launch)
+The author takes no responsibility for any trouble caused by this program.
+You are strongly advised to keep a backup of important files.
 
-・Ver 2.0.2 -> Ver 2.0.3
-	・Fixed typos in the English version settings screen.
+Copyright (C) 1996-2026 by Ohno Tomoaki. All rights reserved.
+	https://www.nakka.com/
 
-・Ver 2.0.1 -> Ver 2.0.2
-	・Support for Unicode in settings files.
-	 →	Starting once with Ver 2.0.2 will make the settings file Unicode.
-		The files before conversion are backed up with the file names "general.ini.back" and "clcl.ini.back".
-		If you want to revert to an older version, use the above files.
-	・The startup function has been changed from WinMain to wWinMain.
-
-・Ver 2.0.0 -> Ver 2.0.1
-	・Incorporated correction code from K. Takata
-	 →	Supports Unicode surrogate pairs
-	 →	Retry processing when task tray addition fails
-	 →	Prevents consecutive double startups and double startups from another user
-	・Fixed a problem where the color of items disabled in the "Action" settings would sometimes become invisible
-	・Improved the task tray icon when clipboard monitoring is stopped.
-
-・Ver 1.1.2 -> Ver 2.0.0
-	・Supports Unicode. As a result, older versions of Windows are no longer supported.
-	 →	The settings of the older version will be inherited, but tools and plugin formats must be Unicode-compatible.
-	・Changed the behavior to copy the file if the save is successful so that template items are not deleted if the save process fails when CLCL is closed.
-	・Changed the icon design in the task tray.
-	・Changed the default behavior when clicking on the task tray.
-	→	Changed the menu to appear when left-clicking the task tray icon to take into account operation on tablets.
-
-・Ver 1.1.1 -> Ver 1.1.2
-	・Fixed the problem where the tooltip background was not displayed correctly in a 256-color environment.
-	・Optimized the menu display method.
-	・Optimized the text display in the viewer.
-
-・Ver 1.1.0 -> Ver 1.1.1
-	・Improved the behavior when selecting the character position with the mouse in TEXT editing.
-	・Fixed the error that occurred when there was no history to save with the filter when closing.
-	・Made it possible to move items between history and template items.
-	・Changed the method of displaying thumbnail images.
-	・Changed the initial value of the waiting time for copy and paste to 100.
-	・Fixed a problem where memory was not being released.
-
-・Ver 1.0.9 -> Ver 1.1.0
-	・Fixed a problem where the menu would loop when Ctrl+V or other keys were specified as the hotkey to bring up the menu.
-	・Now it is possible to specify the Windows key or Space key as the hotkey for actions and tools.
-
-・Ver 1.0.8 -> Ver 1.0.9
-	・Fixed a problem where the display would become distorted if the confirmation message for the same format was canceled when creating a new item in the viewer.
-	・Fixed a problem where the edited format would be displayed unconditionally regardless of priority when editing the contents of the format in the viewer.
-	・Fixed a problem where the status bar was not updated when editing an item in the viewer.
-	・Fixed a problem where the position of Japanese input would shift when editing TEXT.
-
-・Ver 1.0.7 -> Ver 1.0.8
-	・Change the INI file name (user.ini -> clcl.ini)
-	 The file name will be changed automatically at startup.
-	・Changed display and editing of TEXT format from rich edit control to our own.
-	・Improved behavior of the viewer when calling tools from the viewer.
-	・Extended the binary display function.
-	・Other
-
-・Ver 1.0.6 -> Ver 1.0.7
-	・When selecting an item in the menu while holding down the Shift key, it will only send it to the clipboard without pasting.
-	・Added a command line option.
-	・Fixed a bug that prevented keys from being sent to some windows.
-	・Increased the default behavior settings for the list in the viewer options.
-
-・Ver 1.0.5 -> Ver 1.0.6
-	・Made it possible to copy items in the behavior settings.
-	・Changed the number of history items displayed to the display range in the behavior settings.
-	・Made minor adjustments to the options screen.
-
-・Ver 1.0.4 -> Ver 1.0.5
-	・Made it possible to assign hotkeys to template items.
-	・Made hotkeys visible in the menu.
-	・The viewer position is no longer adjusted when launched.
-	・The position and size are now forcibly saved when closing the viewer.
-	・0x7F is no longer displayed in the character display area when displaying binary data.
-	・Files can now be opened even if they are locked.
-
-・Ver 1.0.3 -> Ver 1.0.4
-	・Files can now be automatically registered as external applications when dragged and dropped into the operation settings screen.
-	・Ver 1.0.2 -> Ver 1.0.3
-	・Fixed a bug where history was not saved correctly when the OS was shut down on Windows XP.
-
-・Ver 1.0.1 -> Ver 1.0.2
-	・Improved the timing of releasing memory associated with menus.
-	・Folder icons now use system icons.
-
-・Ver 1.0.0 -> Ver 1.0.1
-	・Added settings for each window.
-	・Fixed a bug where text was not redrawn after changing the font depending on the environment.
-	・Fixed a bug where pasting was not possible in some software.
-	・Fixed a bug where all windows were targeted when only one of the window name and class name was specified in the window settings and key settings.
-
-・Ver 0.2.0 -> Ver 1.0.0
-	・Recreated
-	 Data and settings will not be carried over.
-	 If you want to migrate template items from Ver 0.2.0 to Ver 1.0.0, start both and send the template items from Ver 0.2.0 to the clipboard and add them to the history of Ver 1.0.0. Then, register the items from the history added to Ver 1.0.0 to the template items of Ver 1.0.0. Tools that are compatible with Ver 0.2.0 can also be used with Ver 1.0.0. (Some restrictions apply) 
-
--- 
-
-The author is not responsible for any problems caused by this program. It is strongly recommended that you back up important files. 
-
-Please contact nakka@nakka.com for bugs, requests, and questions. 
-
-Copyright (C) 1996-2022 by Ohno Tomoaki. All rights reserved. https://www.nakka.com/ 
-2022/12/1
+2026/8/19

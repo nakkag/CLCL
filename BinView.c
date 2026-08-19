@@ -62,6 +62,14 @@
 #define UNDO_TYPE_INPUT					1
 #define UNDO_TYPE_DELETE				2
 
+// サロゲート
+#ifndef IS_HIGH_SURROGATE
+#define IS_HIGH_SURROGATE(wch)			((wch) >= 0xD800 && (wch) <= 0xDBFF)
+#endif
+#ifndef IS_LOW_SURROGATE
+#define IS_LOW_SURROGATE(wch)			((wch) >= 0xDC00 && (wch) <= 0xDFFF)
+#endif
+
 /* Global Variables */
 typedef struct _UNDO {
 	int type;
@@ -101,6 +109,8 @@ typedef struct _BUFFER {
 	HBRUSH hbrush;
 	HFONT hfont;
 	HFONT ret_font;
+	// サロゲート ペア表示用の代替フォント
+	HFONT hfont_alt;
 
 	// フォントの高さ
 	int font_height;
@@ -119,6 +129,8 @@ typedef struct _BUFFER {
 	BOOL insert_mode;
 	// マルチバイト
 	BOOL dbcs;
+	// UNICODE テキスト
+	BOOL unicode;
 
 #ifdef OP_XP_STYLE
 	// XP
@@ -128,6 +140,20 @@ typedef struct _BUFFER {
 
 // オプション
 extern OPTION_INFO option;
+
+// サロゲート ペア表示用の代替フォントの候補
+// (FixedSys などのラスタ フォントはサロゲート ペアを表示できないため)
+static const TCHAR *alt_font_name[] = {
+	TEXT("ＭＳ ゴシック"),
+	TEXT("MS Gothic"),
+	TEXT("メイリオ"),
+	TEXT("Meiryo"),
+	TEXT("游ゴシック"),
+	TEXT("Yu Gothic"),
+	TEXT("SimSun-ExtB"),
+	TEXT("MingLiU-ExtB"),
+	NULL
+};
 
 /* Local Function Prototypes */
 static BOOL binview_select_font(const HWND hWnd);
@@ -148,6 +174,10 @@ static void binview_flush(BUFFER *bf);
 static void itox(const DWORD num, const int col, TCHAR *ret);
 static BOOL draw_init(const HWND hWnd, BUFFER *bf);
 static void draw_free(BUFFER *bf);
+static BOOL binview_font_exist(const TCHAR *font_name);
+static HFONT binview_create_alt_font(void);
+static void binview_draw_unicode(const HWND hWnd, const HDC mdc, const BUFFER *bf,
+	const int i, const int sel, int offset, const int height);
 static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const int i);
 static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -655,6 +685,128 @@ static void draw_free(BUFFER *bf)
 }
 
 /*
+ * binview_font_enum_proc - フォントの列挙
+ */
+static int CALLBACK binview_font_enum_proc(const LOGFONT *lf, const TEXTMETRIC *tm, DWORD type, LPARAM lParam)
+{
+	*(BOOL *)lParam = TRUE;
+	return 0;
+}
+
+/*
+ * binview_font_exist - フォントがインストールされているか調べる
+ */
+static BOOL binview_font_exist(const TCHAR *font_name)
+{
+	LOGFONT lf;
+	HDC hdc;
+	BOOL ret = FALSE;
+
+	ZeroMemory(&lf, sizeof(LOGFONT));
+	lf.lfCharSet = DEFAULT_CHARSET;
+	lstrcpyn(lf.lfFaceName, font_name, LF_FACESIZE);
+
+	hdc = GetDC(NULL);
+	EnumFontFamiliesEx(hdc, &lf, (FONTENUMPROC)binview_font_enum_proc, (LPARAM)&ret, 0);
+	ReleaseDC(NULL, hdc);
+	return ret;
+}
+
+/*
+ * binview_create_alt_font - サロゲート ペア表示用の代替フォントを作成する
+ */
+static HFONT binview_create_alt_font(void)
+{
+	int i;
+
+	for (i = 0; *(alt_font_name + i) != NULL; i++) {
+		if (binview_font_exist(*(alt_font_name + i)) == TRUE) {
+			return font_create(*(alt_font_name + i), option.bin_font_size, DEFAULT_CHARSET,
+				option.bin_font_weight, (option.bin_font_italic == 0) ? FALSE : TRUE, FALSE);
+		}
+	}
+	return NULL;
+}
+
+/*
+ * binview_draw_unicode - UNICODE テキストのキャラクタ表示
+ */
+static void binview_draw_unicode(const HWND hWnd, const HDC mdc, const BUFFER *bf,
+	const int i, const int sel, int offset, const int height)
+{
+	RECT drect;
+	HBRUSH hbr;
+	HFONT ret_font;
+	WCHAR wbuf[2];
+	BYTE *p;
+	BOOL skip;
+	int wlen;
+	int len;
+	int j;
+
+	p = (BYTE *)bf->data + (i * LINE_LEN);
+	for (j = 0, len = 0; j < LINE_LEN; p += len, j += len) {
+		if ((DWORD)(p - (BYTE *)bf->data) + sizeof(WCHAR) > (DWORD)bf->data_len) {
+			// 1文字分のデータがない
+			break;
+		}
+		// UNICODE 1文字を取得 (リトル エンディアン)
+		*wbuf = (WCHAR)(*p | (*(p + 1) << 8));
+		wlen = 1;
+		len = sizeof(WCHAR);
+		skip = FALSE;
+
+		if (IS_HIGH_SURROGATE(*wbuf) &&
+			(DWORD)(p - (BYTE *)bf->data) + sizeof(WCHAR) * 2 <= (DWORD)bf->data_len &&
+			IS_LOW_SURROGATE((WCHAR)(*(p + 2) | (*(p + 3) << 8)))) {
+			// サロゲート ペア (行をまたぐ場合は上位側の桁にまとめて表示する)
+			*(wbuf + 1) = (WCHAR)(*(p + 2) | (*(p + 3) << 8));
+			wlen = 2;
+			len = sizeof(WCHAR) * 2;
+		} else if (j == 0 && IS_LOW_SURROGATE(*wbuf) &&
+			(p - (BYTE *)bf->data) >= (int)sizeof(WCHAR) &&
+			IS_HIGH_SURROGATE((WCHAR)(*(p - 2) | (*(p - 1) << 8)))) {
+			// 前の行のサロゲート ペアの下位なので表示しない
+			skip = TRUE;
+		} else if (*wbuf < 0x20 || IS_HIGH_SURROGATE(*wbuf) || IS_LOW_SURROGATE(*wbuf)) {
+			// 表示できない文字
+			*wbuf = L'.';
+		}
+
+		if (sel >= j && sel < j + len) {
+			// 選択文字
+			if (GetFocus() == hWnd) {
+				hbr = CreateSolidBrush(GetSysColor(COLOR_HIGHLIGHT));
+				SetTextColor(mdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
+				SetBkColor(mdc, GetSysColor(COLOR_HIGHLIGHT));
+			} else {
+				hbr = CreateSolidBrush(GetSysColor(COLOR_3DFACE));
+				SetBkColor(mdc, GetSysColor(COLOR_3DFACE));
+			}
+			SetRect(&drect, offset - 1, 0, offset + (len * bf->char_width), bf->font_height);
+			FillRect(mdc, &drect, hbr);
+			DeleteObject(hbr);
+		} else {
+			SetTextColor(mdc, GetSysColor(COLOR_WINDOWTEXT));
+			SetBkColor(mdc, GetSysColor(COLOR_WINDOW));
+		}
+
+		if (skip == FALSE) {
+			if (wlen == 2 && bf->hfont_alt != NULL) {
+				// サロゲート ペアは代替フォントで表示する
+				ret_font = SelectObject(mdc, bf->hfont_alt);
+				TextOutW(mdc, offset, height, wbuf, wlen);
+				SelectObject(mdc, ret_font);
+			} else {
+				TextOutW(mdc, offset, height, wbuf, wlen);
+			}
+		}
+		// 16進表示と桁を合わせるためバイト数分の幅を進める
+		offset += len * bf->char_width;
+	}
+}
+
+/*
  * binview_draw_line - 1行描画
  */
 static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const int i)
@@ -712,7 +864,10 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 			itox(*p, 2, s);
 			s += 2;
 			// キャラクタ
-			if (bf->dbcs == TRUE) {
+			if (bf->unicode == TRUE) {
+				// UNICODE テキストは別に描画する
+				*(r++) = ' ';
+			} else if (bf->dbcs == TRUE) {
 				bf->dbcs = FALSE;
 				if (j == 0) {
 					*(r++) = ' ';
@@ -771,6 +926,11 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 	offset += (lstrlen(buf) * bf->char_width) + bf->char_width;
 
 	// キャラクタ表示
+	if (bf->unicode == TRUE) {
+		// UNICODE テキスト
+		binview_draw_unicode(hWnd, mdc, bf, i, sel, offset, height);
+		return;
+	}
 #ifdef UNICODE
 	char_to_tchar(cbuf, buf, BUF_SIZE - 1);
 	tp = buf;
@@ -871,6 +1031,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		bf->hfont = font_create(option.bin_font_name, option.bin_font_size, option.bin_font_charset,
 			option.bin_font_weight, (option.bin_font_italic == 0) ? FALSE : TRUE, TRUE);
 		bf->ret_font = SelectObject(bf->mdc, bf->hfont);
+		bf->hfont_alt = binview_create_alt_font();
 		draw_free(bf);
 		draw_init(hWnd, bf);
 
@@ -909,6 +1070,9 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			if (bf->hfont != NULL) {
 				SelectObject(bf->mdc, bf->ret_font);
 				DeleteObject(bf->hfont);
+			}
+			if (bf->hfont_alt != NULL) {
+				DeleteObject(bf->hfont_alt);
 			}
 			DeleteDC(bf->mdc);
 			DeleteObject(bf->hbrush);
@@ -1347,6 +1511,8 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		bf->lock = wParam;
 		bf->input_cnt = 0;
 		bf->modified = FALSE;
+		bf->dbcs = FALSE;
+		bf->unicode = FALSE;
 		if (bf->undo != NULL) {
 			mem_free(&bf->undo);
 			bf->undo_size = 0;
@@ -1359,6 +1525,12 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			bf->data_len = 0;
 		}
 		if ((DATA_INFO *)lParam != NULL && ((DATA_INFO *)lParam)->data != NULL) {
+			// UNICODE テキストかどうかを判定
+			if (((DATA_INFO *)lParam)->format == CF_UNICODETEXT ||
+				(((DATA_INFO *)lParam)->format_name != NULL &&
+				lstrcmp(((DATA_INFO *)lParam)->format_name, TEXT("UNICODE TEXT")) == 0)) {
+				bf->unicode = TRUE;
+			}
 			// データをバイト列に変換
 			if ((bf->data = format_data_to_bytes((DATA_INFO *)lParam, &bf->data_len)) == NULL) {
 				bf->data = clipboard_data_to_bytes((DATA_INFO *)lParam, &bf->data_len);
@@ -1437,10 +1609,14 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 						SelectObject(bf->mdc, bf->ret_font);
 						DeleteObject(bf->hfont);
 					}
+					if (bf->hfont_alt != NULL) {
+						DeleteObject(bf->hfont_alt);
+					}
 					// フォント作成
 					bf->hfont = font_create(option.bin_font_name, option.bin_font_size, option.bin_font_charset,
 						option.bin_font_weight, (option.bin_font_italic == 0) ? FALSE : TRUE, TRUE);
 					bf->ret_font = SelectObject(bf->mdc, bf->hfont);
+					bf->hfont_alt = binview_create_alt_font();
 					// Metrics
 					GetTextMetrics(bf->mdc, &tm);
 					bf->font_height = tm.tmHeight + bf->spacing;
