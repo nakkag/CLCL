@@ -119,6 +119,8 @@ typedef struct _BUFFER {
 	BOOL insert_mode;
 	// マルチバイト
 	BOOL dbcs;
+	// UNICODE テキスト
+	BOOL unicode;
 
 #ifdef OP_XP_STYLE
 	// XP
@@ -148,6 +150,8 @@ static void binview_flush(BUFFER *bf);
 static void itox(const DWORD num, const int col, TCHAR *ret);
 static BOOL draw_init(const HWND hWnd, BUFFER *bf);
 static void draw_free(BUFFER *bf);
+static void binview_draw_unicode(const HWND hWnd, const HDC mdc, const BUFFER *bf,
+	const int i, const int sel, int offset, const int height);
 static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const int i);
 static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -655,6 +659,68 @@ static void draw_free(BUFFER *bf)
 }
 
 /*
+ * binview_draw_unicode - UNICODE テキストのキャラクタ表示
+ */
+static void binview_draw_unicode(const HWND hWnd, const HDC mdc, const BUFFER *bf,
+	const int i, const int sel, int offset, const int height)
+{
+	RECT drect;
+	HBRUSH hbr;
+	WCHAR wbuf[2];
+	BYTE *p;
+	int wlen;
+	int len;
+	int j;
+
+	p = (BYTE *)bf->data + (i * LINE_LEN);
+	for (j = 0, len = 0; j < LINE_LEN; p += len, j += len) {
+		if ((DWORD)(p - (BYTE *)bf->data) + sizeof(WCHAR) > (DWORD)bf->data_len) {
+			// 1文字分のデータがない
+			break;
+		}
+		// UNICODE 1文字を取得 (リトル エンディアン)
+		*wbuf = (WCHAR)(*p | (*(p + 1) << 8));
+		wlen = 1;
+		len = sizeof(WCHAR);
+		if (*wbuf >= 0xD800 && *wbuf <= 0xDBFF &&
+			j + (int)(sizeof(WCHAR) * 2) <= LINE_LEN &&
+			(DWORD)(p - (BYTE *)bf->data) + sizeof(WCHAR) * 2 <= (DWORD)bf->data_len) {
+			WCHAR wc = (WCHAR)(*(p + 2) | (*(p + 3) << 8));
+			if (wc >= 0xDC00 && wc <= 0xDFFF) {
+				// サロゲート ペア
+				*(wbuf + 1) = wc;
+				wlen = 2;
+				len = sizeof(WCHAR) * 2;
+			}
+		}
+		if (wlen == 1 && (*wbuf < 0x20 || (*wbuf >= 0xD800 && *wbuf <= 0xDFFF))) {
+			// 表示できない文字
+			*wbuf = L'.';
+		}
+		if (sel >= j && sel < j + len) {
+			// 選択文字
+			if (GetFocus() == hWnd) {
+				hbr = CreateSolidBrush(GetSysColor(COLOR_HIGHLIGHT));
+				SetTextColor(mdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
+				SetBkColor(mdc, GetSysColor(COLOR_HIGHLIGHT));
+			} else {
+				hbr = CreateSolidBrush(GetSysColor(COLOR_3DFACE));
+				SetBkColor(mdc, GetSysColor(COLOR_3DFACE));
+			}
+			SetRect(&drect, offset - 1, 0, offset + (len * bf->char_width), bf->font_height);
+			FillRect(mdc, &drect, hbr);
+			DeleteObject(hbr);
+		} else {
+			SetTextColor(mdc, GetSysColor(COLOR_WINDOWTEXT));
+			SetBkColor(mdc, GetSysColor(COLOR_WINDOW));
+		}
+		TextOutW(mdc, offset, height, wbuf, wlen);
+		// 16進表示と桁を合わせるためバイト数分の幅を進める
+		offset += len * bf->char_width;
+	}
+}
+
+/*
  * binview_draw_line - 1行描画
  */
 static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const int i)
@@ -712,7 +778,10 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 			itox(*p, 2, s);
 			s += 2;
 			// キャラクタ
-			if (bf->dbcs == TRUE) {
+			if (bf->unicode == TRUE) {
+				// UNICODE テキストは別に描画する
+				*(r++) = ' ';
+			} else if (bf->dbcs == TRUE) {
 				bf->dbcs = FALSE;
 				if (j == 0) {
 					*(r++) = ' ';
@@ -771,6 +840,11 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 	offset += (lstrlen(buf) * bf->char_width) + bf->char_width;
 
 	// キャラクタ表示
+	if (bf->unicode == TRUE) {
+		// UNICODE テキスト
+		binview_draw_unicode(hWnd, mdc, bf, i, sel, offset, height);
+		return;
+	}
 #ifdef UNICODE
 	char_to_tchar(cbuf, buf, BUF_SIZE - 1);
 	tp = buf;
@@ -1347,6 +1421,8 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		bf->lock = wParam;
 		bf->input_cnt = 0;
 		bf->modified = FALSE;
+		bf->dbcs = FALSE;
+		bf->unicode = FALSE;
 		if (bf->undo != NULL) {
 			mem_free(&bf->undo);
 			bf->undo_size = 0;
@@ -1359,6 +1435,12 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			bf->data_len = 0;
 		}
 		if ((DATA_INFO *)lParam != NULL && ((DATA_INFO *)lParam)->data != NULL) {
+			// UNICODE テキストかどうかを判定
+			if (((DATA_INFO *)lParam)->format == CF_UNICODETEXT ||
+				(((DATA_INFO *)lParam)->format_name != NULL &&
+				lstrcmp(((DATA_INFO *)lParam)->format_name, TEXT("UNICODE TEXT")) == 0)) {
+				bf->unicode = TRUE;
+			}
 			// データをバイト列に変換
 			if ((bf->data = format_data_to_bytes((DATA_INFO *)lParam, &bf->data_len)) == NULL) {
 				bf->data = clipboard_data_to_bytes((DATA_INFO *)lParam, &bf->data_len);
