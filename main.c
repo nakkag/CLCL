@@ -491,6 +491,11 @@ static BOOL menu_attach_begin(const HWND hWnd, const HWND active_wnd, const BOOL
 	menu_key_wnd = hWnd;
 	// フォーカスを移さずにメニューへキー入力を渡すためのフック
 	menu_key_hook = SetWindowsHookEx(WH_KEYBOARD_LL, menu_key_hook_proc, hInst, 0);
+	if (menu_key_hook == NULL) {
+		// フックを設定できない場合は従来の動作にする
+		menu_attach_end();
+		return FALSE;
+	}
 	return TRUE;
 }
 
@@ -738,17 +743,15 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 		if ((GetAsyncKeyState(VK_RBUTTON) == 1 || ctrl_key == TRUE) &&
 			option.menu_show_tool_menu == 1) {
 			DATA_INFO *di = mii->set_di;
+			BOOL tool_ret;
 			menu_free();
 			// ツールメニュー表示
-			if (show_tool_menu(hWnd, di, ai->paste, (attached == TRUE) ? fi.active_wnd : NULL) == TRUE) {
-				if (attached == FALSE) {
-					set_focus_info(&fi);
-				}
+			tool_ret = show_tool_menu(hWnd, di, ai->paste, (attached == TRUE) ? fi.active_wnd : NULL);
+			if (attached == FALSE) {
+				set_focus_info(&fi);
+			}
+			if (tool_ret == TRUE) {
 				SendMessage(hWnd, WM_ITEM_TO_CLIPBOARD, 0, (LPARAM)di);
-			} else {
-				if (attached == FALSE) {
-					set_focus_info(&fi);
-				}
 			}
 			return TRUE;
 		}
