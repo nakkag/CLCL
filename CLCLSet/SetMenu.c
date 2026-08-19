@@ -72,6 +72,7 @@ BOOL CALLBACK set_menu_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		CheckDlgButton(hDlg, IDC_CHECK_SHOW_HOTKEY, option.menu_show_hotkey);
 		CheckDlgButton(hDlg, IDC_CHECK_SHOW_TOOL_MENU, option.menu_show_tool_menu);
+		CheckDlgButton(hDlg, IDC_CHECK_ATTACH_PROCESS, option.menu_attach_process);
 		CheckDlgButton(hDlg, IDC_CHECK_BREAK, option.menu_break);
 		SendDlgItemMessage(hDlg, IDC_EDIT_TEXT_FORMAT, WM_SETTEXT, 0, (LPARAM)option.menu_text_format);
 		SetDlgItemInt(hDlg, IDC_EDIT_MAX_WIDTH, UnScale(option.menu_max_width), FALSE);
@@ -221,6 +222,7 @@ BOOL CALLBACK set_menu_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 			option.menu_show_hotkey = IsDlgButtonChecked(hDlg, IDC_CHECK_SHOW_HOTKEY);
 			option.menu_show_tool_menu = IsDlgButtonChecked(hDlg, IDC_CHECK_SHOW_TOOL_MENU);
+			option.menu_attach_process = IsDlgButtonChecked(hDlg, IDC_CHECK_ATTACH_PROCESS);
 			option.menu_break = IsDlgButtonChecked(hDlg, IDC_CHECK_BREAK);
 			alloc_get_text(GetDlgItem(hDlg, IDC_EDIT_TEXT_FORMAT), &option.menu_text_format);
 			option.menu_max_width = Scale(GetDlgItemInt(hDlg, IDC_EDIT_MAX_WIDTH, NULL, FALSE));
