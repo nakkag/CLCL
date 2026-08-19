@@ -112,6 +112,7 @@ typedef struct _OPTION_INFO {
 	int menu_show_tooltip;				// ツールチップ表示
 	int menu_show_hotkey;				// ホットキーを表示
 	int menu_show_tool_menu;			// ツールメニュー表示
+	int menu_attach_process;			// プロセスにアタッチしてメニューを表示
 #ifdef MENU_LAYERER
 	int menu_alpha;						// 透明度
 #endif
