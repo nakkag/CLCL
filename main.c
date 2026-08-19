@@ -72,6 +72,10 @@
 #define TOOLFLAG_CALL					1
 #define TOOLFLAG_PASTE					2
 
+// メニューバー起動(SC_KEYMENU)抑止用のマスクキー
+// 未割り当ての仮想キーを使う(文字を生成しないのでビープが鳴らない)
+#define MENU_MASK_VK					0xE8
+
 #define key_wait()						while (GetAsyncKeyState(VK_MENU) < 0 || \
 											GetAsyncKeyState(VK_CONTROL) < 0 || \
 											GetAsyncKeyState(VK_SHIFT) < 0 || \
@@ -139,6 +143,7 @@ static BOOL tray_message(const HWND hWnd, const DWORD dwMessage, const UINT uID,
 static void set_tray_icon(const HWND hWnd, const HICON hIcon, const TCHAR *buf);
 static void set_tray_tooltip(const HWND hWnd);
 static BOOL show_menu_tooltip(const HWND tooltip_wnd, const HMENU hMenu, const UINT id, const BOOL mouse);
+static void menu_mask_modifier_key(void);
 static LRESULT CALLBACK menu_key_hook_proc(int nCode, WPARAM wParam, LPARAM lParam);
 static BOOL menu_attach_begin(const HWND hWnd, const HWND active_wnd, const BOOL enable);
 static void menu_attach_end(void);
@@ -395,6 +400,21 @@ static void set_focus_info(const FOCUS_INFO *fi)
 	if (window_focus_check(fi->active_wnd) == TRUE) {
 		set_focus(fi->active_wnd, fi->focus_wnd);
 	}
+}
+
+/*
+ * menu_mask_modifier_key - 修飾キー単独押しによるメニューバー起動を抑止
+ */
+static void menu_mask_modifier_key(void)
+{
+	// Alt / Win が押されている時だけ送る
+	if (GetAsyncKeyState(VK_MENU) >= 0 &&
+		GetAsyncKeyState(VK_LWIN) >= 0 && GetAsyncKeyState(VK_RWIN) >= 0) {
+		return;
+	}
+	// 文字を生成しないキーを押して離し、修飾キー単独押しの状態を解除する
+	keybd_event(MENU_MASK_VK, 0, 0, 0);
+	keybd_event(MENU_MASK_VK, 0, KEYEVENTF_KEYUP, 0);
 }
 
 /*
@@ -663,6 +683,10 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 			_SetForegroundWindow(hWnd);
 		}
 		return FALSE;
+	}
+	if (attach == TRUE && option.menu_attach_process == 1) {
+		// メニュー作成前にマスクキーを送る(Altを離される前に間に合わせる)
+		menu_mask_modifier_key();
 	}
 	CopyMemory(&fi, &focus_info, sizeof(FOCUS_INFO));
 	if (caret == TRUE || fi.active_wnd == NULL) {
