@@ -175,10 +175,34 @@ BYTE *file_read_buf(const TCHAR *path, DWORD *ret_size, TCHAR *err_str)
 	}
 	CloseHandle(hFile);
 
+	if (ret != size) {
+		message_get_error(ERROR_READ_FAULT, err_str);
+		mem_free(&buf);
+		return NULL;
+	}
+
 	if (ret_size != NULL) {
 		*ret_size = size;
 	}
 	return buf;
+}
+
+/*
+ * file_write_all - ファイルに指定サイズ分書き込む
+ */
+static BOOL file_write_all(const HANDLE hFile, const void *data, const DWORD size, TCHAR *err_str)
+{
+	DWORD ret;
+
+	if (WriteFile(hFile, data, size, &ret, NULL) == FALSE) {
+		message_get_error(GetLastError(), err_str);
+		return FALSE;
+	}
+	if (ret != size) {
+		message_get_error(ERROR_DISK_FULL, err_str);
+		return FALSE;
+	}
+	return TRUE;
 }
 
 /*
@@ -187,7 +211,6 @@ BYTE *file_read_buf(const TCHAR *path, DWORD *ret_size, TCHAR *err_str)
 BOOL file_write_buf(const TCHAR *path, const BYTE *data, const DWORD size, TCHAR *err_str)
 {
 	HANDLE hFile;
-	DWORD ret;
 
 	// ファイルを開く
 	hFile = CreateFile(path, GENERIC_READ | GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -196,8 +219,7 @@ BOOL file_write_buf(const TCHAR *path, const BYTE *data, const DWORD size, TCHAR
 		return FALSE;
 	}
 	// ファイルの書き込み
-	if (WriteFile(hFile, data, size, &ret, NULL) == FALSE) {
-		message_get_error(GetLastError(), err_str);
+	if (file_write_all(hFile, data, size, err_str) == FALSE) {
 		CloseHandle(hFile);
 		return FALSE;
 	}
@@ -542,7 +564,6 @@ static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 	TCHAR str_op[BUF_SIZE];
 	TCHAR *tp;
 	DWORD len, size;
-	DWORD ret;
 	int i;
 
 	// 保存文字列の作成
@@ -571,8 +592,7 @@ static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 			*(p++) = '\0';
 
 			// 書き込み
-			if (WriteFile(hFile, buf, len, &ret, NULL) == FALSE) {
-				message_get_error(GetLastError(), err_str);
+			if (file_write_all(hFile, buf, len, err_str) == FALSE) {
 				mem_free(&buf);
 				return FALSE;
 			}
@@ -582,8 +602,7 @@ static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 				return FALSE;
 			}
 			// 書き込み
-			if (WriteFile(hFile, "\x5", 1, &ret, NULL) == FALSE) {
-				message_get_error(GetLastError(), err_str);
+			if (file_write_all(hFile, "\x5", 1, err_str) == FALSE) {
 				return FALSE;
 			}
 			continue;
@@ -676,8 +695,7 @@ static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 		*(p++) = '\x2';
 
 		// 書き込み
-		if (WriteFile(hFile, buf, len, &ret, NULL) == FALSE) {
-			message_get_error(GetLastError(), err_str);
+		if (file_write_all(hFile, buf, len, err_str) == FALSE) {
 			mem_free(&buf);
 			return FALSE;
 		}
@@ -766,8 +784,7 @@ static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 			}
 
 			// 書き込み
-			if (WriteFile(hFile, buf, len, &ret, NULL) == FALSE) {
-				message_get_error(GetLastError(), err_str);
+			if (file_write_all(hFile, buf, len, err_str) == FALSE) {
 				mem_free(&buf);
 				return FALSE;
 			}
@@ -783,9 +800,14 @@ static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 BOOL file_write_data(const TCHAR *path, DATA_INFO *di, TCHAR *err_str)
 {
 	HANDLE hFile;
+	DWORD err;
 
 	TCHAR tmp_path[MAX_PATH];
 
+	if (lstrlen(path) + 4 >= MAX_PATH) {
+		message_get_error(ERROR_BUFFER_OVERFLOW, err_str);
+		return FALSE;
+	}
 	wsprintf(tmp_path, TEXT("%s.tmp"), path);
 	DeleteFile(tmp_path);
 
@@ -800,11 +822,26 @@ BOOL file_write_data(const TCHAR *path, DATA_INFO *di, TCHAR *err_str)
 		DeleteFile(tmp_path);
 		return FALSE;
 	}
+	if (FlushFileBuffers(hFile) == FALSE) {
+		message_get_error(GetLastError(), err_str);
+		CloseHandle(hFile);
+		DeleteFile(tmp_path);
+		return FALSE;
+	}
 	CloseHandle(hFile);
 
-	CopyFile(tmp_path, path, FALSE);
-	DeleteFile(tmp_path);
-	return TRUE;
+	if (ReplaceFile(path, tmp_path, NULL, REPLACEFILE_IGNORE_MERGE_ERRORS, NULL, NULL) != FALSE) {
+		return TRUE;
+	}
+	err = GetLastError();
+	if (err == ERROR_FILE_NOT_FOUND) {
+		if (MoveFileEx(tmp_path, path, MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) != FALSE) {
+			return TRUE;
+		}
+		err = GetLastError();
+	}
+	message_get_error(err, err_str);
+	return FALSE;
 }
 
 /*
