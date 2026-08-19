@@ -1,4 +1,4 @@
-CLCL Ver 2.1.3
+CLCL Ver 2.1.4
 --
 
 ■ はじめに
@@ -21,7 +21,7 @@ CLCL(クルクル)は、クリップボードの履歴を取るソフトです。
 ・Unicode対応
 
 ■ インストール
-Windows XP以降のOSで動作します。
+Windows 7以降のOSで動作します。
 
 ダウンロードしたファイルを起動するとCLCLをインストールします。
 アンインストールはコントロールパネルから実施してください。
@@ -324,7 +324,7 @@ CLCL起動時にコマンドラインを指定して起動後の動作を指定することができます。
 既にCLCLが起動している場合は、既に起動しているCLCLにコマンドが送られます。
 
 [形式]
-CLCL.exe [/vownx]
+CLCL.exe [/vwnx]
 	/v ビューア表示
 	/w クリップボード監視
 	/n クリップボード監視解除
@@ -484,7 +484,7 @@ K.Takata ( http://webs.to/ken/ )
 
 バグ、要望、質問は nakka@nakka.com までお願いします。
 
-Copyright (C) 1996-2022 by Ohno Tomoaki. All rights reserved.
+Copyright (C) 1996-2026 by Ohno Tomoaki. All rights reserved.
 	https://www.nakka.com/
 
-2022/12/1
+2026/8/19

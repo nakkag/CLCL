@@ -1,8 +1,8 @@
-CLCL Ver 2.1.3
+CLCL Ver 2.1.4
 --
 
 * Introduction
-CLCL (pronounced "kuru-kuru") is software that keeps a history of the
+CLCL is software that keeps a history of the
 clipboard.
 
 * Features
@@ -26,7 +26,7 @@ clipboard.
 - Unicode support
 
 * Installation
-CLCL runs on Windows XP and later.
+CLCL runs on Windows 7 and later.
 
 Running the downloaded file installs CLCL.
 Uninstall CLCL from Control Panel.
@@ -357,8 +357,6 @@ CLCL.exe [/vwnx]
 K.Takata ( http://webs.to/ken/ )
 
 * Update history
-Only the latest version is listed here. For the full history, see
-readme_jp.txt.
 
 - Ver 2.1.2 -> Ver 2.1.3
 	- Changed the system tray icon shown while the clipboard is not
@@ -372,9 +370,7 @@ readme_jp.txt.
 The author takes no responsibility for any trouble caused by this program.
 You are strongly advised to keep a backup of important files.
 
-Please send bugs, requests and questions to nakka@nakka.com.
-
-Copyright (C) 1996-2022 by Ohno Tomoaki. All rights reserved.
+Copyright (C) 1996-2026 by Ohno Tomoaki. All rights reserved.
 	https://www.nakka.com/
 
-2022/12/1
+2026/8/19
