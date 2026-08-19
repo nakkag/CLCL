@@ -67,7 +67,7 @@ static BOOL should_ignore()
 				val = *(DWORD*)m;
 			GlobalUnlock(h);
 			
-			if (val == 0 || val == 1)
+			if (val == 0)
 				return TRUE;
 		}
 	}
