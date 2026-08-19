@@ -225,6 +225,7 @@ BOOL ini_get_option(TCHAR *err_str)
 	option.menu_show_tooltip = profile_get_int(TEXT("menu"), TEXT("show_tooltip"), 1, ini_path);
 	option.menu_show_hotkey = profile_get_int(TEXT("menu"), TEXT("show_hotkey"), 1, ini_path);
 	option.menu_show_tool_menu = profile_get_int(TEXT("menu"), TEXT("show_tool_menu"), 1, ini_path);
+	option.menu_attach_process = profile_get_int(TEXT("menu"), TEXT("attach_process"), 1, ini_path);
 #ifdef MENU_LAYERER
 	option.menu_alpha = profile_get_int(TEXT("menu"), TEXT("menu_alpha"), 0, ini_path);
 #endif	// MENU_LAYERER
@@ -829,6 +830,7 @@ BOOL ini_put_option(void)
 	profile_write_int(TEXT("menu"), TEXT("show_tooltip"), option.menu_show_tooltip, ini_path);
 	profile_write_int(TEXT("menu"), TEXT("show_hotkey"), option.menu_show_hotkey, ini_path);
 	profile_write_int(TEXT("menu"), TEXT("show_tool_menu"), option.menu_show_tool_menu, ini_path);
+	profile_write_int(TEXT("menu"), TEXT("attach_process"), option.menu_attach_process, ini_path);
 #ifdef MENU_LAYERER
 	profile_write_int(TEXT("menu"), TEXT("menu_alpha"), option.menu_alpha, ini_path);
 #endif	// MENU_LAYERER
