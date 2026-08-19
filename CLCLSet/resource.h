@@ -148,6 +148,7 @@
 #define IDC_RADIO_DEF_OPEN              1114
 #define IDC_RADIO_DEF_CLIPBOARD         1115
 #define IDC_RADIO_DEF_SAVE              1116
+#define IDC_CHECK_ATTACH_PROCESS        1117
 #define IDC_LIST_ICON                   1127
 #define IDC_EDIT_FILE                   1128
 #define IDS_MENU_FORMAT_1               2001
@@ -255,7 +256,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        126
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1117
+#define _APS_NEXT_CONTROL_VALUE         1118
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
