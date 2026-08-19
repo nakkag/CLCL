@@ -2,8 +2,7 @@ CLCL Ver 2.1.4
 --
 
 * Introduction
-CLCL is software that keeps a history of the
-clipboard.
+CLCL is software that keeps a history of the clipboard.
 
 * Features
 - Multiple clipboard formats are supported.
@@ -357,6 +356,13 @@ CLCL.exe [/vwnx]
 K.Takata ( http://webs.to/ken/ )
 
 * Update history
+
+- Ver 2.1.3 -> Ver 2.1.4
+	- Improved the save processing performed on exit.
+	- Added UNICODE support to Binary View.
+	- Fixed CLCL so that data a password manager saves to the
+	  clipboard is not kept in the history. (kashima-eyetech)
+	- Improved the wording of the English version.
 
 - Ver 2.1.2 -> Ver 2.1.3
 	- Changed the system tray icon shown while the clipboard is not
