@@ -330,14 +330,12 @@ CLCL.exe [/vwnx]
 	/n クリップボード監視解除
 	/x 終了
 
-■ Special thanks
-K.Takata ( http://webs.to/ken/ )
-
 ■ 更新履歴
 ・Ver 2.1.3 -> Ver 2.1.4
 	・終了時の保存処理を改善した。
 	・バイナリ表示をUNICODEに対応した。
-	・パスワードマネージャがクリップボードに保存した内容は履歴に残さないよう修正(kashima-eyetech)
+	・パスワードマネージャがクリップボードに保存した内容は履歴に残さない
+	  よう修正(kashima-eyetech)
 	・英語版の表記改善
 
 ・Ver 2.1.2 -> Ver 2.1.3

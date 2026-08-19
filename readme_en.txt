@@ -352,9 +352,6 @@ CLCL.exe [/vwnx]
 	/n Turn off Clipboard Watch
 	/x Exit
 
-* Special thanks
-K.Takata ( http://webs.to/ken/ )
-
 * Update history
 
 - Ver 2.1.3 -> Ver 2.1.4
