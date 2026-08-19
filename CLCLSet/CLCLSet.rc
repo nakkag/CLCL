@@ -898,21 +898,21 @@ BEGIN
     EDITTEXT        IDC_EDIT_ADD_INTERVAL,112,25,40,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin2",IDC_SPIN_ADD_INTERVAL,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,203,26,13,15
     LTEXT           "msec",IDC_STATIC,156,28,41,8
-    CONTROL         "History will be saved when you e&xit",IDC_CHECK_SAVE,
+    CONTROL         "Save history on e&xit",IDC_CHECK_SAVE,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,43,160,10
-    CONTROL         "History will always be u&pdated and saved",IDC_CHECK_ALWAYS_SAVE,
+    CONTROL         "Always save when the history has &changed",IDC_CHECK_ALWAYS_SAVE,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,56,175,10
-    CONTROL         "History will be deleted if &send to clipboard",IDC_CHECK_DELETE,
+    CONTROL         "Delete history when &sent to clipboard",IDC_CHECK_DELETE,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,69,160,10
-    CONTROL         "&Except from Template",IDC_CHECK_IGNORE_REGIST_ITEM,
+    CONTROL         "&Exclude template items from history",IDC_CHECK_IGNORE_REGIST_ITEM,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,83,187,11
-    GROUPBOX        "Duplication check of History",IDC_STATIC,9,103,253,70
+    GROUPBOX        "Duplicate check of history",IDC_STATIC,9,103,253,70
     CONTROL         "&No check",IDC_RADIO_CHECK_NO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,16,115,218,10
-    CONTROL         "&Only last History will be checked",IDC_RADIO_CHECK_ONE,
+    CONTROL         "Check &only the latest item",IDC_RADIO_CHECK_ONE,
                     "Button",BS_AUTORADIOBUTTON,16,128,218,10
-    CONTROL         "&All History will be checked",IDC_RADIO_CHECK_ALL,
+    CONTROL         "Check &all history items",IDC_RADIO_CHECK_ALL,
                     "Button",BS_AUTORADIOBUTTON,16,141,218,10
-    CONTROL         "All History will be checked and duplicates &deleted",IDC_RADIO_CHECK_ALL_DELETE,
+    CONTROL         "Check all history items and &delete duplicates",IDC_RADIO_CHECK_ALL_DELETE,
                     "Button",BS_AUTORADIOBUTTON,16,154,218,10
 END
 
@@ -933,7 +933,7 @@ END
 
 IDD_DIALOG_ACTION_SET DIALOG 0, 0, 307, 279
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Edit of Action"
+CAPTION "Edit Action"
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "&Action:",IDC_STATIC,5,10,35,10
@@ -965,7 +965,7 @@ BEGIN
     LTEXT           "Icon &index:",IDC_STATIC,125,201,110,8
     EDITTEXT        IDC_EDIT_ICON_INDEX,125,211,40,12,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin1",IDC_SPIN_ICON_INDEX,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,180,210,13,15
-    LTEXT           "Ran&ge of indication:",IDC_STATIC,125,227,110,8
+    LTEXT           "Displa&y range (0 = none):",IDC_STATIC,125,227,110,8
     EDITTEXT        IDC_EDIT_MIN,125,237,40,12,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin2",IDC_SPIN_MIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,235,235,13,15
     CONTROL         "",IDC_STATIC,"Static",SS_BLACKRECT,170,242,5,1
@@ -984,7 +984,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,120,185,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,175,185,50,14
     EDITTEXT        IDC_EDIT_FILE,5,5,180,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "Browse...",IDC_BUTTON_BROWS,190,5,35,12
+    PUSHBUTTON      "&Browse...",IDC_BUTTON_BROWS,190,5,35,12
 END
 
 IDD_DIALOG_SELECT_FOLDER DIALOG 0, 0, 232, 195
@@ -1014,16 +1014,16 @@ BEGIN
     LTEXT           "x",IDC_STATIC,125,50,8,9
     EDITTEXT        IDC_EDIT_BMP_HEIGHT,133,47,40,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin3",IDC_SPIN_BMP_HEIGHT,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,205,45,13,15
-    CONTROL         "Show &Tool tip",IDC_CHECK_SHOW_TOOLTIP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,62,175,9
-    LTEXT           "Show T&ool tip after idle for:",IDC_STATIC,22,74,108,10
+    CONTROL         "Show &Tooltip",IDC_CHECK_SHOW_TOOLTIP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,62,175,9
+    LTEXT           "Show t&ooltip after idle for:",IDC_STATIC,22,74,108,10
     EDITTEXT        IDC_EDIT_SHOW_DELAY,133,72,40,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin4",IDC_SPIN_SHOW_DELAY,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,225,70,13,15
     LTEXT           "msec",IDC_STATIC,177,75,43,10
     CONTROL         "Show &Hot key",IDC_CHECK_SHOW_HOTKEY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,85,175,10
-    CONTROL         "Mu&lticolumn menu",IDC_CHECK_BREAK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,98,180,10
-    CONTROL         "Click &menu on right, to show tools",IDC_CHECK_SHOW_TOOL_MENU,
+    CONTROL         "Wrap menu if &larger than screen",IDC_CHECK_BREAK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,98,180,10
+    CONTROL         "Right-click &menu to show tool menu",IDC_CHECK_SHOW_TOOL_MENU,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,111,175,10
-    LTEXT           "Display &format of menu:",IDC_STATIC,10,131,175,9
+    LTEXT           "Display &format of menu text:",IDC_STATIC,10,131,175,9
     EDITTEXT        IDC_EDIT_TEXT_FORMAT,10,140,235,13,ES_AUTOHSCROLL
     CONTROL         "S&elect",IDC_BUTTON_FORMAT_SELECT,"Button",BS_OWNERDRAW | WS_TABSTOP,248,140,15,13
     LTEXT           "Maximum &width of menu:",IDC_STATIC,10,161,175,8
@@ -1040,13 +1040,13 @@ BEGIN
     CONTROL         "Expand &Clipboard",IDC_CHECK_CLIP_EXPAND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,23,145,10
     CONTROL         "Expand &History",IDC_CHECK_HISTORY_EXPAND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,36,145,10
     CONTROL         "Expand T&emplate",IDC_CHECK_REGIST_EXPAND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,49,145,10
-    CONTROL         "Expand all &folder",IDC_CHECK_FOLDER_EXPAND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,62,145,11
-    GROUPBOX        "Display items and the order of tree",IDC_STATIC,10,77,250,68
-    LTEXT           "A&vailable Item:",IDC_STATIC,20,88,95,8
+    CONTROL         "Expand all &folders",IDC_CHECK_FOLDER_EXPAND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,62,145,11
+    GROUPBOX        "Display items and order of the tree",IDC_STATIC,10,77,250,68
+    LTEXT           "A&vailable items:",IDC_STATIC,20,88,95,8
     LISTBOX         IDC_LIST_FROM,20,98,95,40,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "&>>",IDC_BUTTON_ADD,126,101,20,15
     PUSHBUTTON      "&<<",IDC_BUTTON_DELETE,126,120,20,15
-    LTEXT           "C&urrent Item:",IDC_STATIC,155,88,95,10
+    LTEXT           "C&urrent items:",IDC_STATIC,155,88,95,10
     LISTBOX         IDC_LIST_TO,155,98,95,40,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Default action of list",IDC_STATIC,10,150,250,52
     CONTROL         "&Open",IDC_RADIO_DEF_OPEN,"Button",BS_AUTORADIOBUTTON,20,160,105,11
@@ -1071,10 +1071,10 @@ END
 
 IDD_DIALOG_FORMAT_SET DIALOG 0, 0, 237, 129
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Edit of Clipboard Format"
+CAPTION "Edit Clipboard Format"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "Format &name:",IDC_STATIC,10,10,150,10
+    LTEXT           "Format &name (separated by "",""):",IDC_STATIC,10,10,150,10
     EDITTEXT        IDC_EDIT_FORMAT_NAME,10,20,195,13,ES_AUTOHSCROLL
     CONTROL         "&Format",IDC_BUTTON_FORMAT,"Button",BS_OWNERDRAW | WS_TABSTOP,210,20,15,13
     LTEXT           "&DLL:",IDC_STATIC,10,45,150,10
@@ -1103,7 +1103,7 @@ CAPTION "Properties"
 FONT 8, "MS Sans Serif"
 BEGIN
     GROUPBOX        "Text",IDC_STATIC,5,5,215,50
-    LTEXT           "&Maximum characters on menu tool tip:",IDC_STATIC,15,20,195,8
+    LTEXT           "&Maximum characters in the menu tooltip:",IDC_STATIC,15,20,195,8
     EDITTEXT        IDC_EDIT_TOOLTIP_SIZE,15,30,45,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin1",IDC_SPIN_TOOLTIP_SIZE,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,65,30,13,15
     DEFPUSHBUTTON   "OK",IDOK,115,60,50,14
@@ -1115,9 +1115,9 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Filter"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "All formatting will be added to &history",IDC_RADIO_ALL_ADD,
+    CONTROL         "Add all formats to &history",IDC_RADIO_ALL_ADD,
                     "Button",BS_AUTORADIOBUTTON | WS_GROUP,10,8,150,10
-    CONTROL         "All formatting will be exce&pted to history",IDC_RADIO_ALL_IGNORE,
+    CONTROL         "Exclude all formats from histor&y",IDC_RADIO_ALL_IGNORE,
                     "Button",BS_AUTORADIOBUTTON,10,22,150,10
     LTEXT           "Filter &settings:",IDC_STATIC,10,40,200,8
     CONTROL         "List1",IDC_LIST_FILTER,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,5,50,240,135
@@ -1130,21 +1130,21 @@ END
 
 IDD_DIALOG_FILTER_SET DIALOG 0, 0, 212, 139
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Edit of Filter"
+CAPTION "Edit Filter"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "Format &name:",IDC_STATIC,10,10,150,10
+    LTEXT           "Format &name (separated by "",""):",IDC_STATIC,10,10,150,10
     EDITTEXT        IDC_EDIT_FORMAT_NAME,10,20,173,13,ES_AUTOHSCROLL
     CONTROL         "&Format",IDC_BUTTON_FORMAT,"Button",BS_OWNERDRAW | WS_TABSTOP,187,20,15,13
     GROUPBOX        "Action",IDC_STATIC,10,40,193,65
     CONTROL         "&Add to history",IDC_RADIO_ADD,"Button",BS_AUTORADIOBUTTON | WS_GROUP,20,50,85,10
     CONTROL         "&Ignore format",IDC_RADIO_IGNORE,"Button",BS_AUTORADIOBUTTON,20,65,85,10
-    CONTROL         "Not &save",IDC_CHECK_NOSAVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,118,50,80,10
+    CONTROL         "Do not &save",IDC_CHECK_NOSAVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,118,50,80,10
     LTEXT           "&Limit size to:",IDC_STATIC,118,65,80,8
     EDITTEXT        IDC_EDIT_SIZE,118,75,50,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin1",IDC_SPIN_SIZE,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,165,75,13,15
     LTEXT           "bytes",IDC_STATIC,174,79,24,10
-    LTEXT           "Zero is no limit",IDC_STATIC,118,92,80,8
+    LTEXT           "* 0 means no limit",IDC_STATIC,118,92,80,8
     DEFPUSHBUTTON   "OK",IDOK,98,115,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,153,115,50,14
 END
@@ -1165,10 +1165,10 @@ END
 
 IDD_DIALOG_WINDOW_SET DIALOGEX 0, 0, 267, 248
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Edit of Window"
+CAPTION "Settings for Each Window"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    LTEXT           "Present &window list:",IDC_STATIC,5,10,170,8
+    LTEXT           "Current &window list:",IDC_STATIC,5,10,170,8
     CONTROL         "List1",IDC_LIST_WINDOW,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_SORTASCENDING | WS_BORDER | WS_TABSTOP,5,20,255,65
     CONTROL         "&Select",IDC_BUTTON_SELECT,"Button",BS_OWNERDRAW | WS_TABSTOP,120,90,35,13
     GROUPBOX        "Edit",IDC_STATIC,5,105,255,120
@@ -1176,10 +1176,10 @@ BEGIN
     EDITTEXT        IDC_EDIT_TITLE,14,127,236,11,ES_AUTOHSCROLL
     LTEXT           "&Class name:",IDC_STATIC,14,141,90,8
     EDITTEXT        IDC_EDIT_CLASSNAME,14,151,236,11,ES_AUTOHSCROLL
-    LTEXT           "(""*"" and ""?"" will be wild card.)",IDC_STATIC,14,166,155,8
-    CONTROL         "&Ignore window",IDC_CHECK_IGNORE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,178,199,11
-    CONTROL         "&Focus is not set",IDC_CHECK_FOCUS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,193,199,11
-    CONTROL         "&Paste by cancellation",IDC_CHECK_PASTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,208,199,11
+    LTEXT           "(""*"" and ""?"" are wildcards.)",IDC_STATIC,14,166,155,8
+    CONTROL         "Do not add to h&istory",IDC_CHECK_IGNORE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,178,199,11
+    CONTROL         "Do not set &focus",IDC_CHECK_FOCUS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,193,199,11
+    CONTROL         "&Paste even if the tool is cancelled",IDC_CHECK_PASTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,208,199,11
     DEFPUSHBUTTON   "OK",IDOK,155,230,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,210,230,50,14
     PUSHBUTTON      "&Update",IDC_BUTTON_RELOAD,219,8,40,12
@@ -1190,7 +1190,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Key"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    GROUPBOX        "Set up default key",IDC_STATIC,5,5,260,65
+    GROUPBOX        "Default key settings",IDC_STATIC,5,5,260,65
     LTEXT           "&Copy:",IDC_STATIC,15,15,50,10
     CONTROL         "",IDC_HOTKEY_COPY,"select_key",WS_BORDER | WS_TABSTOP,15,25,50,13
     LTEXT           "Copy de&lay:",IDC_STATIC,16,41,74,10
@@ -1214,10 +1214,10 @@ END
 
 IDD_DIALOG_SENDKEY_SET DIALOGEX 0, 0, 267, 264
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Edit of key"
+CAPTION "Key Settings for Each Window"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    LTEXT           "Present &window list:",IDC_STATIC,5,10,170,8
+    LTEXT           "Current &window list:",IDC_STATIC,5,10,170,8
     CONTROL         "List1",IDC_LIST_WINDOW,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_SORTASCENDING | WS_BORDER | WS_TABSTOP,5,20,255,65
     CONTROL         "&Select",IDC_BUTTON_SELECT,"Button",BS_OWNERDRAW | WS_TABSTOP,120,90,35,13
     GROUPBOX        "Edit",IDC_STATIC,5,105,255,135
@@ -1225,7 +1225,7 @@ BEGIN
     EDITTEXT        IDC_EDIT_TITLE,14,127,236,11,ES_AUTOHSCROLL
     LTEXT           "&Class name:",IDC_STATIC,14,141,90,8
     EDITTEXT        IDC_EDIT_CLASSNAME,14,151,236,11,ES_AUTOHSCROLL
-    LTEXT           "(""*"" and ""?"" will be wild card.)",IDC_STATIC,14,166,232,8
+    LTEXT           "(""*"" and ""?"" are wildcards.)",IDC_STATIC,14,166,232,8
     LTEXT           "C&opy:",IDC_STATIC,15,180,50,10
     CONTROL         "",IDC_HOTKEY_COPY,"select_key",WS_BORDER | WS_TABSTOP,15,190,50,13
     LTEXT           "Copy de&lay:",IDC_STATIC,16,206,74,10
@@ -1260,12 +1260,12 @@ END
 
 IDD_DIALOG_TOOL_SET DIALOG 0, 0, 247, 263
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Edit of Tool"
+CAPTION "Edit Tool"
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "&Title:",IDC_STATIC,10,5,150,10
-    EDITTEXT        IDC_EDIT_TITLE,10,15,190,13,ES_AUTOHSCROLL
-    LTEXT           "(sep at - )",IDC_STATIC,204,18,43,10
+    EDITTEXT        IDC_EDIT_TITLE,10,15,176,13,ES_AUTOHSCROLL
+    LTEXT           "(- separator)",IDC_STATIC,190,18,57,10
     LTEXT           "&DLL:",IDC_STATIC,10,34,150,10
     EDITTEXT        IDC_EDIT_LIB_PATH,10,44,190,13,ES_AUTOHSCROLL
     PUSHBUTTON      "&Browse...",IDC_BUTTON_FILE_SELECT,205,44,35,13
@@ -1274,20 +1274,20 @@ BEGIN
     PUSHBUTTON      "&Select...",IDC_BUTTON_FUNC_SELECT,205,72,35,13
     LTEXT           "Co&mmand line:",IDC_STATIC,10,88,150,10
     EDITTEXT        IDC_EDIT_CMD_LINE,10,98,230,13,ES_AUTOHSCROLL
-    GROUPBOX        "Call type",IDC_STATIC,10,115,230,125
+    GROUPBOX        "Execution timing",IDC_STATIC,10,115,230,125
     CONTROL         "&Action menu",IDC_CHECK_MENU,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,127,110,10
     CONTROL         "Send Copy and &Paste",IDC_CHECK_COPY_PATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,30,139,100,10
     LTEXT           "Hot &key:",IDC_STATIC,135,125,50,10
     CONTROL         "",IDC_HOTKEY_TOOL,"select_key",WS_BORDER | WS_TABSTOP,135,135,95,13
     CONTROL         "&Viewer menu",IDC_CHECK_VIEWER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,153,165,10
-    CONTROL         "When &open viewer",IDC_CHECK_VIEWER_OPEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,165,157,10
-    CONTROL         "When c&lose viewer",IDC_CHECK_VIEWER_CLOSE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,177,157,10
+    CONTROL         "When the viewer is &opened",IDC_CHECK_VIEWER_OPEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,165,157,10
+    CONTROL         "When the viewer is c&losed",IDC_CHECK_VIEWER_CLOSE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,177,157,10
     CONTROL         "When data is added to h&istory",IDC_CHECK_HISTORY,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,189,165,10
     CONTROL         "When data is sent to &clipboard",IDC_CHECK_CLIPBOARD,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,201,165,10
-    CONTROL         "When sta&rt up",IDC_CHECK_START,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,213,165,10
-    CONTROL         "When e&xit",IDC_CHECK_END,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,225,165,10
+    CONTROL         "On sta&rtup",IDC_CHECK_START,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,213,165,10
+    CONTROL         "On e&xit",IDC_CHECK_END,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,225,165,10
     DEFPUSHBUTTON   "OK",IDOK,135,245,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,191,245,50,14
     CONTROL         "old",IDC_CHECK_OLD,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,10,245,45,10
@@ -1532,16 +1532,16 @@ END
 STRINGTABLE
 BEGIN
     IDS_OPTION_TITLE        "CLCL - Options"
-    IDS_OPTION_START_ERROR  "Sorry, it couldn't start up due to wrong version on CLCL and option."
-    IDS_OPTION_DELETE       "Are you sure you want to delete this item?"
+    IDS_OPTION_START_ERROR  "Cannot start because the versions of CLCL and Options do not match."
+    IDS_OPTION_DELETE       "Are you sure you want to delete the selected item?"
 END
 
 STRINGTABLE
 BEGIN
     IDS_MENU_FORMAT_1       "%1d - Number (Decimal)"
-    IDS_MENU_FORMAT_2       "%1x - Number (Hex in lowercase)"
+    IDS_MENU_FORMAT_2       "%1x - Number (Hexadecimal in lowercase)"
     IDS_MENU_FORMAT_3       "%1X - Number (Hexadecimal)"
-    IDS_MENU_FORMAT_4       "%n - Repeat of single numbers"
+    IDS_MENU_FORMAT_4       "%n - Repeat of a single digit"
     IDS_MENU_FORMAT_5       "%a - Alphabet (Lowercase)"
     IDS_MENU_FORMAT_6       "%A - Alphabet"
     IDS_MENU_FORMAT_7       "%b - Alphabet + Number (Lowercase)"
@@ -1564,10 +1564,10 @@ BEGIN
     IDS_FORMAT_LIST_DLL     "DLL"
     IDS_FORMAT_LIST_HEADER  "Function header"
     IDS_FORMAT_LIST_COMMENT "Comment"
-    IDS_FORMAT_LIST_FORMAT  "Format"
-    IDS_FORMAT_NON_PROP     "This Item has no options that you can set."
-    IDS_FORMAT_COMMENT_TEXT "Text disposition"
-    IDS_FORMAT_COMMENT_BITMAP "Picture disposition"
+    IDS_FORMAT_LIST_FORMAT  "Supported formats"
+    IDS_FORMAT_NON_PROP     "There are no properties that can be set."
+    IDS_FORMAT_COMMENT_TEXT "Text processing"
+    IDS_FORMAT_COMMENT_BITMAP "Picture processing"
 END
 
 STRINGTABLE
@@ -1577,16 +1577,16 @@ BEGIN
     IDS_ACTION_POPUPMEMU    "Menu"
     IDS_ACTION_VIEWER       "Viewer"
     IDS_ACTION_OPTION       "Options"
-    IDS_ACTION_CLIPBOARD_WATCH "Clipboard Watch"
+    IDS_ACTION_CLIPBOARD_WATCH "Toggle Clipboard Watch"
     IDS_ACTION_EXIT         "Exit"
     IDS_ACTION_TYPE_HOTKEY  "Hot key"
     IDS_ACTION_TYPE_CTRL_CTRL "Ctrl + Ctrl"
     IDS_ACTION_TYPE_SHIFT_SHIFT "Shift + Shift"
     IDS_ACTION_TYPE_ALT_ALT "Alt + Alt"
-    IDS_ACTION_TYPE_TRAY_LEFT "Click on left for system tray"
-    IDS_ACTION_TYPE_TRAY_LEFT_DBLCLK "Double click on left for system tray"
-    IDS_ACTION_TYPE_TRAY_RIGHT "Click on right for system tray"
-    IDS_ACTION_TYPE_TRAY_RIGHT_DBLCLK "Double click on right for system tray"
+    IDS_ACTION_TYPE_TRAY_LEFT "Left click on system tray"
+    IDS_ACTION_TYPE_TRAY_LEFT_DBLCLK "Left double click on system tray"
+    IDS_ACTION_TYPE_TRAY_RIGHT "Right click on system tray"
+    IDS_ACTION_TYPE_TRAY_RIGHT_DBLCLK "Right double click on system tray"
     IDS_ACTION_CONTENT_SEPARATOR "Separator"
 END
 
@@ -1599,7 +1599,7 @@ BEGIN
     IDS_ACTION_CONTENT_POPUP "Pop-up Menu"
     IDS_ACTION_CONTENT_VIEWER "Viewer"
     IDS_ACTION_CONTENT_OPTION "Options"
-    IDS_ACTION_CONTENT_CLIPBOARD_WATCH "Clipboard Watch"
+    IDS_ACTION_CONTENT_CLIPBOARD_WATCH "Toggle Clipboard Watch"
     IDS_ACTION_CONTENT_TOOL "Tool"
     IDS_ACTION_CONTENT_APP  "External Application"
     IDS_ACTION_CONTENT_CANCEL "Cancel"
@@ -1607,7 +1607,7 @@ BEGIN
     IDS_ACTION_TREE_MENU    "Menu"
     IDS_ACTION_TREE_NEW     "(New content)"
     IDS_ACTION_TREE_SEP     "-------------------------"
-    IDS_ACTION_ERR_ACTION   "You must select a ""Action."""
+    IDS_ACTION_ERR_ACTION   "You must select an ""Action."""
 END
 
 STRINGTABLE
@@ -1616,7 +1616,7 @@ BEGIN
     IDS_FILTER_LIST_ACTION  "Action"
     IDS_FILTER_LIST_SIZE    "Limit size"
     IDS_FILTER_ACTION_ADD   "Add"
-    IDS_FILTER_ACTION_ADD_NOSAVE "Add(Not save)"
+    IDS_FILTER_ACTION_ADD_NOSAVE "Add (Do not save)"
     IDS_FILTER_ACTION_IGNORE "Ignore"
     IDS_FILTER_ERR_NAME     "You must type a ""Format name."""
 END
@@ -1628,7 +1628,7 @@ BEGIN
     IDS_WINDOW_LIST_IGNORE  "History"
     IDS_WINDOW_LIST_FOCUS   "Focus"
     IDS_WINDOW_LIST_PASTE   "Paste"
-    IDS_WINDOW_LIST_IGNORE_ON "Ignore"
+    IDS_WINDOW_LIST_IGNORE_ON "Do not add"
     IDS_WINDOW_LIST_IGNORE_OFF "Add"
     IDS_WINDOW_LIST_FOCUS_ON "Not set"
 END
@@ -1639,7 +1639,7 @@ BEGIN
     IDS_SENDKEY_LIST_CLASSNAME "Class name"
     IDS_SENDKEY_LIST_COPY   "Copy"
     IDS_SENDKEY_LIST_PASTE  "Paste"
-    IDS_SENDKEY_ERR_INPUT   "You must type ""Title"" and ""Class name."""
+    IDS_SENDKEY_ERR_INPUT   "You must type either ""Title"" or ""Class name."""
 END
 
 STRINGTABLE
@@ -1653,7 +1653,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_FORMAT_COMMENT_FILE "Drop files"
+    IDS_FORMAT_COMMENT_FILE "Drop file processing"
     IDS_FORMAT_SELECT_TITLE "Select clipboard format"
     IDS_FORMAT_SELECT_MSG   "Please select a clipboard format."
     IDS_FORMAT_HEAD_SELECT_TITLE "Select function header"
@@ -1670,7 +1670,7 @@ BEGIN
     IDS_TOOL_LIST_HOTKEY    "Hot key"
     IDS_TOOL_SELECT_TITLE   "Select tool"
     IDS_TOOL_SELECT_MSG     "Please select a tool."
-    IDS_TOOL_NON_PROP       "This Item has no options that you can set."
+    IDS_TOOL_NON_PROP       "There are no properties that can be set."
 END
 
 STRINGTABLE
@@ -1683,7 +1683,7 @@ BEGIN
     IDS_WINDOW_LIST_FOCUS_OFF "Set"
     IDS_WINDOW_LIST_PASTE_ON "Yes"
     IDS_WINDOW_LIST_PASTE_OFF "No"
-    IDS_WINDOW_ERR_INPUT    "You must type ""Title"" and ""Class name."""
+    IDS_WINDOW_ERR_INPUT    "You must type either ""Title"" or ""Class name."""
 END
 
 #endif    // ‰pŒê (•Ä‘) resources
