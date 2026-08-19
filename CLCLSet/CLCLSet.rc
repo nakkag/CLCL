@@ -1564,7 +1564,7 @@ BEGIN
     IDS_FORMAT_LIST_DLL     "DLL"
     IDS_FORMAT_LIST_HEADER  "Function header"
     IDS_FORMAT_LIST_COMMENT "Comment"
-    IDS_FORMAT_LIST_FORMAT  "Supported formats"
+    IDS_FORMAT_LIST_FORMAT  "Formats"
     IDS_FORMAT_NON_PROP     "There are no properties that can be set."
     IDS_FORMAT_COMMENT_TEXT "Text processing"
     IDS_FORMAT_COMMENT_BITMAP "Picture processing"
@@ -1616,7 +1616,7 @@ BEGIN
     IDS_FILTER_LIST_ACTION  "Action"
     IDS_FILTER_LIST_SIZE    "Limit size"
     IDS_FILTER_ACTION_ADD   "Add"
-    IDS_FILTER_ACTION_ADD_NOSAVE "Add (Do not save)"
+    IDS_FILTER_ACTION_ADD_NOSAVE "Add (not saved)"
     IDS_FILTER_ACTION_IGNORE "Ignore"
     IDS_FILTER_ERR_NAME     "You must type a ""Format name."""
 END
