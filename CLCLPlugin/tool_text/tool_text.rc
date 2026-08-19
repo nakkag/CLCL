@@ -1,0 +1,504 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 日本語 resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+#ifdef _WIN32
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_DATE_TIME_FORMAT DIALOG 0, 0, 154, 99
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "日時形式設定"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    LTEXT           "日付形式(&D):",IDC_STATIC,11,10,100,10
+    LTEXT           "時間形式(&T):",IDC_STATIC,11,40,100,10
+    COMBOBOX        IDC_COMBO_DATE,11,20,130,155,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_TIME,11,50,130,120,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,25,75,50,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,80,75,50,14
+END
+
+IDD_DIALOG_QUOTE DIALOG 0, 0, 151, 69
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "引用符の設定"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    LTEXT           "引用符(&Q):",IDC_STATIC,10,10,90,10
+    EDITTEXT        IDC_EDIT_QUOTE_CHAR,10,20,130,13,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,20,45,50,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,75,45,50,14
+END
+
+IDD_DIALOG_JOIN_TEXT DIALOG 0, 0, 179, 79
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "テキストの連結"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,65,60,50,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,120,60,50,14
+    CONTROL         "連結するテキストの間に改行を挿入する(&R)",IDC_CHECK_ADD_RETURN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,15,150,10
+END
+
+IDD_DIALOG_TEXT_EDIT DIALOG 0, 0, 218, 168
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "テキスト編集"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    EDITTEXT        IDC_EDIT_TEXT,0,0,215,145,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_NOHIDESEL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,110,150,50,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,165,150,50,14
+END
+
+IDD_DIALOG_DELETE_CRLF DIALOG 0, 0, 165, 65
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "改行の除去"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    CONTROL         "行頭の空白を除去する(&S)",IDC_CHECK_DELETE_SPACE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,10,150,10
+    DEFPUSHBUTTON   "OK",IDOK,30,40,50,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,85,40,50,14
+END
+
+IDD_DIALOG_BREAK_CNT DIALOG 0, 0, 126, 65
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "テキスト整形"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    LTEXT           "折り返すバイト数(&B):",IDC_STATIC,10,10,90,10
+    EDITTEXT        IDC_EDIT_BREAK_CNT,10,20,35,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "bytes",IDC_STATIC,50,22,40,10
+    DEFPUSHBUTTON   "OK",IDOK,10,40,50,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,65,40,50,14
+END
+
+IDD_DIALOG_WORD_BREAK DIALOG 0, 0, 214, 185
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "テキスト整形"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    LTEXT           "タブサイズ(&T):",IDC_STATIC,10,10,90,10
+    EDITTEXT        IDC_EDIT_TAB_SIZE,10,20,35,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "行頭禁則文字(全角)(&O):",IDC_STATIC,10,45,95,10
+    EDITTEXT        IDC_EDIT_M_OIDA,10,55,190,14,ES_AUTOHSCROLL
+    LTEXT           "行末禁則文字(全角)(&B):",IDC_STATIC,10,71,95,10
+    EDITTEXT        IDC_EDIT_M_BURA,10,81,190,14,ES_AUTOHSCROLL
+    LTEXT           "行頭禁則文字(半角)(&I):",IDC_STATIC,10,105,95,10
+    EDITTEXT        IDC_EDIT_S_OIDA,10,115,190,14,ES_AUTOHSCROLL
+    LTEXT           "行末禁則文字(半角)(&U):",IDC_STATIC,10,131,95,10
+    EDITTEXT        IDC_EDIT_S_BURA,10,141,190,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,95,165,50,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,150,165,50,14
+END
+
+IDD_DIALOG_PUT_TEXT DIALOG 0, 0, 149, 93
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "テキストの挟み込み"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    LTEXT           "開始文字(&S):",IDC_STATIC,5,5,60,10
+    EDITTEXT        IDC_EDIT_OPEN,5,15,135,13,ES_AUTOHSCROLL
+    LTEXT           "終了文字(&E):",IDC_STATIC,5,35,60,10
+    EDITTEXT        IDC_EDIT_CLOSE,5,45,135,13,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,35,70,50,14
+    PUSHBUTTON      "ｷｬﾝｾﾙ",IDCANCEL,90,70,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_DIALOG_DATE_TIME_FORMAT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 147
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 92
+    END
+
+    IDD_DIALOG_QUOTE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 144
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 62
+    END
+
+    IDD_DIALOG_JOIN_TEXT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 172
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 72
+    END
+
+    IDD_DIALOG_TEXT_EDIT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 211
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 161
+    END
+
+    IDD_DIALOG_DELETE_CRLF, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 158
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 58
+    END
+
+    IDD_DIALOG_BREAK_CNT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 119
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 58
+    END
+
+    IDD_DIALOG_WORD_BREAK, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 207
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 178
+    END
+
+    IDD_DIALOG_PUT_TEXT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 142
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 86
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,1,3,0
+ PRODUCTVERSION 2,1,3,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040704b0"
+        BEGIN
+            VALUE "FileDescription", "tool_text plugin for CLCL"
+            VALUE "FileVersion", "2.1.3.0"
+            VALUE "InternalName", "tool_text.dll"
+            VALUE "LegalCopyright", "Copyright (C) 1996-2025 by Ohno Tomoaki. "
+            VALUE "OriginalFilename", "tool_text.dll"
+            VALUE "ProductName", "CLCL"
+            VALUE "ProductVersion", "2.1.3.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x411, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_DATE_TIME_CONVERSION "日時変換(&D)"
+    IDS_TO_LOWER            "小文字に変換(&L)"
+    IDS_TO_UPPER            "大文字に変換(&U)"
+    IDS_QUOTATION           "引用(&Q)"
+    IDS_UNQUOTATION         "引用解除(&N)"
+    IDS_WORDWRAP            "テキスト整形(&W)"
+    IDS_TAG                 "テキストの挟み込み(&P)"
+    IDS_DELETE_CRLF         "改行の除去(&R)"
+    IDS_CONNECT_TEXT        "テキストの連結(&O)"
+    IDS_EDIT_CLIPBOARD      "テキスト編集(&E)"
+END
+
+#endif    // 日本語 resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_DATE_TIME_FORMAT DIALOG 0, 0, 154, 99
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Date and time formatting"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "&Date Format:",IDC_STATIC,11,10,100,10
+    LTEXT           "&Time Format:",IDC_STATIC,11,40,100,10
+    COMBOBOX        IDC_COMBO_DATE,11,20,130,155,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_TIME,11,50,130,120,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,25,75,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,80,75,50,14
+END
+
+IDD_DIALOG_QUOTE DIALOG 0, 0, 151, 69
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Quotation"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "&Quotation character:",IDC_STATIC,10,10,90,10
+    EDITTEXT        IDC_EDIT_QUOTE_CHAR,10,20,130,13,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,20,45,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,75,45,50,14
+END
+
+IDD_DIALOG_JOIN_TEXT DIALOG 0, 0, 203, 69
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Connection of text"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,50,45,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,105,45,50,14
+    CONTROL         "A new-line is inserted between the texts to connect.",IDC_CHECK_ADD_RETURN,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,15,180,10
+END
+
+IDD_DIALOG_TEXT_EDIT DIALOG 0, 0, 218, 168
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Edit"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDIT_TEXT,0,0,215,145,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_NOHIDESEL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,110,150,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,165,150,50,14
+END
+
+IDD_DIALOG_DELETE_CRLF DIALOG 0, 0, 195, 65
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Delete CRLF"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "The blank of the head of the sentence is removed.",IDC_CHECK_DELETE_SPACE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,10,175,10
+    DEFPUSHBUTTON   "OK",IDOK,45,40,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,100,40,50,14
+END
+
+IDD_DIALOG_BREAK_CNT DIALOG 0, 0, 126, 65
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Word Wrap"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "&Number of word wrap:",IDC_STATIC,10,10,90,10
+    EDITTEXT        IDC_EDIT_BREAK_CNT,10,20,35,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "bytes",IDC_STATIC,50,22,40,10
+    DEFPUSHBUTTON   "OK",IDOK,10,40,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,65,40,50,14
+END
+
+IDD_DIALOG_WORD_BREAK DIALOG 0, 0, 135, 65
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Word Wrap"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "&TAB size:",IDC_STATIC,10,10,90,10
+    EDITTEXT        IDC_EDIT_TAB_SIZE,10,20,35,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    DEFPUSHBUTTON   "OK",IDOK,15,40,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,70,40,50,14
+END
+
+IDD_DIALOG_PUT_TEXT DIALOG 0, 0, 149, 93
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "<TAG></TAG>"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "&Start character:",IDC_STATIC,5,5,60,10
+    EDITTEXT        IDC_EDIT_OPEN,5,15,135,13,ES_AUTOHSCROLL
+    LTEXT           "&End character:",IDC_STATIC,5,35,60,10
+    EDITTEXT        IDC_EDIT_CLOSE,5,45,135,13,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,35,70,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,90,70,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_DIALOG_DATE_TIME_FORMAT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 147
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 92
+    END
+
+    IDD_DIALOG_QUOTE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 144
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 62
+    END
+
+    IDD_DIALOG_JOIN_TEXT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 196
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 62
+    END
+
+    IDD_DIALOG_TEXT_EDIT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 211
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 161
+    END
+
+    IDD_DIALOG_DELETE_CRLF, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 188
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 58
+    END
+
+    IDD_DIALOG_BREAK_CNT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 119
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 58
+    END
+
+    IDD_DIALOG_WORD_BREAK, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 128
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 58
+    END
+
+    IDD_DIALOG_PUT_TEXT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 142
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 86
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_DATE_TIME_CONVERSION "&Date and Time Conversion"
+    IDS_TO_LOWER            "To &Lower"
+    IDS_TO_UPPER            "To &Upper"
+    IDS_QUOTATION           "&Quotation"
+    IDS_UNQUOTATION         "U&n Quotation"
+    IDS_WORDWRAP            "&Word Wrap"
+    IDS_TAG                 "<&TAG></TAG>"
+    IDS_DELETE_CRLF         "Delete C&RLF"
+    IDS_CONNECT_TEXT        "C&onnection of text"
+    IDS_EDIT_CLIPBOARD      "&Edit"
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

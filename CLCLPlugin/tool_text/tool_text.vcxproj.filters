@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{f63cab74-a67f-4e76-8944-0ecdc1e263bb}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{9eb3a6c2-6d1b-4759-81be-ea06c9663668}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{d4885041-4432-4245-ba3a-151835f2570b}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="delete_crlf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="join_text.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="put_text.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="quote.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="text_edit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="to_lower.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="to_upper.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tool_text.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unquote.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="word_break.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="convert_date.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="tool_text.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\CLCLPlugin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="tool_text.def">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>
