@@ -404,7 +404,6 @@ __declspec(dllexport) BOOL CALLBACK bitmap_get_menu_bitmap(DATA_INFO *di, const 
 	HBITMAP old_to_hbmp;
 	BITMAP bmp;
 	BYTE *mem;
-	OSVERSIONINFO osvi;
 
 	if (di->data == NULL) {
 		return FALSE;
@@ -433,11 +432,7 @@ __declspec(dllexport) BOOL CALLBACK bitmap_get_menu_bitmap(DATA_INFO *di, const 
 	di->free_bitmap = TRUE;
 	old_to_hbmp = SelectObject(to_dc, di->menu_bitmap);
 
-	//OSバージョンのチェック
-	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx(&osvi);
-	if (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT &&
-		(width < bmp.bmWidth || height < bmp.bmHeight)) {
+	if (width < bmp.bmWidth || height < bmp.bmHeight) {
 		SetStretchBltMode(to_dc, HALFTONE);
 		SetBrushOrgEx(to_dc, 0, 0, NULL);
 	} else {

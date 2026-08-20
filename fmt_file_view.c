@@ -112,24 +112,15 @@ HDROP create_dropfile(const TCHAR **FileName, const int cnt, DWORD *ret_size)
 {
 	HDROP hDrop;
 	LPDROPFILES lpDropFile;
-	OSVERSIONINFO os_info;
 #ifndef UNICODE
 	wchar_t wbuf[BUF_SIZE];
 #endif
 	TCHAR *buf;
-	BOOL fWide = FALSE;
+	BOOL fWide = TRUE;
 	int flen = 0;
 	int i;
 
-	// OSのバージョン取得
-	os_info.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx(&os_info);
-	if (os_info.dwPlatformId == VER_PLATFORM_WIN32_NT) {
-		fWide = TRUE;
-	}
-
 #ifdef UNICODE
-	fWide = TRUE;
 	for (i = 0; i < cnt; i++) {
 		flen += (lstrlen(*(FileName + i)) + 1) * sizeof(TCHAR);
 	}
