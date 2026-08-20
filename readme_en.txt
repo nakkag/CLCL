@@ -365,6 +365,7 @@ CLCL.exe [/vwnx]
 	  English version.
 	  -> Changed the dialogs to DS_SHELLFONT so that they are displayed
 	     with the shell dialog font of the OS. (both Japanese and English)
+	  -> Widened the labels and buttons that were too narrow for their text.
 	- Added an option to show the menu without taking the focus away
 	  from the window you are working in. (Options - Menu - Attach to
 	  the process to show the menu)
