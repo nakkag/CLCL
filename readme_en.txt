@@ -354,23 +354,10 @@ CLCL.exe [/vwnx]
 
 * Update history
 
-- Ver 2.1.3 -> Ver 2.1.4
-	- Added Per-Monitor V2 DPI support. Moving the viewer between
-	  monitors that use different scaling, or changing the display
-	  scaling, is now followed without signing out.
-	- The menu is now sized for the monitor it is displayed on.
-	- The system tray, menu and viewer icons are now loaded at the size
-	  that matches the current scaling.
-	- Fixed clipped text and overlapping controls in the Options of the
-	  English version.
-	  -> Changed the dialogs to DS_SHELLFONT so that they are displayed
-	     with the shell dialog font of the OS. (both Japanese and English)
-	  -> Widened the labels and buttons that were too narrow for their text.
-	- Fixed Binary View, Text View and File View so that they follow a
-	  change of the DPI.
+- Ver 2.1.3 -> Ver 2.2.0
+	- Improved to support for high-DPI displays.
 	- Added an option to show the menu without taking the focus away
-	  from the window you are working in. (Options - Menu - Attach to
-	  the process to show the menu)
+	  from the window you are working in. 
 	- Improved the save processing performed on exit.
 	- Added UNICODE support to Binary View.
 	- Fixed CLCL so that data a password manager saves to the
