@@ -46,6 +46,28 @@
 static MENU_ITEM_INFO *menu_item_info;
 static int menu_item_cnt;
 
+#ifdef OP_XP_STYLE
+// メニューのビジュアルスタイル
+typedef HTHEME (WINAPI *OPENTHEMEDATA_PROC)(HWND, LPCWSTR);
+typedef HRESULT (WINAPI *CLOSETHEMEDATA_PROC)(HTHEME);
+typedef HRESULT (WINAPI *DRAWTHEMEBACKGROUND_PROC)(HTHEME, HDC, int, int, const RECT *, const RECT *);
+typedef HRESULT (WINAPI *GETTHEMECOLOR_PROC)(HTHEME, int, int, int, COLORREF *);
+typedef HRESULT (WINAPI *GETTHEMEPARTSIZE_PROC)(HTHEME, HDC, int, int, RECT *, int, SIZE *);
+typedef BOOL (WINAPI *ISTHEMEACTIVE_PROC)(VOID);
+typedef BOOL (WINAPI *ISTHEMEPARTDEFINED_PROC)(HTHEME, int, int);
+
+static HMODULE menu_theme_lib;
+static HTHEME menu_theme;
+
+static OPENTHEMEDATA_PROC _MenuOpenThemeData;
+static CLOSETHEMEDATA_PROC _MenuCloseThemeData;
+static DRAWTHEMEBACKGROUND_PROC _MenuDrawThemeBackground;
+static GETTHEMECOLOR_PROC _MenuGetThemeColor;
+static GETTHEMEPARTSIZE_PROC _MenuGetThemePartSize;
+static ISTHEMEACTIVE_PROC _MenuIsThemeActive;
+static ISTHEMEPARTDEFINED_PROC _MenuIsThemePartDefined;
+#endif	// OP_XP_STYLE
+
 // メニューを表示するモニタの矩形
 static RECT menu_monitor_rect;
 
@@ -77,6 +99,12 @@ static BOOL menu_set_item(const HDC hdc, const HMENU hMenu, MENU_ITEM_INFO *mii,
 static int menu_draw_bitmap(const HDC draw_dc, const DATA_INFO *di, const int height);
 static BOOL menu_draw_ckeck(const HDC draw_dc, const int left, const int top, const int right, const int bottom);
 static TCHAR menu_get_accelerator(TCHAR *str);
+#ifdef OP_XP_STYLE
+static void menu_theme_open(const HWND hWnd);
+static void menu_theme_close(void);
+static COLORREF menu_theme_text_color(const int state_id, const COLORREF default_color);
+static BOOL menu_draw_check_theme(const HDC draw_dc, const int left, const int top, const int right, const int bottom);
+#endif	// OP_XP_STYLE
 
 /*
  * menu_item_free - メニュー情報の解放
@@ -109,6 +137,9 @@ void menu_free(void)
 	menu_item_free(menu_item_info, menu_item_cnt);
 	menu_item_info = NULL;
 	menu_item_cnt = 0;
+#ifdef OP_XP_STYLE
+	menu_theme_close();
+#endif	// OP_XP_STYLE
 }
 
 /*
@@ -144,6 +175,106 @@ static void menu_load_icons(void)
 		IMAGE_ICON, icon_size, icon_size, 0);
 	menu_icon_load_size = icon_size;
 }
+
+#ifdef OP_XP_STYLE
+/*
+ * menu_theme_open - メニューのビジュアルスタイルテーマを開く
+ */
+static void menu_theme_open(const HWND hWnd)
+{
+	menu_theme_close();
+
+	if (menu_theme_lib == NULL) {
+		if ((menu_theme_lib = LoadLibrary(TEXT("uxtheme.dll"))) == NULL) {
+			return;
+		}
+		_MenuOpenThemeData = (OPENTHEMEDATA_PROC)GetProcAddress(menu_theme_lib, "OpenThemeData");
+		_MenuCloseThemeData = (CLOSETHEMEDATA_PROC)GetProcAddress(menu_theme_lib, "CloseThemeData");
+		_MenuDrawThemeBackground = (DRAWTHEMEBACKGROUND_PROC)GetProcAddress(menu_theme_lib, "DrawThemeBackground");
+		_MenuGetThemeColor = (GETTHEMECOLOR_PROC)GetProcAddress(menu_theme_lib, "GetThemeColor");
+		_MenuGetThemePartSize = (GETTHEMEPARTSIZE_PROC)GetProcAddress(menu_theme_lib, "GetThemePartSize");
+		_MenuIsThemeActive = (ISTHEMEACTIVE_PROC)GetProcAddress(menu_theme_lib, "IsThemeActive");
+		_MenuIsThemePartDefined = (ISTHEMEPARTDEFINED_PROC)GetProcAddress(menu_theme_lib, "IsThemePartDefined");
+	}
+	if (_MenuOpenThemeData == NULL || _MenuCloseThemeData == NULL ||
+		_MenuDrawThemeBackground == NULL || _MenuGetThemeColor == NULL ||
+		_MenuGetThemePartSize == NULL || _MenuIsThemeActive == NULL ||
+		_MenuIsThemePartDefined == NULL) {
+		return;
+	}
+#ifdef MENU_COLOR
+	// 色の設定がある場合は独自描画を使用する
+	if (*option.menu_color_back.color_str != TEXT('\0') ||
+		*option.menu_color_text.color_str != TEXT('\0') ||
+		*option.menu_color_highlight.color_str != TEXT('\0') ||
+		*option.menu_color_highlighttext.color_str != TEXT('\0') ||
+		*option.menu_color_3d_shadow.color_str != TEXT('\0') ||
+		*option.menu_color_3d_highlight.color_str != TEXT('\0')) {
+		return;
+	}
+#endif	// MENU_COLOR
+	if (_MenuIsThemeActive() == FALSE) {
+		return;
+	}
+	if ((menu_theme = _MenuOpenThemeData(hWnd, L"MENU")) == NULL) {
+		return;
+	}
+	// ポップアップメニューのパーツが定義されているか確認 (Vista以降)
+	if (_MenuIsThemePartDefined(menu_theme, MENU_POPUPITEM, 0) == FALSE) {
+		_MenuCloseThemeData(menu_theme);
+		menu_theme = NULL;
+	}
+}
+
+/*
+ * menu_theme_close - メニューのビジュアルスタイルテーマを閉じる
+ */
+static void menu_theme_close(void)
+{
+	if (menu_theme != NULL) {
+		_MenuCloseThemeData(menu_theme);
+		menu_theme = NULL;
+	}
+}
+
+/*
+ * menu_theme_text_color - テーマのメニュー文字色を取得
+ */
+static COLORREF menu_theme_text_color(const int state_id, const COLORREF default_color)
+{
+	COLORREF color;
+
+	if (menu_theme == NULL ||
+		_MenuGetThemeColor(menu_theme, MENU_POPUPITEM, state_id, TMT_TEXTCOLOR, &color) != S_OK) {
+		return default_color;
+	}
+	return color;
+}
+
+/*
+ * menu_draw_check_theme - テーマでメニューのチェックマークを描画
+ */
+static BOOL menu_draw_check_theme(const HDC draw_dc, const int left, const int top, const int right, const int bottom)
+{
+	RECT rect;
+	SIZE size;
+
+	if (menu_theme == NULL) {
+		return FALSE;
+	}
+	SetRect(&rect, left, top, right, bottom);
+	_MenuDrawThemeBackground(menu_theme, draw_dc, MENU_POPUPCHECKBACKGROUND, MCB_NORMAL, &rect, NULL);
+	if (_MenuGetThemePartSize(menu_theme, draw_dc, MENU_POPUPCHECK, MC_CHECKMARKNORMAL, NULL, TS_TRUE, &size) == S_OK &&
+		size.cx <= right - left && size.cy <= bottom - top) {
+		rect.left = left + ((right - left) - size.cx) / 2;
+		rect.top = top + ((bottom - top) - size.cy) / 2;
+		rect.right = rect.left + size.cx;
+		rect.bottom = rect.top + size.cy;
+	}
+	_MenuDrawThemeBackground(menu_theme, draw_dc, MENU_POPUPCHECK, MC_CHECKMARKNORMAL, &rect, NULL);
+	return TRUE;
+}
+#endif	// OP_XP_STYLE
 
 /*
  * menu_get_show_point - メニューを表示する位置の取得
@@ -969,6 +1100,10 @@ HMENU menu_create(const HWND hWnd, MENU_INFO *menu_info, const int menu_cnt,
 	}
 	// 既定のアイコンの読み込み
 	menu_load_icons();
+#ifdef OP_XP_STYLE
+	// メニューのビジュアルスタイルテーマを開く
+	menu_theme_open(hWnd);
+#endif	// OP_XP_STYLE
 	// メニュー作成
 	if ((hMenu = CreatePopupMenu()) == NULL) {
 		return NULL;
@@ -1169,6 +1304,21 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 
 	// 背景
 	SetRect(&draw_rect, 0, 0, width, height);
+#ifdef OP_XP_STYLE
+	if (menu_theme != NULL) {
+		// ビジュアルスタイルで描画
+		_MenuDrawThemeBackground(menu_theme, draw_dc, MENU_POPUPBACKGROUND, 0, &draw_rect, NULL);
+		if (ds->itemState & ODS_SELECTED) {
+			_MenuDrawThemeBackground(menu_theme, draw_dc, MENU_POPUPITEM, MPI_HOT, &draw_rect, NULL);
+			SetTextColor(draw_dc, menu_theme_text_color(MPI_HOT, menu_color_highlighttext));
+		} else if (mii->show_format == TRUE) {
+			SetTextColor(draw_dc, menu_color_highlight);
+		} else {
+			SetTextColor(draw_dc, menu_theme_text_color(MPI_NORMAL, menu_color_text));
+		}
+		SetBkMode(draw_dc, TRANSPARENT);
+	} else
+#endif	// OP_XP_STYLE
 	if (ds->itemState & ODS_SELECTED) {
 		hBrush = CreateSolidBrush(menu_color_highlight);
 		FillRect(draw_dc, &draw_rect, hBrush);
@@ -1203,6 +1353,12 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 					height / 2 - MENU_ICON_SIZE / 2, mii->icon,
 					MENU_ICON_SIZE, MENU_ICON_SIZE, 0, NULL, DI_NORMAL);
 			} else if (mii->flag & MF_CHECKED) {
+#ifdef OP_XP_STYLE
+				if (menu_draw_check_theme(draw_dc, MENU_ICON_MARGIN,
+					height / 2 - MENU_ICON_SIZE / 2,
+					MENU_ICON_MARGIN + MENU_ICON_SIZE,
+					height / 2 - MENU_ICON_SIZE / 2 + MENU_ICON_SIZE) == FALSE)
+#endif	// OP_XP_STYLE
 				menu_draw_ckeck(draw_dc, MENU_ICON_MARGIN,
 					height / 2 - MENU_ICON_SIZE / 2,
 					MENU_ICON_SIZE, MENU_ICON_SIZE);
@@ -1211,6 +1367,10 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 		}
 	} else {
 		if (mii->flag & MF_CHECKED) {
+#ifdef OP_XP_STYLE
+			if (menu_draw_check_theme(draw_dc, MENU_ICON_MARGIN, 0,
+				MENU_ICON_MARGIN + MENU_ICON_SIZE, height) == FALSE)
+#endif	// OP_XP_STYLE
 			menu_draw_ckeck(draw_dc, MENU_ICON_MARGIN, 0,
 				MENU_ICON_SIZE, height);
 		}
@@ -1236,6 +1396,11 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 				&draw_rect, DT_VCENTER | DT_SINGLELINE | DT_NOCLIP | DT_WORD_ELLIPSIS);
 			// ホットキー表示
 			if (!(ds->itemState & ODS_SELECTED) && mii->show_format == TRUE) {
+#ifdef OP_XP_STYLE
+				if (menu_theme != NULL) {
+					SetTextColor(draw_dc, menu_theme_text_color(MPI_NORMAL, menu_color_text));
+				} else
+#endif	// OP_XP_STYLE
 				SetTextColor(draw_dc, menu_color_text);
 			}
 			draw_rect.right = width - MENU_TEXT_MARGIN_RIGHT;
@@ -1248,6 +1413,20 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 
 	} else if (mii->flag & MF_SEPARATOR) {
 		// 区切り
+#ifdef OP_XP_STYLE
+		if (menu_theme != NULL) {
+			SIZE size;
+
+			SetRect(&draw_rect, MENU_SEPARATOR_MARGIN_LEFT, 0,
+				width - MENU_SEPARATOR_MARGIN_RIGHT, height);
+			if (_MenuGetThemePartSize(menu_theme, draw_dc, MENU_POPUPSEPARATOR, 0,
+				NULL, TS_TRUE, &size) == S_OK && size.cy < height) {
+				draw_rect.top = (height - size.cy) / 2;
+				draw_rect.bottom = draw_rect.top + size.cy;
+			}
+			_MenuDrawThemeBackground(menu_theme, draw_dc, MENU_POPUPSEPARATOR, 0, &draw_rect, NULL);
+		} else {
+#endif	// OP_XP_STYLE
 		hPen = CreatePen(PS_SOLID, 1, menu_color_3d_shadow);
 		hRetPen = SelectObject(draw_dc, hPen);
 		MoveToEx(draw_dc, MENU_SEPARATOR_MARGIN_LEFT,
@@ -1265,6 +1444,9 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 			MENU_SEPARATOR_HEIGHT / 2);
 		SelectObject(draw_dc, hRetPen);
 		DeleteObject(hPen);
+#ifdef OP_XP_STYLE
+		}
+#endif	// OP_XP_STYLE
 	}
 
 	// メニューに描画
