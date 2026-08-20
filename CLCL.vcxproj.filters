@@ -21,6 +21,9 @@
     <ClCompile Include="Bitmap.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Caret.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ClipBoard.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -155,6 +158,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Bitmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Caret.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ClipBoard.h">
