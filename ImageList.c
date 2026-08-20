@@ -22,8 +22,8 @@
 #include "resource.h"
 
 /* Define */
-#define LICONSIZE			Scale(32)
-#define SICONSIZE			Scale(16)
+// イメージリストのアイコンサイズ (シェルの小アイコンと同じサイズにする)
+#define SICONSIZE			GetSystemMetricsDpi(SM_CXSMICON)
 
 /* Global Variables */
 extern TCHAR work_path[];
@@ -86,8 +86,9 @@ HIMAGELIST create_imagelist(const HINSTANCE hInstance)
 	int i;
 	BOOL free_icon;
 
-	icon_list = ImageList_Create(SICONSIZE, SICONSIZE, ILC_COLOR4 | ILC_MASK, 0, 0);
-	ImageList_SetBkColor(icon_list, GetSysColor(COLOR_WINDOW));
+	icon_list = ImageList_Create(SICONSIZE, SICONSIZE, ILC_COLOR32 | ILC_MASK, 0, 0);
+	// 32bitアイコンのアルファチャンネルを有効にするため背景色は設定しない
+	ImageList_SetBkColor(icon_list, CLR_NONE);
 
 	imagelist_icon_add(hInstance, icon_list, IDI_ICON_CLIPBOARD);
 	imagelist_icon_add(hInstance, icon_list, IDI_ICON_MAIN);

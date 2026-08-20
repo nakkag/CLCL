@@ -61,11 +61,11 @@ BOOL CALLBACK set_menu_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		SendDlgItemMessage(hDlg, IDC_SPIN_MAX_WIDTH, UDM_SETRANGE, 0, (LPARAM)MAKELONG(UD_MAXVAL, 1));
 
 		CheckDlgButton(hDlg, IDC_CHECK_SHOW_ICON, option.menu_show_icon);
-		SetDlgItemInt(hDlg, IDC_EDIT_ICON_SIZE, UnScale(option.menu_icon_size), FALSE);
+		SetDlgItemInt(hDlg, IDC_EDIT_ICON_SIZE, option.menu_icon_size, FALSE);
 
 		CheckDlgButton(hDlg, IDC_CHECK_SHOW_BITMAP, option.menu_show_bitmap);
-		SetDlgItemInt(hDlg, IDC_EDIT_BMP_WIDTH, UnScale(option.menu_bitmap_width), FALSE);
-		SetDlgItemInt(hDlg, IDC_EDIT_BMP_HEIGHT, UnScale(option.menu_bitmap_height), FALSE);
+		SetDlgItemInt(hDlg, IDC_EDIT_BMP_WIDTH, option.menu_bitmap_width, FALSE);
+		SetDlgItemInt(hDlg, IDC_EDIT_BMP_HEIGHT, option.menu_bitmap_height, FALSE);
 
 		CheckDlgButton(hDlg, IDC_CHECK_SHOW_TOOLTIP, option.menu_show_tooltip);
 		SetDlgItemInt(hDlg, IDC_EDIT_SHOW_DELAY, option.tooltip_show_delay, FALSE);
@@ -75,7 +75,7 @@ BOOL CALLBACK set_menu_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CheckDlgButton(hDlg, IDC_CHECK_ATTACH_PROCESS, option.menu_attach_process);
 		CheckDlgButton(hDlg, IDC_CHECK_BREAK, option.menu_break);
 		SendDlgItemMessage(hDlg, IDC_EDIT_TEXT_FORMAT, WM_SETTEXT, 0, (LPARAM)option.menu_text_format);
-		SetDlgItemInt(hDlg, IDC_EDIT_MAX_WIDTH, UnScale(option.menu_max_width), FALSE);
+		SetDlgItemInt(hDlg, IDC_EDIT_MAX_WIDTH, option.menu_max_width, FALSE);
 
 		SendMessage(hDlg, WM_COMMAND, IDC_CHECK_SHOW_ICON, 0);
 		SendMessage(hDlg, WM_COMMAND, IDC_CHECK_SHOW_TOOLTIP, 0);
@@ -211,11 +211,11 @@ BOOL CALLBACK set_menu_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		case IDOK:
 			option.menu_show_icon = IsDlgButtonChecked(hDlg, IDC_CHECK_SHOW_ICON);
-			option.menu_icon_size = Scale(GetDlgItemInt(hDlg, IDC_EDIT_ICON_SIZE, NULL, FALSE));
+			option.menu_icon_size = GetDlgItemInt(hDlg, IDC_EDIT_ICON_SIZE, NULL, FALSE);
 
 			option.menu_show_bitmap = IsDlgButtonChecked(hDlg, IDC_CHECK_SHOW_BITMAP);
-			option.menu_bitmap_width = Scale(GetDlgItemInt(hDlg, IDC_EDIT_BMP_WIDTH, NULL, FALSE));
-			option.menu_bitmap_height = Scale(GetDlgItemInt(hDlg, IDC_EDIT_BMP_HEIGHT, NULL, FALSE));
+			option.menu_bitmap_width = GetDlgItemInt(hDlg, IDC_EDIT_BMP_WIDTH, NULL, FALSE);
+			option.menu_bitmap_height = GetDlgItemInt(hDlg, IDC_EDIT_BMP_HEIGHT, NULL, FALSE);
 
 			option.menu_show_tooltip = IsDlgButtonChecked(hDlg, IDC_CHECK_SHOW_TOOLTIP);
 			option.tooltip_show_delay = GetDlgItemInt(hDlg, IDC_EDIT_SHOW_DELAY, NULL, FALSE);
@@ -225,7 +225,7 @@ BOOL CALLBACK set_menu_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			option.menu_attach_process = IsDlgButtonChecked(hDlg, IDC_CHECK_ATTACH_PROCESS);
 			option.menu_break = IsDlgButtonChecked(hDlg, IDC_CHECK_BREAK);
 			alloc_get_text(GetDlgItem(hDlg, IDC_EDIT_TEXT_FORMAT), &option.menu_text_format);
-			option.menu_max_width = Scale(GetDlgItemInt(hDlg, IDC_EDIT_MAX_WIDTH, NULL, FALSE));
+			option.menu_max_width = GetDlgItemInt(hDlg, IDC_EDIT_MAX_WIDTH, NULL, FALSE);
 			prop_ret = 1;
 			break;
 

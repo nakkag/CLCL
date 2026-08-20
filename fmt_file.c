@@ -26,22 +26,44 @@
 
 /* Global Variables */
 static HICON file_icon;
+// 読み込み済みのアイコンのサイズ
+static int file_icon_size;
 static HWND hFileWnd;
 
 extern HINSTANCE hInst;
 
 /* Local Function Prototypes */
+static HICON file_load_icon(const int icon_size);
 
 /*
  * file_initialize - 初期化
  */
 __declspec(dllexport) BOOL CALLBACK file_initialize(void)
 {
-	if (file_icon == NULL) {
-		file_icon = LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_FILE), IMAGE_ICON, Scale(16), Scale(16), 0);
-	}
+	file_load_icon(GetSystemMetricsDpi(SM_CXSMICON));
 	fileview_regist(hInst);
 	return TRUE;
+}
+
+/*
+ * file_load_icon - 形式用のアイコンの読み込み
+ *
+ *	DPIによって必要なサイズが変わるためサイズが違う場合は読み込み直す
+ */
+static HICON file_load_icon(const int icon_size)
+{
+	if (icon_size <= 0) {
+		return file_icon;
+	}
+	if (file_icon != NULL && file_icon_size == icon_size) {
+		return file_icon;
+	}
+	if (file_icon != NULL) {
+		DestroyIcon(file_icon);
+	}
+	file_icon = (HICON)LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_FILE), IMAGE_ICON, icon_size, icon_size, 0);
+	file_icon_size = icon_size;
+	return file_icon;
 }
 
 /*
@@ -50,7 +72,7 @@ __declspec(dllexport) BOOL CALLBACK file_initialize(void)
 __declspec(dllexport) HICON CALLBACK file_get_icon(const int icon_size, BOOL *free_icon)
 {
 	*free_icon = FALSE;
-	return file_icon;
+	return file_load_icon(icon_size);
 }
 
 /*
@@ -62,6 +84,7 @@ __declspec(dllexport) BOOL CALLBACK file_free(void)
 		DestroyIcon(file_icon);
 		file_icon = NULL;
 	}
+	file_icon_size = 0;
 	return TRUE;
 }
 
@@ -202,7 +225,7 @@ __declspec(dllexport) BOOL CALLBACK file_get_menu_title(DATA_INFO *di)
  */
 __declspec(dllexport) BOOL CALLBACK file_get_menu_icon(DATA_INFO *di, const int icon_size)
 {
-	di->menu_icon = file_icon;
+	di->menu_icon = file_load_icon(icon_size);
 	di->free_icon = FALSE;
 	return TRUE;
 }

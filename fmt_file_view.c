@@ -23,6 +23,7 @@
 #include "File.h"
 #include "ListView.h"
 #include "fmt_file_view.h"
+#include "dpi.h"
 
 #include "resource.h"
 
@@ -40,8 +41,6 @@
 #define WM_LIST_DELETE					(WM_APP + 12)
 #define WM_LIST_COPY_FILENAME			(WM_APP + 13)
 #define WM_LIST_COPY_PATH				(WM_APP + 14)
-
-#define SICONSIZE						16
 
 #define ABS(n)							((n < 0) ? (n * -1) : n)
 
@@ -562,19 +561,19 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 		lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
 		lvc.fmt = LVCFMT_LEFT;
-		lvc.cx = option.fmt_file_column_name;
+		lvc.cx = Scale(option.fmt_file_column_name);
 		lvc.pszText = message_get_res(IDS_FILE_LIST_NAME);
 		lvc.iSubItem = 0;
 		ListView_InsertColumn(GetDlgItem(hWnd, IDC_LIST_FILE), lvc.iSubItem, &lvc);
 
 		lvc.fmt = LVCFMT_LEFT;
-		lvc.cx = option.fmt_file_column_folder;
+		lvc.cx = Scale(option.fmt_file_column_folder);
 		lvc.pszText = message_get_res(IDS_FILE_LIST_FOLDER);
 		lvc.iSubItem = 1;
 		ListView_InsertColumn(GetDlgItem(hWnd, IDC_LIST_FILE), lvc.iSubItem, &lvc);
 
 		lvc.fmt = LVCFMT_LEFT;
-		lvc.cx = option.fmt_file_column_type;
+		lvc.cx = Scale(option.fmt_file_column_type);
 		lvc.pszText = message_get_res(IDS_FILE_LIST_TYPE);
 		lvc.iSubItem = 2;
 		ListView_InsertColumn(GetDlgItem(hWnd, IDC_LIST_FILE), lvc.iSubItem, &lvc);
@@ -587,9 +586,10 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 
 	case WM_DESTROY:
 		// カラム幅取得
-		option.fmt_file_column_name = ListView_GetColumnWidth(GetDlgItem(hWnd, IDC_LIST_FILE), 0);
-		option.fmt_file_column_folder = ListView_GetColumnWidth(GetDlgItem(hWnd, IDC_LIST_FILE), 1);
-		option.fmt_file_column_type = ListView_GetColumnWidth(GetDlgItem(hWnd, IDC_LIST_FILE), 2);
+		SetDpiFromWindow(hWnd);
+		option.fmt_file_column_name = UnScale(ListView_GetColumnWidth(GetDlgItem(hWnd, IDC_LIST_FILE), 0));
+		option.fmt_file_column_folder = UnScale(ListView_GetColumnWidth(GetDlgItem(hWnd, IDC_LIST_FILE), 1));
+		option.fmt_file_column_type = UnScale(ListView_GetColumnWidth(GetDlgItem(hWnd, IDC_LIST_FILE), 2));
 		// フォント解放
 		if (lv_font != NULL) {
 			DeleteObject(lv_font);

@@ -54,8 +54,6 @@
 #define WM_TRAY_NOTIFY					(WM_APP + 1000)		// タスクトレイ
 #define WM_KEY_HOOK						(WM_APP + 1001)		// フック
 
-#define SICONSIZE						Scale(16)
-
 #define TRAY_ID							1					// タスクトレイID
 
 #define ID_HISTORY_TIMER				1					// タイマーID
@@ -96,8 +94,8 @@ static HMODULE themes_lib;
 static HICON icon_tray;
 static HICON icon_clip;
 static HICON icon_clip_ban;
-HICON icon_menu_default;
-HICON icon_menu_folder;
+// 読み込み済みのタスクトレイのアイコンのサイズ
+static int tray_icon_size;
 
 static POINT menu_sel_pt;
 static int menu_sel_top;
@@ -141,6 +139,7 @@ static void get_focus_info(FOCUS_INFO *fi);
 static void set_focus_info(const FOCUS_INFO *fi);
 static BOOL tray_message(const HWND hWnd, const DWORD dwMessage, const UINT uID, const HICON hIcon, const TCHAR *pszTip);
 static void set_tray_icon(const HWND hWnd, const HICON hIcon, const TCHAR *buf);
+static void load_tray_icon(void);
 static void set_tray_tooltip(const HWND hWnd);
 static BOOL show_menu_tooltip(const HWND tooltip_wnd, const HMENU hMenu, const UINT id, const BOOL mouse);
 static void menu_mask_modifier_key(void);
@@ -619,6 +618,8 @@ static BOOL show_tool_menu(const HWND hWnd, DATA_INFO *di, const int paste, cons
 	if (popup_menu != NULL) {
 		return FALSE;
 	}
+	// メニューを表示するモニタのDPIに合わせる
+	menu_set_dpi(NULL);
 	// メニュー作成
 	ZeroMemory(&mi, sizeof(MENU_INFO));
 	mi.content = MENU_CONTENT_TOOL;
@@ -705,6 +706,8 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 	// キー初期化
 	GetAsyncKeyState(VK_RBUTTON);
 
+	// メニューを表示するモニタのDPIに合わせる
+	menu_set_dpi((caret_flag == TRUE) ? &fi.cpos : NULL);
 	// メニュー作成
 	popup_menu = menu_create(hWnd, ai->menu_info, ai->menu_cnt, history_data.child, regist_data.child);
 	if (popup_menu == NULL) {
@@ -1329,6 +1332,31 @@ static void unregist_hook(void)
 }
 
 /*
+ * load_tray_icon - タスクトレイのアイコンの読み込み
+ *
+ *	タスクトレイのアイコンのサイズはDPIによって変わる
+ */
+static void load_tray_icon(void)
+{
+	int icon_size = GetSystemMetricsDpi(SM_CXSMICON);
+
+	if (icon_size == tray_icon_size) {
+		return;
+	}
+	if (icon_clip != NULL) {
+		DestroyIcon(icon_clip);
+	}
+	if (icon_clip_ban != NULL) {
+		DestroyIcon(icon_clip_ban);
+	}
+	icon_clip = (HICON)LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_CLIP),
+		IMAGE_ICON, icon_size, icon_size, 0);
+	icon_clip_ban = (HICON)LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_CLIP_BAN),
+		IMAGE_ICON, icon_size, icon_size, 0);
+	tray_icon_size = icon_size;
+}
+
+/*
  * winodw_initialize - ウィンドウの初期化
  */
 static BOOL winodw_initialize(const HWND hWnd)
@@ -1360,32 +1388,9 @@ static BOOL winodw_initialize(const HWND hWnd)
 	hToolTip = tooltip_create(hInst);
 
 	// タスクトレイにアイコンを登録
-	if (GetAwareness() != PROCESS_DPI_UNAWARE && GetScale() >= 300) {
-		icon_clip = LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_CLIP),
-			IMAGE_ICON, 48, 48, 0);
-		icon_clip_ban = LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_CLIP_BAN),
-			IMAGE_ICON, 48, 48, 0);
-	}
-	else if (GetAwareness() != PROCESS_DPI_UNAWARE && GetScale() >= 150) {
-		icon_clip = LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_CLIP),
-			IMAGE_ICON, 32, 32, 0);
-		icon_clip_ban = LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_CLIP_BAN),
-			IMAGE_ICON, 32, 32, 0);
-	}
-	else {
-		icon_clip = LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_CLIP),
-			IMAGE_ICON, 16, 16, 0);
-		icon_clip_ban = LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_CLIP_BAN),
-			IMAGE_ICON, 16, 16, 0);
-	}
+	load_tray_icon();
 	icon_tray = (option.main_clipboard_watch == 1) ? icon_clip : icon_clip_ban;
 	set_tray_icon(hWnd, icon_tray, MAIN_WINDOW_TITLE);
-
-	// メニューに表示するアイコンの読み込み
-	icon_menu_default = LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_DEFAULT),
-		IMAGE_ICON, SICONSIZE, SICONSIZE, 0);
-	icon_menu_folder = LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_FOLDER),
-		IMAGE_ICON, SICONSIZE, SICONSIZE, 0);
 
 	// クリップボード監視開始
 	if (option.main_clipboard_watch == 1) {
@@ -1537,8 +1542,8 @@ static BOOL winodw_end(const HWND hWnd)
 	}
 	DestroyIcon(icon_clip);
 	DestroyIcon(icon_clip_ban);
-	DestroyIcon(icon_menu_default);
-	DestroyIcon(icon_menu_folder);
+	// メニューに表示する既定のアイコンの解放
+	menu_free_icons();
 	return TRUE;
 }
 
@@ -1567,6 +1572,17 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		winodw_save(hWnd);
 		save_flag = TRUE;
 		return TRUE;
+
+	case WM_DPICHANGED:
+	case WM_DISPLAYCHANGE:
+		// DPIや画面構成の変更に合わせてタスクトレイのアイコンを読み込み直す
+		if (msg == WM_DPICHANGED) {
+			SetDpi(HIWORD(wParam));
+		}
+		load_tray_icon();
+		icon_tray = (option.main_clipboard_watch == 1) ? icon_clip : icon_clip_ban;
+		set_tray_tooltip(hWnd);
+		break;
 
 	case WM_ENDSESSION:
 		// Windows終了
@@ -1613,6 +1629,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		// メニュー描画
 		if (wParam == 0) {
 			HWND menu_wnd;
+			RECT monitor_rect;
 
 #ifdef MENU_LAYERER
 			menu_wnd = WindowFromDC(((DRAWITEMSTRUCT *)lParam)->hDC);
@@ -1627,7 +1644,8 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 				menu_wnd = WindowFromDC(((DRAWITEMSTRUCT *)lParam)->hDC);
 				ClientToScreen(menu_wnd, &menu_sel_pt);
-				if (menu_sel_pt.y > GetSystemMetrics(SM_CYSCREEN)) {
+				GetMonitorRectFromPoint(menu_sel_pt, &monitor_rect);
+				if (menu_sel_pt.y > monitor_rect.bottom) {
 					menu_sel_pt.x = menu_sel_pt.y = 0;
 					menu_sel_top = 0;
 				}

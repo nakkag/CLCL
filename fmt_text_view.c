@@ -25,6 +25,7 @@
 #include "Ini.h"
 #include "Font.h"
 #include "fmt_text_view.h"
+#include "dpi.h"
 
 #include "resource.h"
 
@@ -128,13 +129,10 @@ static BOOL font_select(const HWND hWnd)
 {
 	CHOOSEFONT cf;
 	LOGFONT lf;
-	HDC hdc;
 
 	// ÉtÉHÉìÉgèÓïÒÇÃçÏê¨
 	ZeroMemory(&lf, sizeof(LOGFONT));
-	hdc = GetDC(NULL);
-	lf.lfHeight = -(int)((option.fmt_txt_font_size * GetDeviceCaps(hdc, LOGPIXELSY)) / 72);
-	ReleaseDC(NULL, hdc);
+	lf.lfHeight = -MulDiv(option.fmt_txt_font_size, GetDpi(), 72);
 	lf.lfWeight = option.fmt_txt_font_weight;
 	lf.lfItalic = option.fmt_txt_font_italic;
 	lf.lfCharSet = option.fmt_txt_font_charset;

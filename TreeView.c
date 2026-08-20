@@ -28,13 +28,12 @@
 #include "Viewer.h"
 #include "TreeView.h"
 #include "ImageList.h"
+#include "dpi.h"
 
 #include "resource.h"
 
 /* Define */
 #define ERROR_TITLE						TEXT("CLCL - Error")
-
-#define SICONSIZE						16
 
 /* Global Variables */
 static HFONT tree_font;
@@ -53,6 +52,24 @@ extern OPTION_INFO option;
 /* Local Function Prototypes */
 
 /*
+ * treeview_set_font - ツリービューのフォントの設定
+ *
+ *	フォントは現在のDPIで作成されるためDPIが変わった場合も呼び出す
+ */
+void treeview_set_font(const HWND hTreeView)
+{
+	if (hTreeView == NULL || *option.tree_font_name == TEXT('\0')) {
+		return;
+	}
+	if (tree_font != NULL) {
+		DeleteObject(tree_font);
+	}
+	tree_font = font_create(option.tree_font_name, option.tree_font_size, option.tree_font_charset,
+		option.tree_font_weight, (option.tree_font_italic == 0) ? FALSE : TRUE, FALSE);
+	SendMessage(hTreeView, WM_SETFONT, (WPARAM)tree_font, MAKELPARAM(TRUE, 0));
+}
+
+/*
  * treeview_create - ツリービューの作成
  */
 HWND treeview_create(const HINSTANCE hInstance, const HWND hWnd, const int id, const HIMAGELIST icon_list)
@@ -63,20 +80,13 @@ HWND treeview_create(const HINSTANCE hInstance, const HWND hWnd, const int id, c
 	hTreeView = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE,
 		WC_TREEVIEW, NULL, WS_VISIBLE | WS_CHILD | WS_TABSTOP |
 		TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_EDITLABELS,
-		0, 0, option.viewer_sep_size, 100, hWnd, (HMENU)id, hInstance, NULL);
+		0, 0, Scale(option.viewer_sep_size), 100, hWnd, (HMENU)id, hInstance, NULL);
 	if (hTreeView == NULL) {
 		return NULL;
 	}
 
 	// フォント設定
-	if (*option.tree_font_name != TEXT('\0')) {
-		if (tree_font != NULL) {
-			DeleteObject(tree_font);
-		}
-		tree_font = font_create(option.tree_font_name, option.tree_font_size, option.tree_font_charset,
-			option.tree_font_weight, (option.tree_font_italic == 0) ? FALSE : TRUE, FALSE);
-		SendMessage(hTreeView, WM_SETFONT, (WPARAM)tree_font, MAKELPARAM(TRUE, 0));
-	}
+	treeview_set_font(hTreeView);
 
 	// イメージリストの設定
 	TreeView_SetImageList(hTreeView, icon_list, TVSIL_NORMAL);

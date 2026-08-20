@@ -20,6 +20,7 @@
 #include "Font.h"
 #include "TreeView.h"
 #include "ListView.h"
+#include "dpi.h"
 
 #include "resource.h"
 
@@ -27,8 +28,6 @@
 #ifndef LVS_EX_INFOTIP
 #define LVS_EX_INFOTIP					0x400
 #endif
-
-#define SICONSIZE						16
 
 #define ABS(n)							((n < 0) ? (n * -1) : n)
 
@@ -40,6 +39,24 @@ static HWND gTreeView;
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
+
+/*
+ * listview_set_font - リストビューのフォントの設定
+ *
+ *	フォントは現在のDPIで作成されるためDPIが変わった場合も呼び出す
+ */
+void listview_set_font(const HWND hListView)
+{
+	if (hListView == NULL || *option.list_font_name == TEXT('\0')) {
+		return;
+	}
+	if (list_font != NULL) {
+		DeleteObject(list_font);
+	}
+	list_font = font_create(option.list_font_name, option.list_font_size, option.list_font_charset,
+		option.list_font_weight, (option.list_font_italic == 0) ? FALSE : TRUE, FALSE);
+	SendMessage(hListView, WM_SETFONT, (WPARAM)list_font, MAKELPARAM(TRUE, 0));
+}
 
 /*
  * listview_create - リストビューの作成
@@ -60,14 +77,7 @@ HWND listview_create(const HINSTANCE hInstance, const HWND hWnd, const int id, c
 	ListView_SetExtendedListViewStyle(hListView, LVS_EX_INFOTIP);
 
 	// フォント設定
-	if (*option.list_font_name != TEXT('\0')) {
-		if (list_font != NULL) {
-			DeleteObject(list_font);
-		}
-		list_font = font_create(option.list_font_name, option.list_font_size, option.list_font_charset,
-			option.list_font_weight, (option.list_font_italic == 0) ? FALSE : TRUE, FALSE);
-		SendMessage(hListView, WM_SETFONT, (WPARAM)list_font, MAKELPARAM(TRUE, 0));
-	}
+	listview_set_font(hListView);
 	
 	// イメージリストの設定
 	ListView_SetImageList(hListView, icon_list, LVSIL_SMALL);
@@ -76,25 +86,25 @@ HWND listview_create(const HINSTANCE hInstance, const HWND hWnd, const int id, c
 	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
 	lvc.fmt = LVCFMT_LEFT;
-	lvc.cx = option.list_column_data;
+	lvc.cx = Scale(option.list_column_data);
 	lvc.pszText = message_get_res(IDS_LISTCOLUMN_DATA);
 	lvc.iSubItem = 0;
 	ListView_InsertColumn(hListView, lvc.iSubItem, &lvc);
 
 	lvc.fmt = LVCFMT_RIGHT;
-	lvc.cx = option.list_column_size;
+	lvc.cx = Scale(option.list_column_size);
 	lvc.pszText = message_get_res(IDS_LISTCOLUMN_SIZE);
 	lvc.iSubItem = 1;
 	ListView_InsertColumn(hListView, lvc.iSubItem, &lvc);
 
 	lvc.fmt = LVCFMT_LEFT;
-	lvc.cx = option.list_column_date;
+	lvc.cx = Scale(option.list_column_date);
 	lvc.pszText = message_get_res(IDS_LISTCOLUMN_DATE);
 	lvc.iSubItem = 2;
 	ListView_InsertColumn(hListView, lvc.iSubItem, &lvc);
 
 	lvc.fmt = LVCFMT_LEFT;
-	lvc.cx = option.list_column_window;
+	lvc.cx = Scale(option.list_column_window);
 	lvc.pszText = message_get_res(IDS_LISTCOLUMN_WINDOW);
 	lvc.iSubItem = 3;
 	ListView_InsertColumn(hListView, lvc.iSubItem, &lvc);

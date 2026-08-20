@@ -27,6 +27,7 @@
 #include "ClipBoard.h"
 #include "Font.h"
 #include "BinView.h"
+#include "dpi.h"
 
 #include "resource.h"
 
@@ -188,13 +189,10 @@ static BOOL binview_select_font(const HWND hWnd)
 {
 	CHOOSEFONT cf;
 	LOGFONT lf;
-	HDC hdc;
 
 	// ÉtÉHÉìÉgèÓïÒÇÃçÏê¨
 	ZeroMemory(&lf, sizeof(LOGFONT));
-	hdc = GetDC(NULL);
-	lf.lfHeight = -(int)((option.bin_font_size * GetDeviceCaps(hdc, LOGPIXELSY)) / 72);
-	ReleaseDC(NULL, hdc);
+	lf.lfHeight = -MulDiv(option.bin_font_size, GetDpi(), 72);
 	lf.lfWeight = option.bin_font_weight;
 	lf.lfItalic = option.bin_font_italic;
 	lf.lfCharSet = option.bin_font_charset;

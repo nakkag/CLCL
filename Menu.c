@@ -29,23 +29,40 @@
 #include "resource.h"
 
 /* Define */
-#define LICONSIZE			32
-#define SICONSIZE			16
+// メニューのサイズはDPIに合わせてスケール変換する
+#define MENU_TEXT_MARGIN_LEFT		Scale(option.menu_text_margin_left)
+#define MENU_TEXT_MARGIN_RIGHT		Scale(option.menu_text_margin_right)
+#define MENU_TEXT_MARGIN_Y			Scale(option.menu_text_margin_y)
+#define MENU_SEPARATOR_HEIGHT		Scale(option.menu_separator_height)
+#define MENU_SEPARATOR_MARGIN_LEFT	Scale(option.menu_separator_margin_left)
+#define MENU_SEPARATOR_MARGIN_RIGHT	Scale(option.menu_separator_margin_right)
+#define MENU_MAX_WIDTH				Scale(option.menu_max_width)
+#define MENU_ICON_SIZE				Scale(option.menu_icon_size)
+#define MENU_ICON_MARGIN			Scale(option.menu_icon_margin)
+#define MENU_BITMAP_WIDTH			Scale(option.menu_bitmap_width)
+#define MENU_BITMAP_HEIGHT			Scale(option.menu_bitmap_height)
 
 /* Global Variables */
 static MENU_ITEM_INFO *menu_item_info;
 static int menu_item_cnt;
 
-extern HINSTANCE hInst;
+// メニューを表示するモニタの矩形
+static RECT menu_monitor_rect;
 
-extern HICON icon_menu_default;
-extern HICON icon_menu_folder;
+// メニューに表示する既定のアイコン (現在のDPIに合わせて読み込む)
+static HICON menu_icon_default;
+static HICON menu_icon_folder;
+static int menu_icon_load_size;
+
+extern HINSTANCE hInst;
 
 // オプション
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
 static void menu_item_free(MENU_ITEM_INFO *mii, int cnt);
+static void menu_load_icons(void);
+static void menu_get_show_point(const POINT *mpos, POINT *ret);
 static MENU_ITEM_INFO *menu_id_to_menuitem(MENU_ITEM_INFO *mii, const int mcnt, const UINT id);
 static HICON menu_read_icon(const TCHAR *file_name, const int index, const int icon_size);
 static HFONT menu_create_font(void);
@@ -95,27 +112,88 @@ void menu_free(void)
 }
 
 /*
+ * menu_free_icons - メニューに表示する既定のアイコンの解放
+ */
+void menu_free_icons(void)
+{
+	if (menu_icon_default != NULL) {
+		DestroyIcon(menu_icon_default);
+		menu_icon_default = NULL;
+	}
+	if (menu_icon_folder != NULL) {
+		DestroyIcon(menu_icon_folder);
+		menu_icon_folder = NULL;
+	}
+	menu_icon_load_size = 0;
+}
+
+/*
+ * menu_load_icons - メニューに表示する既定のアイコンの読み込み
+ *
+ *	DPIやアイコンサイズが変わった場合は読み込み直す
+ */
+static void menu_load_icons(void)
+{
+	int icon_size = MENU_ICON_SIZE;
+
+	if (menu_icon_load_size == icon_size) {
+		return;
+	}
+	menu_free_icons();
+	menu_icon_default = (HICON)LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_DEFAULT),
+		IMAGE_ICON, icon_size, icon_size, 0);
+	menu_icon_folder = (HICON)LoadImage(hInst, MAKEINTRESOURCE(IDI_ICON_FOLDER),
+		IMAGE_ICON, icon_size, icon_size, 0);
+	menu_icon_load_size = icon_size;
+}
+
+/*
+ * menu_get_show_point - メニューを表示する位置の取得
+ */
+static void menu_get_show_point(const POINT *mpos, POINT *ret)
+{
+	RECT vrect;
+
+	// 仮想画面全体の矩形 (マルチモニタ対応)
+	SetRect(&vrect,
+		GetSystemMetrics(SM_XVIRTUALSCREEN),
+		GetSystemMetrics(SM_YVIRTUALSCREEN),
+		GetSystemMetrics(SM_XVIRTUALSCREEN) + GetSystemMetrics(SM_CXVIRTUALSCREEN),
+		GetSystemMetrics(SM_YVIRTUALSCREEN) + GetSystemMetrics(SM_CYVIRTUALSCREEN));
+
+	if (mpos == NULL || PtInRect(&vrect, *mpos) == FALSE) {
+		GetCursorPos(ret);
+	} else {
+		*ret = *mpos;
+	}
+}
+
+/*
+ * menu_set_dpi - メニューを表示するモニタのDPIを設定する
+ *
+ *	メニューの項目サイズを計算する前に呼び出す
+ */
+void menu_set_dpi(const POINT *mpos)
+{
+	POINT apos;
+
+	menu_get_show_point(mpos, &apos);
+	SetDpiFromPoint(apos);
+	GetMonitorRectFromPoint(apos, &menu_monitor_rect);
+}
+
+/*
  * menu_show - マウスの位置にメニューを表示する
  */
 int menu_show(const HWND hWnd, const HMENU hMenu, const POINT *mpos)
 {
 	POINT apos;
 	DWORD ret;
-	int x = 0, y = 0;
 
-	if (mpos == NULL ||
-		(mpos->x < 0 || mpos->x > GetSystemMetrics(SM_CXSCREEN) ||
-		mpos->y < 0 || mpos->y > GetSystemMetrics(SM_CYSCREEN))) {
-		GetCursorPos((LPPOINT)&apos);
-		x = apos.x;
-		y = apos.y;
-	} else {
-		x = mpos->x;
-		y = mpos->y;
-	}
+	menu_get_show_point(mpos, &apos);
 	ret = TrackPopupMenu(hMenu,
 		TPM_TOPALIGN | TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-		x, y, 0, hWnd, NULL);
+		apos.x, apos.y, 0, hWnd, NULL);
 	PostMessage(hWnd, WM_NULL, 0, 0);
 	return ret;
 }
@@ -162,6 +240,7 @@ static HICON menu_read_icon(const TCHAR *file_name, const int index, const int i
 	HICON hIcon = NULL;
 	HICON hsIcon = NULL;
 	int icon_flag;
+	BOOL large_icon;
 
 	if (file_name == NULL || *file_name == TEXT('\0')) {
 		return NULL;
@@ -171,19 +250,27 @@ static HICON menu_read_icon(const TCHAR *file_name, const int index, const int i
 	DWORD ret = 0;
 	if ((ret = ExpandEnvironmentStrings(file_name, expanded_name, MAX_PATH)) == 0 || ret > MAX_PATH)
 		return NULL;
+	// 要求されたサイズに近い方のアイコンを取得する (DPIによって小アイコンのサイズは変わる)
+	// pick the icon size closest to the requested one (the small icon size depends on the DPI)
+	large_icon = (icon_size > GetSystemMetricsDpi(SM_CXSMICON)) ? TRUE : FALSE;
+
 	// ファイルからアイコン取得
 	// get icon from file
 	ExtractIconEx(expanded_name, index, &hIcon, &hsIcon, 1);
-	if (icon_size >= LICONSIZE) {
-		DestroyIcon(hsIcon);
+	if (large_icon == TRUE) {
+		if (hsIcon != NULL) {
+			DestroyIcon(hsIcon);
+		}
 	} else {
-		DestroyIcon(hIcon);
+		if (hIcon != NULL) {
+			DestroyIcon(hIcon);
+		}
 		hIcon = hsIcon;
 	}
 	if (hIcon == NULL) {
 		// 関連付けからアイコン取得
 		// get icon from file association
-		icon_flag = SHGFI_ICON | ((icon_size == SICONSIZE) ? SHGFI_SMALLICON : SHGFI_LARGEICON);
+		icon_flag = SHGFI_ICON | ((large_icon == TRUE) ? SHGFI_LARGEICON : SHGFI_SMALLICON);
 		SHGetFileInfo(expanded_name, SHGFI_USEFILEATTRIBUTES, &shfi, sizeof(SHFILEINFO), icon_flag);
 		hIcon = shfi.hIcon;
 	}
@@ -202,9 +289,7 @@ static HFONT menu_create_font(void)
 			option.menu_font_weight, (option.menu_font_italic == 0) ? FALSE : TRUE, FALSE);
 	}
 
-	ncMetrics.cbSize = sizeof(NONCLIENTMETRICS);
-	if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS,
-		sizeof(NONCLIENTMETRICS), &ncMetrics, 0) == FALSE) {
+	if (GetNonClientMetricsDpi(&ncMetrics) == FALSE) {
 		return NULL;
 	}
 	return CreateFontIndirect(&ncMetrics.lfMenuFont);
@@ -225,40 +310,40 @@ static int menu_get_item_size(const MENU_ITEM_INFO *mii, int *width)
 	if (mii->flag & MF_SEPARATOR) {
 		// 区切り
 		ret_x = 0;
-		ret_y = option.menu_separator_height;
+		ret_y = MENU_SEPARATOR_HEIGHT;
 
 	} else if (option.menu_show_icon != 1) {
 		// テキストのみ
-		text_x += (option.menu_icon_margin + option.menu_icon_size + option.menu_text_margin_left + option.menu_text_margin_right);
-		ret_x = (text_x > option.menu_max_width) ? option.menu_max_width : text_x;
+		text_x += (MENU_ICON_MARGIN + MENU_ICON_SIZE + MENU_TEXT_MARGIN_LEFT + MENU_TEXT_MARGIN_RIGHT);
+		ret_x = (text_x > MENU_MAX_WIDTH) ? MENU_MAX_WIDTH : text_x;
 
-		text_y += (option.menu_text_margin_y * 2);
+		text_y += (MENU_TEXT_MARGIN_Y * 2);
 		ret_y = text_y;
 
 	} else if (mii->show_bitmap == TRUE) {
 		// ビットマップ表示
 		if (mii->show_di->menu_bmp_width == 0 && mii->show_di->menu_bmp_height == 0) {
-			bmp_x = option.menu_bitmap_width;
-			bmp_y = option.menu_bitmap_height;
+			bmp_x = MENU_BITMAP_WIDTH;
+			bmp_y = MENU_BITMAP_HEIGHT;
 		} else {
 			bmp_x = mii->show_di->menu_bmp_width;
 			bmp_y = mii->show_di->menu_bmp_height;
 		}
-		text_x += (option.menu_icon_margin + bmp_x + option.menu_text_margin_left + option.menu_text_margin_right);
-		ret_x = (text_x > option.menu_max_width) ? option.menu_max_width : text_x;
+		text_x += (MENU_ICON_MARGIN + bmp_x + MENU_TEXT_MARGIN_LEFT + MENU_TEXT_MARGIN_RIGHT);
+		ret_x = (text_x > MENU_MAX_WIDTH) ? MENU_MAX_WIDTH : text_x;
 
-		text_y += (option.menu_text_margin_y * 2);
-		ret_y = (bmp_y + (option.menu_icon_margin * 2) > text_y)
-			? bmp_y + (option.menu_icon_margin * 2) : text_y;
+		text_y += (MENU_TEXT_MARGIN_Y * 2);
+		ret_y = (bmp_y + (MENU_ICON_MARGIN * 2) > text_y)
+			? bmp_y + (MENU_ICON_MARGIN * 2) : text_y;
 
 	} else {
 		// アイコン表示
-		text_x += (option.menu_icon_margin + option.menu_icon_size + option.menu_text_margin_left + option.menu_text_margin_right);
-		ret_x = (text_x > option.menu_max_width) ? option.menu_max_width : text_x;
+		text_x += (MENU_ICON_MARGIN + MENU_ICON_SIZE + MENU_TEXT_MARGIN_LEFT + MENU_TEXT_MARGIN_RIGHT);
+		ret_x = (text_x > MENU_MAX_WIDTH) ? MENU_MAX_WIDTH : text_x;
 
-		text_y += (option.menu_text_margin_y * 2);
-		ret_y = (text_y > option.menu_icon_margin + option.menu_icon_size + option.menu_icon_margin)
-			? text_y : (option.menu_icon_margin + option.menu_icon_size + option.menu_icon_margin);
+		text_y += (MENU_TEXT_MARGIN_Y * 2);
+		ret_y = (text_y > MENU_ICON_MARGIN + MENU_ICON_SIZE + MENU_ICON_MARGIN)
+			? text_y : (MENU_ICON_MARGIN + MENU_ICON_SIZE + MENU_ICON_MARGIN);
 	}
 	if (width != NULL) {
 		*width = ret_x;
@@ -552,7 +637,7 @@ static BOOL menu_create_datainfo(DATA_INFO *set_di,
 			// メニューに表示するアイコンを取得
 			format_get_menu_icon((mii + i)->show_di);
 			if ((mii + i)->show_di->menu_icon == NULL) {
-				(mii + i)->icon = (di->type == TYPE_FOLDER) ? icon_menu_folder : icon_menu_default;
+				(mii + i)->icon = (di->type == TYPE_FOLDER) ? menu_icon_folder : menu_icon_default;
 			} else {
 				(mii + i)->icon = (mii + i)->show_di->menu_icon;
 			}
@@ -688,7 +773,7 @@ static MENU_ITEM_INFO *menu_create_info(MENU_INFO *menu_info, const int menu_cnt
 			(mii + j)->flag = MF_POPUP | MF_OWNERDRAW;
 			(mii + j)->item = (LPCTSTR)(mii + j);
 			(mii + j)->text = alloc_copy((menu_info + i)->title);
-			(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, option.menu_icon_size);
+			(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, MENU_ICON_SIZE);
 			(mii + j)->free_icon = TRUE;
 			(mii + j)->mii = menu_create_info(
 				(menu_info + i)->mi, (menu_info + i)->mi_cnt,
@@ -703,7 +788,7 @@ static MENU_ITEM_INFO *menu_create_info(MENU_INFO *menu_info, const int menu_cnt
 			(mii + j)->item = (LPCTSTR)(mii + j);
 			(mii + j)->text = alloc_copy(((menu_info + i)->title == NULL || *(menu_info + i)->title == TEXT('\0')) ?
 				message_get_res(IDS_MENU_VIEWER) : (menu_info + i)->title);
-			(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, option.menu_icon_size);
+			(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, MENU_ICON_SIZE);
 			(mii + j)->free_icon = TRUE;
 			j++;
 			break;
@@ -715,7 +800,7 @@ static MENU_ITEM_INFO *menu_create_info(MENU_INFO *menu_info, const int menu_cnt
 			(mii + j)->item = (LPCTSTR)(mii + j);
 			(mii + j)->text = alloc_copy(((menu_info + i)->title == NULL || *(menu_info + i)->title == TEXT('\0')) ?
 				message_get_res(IDS_MENU_OPTION) : (menu_info + i)->title);
-			(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, option.menu_icon_size);
+			(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, MENU_ICON_SIZE);
 			(mii + j)->free_icon = TRUE;
 			j++;
 			break;
@@ -727,7 +812,7 @@ static MENU_ITEM_INFO *menu_create_info(MENU_INFO *menu_info, const int menu_cnt
 			(mii + j)->item = (LPCTSTR)(mii + j);
 			(mii + j)->text = alloc_copy(((menu_info + i)->title == NULL || *(menu_info + i)->title == TEXT('\0')) ?
 				message_get_res(IDS_MENU_CLIPBOARD_WATCH) : (menu_info + i)->title);
-			(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, option.menu_icon_size);
+			(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, MENU_ICON_SIZE);
 			(mii + j)->free_icon = TRUE;
 			j++;
 			break;
@@ -747,7 +832,7 @@ static MENU_ITEM_INFO *menu_create_info(MENU_INFO *menu_info, const int menu_cnt
 					if (option.menu_show_hotkey == 1) {
 						(mii + j)->hkey = menu_get_keyname((option.tool_info + t)->modifiers, (option.tool_info + t)->virtkey);
 					}
-					(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, option.menu_icon_size);
+					(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, MENU_ICON_SIZE);
 					(mii + j)->free_icon = TRUE;
 					(mii + j)->ti = option.tool_info + t;
 					j++;
@@ -783,9 +868,9 @@ static MENU_ITEM_INFO *menu_create_info(MENU_INFO *menu_info, const int menu_cnt
 			(mii + j)->item = (LPCTSTR)(mii + j);
 			(mii + j)->text = alloc_copy((menu_info + i)->title);
 			if (*(menu_info + i)->icon_path != TEXT('\0')) {
-				(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, option.menu_icon_size);
+				(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, MENU_ICON_SIZE);
 			} else {
-				(mii + j)->icon = menu_read_icon((menu_info + i)->path, 0, option.menu_icon_size);
+				(mii + j)->icon = menu_read_icon((menu_info + i)->path, 0, MENU_ICON_SIZE);
 			}
 			(mii + j)->free_icon = TRUE;
 			// メニュー情報を設定
@@ -800,7 +885,7 @@ static MENU_ITEM_INFO *menu_create_info(MENU_INFO *menu_info, const int menu_cnt
 			(mii + j)->item = (LPCTSTR)(mii + j);
 			(mii + j)->text = alloc_copy(((menu_info + i)->title == NULL || *(menu_info + i)->title == TEXT('\0')) ?
 				message_get_res(IDS_MENU_CANCEL) : (menu_info + i)->title);
-			(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, option.menu_icon_size);
+			(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, MENU_ICON_SIZE);
 			(mii + j)->free_icon = TRUE;
 			j++;
 			break;
@@ -812,7 +897,7 @@ static MENU_ITEM_INFO *menu_create_info(MENU_INFO *menu_info, const int menu_cnt
 			(mii + j)->item = (LPCTSTR)(mii + j);
 			(mii + j)->text = alloc_copy(((menu_info + i)->title == NULL || *(menu_info + i)->title == TEXT('\0')) ?
 				message_get_res(IDS_MENU_EXIT) : (menu_info + i)->title);
-			(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, option.menu_icon_size);
+			(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, MENU_ICON_SIZE);
 			(mii + j)->free_icon = TRUE;
 			j++;
 			break;
@@ -837,7 +922,7 @@ static BOOL menu_set_item(const HDC hdc, const HMENU hMenu, MENU_ITEM_INFO *mii,
 	for (i = 0; i < cnt; i++) {
 		// メニューの高さを取得
 		if ((mii + i)->flag & MF_SEPARATOR) {
-			item_height = option.menu_separator_height;
+			item_height = MENU_SEPARATOR_HEIGHT;
 		} else if ((mii + i)->flag & MF_OWNERDRAW) {
 			if ((mii + i)->text != NULL && GetTextExtentPoint32(hdc,
 				(mii + i)->text, lstrlen((mii + i)->text), &size) == TRUE) {
@@ -855,7 +940,7 @@ static BOOL menu_set_item(const HDC hdc, const HMENU hMenu, MENU_ITEM_INFO *mii,
 		// 折り返し設定
 		menu_flag = 0;
 		height += item_height;
-		if (option.menu_break == 1 && height >= GetSystemMetrics(SM_CYSCREEN)) {
+		if (option.menu_break == 1 && height >= (menu_monitor_rect.bottom - menu_monitor_rect.top)) {
 			height = item_height;
 			menu_flag = MF_MENUBARBREAK;
 		}
@@ -884,6 +969,12 @@ HMENU menu_create(const HWND hWnd, MENU_INFO *menu_info, const int menu_cnt,
 	HFONT hFont, hRetFont;
 	int id = 0;
 
+	// メニューを表示するモニタのDPIに合わせる
+	if (IsRectEmpty(&menu_monitor_rect) != FALSE) {
+		menu_set_dpi(NULL);
+	}
+	// 既定のアイコンを現在のDPIに合わせて読み込む
+	menu_load_icons();
 	// メニュー作成
 	if ((hMenu = CreatePopupMenu()) == NULL) {
 		return NULL;
@@ -951,22 +1042,22 @@ static int menu_draw_bitmap(const HDC draw_dc, const DATA_INFO *di, const int he
 	}
 
 	if (di->menu_bmp_width == 0 && di->menu_bmp_height == 0) {
-		bmp_width = option.menu_bitmap_width;
-		bmp_height = option.menu_bitmap_height;
+		bmp_width = MENU_BITMAP_WIDTH;
+		bmp_height = MENU_BITMAP_HEIGHT;
 	} else {
 		bmp_width = di->menu_bmp_width;
 		bmp_height = di->menu_bmp_height;
 	}
 
 	BitBlt(draw_dc,
-		option.menu_icon_margin,
+		MENU_ICON_MARGIN,
 		height / 2 - bmp_height / 2,
 		bmp_width, height,
 		hdc, 0, 0, SRCCOPY);
 
 	SelectObject(hdc, hRetBmp);
 	DeleteDC(hdc);
-	return option.menu_icon_margin + bmp_width;
+	return MENU_ICON_MARGIN + bmp_width;
 }
 
 /*
@@ -1114,22 +1205,22 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 		if (left_margin == -1) {
 			// アイコン
 			if (mii->icon != NULL) {
-				DrawIconEx(draw_dc, option.menu_icon_margin,
-					height / 2 - option.menu_icon_size / 2, mii->icon,
-					option.menu_icon_size, option.menu_icon_size, 0, NULL, DI_NORMAL);
+				DrawIconEx(draw_dc, MENU_ICON_MARGIN,
+					height / 2 - MENU_ICON_SIZE / 2, mii->icon,
+					MENU_ICON_SIZE, MENU_ICON_SIZE, 0, NULL, DI_NORMAL);
 			} else if (mii->flag & MF_CHECKED) {
-				menu_draw_ckeck(draw_dc, option.menu_icon_margin,
-					height / 2 - option.menu_icon_size / 2,
-					option.menu_icon_size, option.menu_icon_size);
+				menu_draw_ckeck(draw_dc, MENU_ICON_MARGIN,
+					height / 2 - MENU_ICON_SIZE / 2,
+					MENU_ICON_SIZE, MENU_ICON_SIZE);
 			}
-			left_margin = option.menu_icon_margin + option.menu_icon_size;
+			left_margin = MENU_ICON_MARGIN + MENU_ICON_SIZE;
 		}
 	} else {
 		if (mii->flag & MF_CHECKED) {
-			menu_draw_ckeck(draw_dc, option.menu_icon_margin, 0,
-				option.menu_icon_size, height);
+			menu_draw_ckeck(draw_dc, MENU_ICON_MARGIN, 0,
+				MENU_ICON_SIZE, height);
 		}
-		left_margin = option.menu_icon_margin + GetSystemMetrics(SM_CXMENUCHECK);
+		left_margin = MENU_ICON_MARGIN + GetSystemMetrics(SM_CXMENUCHECK);
 	}
 
 	if (mii->text != NULL) {
@@ -1137,8 +1228,8 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 		hFont = menu_create_font();
 		hRetFont = SelectObject(draw_dc, hFont);
 
-		left_margin += option.menu_text_margin_left;
-		SetRect(&draw_rect, left_margin, 0, width - option.menu_text_margin_right, height);
+		left_margin += MENU_TEXT_MARGIN_LEFT;
+		SetRect(&draw_rect, left_margin, 0, width - MENU_TEXT_MARGIN_RIGHT, height);
 		if (mii->hkey == NULL) {
 			DrawText(draw_dc,
 				mii->text, lstrlen(mii->text),
@@ -1153,7 +1244,7 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 			if (!(ds->itemState & ODS_SELECTED) && mii->show_format == TRUE) {
 				SetTextColor(draw_dc, menu_color_text);
 			}
-			draw_rect.right = width - option.menu_text_margin_right;
+			draw_rect.right = width - MENU_TEXT_MARGIN_RIGHT;
 			DrawText(draw_dc,
 				mii->hkey, lstrlen(mii->hkey),
 				&draw_rect, DT_VCENTER | DT_SINGLELINE | DT_NOCLIP | DT_RIGHT);
@@ -1165,19 +1256,19 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 		// 区切り
 		hPen = CreatePen(PS_SOLID, 1, menu_color_3d_shadow);
 		hRetPen = SelectObject(draw_dc, hPen);
-		MoveToEx(draw_dc, option.menu_separator_margin_left,
-			option.menu_separator_height / 2 - 1, NULL);
-		LineTo(draw_dc, width - option.menu_separator_margin_right,
-			option.menu_separator_height / 2 - 1);
+		MoveToEx(draw_dc, MENU_SEPARATOR_MARGIN_LEFT,
+			MENU_SEPARATOR_HEIGHT / 2 - 1, NULL);
+		LineTo(draw_dc, width - MENU_SEPARATOR_MARGIN_RIGHT,
+			MENU_SEPARATOR_HEIGHT / 2 - 1);
 		SelectObject(draw_dc, hRetPen);
 		DeleteObject(hPen);
 
 		hPen = CreatePen(PS_SOLID, 1, menu_color_3d_highlight);
 		hRetPen = SelectObject(draw_dc, hPen);
-		MoveToEx(draw_dc, option.menu_separator_margin_left,
-			option.menu_separator_height / 2, NULL);
-		LineTo(draw_dc, width - option.menu_separator_margin_right,
-			option.menu_separator_height / 2);
+		MoveToEx(draw_dc, MENU_SEPARATOR_MARGIN_LEFT,
+			MENU_SEPARATOR_HEIGHT / 2, NULL);
+		LineTo(draw_dc, width - MENU_SEPARATOR_MARGIN_RIGHT,
+			MENU_SEPARATOR_HEIGHT / 2);
 		SelectObject(draw_dc, hRetPen);
 		DeleteObject(hPen);
 	}

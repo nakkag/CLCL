@@ -24,6 +24,8 @@
 #define BITMAP_CNT						7
 
 #define TOOLBAR_INDENT					Scale(5)
+// ツールバーのビットマップの基準サイズ
+#define TOOLBAR_BITMAP_SIZE				16
 
 /* Global Variables */
 static TBBUTTON tbb[] = {
@@ -52,21 +54,26 @@ extern OPTION_INFO option;
 HWND toolbar_create(const HWND hWnd, const int id)
 {
 	HWND hToolBar;
+	int bmp_size;
+	int bmp_id;
 
-	if (GetAwareness() != PROCESS_DPI_UNAWARE && GetScale() >= 300) {
-		hToolBar = CreateToolbarEx(hWnd, WS_CHILD | TBSTYLE_TOOLTIPS,
-			id, BITMAP_CNT, hInst, IDR_TOOLBAR48, tbb, sizeof(tbb) / sizeof(TBBUTTON), 0, 0,
-			48, 48, sizeof(TBBUTTON));
+	// 現在のDPIでのサイズに近いビットマップを選択する (16/32/48の3種類)
+	bmp_size = Scale(TOOLBAR_BITMAP_SIZE);
+	if (bmp_size >= 40) {
+		bmp_size = 48;
+		bmp_id = IDR_TOOLBAR48;
+	} else if (bmp_size >= 24) {
+		bmp_size = 32;
+		bmp_id = IDR_TOOLBAR32;
+	} else {
+		bmp_size = 16;
+		bmp_id = IDR_TOOLBAR;
 	}
-	else if (GetAwareness() != PROCESS_DPI_UNAWARE && GetScale() >= 150) {
-		hToolBar = CreateToolbarEx(hWnd, WS_CHILD | TBSTYLE_TOOLTIPS,
-			id, BITMAP_CNT, hInst, IDR_TOOLBAR32, tbb, sizeof(tbb) / sizeof(TBBUTTON), 0, 0,
-			32, 32, sizeof(TBBUTTON));
-	}
-	else {
-		hToolBar = CreateToolbarEx(hWnd, WS_CHILD | TBSTYLE_TOOLTIPS,
-			id, BITMAP_CNT, hInst, IDR_TOOLBAR, tbb, sizeof(tbb) / sizeof(TBBUTTON), 0, 0,
-			16, 16, sizeof(TBBUTTON));
+	hToolBar = CreateToolbarEx(hWnd, WS_CHILD | TBSTYLE_TOOLTIPS,
+		id, BITMAP_CNT, hInst, bmp_id, tbb, sizeof(tbb) / sizeof(TBBUTTON), 0, 0,
+		bmp_size, bmp_size, sizeof(TBBUTTON));
+	if (hToolBar == NULL) {
+		return NULL;
 	}
 
 	SetWindowLong(hToolBar, GWL_STYLE, GetWindowLong(hToolBar, GWL_STYLE) | TBSTYLE_FLAT);

@@ -355,6 +355,14 @@ CLCL.exe [/vwnx]
 * Update history
 
 - Ver 2.1.3 -> Ver 2.1.4
+	- Added Per-Monitor V2 DPI support. Moving the viewer between
+	  monitors that use different scaling, or changing the display
+	  scaling, is now followed without signing out.
+	- The menu is now sized for the monitor it is displayed on.
+	- The system tray, menu and viewer icons are now loaded at the size
+	  that matches the current scaling.
+	- Fixed clipped text and overlapping controls in the Options of the
+	  English version by using the system UI font for the dialogs.
 	- Added an option to show the menu without taking the focus away
 	  from the window you are working in. (Options - Menu - Attach to
 	  the process to show the menu)
