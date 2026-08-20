@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CLCL
  *
  * History.h

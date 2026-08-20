@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * File.c
@@ -34,7 +34,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str);
 
 /*
- * file_name_check - ƒtƒ@ƒCƒ‹–¼‚É‚Å‚«‚È‚¢•¶š—ñ‚ªŠÜ‚Ü‚ê‚Ä‚¢‚È‚¢‚©ƒ`ƒFƒbƒN‚ğs‚¤
+ * file_name_check - ãƒ•ã‚¡ã‚¤ãƒ«åã«ã§ããªã„æ–‡å­—åˆ—ãŒå«ã¾ã‚Œã¦ã„ãªã„ã‹ãƒã‚§ãƒƒã‚¯ã‚’è¡Œã†
  */
 BOOL file_name_check(TCHAR *file_name)
 {
@@ -43,13 +43,13 @@ BOOL file_name_check(TCHAR *file_name)
 	for (p = file_name; *p != TEXT('\0'); p++) {
 #ifndef UNICODE
 		if (IsDBCSLeadByte((BYTE)*p) == TRUE) {
-			// ‚QƒoƒCƒgƒR[ƒh‚Ìê‡
+			// ï¼’ãƒã‚¤ãƒˆã‚³ãƒ¼ãƒ‰ã®å ´åˆ
 			p++;
 			continue;
 
 		}
 #endif
-		// ƒtƒ@ƒCƒ‹–¼‚É‚Å‚«‚È‚¢•¶š‚Ìƒ`ƒFƒbƒN
+		// ãƒ•ã‚¡ã‚¤ãƒ«åã«ã§ããªã„æ–‡å­—ã®ãƒã‚§ãƒƒã‚¯
 		if (*p == TEXT('\\') ||
 			*p == TEXT('/') ||
 			*p == TEXT(':') ||
@@ -68,7 +68,7 @@ BOOL file_name_check(TCHAR *file_name)
 }
 
 /*
- * file_name_conv - ƒtƒ@ƒCƒ‹–¼‚Ég‚¦‚È‚¢•¶š‚ğ•ÏŠ·‚·‚é
+ * file_name_conv - ãƒ•ã‚¡ã‚¤ãƒ«åã«ä½¿ãˆãªã„æ–‡å­—ã‚’å¤‰æ›ã™ã‚‹
  */
 void file_name_conv(TCHAR *file_name, TCHAR conv_char)
 {
@@ -77,12 +77,12 @@ void file_name_conv(TCHAR *file_name, TCHAR conv_char)
 	for (p = file_name; *p != TEXT('\0'); p++) {
 #ifndef UNICODE
 		if (IsDBCSLeadByte((BYTE)*p) == TRUE) {
-			// ‚QƒoƒCƒgƒR[ƒh‚Ìê‡
+			// ï¼’ãƒã‚¤ãƒˆã‚³ãƒ¼ãƒ‰ã®å ´åˆ
 			p++;
 			continue;
 		}
 #endif
-		// ƒtƒ@ƒCƒ‹–¼‚É‚Å‚«‚È‚¢•¶š‚Íw’è‚Ì•¶š‚É•ÏŠ·
+		// ãƒ•ã‚¡ã‚¤ãƒ«åã«ã§ããªã„æ–‡å­—ã¯æŒ‡å®šã®æ–‡å­—ã«å¤‰æ›
 		if (*p == TEXT('\\') ||
 			*p == TEXT('/') ||
 			*p == TEXT(':') ||
@@ -100,7 +100,7 @@ void file_name_conv(TCHAR *file_name, TCHAR conv_char)
 }
 
 /*
- * file_check_directory - ƒfƒBƒŒƒNƒgƒŠ‚ª‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN‚·‚é
+ * file_check_directory - ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒå­˜åœ¨ã™ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ã™ã‚‹
  */
 BOOL file_check_directory(const TCHAR *path)
 {
@@ -113,14 +113,14 @@ BOOL file_check_directory(const TCHAR *path)
 	FindClose(hFindFile);
 
 	if (FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-		// ƒfƒBƒŒƒNƒgƒŠ‚ª‘¶İ‚µ‚½ê‡
+		// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒå­˜åœ¨ã—ãŸå ´åˆ
 		return TRUE;
 	}
 	return FALSE;
 }
 
 /*
- * file_check_file - ƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN‚·‚é
+ * file_check_file - ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã™ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ã™ã‚‹
  */
 BOOL file_check_file(const TCHAR *path)
 {
@@ -133,14 +133,14 @@ BOOL file_check_file(const TCHAR *path)
 	FindClose(hFindFile);
 
 	if ((FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
-		// ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚½ê‡
+		// ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãŸå ´åˆ
 		return TRUE;
 	}
 	return FALSE;
 }
 
 /*
- * file_read_buf - ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚Ş
+ * file_read_buf - ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€
  */
 BYTE *file_read_buf(const TCHAR *path, DWORD *ret_size, TCHAR *err_str)
 {
@@ -149,7 +149,7 @@ BYTE *file_read_buf(const TCHAR *path, DWORD *ret_size, TCHAR *err_str)
 	DWORD ret;
 	BYTE *buf;
 
-	// ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	hFile = CreateFile(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == NULL || hFile == (HANDLE)-1) {
 		message_get_error(GetLastError(), err_str);
@@ -166,7 +166,7 @@ BYTE *file_read_buf(const TCHAR *path, DWORD *ret_size, TCHAR *err_str)
 		CloseHandle(hFile);
 		return NULL;
 	}
-	// ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚±‚Ş
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿ã“ã‚€
 	if (ReadFile(hFile, buf, size, &ret, NULL) == FALSE) {
 		message_get_error(GetLastError(), err_str);
 		mem_free(&buf);
@@ -188,7 +188,7 @@ BYTE *file_read_buf(const TCHAR *path, DWORD *ret_size, TCHAR *err_str)
 }
 
 /*
- * file_write_all - ƒtƒ@ƒCƒ‹‚Éw’èƒTƒCƒY•ª‘‚«‚Ş
+ * file_write_all - ãƒ•ã‚¡ã‚¤ãƒ«ã«æŒ‡å®šã‚µã‚¤ã‚ºåˆ†æ›¸ãè¾¼ã‚€
  */
 static BOOL file_write_all(const HANDLE hFile, const void *data, const DWORD size, TCHAR *err_str)
 {
@@ -206,19 +206,19 @@ static BOOL file_write_all(const HANDLE hFile, const void *data, const DWORD siz
 }
 
 /*
- * file_write_buf - ƒtƒ@ƒCƒ‹‚É‘‚«‚Ş
+ * file_write_buf - ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã‚€
  */
 BOOL file_write_buf(const TCHAR *path, const BYTE *data, const DWORD size, TCHAR *err_str)
 {
 	HANDLE hFile;
 
-	// ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	hFile = CreateFile(path, GENERIC_READ | GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == NULL || hFile == (HANDLE)-1) {
 		message_get_error(GetLastError(), err_str);
 		return FALSE;
 	}
-	// ƒtƒ@ƒCƒ‹‚Ì‘‚«‚İ
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã®æ›¸ãè¾¼ã¿
 	if (file_write_all(hFile, data, size, err_str) == FALSE) {
 		CloseHandle(hFile);
 		return FALSE;
@@ -229,7 +229,7 @@ BOOL file_write_buf(const TCHAR *path, const BYTE *data, const DWORD size, TCHAR
 }
 
 /*
- * file_expand_option - ƒIƒvƒVƒ‡ƒ“•¶š—ñ‚ğ“WŠJ
+ * file_expand_option - ã‚ªãƒ—ã‚·ãƒ§ãƒ³æ–‡å­—åˆ—ã‚’å±•é–‹
  */
 static void file_expand_option(DATA_INFO *di, char *option)
 {
@@ -259,7 +259,7 @@ static void file_expand_option(DATA_INFO *di, char *option)
 }
 
 /*
- * file_file_to_item - ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚ñ‚ÅƒAƒCƒeƒ€ƒŠƒXƒg‚É•ÏŠ·
+ * file_file_to_item - ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚“ã§ã‚¢ã‚¤ãƒ†ãƒ ãƒªã‚¹ãƒˆã«å¤‰æ›
  */
 static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_INFO **root, const int level, TCHAR *err_str)
 {
@@ -284,11 +284,11 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 
 		case '\x4':
 			p++;
-			// ƒtƒHƒ‹ƒ_‚Ìì¬
+			// ãƒ•ã‚©ãƒ«ãƒ€ã®ä½œæˆ
 			if ((new_item = data_create_folder(NULL, err_str)) == NULL) {
 				return NULL;
 			}
-			// ƒ^ƒCƒgƒ‹
+			// ã‚¿ã‚¤ãƒˆãƒ«
 			if (size > (DWORD)(p - buf) && *p != '\x2') {
 				if (*p != '\0') {
 					new_item->title = alloc_char_to_tchar(p);
@@ -300,7 +300,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 			for (; size > (DWORD)(p - buf) && *p != '\x1' && *p != '\x4' && *p != '\x5'; p++)
 				;
 
-			// Œ`®‚Ì’Ç‰Á
+			// å½¢å¼ã®è¿½åŠ 
 			if (*root == NULL) {
 				*root = new_item;
 			} else {
@@ -316,14 +316,14 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 		case '\x1':
 			p++;
 #ifndef OPTION_SET
-			// eƒAƒCƒeƒ€‚Ìì¬
+			// è¦ªã‚¢ã‚¤ãƒ†ãƒ ã®ä½œæˆ
 			new_item = data_create_item(NULL, FALSE, err_str);
 			if (new_item == NULL) {
 				return NULL;
 			}
 #endif	// OPTION_SET
 
-			// ƒ^ƒCƒgƒ‹
+			// ã‚¿ã‚¤ãƒˆãƒ«
 			if (size > (DWORD)(p - buf) && *p != '\x2') {
 #ifndef OPTION_SET
 				if (*p != '\0') {
@@ -334,7 +334,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 					;
 				p++;
 			}
-			// XV“ú
+			// æ›´æ–°æ—¥æ™‚
 			if (size > (DWORD)(p - buf) && *p != '\x2') {
 #ifndef OPTION_SET
 				if (*p != '\0') {
@@ -350,7 +350,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 					;
 				p++;
 			}
-			// ƒEƒBƒ“ƒhƒE–¼
+			// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å
 			if (size > (DWORD)(p - buf) && *p != '\x2') {
 #ifndef OPTION_SET
 				if (*p != '\0') {
@@ -361,7 +361,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 					;
 				p++;
 			}
-			// ƒc[ƒ‹—p•¶š—ñ
+			// ãƒ„ãƒ¼ãƒ«ç”¨æ–‡å­—åˆ—
 			if (size > (DWORD)(p - buf) && *p != '\x2') {
 #ifndef OPTION_SET
 				if (*p != '\0') {
@@ -372,7 +372,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 					;
 				p++;
 			}
-			// ƒc[ƒ‹—plong
+			// ãƒ„ãƒ¼ãƒ«ç”¨long
 			if (size > (DWORD)(p - buf) && *p != '\x2') {
 #ifndef OPTION_SET
 				new_item->plugin_param = a2i(p);
@@ -381,7 +381,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 					;
 				p++;
 			}
-			// ƒIƒvƒVƒ‡ƒ“
+			// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 			if (size > (DWORD)(p - buf) && *p != '\x2') {
 #ifndef OPTION_SET
 				if (*p != '\0') {
@@ -392,7 +392,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 					;
 				p++;
 			}
-			// ƒwƒbƒ_ŠJnˆÊ’u‚Ü‚ÅƒXƒLƒbƒv
+			// ãƒ˜ãƒƒãƒ€é–‹å§‹ä½ç½®ã¾ã§ã‚¹ã‚­ãƒƒãƒ—
 			for (; size > (DWORD)(p - buf) && *p != '\x2'; p++)
 				;
 			if (size <= (DWORD)(p - buf)) {
@@ -416,7 +416,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 				return NULL;
 			}
 
-			// Œ`®–ˆ‚ÌƒAƒCƒeƒ€‚Ìì¬
+			// å½¢å¼æ¯ã®ã‚¢ã‚¤ãƒ†ãƒ ã®ä½œæˆ
 			if ((child_item = (DATA_INFO *)mem_calloc(sizeof(DATA_INFO))) == NULL) {
 				message_get_error(GetLastError(), err_str);
 				return NULL;
@@ -425,8 +425,8 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 			child_item->type = TYPE_DATA;
 #endif	// OPTION_SET
 
-			// ƒwƒbƒ_‚Ì“Ç‚İ‚İ
-			// ƒTƒCƒY
+			// ãƒ˜ãƒƒãƒ€ã®èª­ã¿è¾¼ã¿
+			// ã‚µã‚¤ã‚º
 			data_size = a2i(p);
 #ifndef OPTION_SET
 			child_item->size = data_size;
@@ -434,7 +434,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 			for (; size > (DWORD)(p - buf) && *p != '\0'; p++)
 				;
 			p++;
-			// ƒtƒH[ƒ}ƒbƒg
+			// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 			if (size > (DWORD)(p - buf) && *p != '\x3') {
 #ifndef OPTION_SET
 				child_item->format_name = alloc_char_to_tchar(p);
@@ -445,7 +445,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 					;
 				p++;
 			}
-			// ƒc[ƒ‹—p•¶š—ñ
+			// ãƒ„ãƒ¼ãƒ«ç”¨æ–‡å­—åˆ—
 			if (size > (DWORD)(p - buf) && *p != '\x3') {
 #ifndef OPTION_SET
 				child_item->plugin_string = alloc_char_to_tchar(p);
@@ -454,7 +454,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 					;
 				p++;
 			}
-			// ƒc[ƒ‹—plong
+			// ãƒ„ãƒ¼ãƒ«ç”¨long
 			if (size > (DWORD)(p - buf) && *p != '\x3') {
 #ifndef OPTION_SET
 				child_item->plugin_param = a2i(p);
@@ -463,7 +463,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 					;
 				p++;
 			}
-			// ƒIƒvƒVƒ‡ƒ“
+			// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 			if (size > (DWORD)(p - buf) && *p != '\x3') {
 #ifndef OPTION_SET
 				if (*p != '\0') {
@@ -474,7 +474,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 					;
 				p++;
 			}
-			// ƒf[ƒ^ŠJnˆÊ’u‚Ü‚ÅƒXƒLƒbƒv
+			// ãƒ‡ãƒ¼ã‚¿é–‹å§‹ä½ç½®ã¾ã§ã‚¹ã‚­ãƒƒãƒ—
 			for (; size > (DWORD)(p - buf) && *p != '\x3'; p++)
 				;
 			if (size <= (DWORD)(p - buf)) {
@@ -484,7 +484,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 
 			if (data_size > 0) {
 #ifndef OPTION_SET
-				// ƒf[ƒ^
+				// ãƒ‡ãƒ¼ã‚¿
 				if ((mem = mem_alloc(data_size)) == NULL) {
 					message_get_error(GetLastError(), err_str);
 					data_free(child_item);
@@ -503,7 +503,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 			}
 
 #ifndef OPTION_SET
-			// Œ`®‚Ì’Ç‰Á
+			// å½¢å¼ã®è¿½åŠ 
 			if (cdi == NULL) {
 				di->child = child_item;
 			} else {
@@ -518,14 +518,14 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 }
 
 /*
- * file_read_data - ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚ñ‚ÅƒAƒCƒeƒ€ƒŠƒXƒg‚É•ÏŠ·
+ * file_read_data - ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚“ã§ã‚¢ã‚¤ãƒ†ãƒ ãƒªã‚¹ãƒˆã«å¤‰æ›
  */
 BOOL file_read_data(const TCHAR *path, DATA_INFO **root, TCHAR *err_str)
 {
 	BYTE *buf;
 	DWORD size;
 
-	// ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿
 	if ((buf = file_read_buf(path, &size, err_str)) == NULL) {
 		return FALSE;
 	}
@@ -538,21 +538,21 @@ BOOL file_read_data(const TCHAR *path, DATA_INFO **root, TCHAR *err_str)
 }
 
 /*
- * file_item_to_file - ƒAƒCƒeƒ€ƒŠƒXƒg‚ğƒtƒ@ƒCƒ‹‚É‘‚«‚Ş
+ * file_item_to_file - ã‚¢ã‚¤ãƒ†ãƒ ãƒªã‚¹ãƒˆã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã‚€
  *
- *	\x1 title \0 modified \0 app_name \0 plugin_string \0 plugin_param \0 option \0		#ƒAƒCƒeƒ€
- *		\x2 size \0 format_name \0 plugin_string \0 plugin_param \0  option \0			#ƒf[ƒ^ƒwƒbƒ_
- *			\x3 data																	#ƒf[ƒ^
+ *	\x1 title \0 modified \0 app_name \0 plugin_string \0 plugin_param \0 option \0		#ã‚¢ã‚¤ãƒ†ãƒ 
+ *		\x2 size \0 format_name \0 plugin_string \0 plugin_param \0  option \0			#ãƒ‡ãƒ¼ã‚¿ãƒ˜ãƒƒãƒ€
+ *			\x3 data																	#ãƒ‡ãƒ¼ã‚¿
  *		\x2 size \0 format_name \0 plugin_string \0 plugin_param \0  option \0
  *			\x3 data
  *
- *	\x4 title \0																		#ƒtƒHƒ‹ƒ_
+ *	\x4 title \0																		#ãƒ•ã‚©ãƒ«ãƒ€
  *		\x1 title \0 modified \0 app_name \0 plugin_string \0 plugin_param \0 option \0
  *			\x2 size \0 format_name \0 plugin_string \0 plugin_param \0 option \0
  *				\x3 data
  *			\x2 size \0 format_name \0 plugin_string \0 plugin_param \0 option \0
  *				\x3 data
- *	\x5																					#ƒtƒHƒ‹ƒ_I—¹ƒ}[ƒN
+ *	\x5																					#ãƒ•ã‚©ãƒ«ãƒ€çµ‚äº†ãƒãƒ¼ã‚¯
  */
 static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 {
@@ -566,32 +566,32 @@ static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 	DWORD len, size;
 	int i;
 
-	// •Û‘¶•¶š—ñ‚Ìì¬
+	// ä¿å­˜æ–‡å­—åˆ—ã®ä½œæˆ
 	for (; di != NULL; di = di->next) {
 		if (di->type == TYPE_FOLDER) {
-			// ƒtƒHƒ‹ƒ_‚Ì‘‚«‚İ
+			// ãƒ•ã‚©ãƒ«ãƒ€ã®æ›¸ãè¾¼ã¿
 			len = 1;	// \x4
 			if (di->title != NULL) {
 				len += tchar_to_char_size(di->title);
 			}
 			len++;		// \0
 
-			// Šm•Û
+			// ç¢ºä¿
 			if ((p = buf = mem_alloc(len)) == NULL) {
 				message_get_error(GetLastError(), err_str);
 				return FALSE;
 			}
 
-			// ƒAƒCƒeƒ€ŠJnƒ}[ƒN
+			// ã‚¢ã‚¤ãƒ†ãƒ é–‹å§‹ãƒãƒ¼ã‚¯
 			*(p++) = '\x4';
-			// ƒ^ƒCƒgƒ‹
+			// ã‚¿ã‚¤ãƒˆãƒ«
 			if (di->title != NULL) {
 				tchar_to_char(di->title, p, tchar_to_char_size(di->title));
 				p += tchar_to_char_size(di->title);
 			}
 			*(p++) = '\0';
 
-			// ‘‚«‚İ
+			// æ›¸ãè¾¼ã¿
 			if (file_write_all(hFile, buf, len, err_str) == FALSE) {
 				mem_free(&buf);
 				return FALSE;
@@ -601,7 +601,7 @@ static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 			if (file_item_to_file(hFile, di->child, err_str) == FALSE) {
 				return FALSE;
 			}
-			// ‘‚«‚İ
+			// æ›¸ãè¾¼ã¿
 			if (file_write_all(hFile, "\x5", 1, err_str) == FALSE) {
 				return FALSE;
 			}
@@ -611,7 +611,7 @@ static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 		if (di->type != TYPE_ITEM || di->child == NULL) {
 			continue;
 		}
-		// ƒTƒCƒYæ“¾
+		// ã‚µã‚¤ã‚ºå–å¾—
 		len = 1;	// \x1
 		if (di->title != NULL) {
 			len += tchar_to_char_size(di->title);
@@ -642,22 +642,22 @@ static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 		len++;		// \0
 		len++;		// \x2
 
-		// Šm•Û
+		// ç¢ºä¿
 		if ((p = buf = mem_alloc(len)) == NULL) {
 			message_get_error(GetLastError(), err_str);
 			return FALSE;
 		}
 
-		// ƒAƒCƒeƒ€ŠJnƒ}[ƒN
+		// ã‚¢ã‚¤ãƒ†ãƒ é–‹å§‹ãƒãƒ¼ã‚¯
 		*(p++) = '\x1';
 
-		// ƒ^ƒCƒgƒ‹
+		// ã‚¿ã‚¤ãƒˆãƒ«
 		if (di->title != NULL) {
 			tchar_to_char(di->title, p, tchar_to_char_size(di->title));
 			p += tchar_to_char_size(di->title);
 		}
 		*(p++) = '\0';
-		// XV“ú
+		// æ›´æ–°æ—¥æ™‚
 		_itot_s(di->modified.dwHighDateTime, str_date, BUF_SIZE, 16);
 		for (i = 0; i < 8 - lstrlen(str_date); i++) {
 			*(p++) = '0';
@@ -671,30 +671,30 @@ static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 		tchar_to_char(str_date, p, tchar_to_char_size(str_date));
 		p += lstrlen(str_date);
 		*(p++) = '\0';
-		// ƒEƒBƒ“ƒhƒE–¼
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å
 		if (di->window_name != NULL) {
 			tchar_to_char(di->window_name, p, tchar_to_char_size(di->window_name));
 			p += tchar_to_char_size(di->window_name);
 		}
 		*(p++) = '\0';
-		// ƒc[ƒ‹—p•¶š—ñ
+		// ãƒ„ãƒ¼ãƒ«ç”¨æ–‡å­—åˆ—
 		if (di->plugin_string != NULL) {
 			tchar_to_char(di->plugin_string, p, tchar_to_char_size(di->plugin_string));
 			p += tchar_to_char_size(di->plugin_string);
 		}
 		*(p++) = '\0';
-		// ƒc[ƒ‹—plong
+		// ãƒ„ãƒ¼ãƒ«ç”¨long
 		tchar_to_char(str_param, p, tchar_to_char_size(str_param));
 		p += tchar_to_char_size(str_param);
 		*(p++) = '\0';
-		// ƒIƒvƒVƒ‡ƒ“
+		// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 		tchar_to_char(str_op, p, tchar_to_char_size(str_op));
 		p += tchar_to_char_size(str_op);
 		*(p++) = '\0';
-		// ƒwƒbƒ_ŠJnƒ}[ƒN
+		// ãƒ˜ãƒƒãƒ€é–‹å§‹ãƒãƒ¼ã‚¯
 		*(p++) = '\x2';
 
-		// ‘‚«‚İ
+		// æ›¸ãè¾¼ã¿
 		if (file_write_all(hFile, buf, len, err_str) == FALSE) {
 			mem_free(&buf);
 			return FALSE;
@@ -702,14 +702,14 @@ static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 		mem_free(&buf);
 
 		for (cdi = di->child; cdi != NULL; cdi = cdi->next) {
-			// ƒTƒCƒYæ“¾
+			// ã‚µã‚¤ã‚ºå–å¾—
 			len = 0;
-			// ƒf[ƒ^æ“¾
+			// ãƒ‡ãƒ¼ã‚¿å–å¾—
 			if ((mem = format_data_to_bytes(cdi, &size)) == NULL) {
 				mem = clipboard_data_to_bytes(cdi, &size);
 			}
 			if (mem != NULL) {
-				// ƒTƒCƒY
+				// ã‚µã‚¤ã‚º
 				_itot_s(size, str_size, BUF_SIZE, 10);
 				len += tchar_to_char_size(str_size);
 				len++;		// \0
@@ -743,47 +743,47 @@ static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 			len++;			// \0
 			len++;			// \x3
 
-			// Šm•Û
+			// ç¢ºä¿
 			if ((p = buf = mem_alloc(len)) == NULL) {
 				message_get_error(GetLastError(), err_str);
 				return FALSE;
 			}
 
-			// ƒwƒbƒ_ì¬
-			// ƒTƒCƒY
+			// ãƒ˜ãƒƒãƒ€ä½œæˆ
+			// ã‚µã‚¤ã‚º
 			tchar_to_char(str_size, p, tchar_to_char_size(str_size));
 			p += tchar_to_char_size(str_size);
 			*(p++) = '\0';
-			// ƒtƒH[ƒ}ƒbƒg–¼
+			// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå
 			if (cdi->format_name != NULL) {
 				tchar_to_char(cdi->format_name, p, tchar_to_char_size(cdi->format_name));
 				p += tchar_to_char_size(cdi->format_name);
 			}
 			*(p++) = '\0';
-			// ƒc[ƒ‹—p•¶š—ñ
+			// ãƒ„ãƒ¼ãƒ«ç”¨æ–‡å­—åˆ—
 			if (cdi->plugin_string != NULL) {
 				tchar_to_char(cdi->plugin_string, p, tchar_to_char_size(cdi->plugin_string));
 				p += tchar_to_char_size(cdi->plugin_string);
 			}
 			*(p++) = '\0';
-			// ƒc[ƒ‹—plong
+			// ãƒ„ãƒ¼ãƒ«ç”¨long
 			tchar_to_char(str_param, p, tchar_to_char_size(str_param));
 			p += tchar_to_char_size(str_param);
 			*(p++) = '\0';
-			// ƒIƒvƒVƒ‡ƒ“
+			// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 			tchar_to_char(str_op, p, tchar_to_char_size(str_op));
 			p += tchar_to_char_size(str_op);
 			*(p++) = '\0';
-			// ƒf[ƒ^ŠJnƒ}[ƒN
+			// ãƒ‡ãƒ¼ã‚¿é–‹å§‹ãƒãƒ¼ã‚¯
 			*(p++) = '\x3';
 
-			// ƒf[ƒ^
+			// ãƒ‡ãƒ¼ã‚¿
 			if (mem != NULL) {
 				CopyMemory(p, mem, size);
 				mem_free(&mem);
 			}
 
-			// ‘‚«‚İ
+			// æ›¸ãè¾¼ã¿
 			if (file_write_all(hFile, buf, len, err_str) == FALSE) {
 				mem_free(&buf);
 				return FALSE;
@@ -795,7 +795,7 @@ static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str)
 }
 
 /*
- * file_write_data - ƒAƒCƒeƒ€ƒŠƒXƒgƒtƒ@ƒCƒ‹‚Ìì¬
+ * file_write_data - ã‚¢ã‚¤ãƒ†ãƒ ãƒªã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã®ä½œæˆ
  */
 BOOL file_write_data(const TCHAR *path, DATA_INFO *di, TCHAR *err_str)
 {
@@ -811,7 +811,7 @@ BOOL file_write_data(const TCHAR *path, DATA_INFO *di, TCHAR *err_str)
 	wsprintf(tmp_path, TEXT("%s.tmp"), path);
 	DeleteFile(tmp_path);
 
-	// •Û‘¶
+	// ä¿å­˜
 	hFile = CreateFile(tmp_path, GENERIC_READ | GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == NULL || hFile == (HANDLE)-1) {
 		message_get_error(GetLastError(), err_str);
@@ -845,7 +845,7 @@ BOOL file_write_data(const TCHAR *path, DATA_INFO *di, TCHAR *err_str)
 }
 
 /*
- * shell_open - ƒtƒ@ƒCƒ‹‚ğÀs
+ * shell_open - ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å®Ÿè¡Œ
  */
 BOOL shell_open(const TCHAR *file_name, const TCHAR *command_line)
 {

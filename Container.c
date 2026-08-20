@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Container.c
@@ -25,7 +25,7 @@
 /* Local Function Prototypes */
 
 /*
- * binview_proc - ƒEƒBƒ“ƒhƒE‚ÌƒvƒƒV[ƒWƒƒ
+ * binview_proc - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 static LRESULT CALLBACK container_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -34,16 +34,16 @@ static LRESULT CALLBACK container_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
 	switch (msg) {
 	case WM_CREATE:
-		// ƒEƒBƒ“ƒhƒEì¬
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½œæˆ
 		break;
 
 	case WM_CLOSE:
-		// ƒEƒBƒ“ƒhƒE‚ğ•Â‚¶‚é
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’é–‰ã˜ã‚‹
 		DestroyWindow(hWnd);
 		break;
 
 	case WM_DESTROY:
-		// ƒEƒBƒ“ƒhƒE‚Ì”jŠü
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ç ´æ£„
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 
 	case WM_SETFOCUS:
@@ -65,10 +65,10 @@ static LRESULT CALLBACK container_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		break;
 
 	case WM_SIZE:
-		// ƒTƒCƒY•ÏX
+		// ã‚µã‚¤ã‚ºå¤‰æ›´
 		GetClientRect(hWnd, (LPRECT)&window_rect);
 
-		// qƒEƒBƒ“ƒhƒE‚ğŒŸõ‚µ‚ÄƒTƒCƒY‚ğİ’è
+		// å­ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’æ¤œç´¢ã—ã¦ã‚µã‚¤ã‚ºã‚’è¨­å®š
 		cWnd = GetWindow(hWnd, GW_CHILD);
 		while (cWnd != NULL) {
 			if (IsWindowVisible(cWnd) == TRUE) {
@@ -95,7 +95,7 @@ static LRESULT CALLBACK container_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		break;
 
 	case WM_DPICHANGED_AFTERPARENT:
-		// Œ`®–ˆ‚ÌƒEƒBƒ“ƒhƒE‚Ö’Ê’m
+		// å½¢å¼æ¯ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¸é€šçŸ¥
 		cWnd = GetWindow(hWnd, GW_CHILD);
 		while (cWnd != NULL) {
 			SendMessage(cWnd, msg, wParam, lParam);
@@ -110,7 +110,7 @@ static LRESULT CALLBACK container_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 }
 
 /*
- * container_regist - ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì“o˜^
+ * container_regist - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ç™»éŒ²
  */
 BOOL container_regist(const HINSTANCE hInstance)
 {
@@ -126,18 +126,18 @@ BOOL container_regist(const HINSTANCE hInstance)
 	wc.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
 	wc.lpszMenuName = NULL;
 	wc.lpszClassName = WINDOW_CLASS;
-	// ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì“o˜^
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ç™»éŒ²
 	return RegisterClass(&wc);
 }
 
 /*
- * container_create - ƒoƒCƒiƒŠƒrƒ…[ƒA‚Ìì¬
+ * container_create - ãƒã‚¤ãƒŠãƒªãƒ“ãƒ¥ãƒ¼ã‚¢ã®ä½œæˆ
  */
 HWND container_create(const HINSTANCE hInstance, const HWND pWnd, int id)
 {
 	HWND hWnd;
 
-	// ƒEƒBƒ“ƒhƒE‚Ìì¬
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½œæˆ
 	hWnd = CreateWindow(WINDOW_CLASS,
 		TEXT(""),
 		WS_CHILD | WS_VISIBLE | WS_TABSTOP,

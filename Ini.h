@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Ini.h
@@ -58,8 +58,8 @@ typedef struct _ACTION_INFO {
 	int action;							// ACTION_
 	int type;							// ACTION_TYPE_
 
-	int enable;							// 0-–³Œø 1-—LŒø
-	int caret;							// CaretˆÊ’u‚É•\¦
+	int enable;							// 0-ç„¡åŠ¹ 1-æœ‰åŠ¹
+	int caret;							// Caretä½ç½®ã«è¡¨ç¤º
 
 	// hot key
 	int id;
@@ -74,55 +74,55 @@ typedef struct _ACTION_INFO {
 // option
 typedef struct _OPTION_INFO {
 	// main
-	int main_clipboard_watch;			// ƒNƒŠƒbƒvƒ{[ƒhŠÄ‹
-	int main_clipboard_rechain_minute;	// ƒNƒŠƒbƒvƒ{[ƒhÄŠÄ‹ŠÔ
-	int main_show_trayicon;				// ƒ^ƒXƒNƒgƒŒƒC‚ÉƒAƒCƒRƒ“‚ğ•\¦
-	int main_show_viewer;				// ‹N“®‚Éƒrƒ…[ƒA‚ğ•\¦
+	int main_clipboard_watch;			// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ç›£è¦–
+	int main_clipboard_rechain_minute;	// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰å†ç›£è¦–æ™‚é–“
+	int main_show_trayicon;				// ã‚¿ã‚¹ã‚¯ãƒˆãƒ¬ã‚¤ã«ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¡¨ç¤º
+	int main_show_viewer;				// èµ·å‹•æ™‚ã«ãƒ“ãƒ¥ãƒ¼ã‚¢ã‚’è¡¨ç¤º
 
 	// data
 	TCHAR *data_date_format;
 	TCHAR *data_time_format;
 
 	// history
-	int history_add_interval;			// —š—ğ‚É’Ç‰Á‚·‚é‚Ü‚Å‚ÌƒCƒ“ƒ^[ƒoƒ‹
-	int history_save;					// I—¹‚É—š—ğ‚ğ•Û‘¶
-	int history_always_save;			// •ÏX‚ª‚ ‚ê‚Îí‚É•Û‘¶
-	int history_delete;					// ƒNƒŠƒbƒvƒ{[ƒh‚É‘—‚é‚Æ—š—ğ‚©‚çíœ
-	int history_max;					// —š—ğŒ”
-	int history_overlap_check;			// —š—ğ‚Ìd•¡ƒ`ƒFƒbƒN 0-ƒ`ƒFƒbƒN‚µ‚È‚¢ 1-Å‹ß‚Ì‚PŒ‚Ì‚İƒ`ƒFƒbƒN 2-‘S‚Ä‚Ì—š—ğ‚ğƒ`ƒFƒbƒN
-	int history_ignore_regist_item;		// “o˜^ƒAƒCƒeƒ€‚ğƒNƒŠƒbƒvƒ{[ƒh‚É‘—‚Á‚½‚É—š—ğ‚É“ü‚ê‚È‚¢
+	int history_add_interval;			// å±¥æ­´ã«è¿½åŠ ã™ã‚‹ã¾ã§ã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒ«
+	int history_save;					// çµ‚äº†æ™‚ã«å±¥æ­´ã‚’ä¿å­˜
+	int history_always_save;			// å¤‰æ›´ãŒã‚ã‚Œã°å¸¸ã«ä¿å­˜
+	int history_delete;					// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«é€ã‚‹ã¨å±¥æ­´ã‹ã‚‰å‰Šé™¤
+	int history_max;					// å±¥æ­´ä»¶æ•°
+	int history_overlap_check;			// å±¥æ­´ã®é‡è¤‡ãƒã‚§ãƒƒã‚¯ 0-ãƒã‚§ãƒƒã‚¯ã—ãªã„ 1-æœ€è¿‘ã®ï¼‘ä»¶ã®ã¿ãƒã‚§ãƒƒã‚¯ 2-å…¨ã¦ã®å±¥æ­´ã‚’ãƒã‚§ãƒƒã‚¯
+	int history_ignore_regist_item;		// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã‚’ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«é€ã£ãŸæ™‚ã«å±¥æ­´ã«å…¥ã‚Œãªã„
 
 	// menu
-	TCHAR *menu_text_format;			// ƒƒjƒ…[ƒ^ƒCƒgƒ‹‚Ì•\¦Œ`®
-	int menu_intact_item_title;			// ƒAƒCƒeƒ€ƒ^ƒCƒgƒ‹‚ª‚ ‚éê‡‚Í‚»‚Ì‚Ü‚Ü•\¦‚·‚é
-	int menu_text_margin_left;			// ƒeƒLƒXƒg‚Ì¶ƒ}[ƒWƒ“
-	int menu_text_margin_right;			// ƒeƒLƒXƒg‚Ì‰Eƒ}[ƒWƒ“
-	int menu_text_margin_y;				// ƒeƒLƒXƒg‚Ìã‰ºƒ}[ƒWƒ“
-	int menu_separator_height;			// ‹æØ‚è‚Ì‚‚³
-	int menu_separator_margin_left;		// ‹æØ‚è‚Ì¶ƒ}[ƒWƒ“
-	int menu_separator_margin_right;	// ‹æØ‚è‚Ì‰Eƒ}[ƒWƒ“
-	int menu_max_width;					// ƒƒjƒ…[‚ÌÅ‘å•
-	int menu_break;						// ‰æ–Ê‚©‚ç‚Í‚İo‚½ê‡‚ÌÜ‚è•Ô‚µ
-	int menu_show_icon;					// ƒAƒCƒRƒ“•\¦
-	int menu_icon_size;					// ƒAƒCƒRƒ“‚ÌƒTƒCƒY
-	int menu_icon_margin;				// ƒAƒCƒRƒ“‚Ìƒ}[ƒWƒ“
-	int menu_show_bitmap;				// ƒrƒbƒgƒ}ƒbƒv•\¦
-	int menu_bitmap_width;				// ƒrƒbƒgƒ}ƒbƒv‚Ì‰¡•
-	int menu_bitmap_height;				// ƒrƒbƒgƒ}ƒbƒv‚Ìc•
-	int menu_show_tooltip;				// ƒc[ƒ‹ƒ`ƒbƒv•\¦
-	int menu_show_hotkey;				// ƒzƒbƒgƒL[‚ğ•\¦
-	int menu_show_tool_menu;			// ƒc[ƒ‹ƒƒjƒ…[•\¦
-	int menu_attach_process;			// ƒvƒƒZƒX‚ÉƒAƒ^ƒbƒ`‚µ‚Äƒƒjƒ…[‚ğ•\¦
+	TCHAR *menu_text_format;			// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¿ã‚¤ãƒˆãƒ«ã®è¡¨ç¤ºå½¢å¼
+	int menu_intact_item_title;			// ã‚¢ã‚¤ãƒ†ãƒ ã‚¿ã‚¤ãƒˆãƒ«ãŒã‚ã‚‹å ´åˆã¯ãã®ã¾ã¾è¡¨ç¤ºã™ã‚‹
+	int menu_text_margin_left;			// ãƒ†ã‚­ã‚¹ãƒˆã®å·¦ãƒãƒ¼ã‚¸ãƒ³
+	int menu_text_margin_right;			// ãƒ†ã‚­ã‚¹ãƒˆã®å³ãƒãƒ¼ã‚¸ãƒ³
+	int menu_text_margin_y;				// ãƒ†ã‚­ã‚¹ãƒˆã®ä¸Šä¸‹ãƒãƒ¼ã‚¸ãƒ³
+	int menu_separator_height;			// åŒºåˆ‡ã‚Šã®é«˜ã•
+	int menu_separator_margin_left;		// åŒºåˆ‡ã‚Šã®å·¦ãƒãƒ¼ã‚¸ãƒ³
+	int menu_separator_margin_right;	// åŒºåˆ‡ã‚Šã®å³ãƒãƒ¼ã‚¸ãƒ³
+	int menu_max_width;					// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®æœ€å¤§å¹…
+	int menu_break;						// ç”»é¢ã‹ã‚‰ã¯ã¿å‡ºãŸå ´åˆã®æŠ˜ã‚Šè¿”ã—
+	int menu_show_icon;					// ã‚¢ã‚¤ã‚³ãƒ³è¡¨ç¤º
+	int menu_icon_size;					// ã‚¢ã‚¤ã‚³ãƒ³ã®ã‚µã‚¤ã‚º
+	int menu_icon_margin;				// ã‚¢ã‚¤ã‚³ãƒ³ã®ãƒãƒ¼ã‚¸ãƒ³
+	int menu_show_bitmap;				// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—è¡¨ç¤º
+	int menu_bitmap_width;				// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®æ¨ªå¹…
+	int menu_bitmap_height;				// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®ç¸¦å¹…
+	int menu_show_tooltip;				// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—è¡¨ç¤º
+	int menu_show_hotkey;				// ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã‚’è¡¨ç¤º
+	int menu_show_tool_menu;			// ãƒ„ãƒ¼ãƒ«ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¡¨ç¤º
+	int menu_attach_process;			// ãƒ—ãƒ­ã‚»ã‚¹ã«ã‚¢ã‚¿ãƒƒãƒã—ã¦ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’è¡¨ç¤º
 #ifdef MENU_LAYERER
-	int menu_alpha;						// “§–¾“x
+	int menu_alpha;						// é€æ˜åº¦
 #endif
-	TCHAR *menu_font_name;				// ƒƒjƒ…[‚ÌƒtƒHƒ“ƒg
+	TCHAR *menu_font_name;				// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ãƒ•ã‚©ãƒ³ãƒˆ
 	int menu_font_size;
 	int menu_font_weight;
 	int menu_font_italic;
 	int menu_font_charset;
 #ifdef MENU_COLOR
-	COLOR_INFO menu_color_back;			// ƒƒjƒ…[‚ÌF
+	COLOR_INFO menu_color_back;			// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®è‰²
 	COLOR_INFO menu_color_text;
 	COLOR_INFO menu_color_highlight;
 	COLOR_INFO menu_color_highlighttext;
@@ -131,23 +131,23 @@ typedef struct _OPTION_INFO {
 #endif
 
 	// tooltip
-	int tooltip_show_delay;				// ƒc[ƒ‹ƒ`ƒbƒv‚ğ•\¦‚·‚é‚Ü‚Å‚Ì‘Ò‚¿ŠÔ(ƒ~ƒŠ•b)
-	int tooltip_tab_length;				// ƒc[ƒ‹ƒ`ƒbƒv‚Ìƒ^ƒu•
-	int tooltip_margin_x;				// ƒc[ƒ‹ƒ`ƒbƒv“à‚É•\¦‚·‚é•¶š‚Ì‰¡ƒ}[ƒWƒ“
-	int tooltip_margin_y;				// ƒc[ƒ‹ƒ`ƒbƒv“à‚É•\¦‚·‚é•¶š‚Ìcƒ}[ƒWƒ“
-	TCHAR *tooltip_font_name;			// ƒc[ƒ‹ƒ`ƒbƒv‚ÌƒtƒHƒ“ƒg
+	int tooltip_show_delay;				// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã‚’è¡¨ç¤ºã™ã‚‹ã¾ã§ã®å¾…ã¡æ™‚é–“(ãƒŸãƒªç§’)
+	int tooltip_tab_length;				// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã®ã‚¿ãƒ–å¹…
+	int tooltip_margin_x;				// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—å†…ã«è¡¨ç¤ºã™ã‚‹æ–‡å­—ã®æ¨ªãƒãƒ¼ã‚¸ãƒ³
+	int tooltip_margin_y;				// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—å†…ã«è¡¨ç¤ºã™ã‚‹æ–‡å­—ã®ç¸¦ãƒãƒ¼ã‚¸ãƒ³
+	TCHAR *tooltip_font_name;			// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã®ãƒ•ã‚©ãƒ³ãƒˆ
 	int tooltip_font_size;
 	int tooltip_font_weight;
 	int tooltip_font_italic;
 	int tooltip_font_charset;
 #ifdef TOOLTIP_COLOR
-	COLOR_INFO tooltip_color_back;		// ƒc[ƒ‹ƒ`ƒbƒv‚ÌF
+	COLOR_INFO tooltip_color_back;		// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã®è‰²
 	COLOR_INFO tooltip_color_text;
 #endif
 
 	// action
-	int action_double_press_time;		// CTRL or Shift or Alt‚Ì1‰ñ–Ú‚Æ2‰ñ–Ú‚ÌƒL[‚ğ‰Ÿ‚·ŠÔ‚ÉŒo‰ß‚·‚éŠÔ(ƒ~ƒŠ•b)
-	int action_show_hotkey_error;		// ƒzƒbƒgƒL[‚ÌƒGƒ‰[‚ğ•\¦
+	int action_double_press_time;		// CTRL or Shift or Altã®1å›ç›®ã¨2å›ç›®ã®ã‚­ãƒ¼ã‚’æŠ¼ã™é–“ã«çµŒéã™ã‚‹æ™‚é–“(ãƒŸãƒªç§’)
+	int action_show_hotkey_error;		// ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®ã‚¨ãƒ©ãƒ¼ã‚’è¡¨ç¤º
 	ACTION_INFO *action_info;
 	int action_cnt;
 
@@ -167,36 +167,36 @@ typedef struct _OPTION_INFO {
 	// send key
 	UINT def_copy_modifiers;
 	UINT def_copy_virtkey;
-	int def_copy_wait;					// ƒRƒs[‚Ü‚Å‚Ì‘Ò‚¿ŠÔ
+	int def_copy_wait;					// ã‚³ãƒ”ãƒ¼ã¾ã§ã®å¾…ã¡æ™‚é–“
 
 	UINT def_paste_modifiers;
 	UINT def_paste_virtkey;
-	int def_paste_wait;					// “\‚è•t‚¯‚Ü‚Å‚Ì‘Ò‚¿ŠÔ
+	int def_paste_wait;					// è²¼ã‚Šä»˜ã‘ã¾ã§ã®å¾…ã¡æ™‚é–“
 
 	SENDKEY_INFO *sendkey_info;
 	int sendkey_cnt;
 
 	// tool
-	int tool_valid_interval;			// “®ìƒƒjƒ…[‚©‚ç‚Ì‘I‘ğ‚Åƒc[ƒ‹‚ª—LŒø‚ÈŠÔ
+	int tool_valid_interval;			// å‹•ä½œãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‹ã‚‰ã®é¸æŠã§ãƒ„ãƒ¼ãƒ«ãŒæœ‰åŠ¹ãªæ™‚é–“
 	TOOL_INFO *tool_info;
 	int tool_cnt;
 
 	// viewer
-	int viewer_toggle;					// •\¦‚ğƒgƒOƒ‹‚·‚é
-	int viewer_show_bin;				// í‚ÉƒoƒCƒiƒŠ•\¦
+	int viewer_toggle;					// è¡¨ç¤ºã‚’ãƒˆã‚°ãƒ«ã™ã‚‹
+	int viewer_show_bin;				// å¸¸ã«ãƒã‚¤ãƒŠãƒªè¡¨ç¤º
 	int viewer_show_toolbar;
 	int viewer_show_statusbar;
-	int viewer_delete_confirm;			// íœŠm”F 0-‚µ‚È‚¢ 1-‚·‚é
+	int viewer_delete_confirm;			// å‰Šé™¤ç¢ºèª 0-ã—ãªã„ 1-ã™ã‚‹
 	RECT viewer_rect;
 	int viewer_sep_size;
 
 	// treeview
-	int tree_show_format;				// ƒcƒŠ[‚ÉŒ`®‚ğ•\¦
-	TCHAR *tree_root_order;				// ƒ‹[ƒg‚Ì•\¦‚Æ•À‚Ñ‡ 0-clip 1-history 2-regist
-	int tree_clip_expand;				// ƒNƒŠƒbƒvƒ{[ƒh‚ğ“WŠJ
-	int tree_history_expand;			// —š—ğ‚ğ“WŠJ
-	int tree_regist_expand;				// “o˜^ƒAƒCƒeƒ€‚ğ“WŠJ
-	int tree_folder_expand;				// ƒtƒHƒ‹ƒ_‚ğ“WŠJ
+	int tree_show_format;				// ãƒ„ãƒªãƒ¼ã«å½¢å¼ã‚’è¡¨ç¤º
+	TCHAR *tree_root_order;				// ãƒ«ãƒ¼ãƒˆã®è¡¨ç¤ºã¨ä¸¦ã³é † 0-clip 1-history 2-regist
+	int tree_clip_expand;				// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’å±•é–‹
+	int tree_history_expand;			// å±¥æ­´ã‚’å±•é–‹
+	int tree_regist_expand;				// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã‚’å±•é–‹
+	int tree_folder_expand;				// ãƒ•ã‚©ãƒ«ãƒ€ã‚’å±•é–‹
 	TCHAR *tree_font_name;
 	int tree_font_size;
 	int tree_font_weight;
@@ -204,7 +204,7 @@ typedef struct _OPTION_INFO {
 	int tree_font_charset;
 
 	// listview
-	int list_default_action;			// ƒfƒtƒHƒ‹ƒg“®ì 0-•\¦ 1-ƒNƒŠƒbƒvƒ{[ƒh‚É‘—‚é 2-–¼‘O‚ğ•t‚¯‚Ä•Û‘¶
+	int list_default_action;			// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå‹•ä½œ 0-è¡¨ç¤º 1-ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«é€ã‚‹ 2-åå‰ã‚’ä»˜ã‘ã¦ä¿å­˜
 	int list_column_data;
 	int list_column_size;
 	int list_column_date;
@@ -224,9 +224,9 @@ typedef struct _OPTION_INFO {
 	int bin_font_charset;
 
 	// text format
-	int fmt_txt_menu_tooltip_size;		// ƒc[ƒ‹ƒ`ƒbƒv‚É•\¦‚·‚é•¶š”
-	int fmt_txt_viewer_word_wrap;		// ‰E’[‚ÅÜ‚è•Ô‚·
-	int fmt_txt_tab_size;				// TABƒTƒCƒY
+	int fmt_txt_menu_tooltip_size;		// ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã«è¡¨ç¤ºã™ã‚‹æ–‡å­—æ•°
+	int fmt_txt_viewer_word_wrap;		// å³ç«¯ã§æŠ˜ã‚Šè¿”ã™
+	int fmt_txt_tab_size;				// TABã‚µã‚¤ã‚º
 	TCHAR *fmt_txt_font_name;
 	int fmt_txt_font_size;
 	int fmt_txt_font_weight;
@@ -234,7 +234,7 @@ typedef struct _OPTION_INFO {
 	int fmt_txt_font_charset;
 
 	// bitmap format
-	int fmt_bmp_stretch_mode;			// ‰æ‘œ‚ğƒEƒBƒ“ƒhƒE‚Ì‘å‚«‚³‚É‡‚í‚¹‚Ä•\¦
+	int fmt_bmp_stretch_mode;			// ç”»åƒã‚’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å¤§ãã•ã«åˆã‚ã›ã¦è¡¨ç¤º
 
 	// file format
 	int fmt_file_column_name;

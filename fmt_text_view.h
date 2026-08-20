@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * fmt_text_view.h
@@ -52,110 +52,110 @@ typedef struct _UNDO {
 } UNDO;
 
 typedef struct _BUFFER {
-	// •Û‚µ‚Ä‚¢‚é“à—e
+	// ä¿æŒã—ã¦ã„ã‚‹å†…å®¹
 	TCHAR *buf;
 	DWORD buf_size;
 	DWORD buf_len;
 
-	// “ü—Íƒoƒbƒtƒ@
+	// å…¥åŠ›ãƒãƒƒãƒ•ã‚¡
 	TCHAR *input_buf;
 	DWORD input_size;
 	DWORD input_len;
 
-	// •\¦s“ª‚ÌƒIƒtƒZƒbƒg
+	// è¡¨ç¤ºè¡Œé ­ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
 	DWORD *line;
 	int line_size;
 	int line_len;
 	int line_add_index;
 	int line_add_len;
 
-	// UNDOƒoƒbƒtƒ@
+	// UNDOãƒãƒƒãƒ•ã‚¡
 	UNDO *undo;
 	int undo_size;
 	int undo_len;
 	int undo_pos;
 
-	// “ü—ÍŠJnˆÊ’u
+	// å…¥åŠ›é–‹å§‹ä½ç½®
 	TCHAR *ip;
 	DWORD ip_len;
-	// íœŠJnˆÊ’u
+	// å‰Šé™¤é–‹å§‹ä½ç½®
 	TCHAR *dp;
 	DWORD del_len;
 
-	// ƒLƒƒƒŒƒbƒg‚ÌˆÊ’u
+	// ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã®ä½ç½®
 	DWORD cp;
-	// ‘I‘ğˆÊ’u
+	// é¸æŠä½ç½®
 	DWORD sp;
-	// ã‰ºˆÚ“®‚ÌƒLƒƒƒŒƒbƒg‚ÌXÀ•W
+	// ä¸Šä¸‹ç§»å‹•æ™‚ã®ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã®Xåº§æ¨™
 	int cpx;
 
-	// 1s‚Ì•¶š”
+	// 1è¡Œã®æ–‡å­—æ•°
 	int line_max;
-	// s‚ÌÅ‘å•
+	// è¡Œã®æœ€å¤§å¹…
 	int line_width;
-	// ƒEƒBƒ“ƒhƒE‚Ì•
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å¹…
 	int width;
 
-	// ƒRƒ“ƒgƒ[ƒ‹¯•Êq
+	// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«è­˜åˆ¥å­
 	int id;
 
-	// ƒXƒNƒ[ƒ‹ ƒo[
+	// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ« ãƒãƒ¼
 	int pos_x;
 	int max_x;
 	int pos_y;
 	int max_y;
 
-	// ƒ^ƒuƒXƒgƒbƒv
+	// ã‚¿ãƒ–ã‚¹ãƒˆãƒƒãƒ—
 	int tab_stop;
-	// ¶ƒ}[ƒWƒ“
+	// å·¦ãƒãƒ¼ã‚¸ãƒ³
 	int left_margin;
-	// ãƒ}[ƒWƒ“
+	// ä¸Šãƒãƒ¼ã‚¸ãƒ³
 	int top_margin;
-	// ‰Eƒ}[ƒWƒ“
+	// å³ãƒãƒ¼ã‚¸ãƒ³
 	int right_margin;
-	// ‰ºƒ}[ƒWƒ“
+	// ä¸‹ãƒãƒ¼ã‚¸ãƒ³
 	int bottom_margin;
-	// sŠÔ
+	// è¡Œé–“
 	int spacing;
-	// ƒtƒHƒ“ƒg‚ğì¬‚µ‚½‚Æ‚«‚ÌDPI
+	// ãƒ•ã‚©ãƒ³ãƒˆã‚’ä½œæˆã—ãŸã¨ãã®DPI
 	UINT font_dpi;
 
-	// •`‰æ—pî•ñ
+	// æç”»ç”¨æƒ…å ±
 	HDC mdc;
 	HBITMAP ret_bmp;
 	HRGN hrgn;
 	HFONT hfont;
 	HFONT ret_font;
 
-	// ƒtƒHƒ“ƒg
+	// ãƒ•ã‚©ãƒ³ãƒˆ
 	int font_height;
 	int char_width;
 
 	// IME
 	HIMC himc;
 
-	// Ü‚è•Ô‚µƒtƒ‰ƒO
+	// æŠ˜ã‚Šè¿”ã—ãƒ•ãƒ©ã‚°
 	BOOL wordwrap;
-	// ƒtƒH[ƒJƒX‚ª–³‚­‚Ä‚à‘I‘ğ•\¦
+	// ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ãŒç„¡ãã¦ã‚‚é¸æŠè¡¨ç¤º
 	BOOL no_hide_sel;
-	// ¬•¶š‚É•ÏŠ·
+	// å°æ–‡å­—ã«å¤‰æ›
 	BOOL lowercase;
-	// ‘å•¶š‚É•ÏŠ·
+	// å¤§æ–‡å­—ã«å¤‰æ›
 	BOOL uppercase;
-	// ƒƒbƒNƒtƒ‰ƒO
+	// ãƒ­ãƒƒã‚¯ãƒ•ãƒ©ã‚°
 	BOOL lock;
-	// C³ƒtƒ‰ƒO
+	// ä¿®æ­£ãƒ•ãƒ©ã‚°
 	BOOL modified;
-	// “ü—Íƒ‚[ƒh
+	// å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰
 	BOOL insert_mode;
-	// ‘I‘ğƒtƒ‰ƒO
+	// é¸æŠãƒ•ãƒ©ã‚°
 	BOOL sel;
-	// ƒ}ƒEƒXî•ñƒtƒ‰ƒO
+	// ãƒã‚¦ã‚¹æƒ…å ±ãƒ•ãƒ©ã‚°
 	BOOL mousedown;
-	// “ü—Í’·§ŒÀ
+	// å…¥åŠ›é•·åˆ¶é™
 	DWORD limit_len;
 
-	// •¶š‚Ì•
+	// æ–‡å­—ã®å¹…
 	BYTE cwidth[256];
 
 #ifdef OP_XP_STYLE

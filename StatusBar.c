@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * StatusBar.c
@@ -40,7 +40,7 @@ extern HTREEITEM regist_treeitem;
 extern DATA_INFO history_data;
 extern DATA_INFO regist_data;
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
@@ -48,7 +48,7 @@ static int statusbar_get_allsize(DATA_INFO *di);
 static void statusbar_get_size_text(const int size, TCHAR *ret);
 
 /*
- * statusbar_create - StatusBar‚Ìì¬
+ * statusbar_create - StatusBarã®ä½œæˆ
  */
 HWND statusbar_create(const HWND hWnd, const int id)
 {
@@ -58,16 +58,16 @@ HWND statusbar_create(const HWND hWnd, const int id)
 		return NULL;
 	}
 	if (option.viewer_show_statusbar == 1) {
-		// ƒXƒe[ƒ^ƒXƒo[•\¦
+		// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒãƒ¼è¡¨ç¤º
 		ShowWindow(hStatusBar, SW_SHOW);
 	}
-	// ƒp[ƒc‚Ìİ’è
+	// ãƒ‘ãƒ¼ãƒ„ã®è¨­å®š
 	statusbar_reset_parts(hStatusBar);
 	return hStatusBar;
 }
 
 /*
- * statusbar_reset_parts - StatusBar‚Ìƒp[ƒc‚ğŒ»İ‚ÌDPI‚É‡‚í‚¹‚é
+ * statusbar_reset_parts - StatusBarã®ãƒ‘ãƒ¼ãƒ„ã‚’ç¾åœ¨ã®DPIã«åˆã‚ã›ã‚‹
  */
 void statusbar_reset_parts(const HWND hStatusBar)
 {
@@ -80,7 +80,7 @@ void statusbar_reset_parts(const HWND hStatusBar)
 }
 
 /*
- * statusbar_get_allsize - ƒf[ƒ^ƒTƒCƒY‚Ì‡Œv
+ * statusbar_get_allsize - ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºã®åˆè¨ˆ
  */
 static int statusbar_get_allsize(DATA_INFO *di)
 {
@@ -105,7 +105,7 @@ static int statusbar_get_allsize(DATA_INFO *di)
 }
 
 /*
- * statusbar_set_text - ƒTƒCƒY•¶š—ñ‚Ìæ“¾
+ * statusbar_set_text - ã‚µã‚¤ã‚ºæ–‡å­—åˆ—ã®å–å¾—
  */
 static void statusbar_get_size_text(const int size, TCHAR *ret)
 {
@@ -117,7 +117,7 @@ static void statusbar_get_size_text(const int size, TCHAR *ret)
 }
 
 /*
- * statusbar_set_text - StatusBar‚ÌƒeƒLƒXƒg‚ğİ’è
+ * statusbar_set_text - StatusBarã®ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®š
  */
 BOOL statusbar_set_text(const HWND hWnd, const HWND hStatusBar)
 {
@@ -130,12 +130,12 @@ BOOL statusbar_set_text(const HWND hWnd, const HWND hStatusBar)
 	TCHAR *str_hkey;
 	int cnt;
 
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	SendMessage(hStatusBar, SB_SETTEXT, (WPARAM)0 | 0, (LPARAM)TEXT(""));
 	SendMessage(hStatusBar, SB_SETTEXT, (WPARAM)1 | 0, (LPARAM)TEXT(""));
 	SendMessage(hStatusBar, SB_SETTEXT, (WPARAM)2 | 0, (LPARAM)TEXT(""));
 
-	// ‘I‘ğƒAƒCƒeƒ€‚Ìæ“¾
+	// é¸æŠã‚¢ã‚¤ãƒ†ãƒ ã®å–å¾—
 	if ((hItem = TreeView_GetSelection(hTreeView)) == NULL || hItem == clip_treeitem) {
 		return FALSE;
 	}
@@ -154,13 +154,13 @@ BOOL statusbar_set_text(const HWND hWnd, const HWND hStatusBar)
 		return TRUE;
 	}
 
-	// ƒf[ƒ^‚Ìæ“¾
+	// ãƒ‡ãƒ¼ã‚¿ã®å–å¾—
 	if ((di = (DATA_INFO *)treeview_get_lparam(hTreeView, hItem)) == NULL) {
 		return FALSE;
 	}
 	switch (di->type) {
 	case TYPE_FOLDER:
-		// ƒtƒHƒ‹ƒ_
+		// ãƒ•ã‚©ãƒ«ãƒ€
 		cnt = ListView_GetItemCount(hListView);
 		wsprintf(buf, message_get_res(IDS_STATUSBAR_ITEM_CNT), cnt);
 		SendMessage(hStatusBar, SB_SETTEXT, (WPARAM)0 | 0, (LPARAM)buf);
@@ -171,12 +171,12 @@ BOOL statusbar_set_text(const HWND hWnd, const HWND hStatusBar)
 		break;
 
 	case TYPE_ITEM:
-		// ƒAƒCƒeƒ€
-		// XV“ú
+		// ã‚¢ã‚¤ãƒ†ãƒ 
+		// æ›´æ–°æ—¥æ™‚
 		data_get_modified_string(di, buf);
 		SendMessage(hStatusBar, SB_SETTEXT, (WPARAM)0 | 0, (LPARAM)buf);
 
-		// ‡ŒvƒTƒCƒY
+		// åˆè¨ˆã‚µã‚¤ã‚º
 		cnt = 0;
 		for (cdi = di->child; cdi != NULL; cdi = cdi->next) {
 			cnt += cdi->size;
@@ -185,10 +185,10 @@ BOOL statusbar_set_text(const HWND hWnd, const HWND hStatusBar)
 		SendMessage(hStatusBar, SB_SETTEXT, (WPARAM)1 | 0, (LPARAM)buf);
 
 		if (di->window_name != NULL) {
-			// ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹
+			// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¿ã‚¤ãƒˆãƒ«
 			SendMessage(hStatusBar, SB_SETTEXT, (WPARAM)2 | 0, (LPARAM)di->window_name);
 		} else {
-			// ƒzƒbƒgƒL[
+			// ãƒ›ãƒƒãƒˆã‚­ãƒ¼
 			if ((str_hkey = menu_get_keyname(di->op_modifiers, di->op_virtkey)) != NULL) {
 				SendMessage(hStatusBar, SB_SETTEXT, (WPARAM)2 | 0, (LPARAM)str_hkey);
 				mem_free(&str_hkey);
@@ -197,7 +197,7 @@ BOOL statusbar_set_text(const HWND hWnd, const HWND hStatusBar)
 		break;
 
 	case TYPE_DATA:
-		// ƒf[ƒ^
+		// ãƒ‡ãƒ¼ã‚¿
 		statusbar_get_size_text(di->size, buf);
 		SendMessage(hStatusBar, SB_SETTEXT, (WPARAM)1 | 0, (LPARAM)buf);
 		break;
@@ -206,7 +206,7 @@ BOOL statusbar_set_text(const HWND hWnd, const HWND hStatusBar)
 }
 
 /*
- * statusbar_notify_proc - ƒXƒe[ƒ^ƒXƒo[‚Ìƒc[ƒ‹ƒ`ƒbƒv‚Ìİ’è
+ * statusbar_notify_proc - ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒãƒ¼ã®ãƒ„ãƒ¼ãƒ«ãƒãƒƒãƒ—ã®è¨­å®š
  */
 LRESULT statusbar_notify_proc(const HWND hStatusBar, LPARAM lParam)
 {

@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Regist.c
@@ -27,13 +27,13 @@
 /* Define */
 
 /* Global Variables */
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
 
 /*
- * regist_path_to_item - ƒpƒX‚©‚ç“o˜^ƒAƒCƒeƒ€‚ğæ“¾
+ * regist_path_to_item - ãƒ‘ã‚¹ã‹ã‚‰ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—
  */
 DATA_INFO *regist_path_to_item(DATA_INFO *di, TCHAR *path)
 {
@@ -55,7 +55,7 @@ DATA_INFO *regist_path_to_item(DATA_INFO *di, TCHAR *path)
 		return di;
 	}
 
-	// ƒpƒX‚ğ“WŠJ
+	// ãƒ‘ã‚¹ã‚’å±•é–‹
 	for (r = buf; *p != TEXT('\0'); p++, r++) {
 #ifndef UNICODE
 		if (IsDBCSLeadByte((BYTE)*p) == TRUE) {
@@ -71,7 +71,7 @@ DATA_INFO *regist_path_to_item(DATA_INFO *di, TCHAR *path)
 	}
 	*r = TEXT('\0');
 
-	// –¼‘O‚©‚çƒAƒCƒeƒ€‚ğæ“¾
+	// åå‰ã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—
 	for (; di != NULL; di = di->next) {
 		if (di->type == TYPE_FOLDER && di->title != NULL &&
 			lstrcmpi(di->title, buf) == 0) {
@@ -83,32 +83,32 @@ DATA_INFO *regist_path_to_item(DATA_INFO *di, TCHAR *path)
 	}
 
 	if (*p != TEXT('\0')) {
-		// Ä‹A
+		// å†å¸°
 		return regist_path_to_item(di->child, p);
 	}
 	return di->child;
 }
 
 /*
- * regist_create_folder - “o˜^ƒAƒCƒeƒ€‚ÉƒtƒHƒ‹ƒ_‚ğ’Ç‰Á
+ * regist_create_folder - ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã«ãƒ•ã‚©ãƒ«ãƒ€ã‚’è¿½åŠ 
  */
 DATA_INFO *regist_create_folder(DATA_INFO **root, const TCHAR *title, TCHAR *err_str)
 {
 	DATA_INFO *new_item;
 	DATA_INFO *di;
 
-	// “¯–¼‚ÌƒtƒHƒ‹ƒ_‚ÍƒGƒ‰[‚Æ‚·‚é
+	// åŒåã®ãƒ•ã‚©ãƒ«ãƒ€ã¯ã‚¨ãƒ©ãƒ¼ã¨ã™ã‚‹
 	for (di = *root; di != NULL; di = di->next) {
 		if (di->type == TYPE_FOLDER && lstrcmpi(di->title, title) == 0) {
 			return NULL;
 		}
 	}
 
-	// ƒtƒHƒ‹ƒ_‚Ìì¬
+	// ãƒ•ã‚©ãƒ«ãƒ€ã®ä½œæˆ
 	if ((new_item = data_create_folder(title, err_str)) == NULL) {
 		return NULL;
 	}
-	// ƒtƒHƒ‹ƒ_‚Ì’Ç‰Á
+	// ãƒ•ã‚©ãƒ«ãƒ€ã®è¿½åŠ 
 	if (*root == NULL) {
 		new_item->next = *root;
 		*root = new_item;
@@ -121,7 +121,7 @@ DATA_INFO *regist_create_folder(DATA_INFO **root, const TCHAR *title, TCHAR *err
 }
 
 /*
- * regist_merge_item - “o˜^ƒAƒCƒeƒ€‚Ìƒ}[ƒW
+ * regist_merge_item - ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã®ãƒãƒ¼ã‚¸
  */
 DATA_INFO *regist_merge_item(DATA_INFO **root, const DATA_INFO *from_di, const BOOL move_flag, TCHAR *err_str)
 {
@@ -133,7 +133,7 @@ DATA_INFO *regist_merge_item(DATA_INFO **root, const DATA_INFO *from_di, const B
 		if ((wk_di = data_item_copy(from_di, FALSE, move_flag, err_str)) == NULL) {
 			return NULL;
 		}
-		// ƒEƒBƒ“ƒhƒE–¼‚Ìœ‹
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦åã®é™¤å»
 		mem_free(&wk_di->window_name);
 		if (*root == NULL) {
 			*root = wk_di;
@@ -147,19 +147,19 @@ DATA_INFO *regist_merge_item(DATA_INFO **root, const DATA_INFO *from_di, const B
 		break;
 
 	case TYPE_FOLDER:
-		// ƒtƒHƒ‹ƒ_‚ÌŒŸõ
+		// ãƒ•ã‚©ãƒ«ãƒ€ã®æ¤œç´¢
 		for (wk_di = *root; wk_di != NULL; wk_di = wk_di->next) {
 			if (wk_di->type == TYPE_FOLDER && lstrcmpi(wk_di->title, from_di->title) == 0) {
 				break;
 			}
 		}
 		if (wk_di == NULL) {
-			// ƒtƒHƒ‹ƒ_‚Ì’Ç‰Á
+			// ãƒ•ã‚©ãƒ«ãƒ€ã®è¿½åŠ 
 			if ((wk_di = regist_create_folder(root, from_di->title, err_str)) == NULL) {
 				return NULL;
 			}
 		}
-		// ƒAƒCƒeƒ€‚ğƒRƒs[
+		// ã‚¢ã‚¤ãƒ†ãƒ ã‚’ã‚³ãƒ”ãƒ¼
 		for (di = from_di->child; di != NULL; di = di->next) {
 			if (regist_merge_item(&wk_di->child, di, move_flag, err_str) == NULL) {
 				break;
@@ -172,7 +172,7 @@ DATA_INFO *regist_merge_item(DATA_INFO **root, const DATA_INFO *from_di, const B
 }
 
 /*
- * regist_regist_hotkey - ƒzƒbƒgƒL[‚Ì“o˜^
+ * regist_regist_hotkey - ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®ç™»éŒ²
  */
 BOOL regist_regist_hotkey(const HWND hWnd, DATA_INFO *di, int *id)
 {
@@ -207,7 +207,7 @@ BOOL regist_regist_hotkey(const HWND hWnd, DATA_INFO *di, int *id)
 }
 
 /*
- * regist_unregist_hotkey - ƒzƒbƒgƒL[‚Ì‰ğœ
+ * regist_unregist_hotkey - ãƒ›ãƒƒãƒˆã‚­ãƒ¼ã®è§£é™¤
  */
 void regist_unregist_hotkey(const HWND hWnd, DATA_INFO *di)
 {
@@ -233,7 +233,7 @@ void regist_unregist_hotkey(const HWND hWnd, DATA_INFO *di)
 }
 
 /*
- * regist_hotkey_to_item - ƒzƒbƒgƒL[ID‚©‚çƒAƒCƒeƒ€‚ğŒŸõ
+ * regist_hotkey_to_item - ãƒ›ãƒƒãƒˆã‚­ãƒ¼IDã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã‚’æ¤œç´¢
  */
 DATA_INFO *regist_hotkey_to_item(DATA_INFO *di, const int id)
 {

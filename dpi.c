@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * dpi.c
@@ -23,10 +23,10 @@
 #define MONITOR_DEFAULTTONEAREST    0x00000002
 #endif
 
-// GetDpiForMonitor ‚Ì MONITOR_DPI_TYPE
+// GetDpiForMonitor ã® MONITOR_DPI_TYPE
 #define MDT_EFFECTIVE_DPI			0
 
-// DPI‚Ì”ÍˆÍ
+// DPIã®ç¯„å›²
 #define DPI_MIN						48
 #define DPI_MAX						960
 
@@ -42,7 +42,7 @@ typedef BOOL (WINAPI *SYSTEMPARAMETERSINFOFORDPI)(UINT, UINT, PVOID, UINT, UINT)
 /* Global Variables */
 static HMODULE hModShcore;
 
-// Œ»İ‚Ì•`‰æ‘ÎÛ‚ÌDPI
+// ç¾åœ¨ã®æç”»å¯¾è±¡ã®DPI
 static UINT m_nDpi = USER_DEFAULT_SCREEN_DPI;
 static PROCESS_DPI_AWARENESS m_Awareness = PROCESS_SYSTEM_DPI_AWARE;
 
@@ -59,7 +59,7 @@ static UINT get_monitor_dpi(const HMONITOR hMonitor);
 
 
 /*
- * get_monitor_dpi - ƒ‚ƒjƒ^‚ÌDPI‚Ìæ“¾
+ * get_monitor_dpi - ãƒ¢ãƒ‹ã‚¿ã®DPIã®å–å¾—
  */
 static UINT get_monitor_dpi(const HMONITOR hMonitor)
 {
@@ -75,14 +75,14 @@ static UINT get_monitor_dpi(const HMONITOR hMonitor)
 }
 
 /*
- * InitDpi - DPI‚Ì‰Šú‰»
+ * InitDpi - DPIã®åˆæœŸåŒ–
  */
 void InitDpi()
 {
 	HMODULE hModUser32;
 	UINT dpi = 0;
 
-	// user32.dll‚ÌAPI
+	// user32.dllã®API
 	hModUser32 = GetModuleHandle(TEXT("user32.dll"));
 	if (hModUser32 != NULL) {
 		_GetDpiForWindow = (GETDPIFORWINDOW)GetProcAddress(hModUser32, "GetDpiForWindow");
@@ -90,17 +90,17 @@ void InitDpi()
 		_GetSystemMetricsForDpi = (GETSYSTEMMETRICSFORDPI)GetProcAddress(hModUser32, "GetSystemMetricsForDpi");
 		_SystemParametersInfoForDpi = (SYSTEMPARAMETERSINFOFORDPI)GetProcAddress(hModUser32, "SystemParametersInfoForDpi");
 	}
-	// shcore.dll‚ÌAPI
+	// shcore.dllã®API
 	if ((hModShcore = LoadLibrary(TEXT("shcore.dll"))) != NULL) {
 		_GetDpiForMonitor = (GETDPIFORMONITOR)GetProcAddress(hModShcore, "GetDpiForMonitor");
 		_GetProcessDpiAwareness = (GETPROCESSDPIAWARENESS)GetProcAddress(hModShcore, "GetProcessDpiAwareness");
 		_SetProcessDpiAwareness = (SETPROCESSDPIAWARENESS)GetProcAddress(hModShcore, "SetProcessDpiAwareness");
 	}
 
-	// DPI‘Î‰ƒŒƒxƒ‹‚Ìæ“¾
+	// DPIå¯¾å¿œãƒ¬ãƒ™ãƒ«ã®å–å¾—
 	GetAwareness();
 
-	// ƒvƒ‰ƒCƒ}ƒŠƒ‚ƒjƒ^‚ÌDPI‚ğæ“¾
+	// ãƒ—ãƒ©ã‚¤ãƒãƒªãƒ¢ãƒ‹ã‚¿ã®DPIã‚’å–å¾—
 	dpi = get_monitor_dpi(MonitorFromWindow(NULL, MONITOR_DEFAULTTOPRIMARY));
 	if (dpi == 0 && _GetDpiForSystem != NULL) {
 		dpi = _GetDpiForSystem();
@@ -116,7 +116,7 @@ void InitDpi()
 }
 
 /*
- * Scale - ƒXƒP[ƒ‹•ÏŠ·‚µ‚½’l‚Ìæ“¾
+ * Scale - ã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›ã—ãŸå€¤ã®å–å¾—
  */
 int Scale(int x)
 {
@@ -127,7 +127,7 @@ int Scale(int x)
 }
 
 /*
- * UnScale - ƒXƒP[ƒ‹‚ğ–ß‚µ‚½’l‚Ìæ“¾
+ * UnScale - ã‚¹ã‚±ãƒ¼ãƒ«ã‚’æˆ»ã—ãŸå€¤ã®å–å¾—
  */
 int UnScale(int x)
 {
@@ -138,7 +138,7 @@ int UnScale(int x)
 }
 
 /*
- * GetDpi - Œ»İ‚ÌDPI‚Ìæ“¾
+ * GetDpi - ç¾åœ¨ã®DPIã®å–å¾—
  */
 UINT GetDpi()
 {
@@ -146,7 +146,7 @@ UINT GetDpi()
 }
 
 /*
- * SetDpi - Œ»İ‚ÌDPI‚Ìİ’è
+ * SetDpi - ç¾åœ¨ã®DPIã®è¨­å®š
  */
 void SetDpi(const UINT dpi)
 {
@@ -161,7 +161,7 @@ void SetDpi(const UINT dpi)
 }
 
 /*
- * GetScale - ƒXƒP[ƒ‹‚Ìæ“¾
+ * GetScale - ã‚¹ã‚±ãƒ¼ãƒ«ã®å–å¾—
  */
 UINT GetScale()
 {
@@ -169,7 +169,7 @@ UINT GetScale()
 }
 
 /*
- * SetScale - ƒXƒP[ƒ‹‚Ìİ’è
+ * SetScale - ã‚¹ã‚±ãƒ¼ãƒ«ã®è¨­å®š
  */
 void SetScale(UINT iDPI)
 {
@@ -177,7 +177,7 @@ void SetScale(UINT iDPI)
 }
 
 /*
- * GetWindowDpi - ƒEƒBƒ“ƒhƒE‚ÌDPI‚Ìæ“¾
+ * GetWindowDpi - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®DPIã®å–å¾—
  */
 UINT GetWindowDpi(const HWND hWnd)
 {
@@ -194,7 +194,7 @@ UINT GetWindowDpi(const HWND hWnd)
 }
 
 /*
- * GetPointDpi - À•W‚ªŠÜ‚Ü‚ê‚éƒ‚ƒjƒ^‚ÌDPI‚Ìæ“¾
+ * GetPointDpi - åº§æ¨™ãŒå«ã¾ã‚Œã‚‹ãƒ¢ãƒ‹ã‚¿ã®DPIã®å–å¾—
  */
 UINT GetPointDpi(const POINT pt)
 {
@@ -202,7 +202,7 @@ UINT GetPointDpi(const POINT pt)
 }
 
 /*
- * SetDpiFromWindow - ƒEƒBƒ“ƒhƒE‚ÌDPI‚ğŒ»İ‚ÌDPI‚Éİ’è
+ * SetDpiFromWindow - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®DPIã‚’ç¾åœ¨ã®DPIã«è¨­å®š
  */
 UINT SetDpiFromWindow(const HWND hWnd)
 {
@@ -211,7 +211,7 @@ UINT SetDpiFromWindow(const HWND hWnd)
 }
 
 /*
- * SetDpiFromPoint - À•W‚ªŠÜ‚Ü‚ê‚éƒ‚ƒjƒ^‚ÌDPI‚ğŒ»İ‚ÌDPI‚Éİ’è
+ * SetDpiFromPoint - åº§æ¨™ãŒå«ã¾ã‚Œã‚‹ãƒ¢ãƒ‹ã‚¿ã®DPIã‚’ç¾åœ¨ã®DPIã«è¨­å®š
  */
 UINT SetDpiFromPoint(const POINT pt)
 {
@@ -220,7 +220,7 @@ UINT SetDpiFromPoint(const POINT pt)
 }
 
 /*
- * GetAwareness - Awareness‚Ìæ“¾
+ * GetAwareness - Awarenessã®å–å¾—
  */
 PROCESS_DPI_AWARENESS GetAwareness()
 {
@@ -236,7 +236,7 @@ PROCESS_DPI_AWARENESS GetAwareness()
 }
 
 /*
- * SetAwareness - Awareness‚Ìİ’è
+ * SetAwareness - Awarenessã®è¨­å®š
  */
 void SetAwareness(PROCESS_DPI_AWARENESS awareness)
 {
@@ -249,7 +249,7 @@ void SetAwareness(PROCESS_DPI_AWARENESS awareness)
 }
 
 /*
- * GetSystemMetricsDpi - Œ»İ‚ÌDPI‚Å‚ÌƒVƒXƒeƒ€ƒƒgƒŠƒbƒN‚Ìæ“¾
+ * GetSystemMetricsDpi - ç¾åœ¨ã®DPIã§ã®ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒˆãƒªãƒƒã‚¯ã®å–å¾—
  */
 int GetSystemMetricsDpi(const int nIndex)
 {
@@ -260,7 +260,7 @@ int GetSystemMetricsDpi(const int nIndex)
 }
 
 /*
- * GetNonClientMetricsDpi - Œ»İ‚ÌDPI‚Å‚Ì”ñƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ÌƒƒgƒŠƒbƒN‚Ìæ“¾
+ * GetNonClientMetricsDpi - ç¾åœ¨ã®DPIã§ã®éã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã®ãƒ¡ãƒˆãƒªãƒƒã‚¯ã®å–å¾—
  */
 BOOL GetNonClientMetricsDpi(NONCLIENTMETRICS *ncm)
 {
@@ -276,7 +276,7 @@ BOOL GetNonClientMetricsDpi(NONCLIENTMETRICS *ncm)
 }
 
 /*
- * GetMonitorRectFromPoint - À•W‚ªŠÜ‚Ü‚ê‚éƒ‚ƒjƒ^‚Ì‹éŒ`‚Ìæ“¾
+ * GetMonitorRectFromPoint - åº§æ¨™ãŒå«ã¾ã‚Œã‚‹ãƒ¢ãƒ‹ã‚¿ã®çŸ©å½¢ã®å–å¾—
  */
 BOOL GetMonitorRectFromPoint(const POINT pt, RECT *pRect)
 {
@@ -297,7 +297,7 @@ BOOL GetMonitorRectFromPoint(const POINT pt, RECT *pRect)
 }
 
 /*
- * ScaleRect - RECT‚ÌƒXƒP[ƒ‹•ÏŠ·
+ * ScaleRect - RECTã®ã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›
  */
 void ScaleRect(RECT* pRect)
 {
@@ -308,7 +308,7 @@ void ScaleRect(RECT* pRect)
 }
 
 /*
- * UnScaleRect - RECT‚ÌƒXƒP[ƒ‹•ÏŠ·
+ * UnScaleRect - RECTã®ã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›
  */
 void UnScaleRect(RECT* pRect)
 {
@@ -319,7 +319,7 @@ void UnScaleRect(RECT* pRect)
 }
 
 /*
- * ScalePoint - POINT‚ÌƒXƒP[ƒ‹•ÏŠ·
+ * ScalePoint - POINTã®ã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›
  */
 void ScalePoint(POINT* pPoint)
 {
@@ -328,7 +328,7 @@ void ScalePoint(POINT* pPoint)
 }
 
 /*
- * UnScalePoint - POINT‚ÌƒXƒP[ƒ‹•ÏŠ·
+ * UnScalePoint - POINTã®ã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›
  */
 void UnScalePoint(POINT* pPoint)
 {

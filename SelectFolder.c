@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * SelectFolder.c
@@ -33,7 +33,7 @@ static BOOL treeview_copy_tree(const HWND from_tv, const HTREEITEM from_item, co
 static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 /*
- * treeview_copy_tree - ƒcƒŠƒrƒ…[ƒAƒCƒeƒ€‚ÌƒRƒs[‚ğì¬
+ * treeview_copy_tree - ãƒ„ãƒªãƒ“ãƒ¥ãƒ¼ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚³ãƒ”ãƒ¼ã‚’ä½œæˆ
  */
 static BOOL treeview_copy_tree(const HWND from_tv, const HTREEITEM from_item, const HWND to_tv, const HTREEITEM parent_item)
 {
@@ -68,7 +68,7 @@ static BOOL treeview_copy_tree(const HWND from_tv, const HTREEITEM from_item, co
 
 	cItem = TreeView_GetChild(from_tv, from_item);
 	while (cItem != NULL) {
-		// Ä‹A
+		// å†å¸°
 		if (treeview_copy_tree(from_tv, cItem, to_tv, new_item) == FALSE) {
 			return FALSE;
 		}
@@ -78,7 +78,7 @@ static BOOL treeview_copy_tree(const HWND from_tv, const HTREEITEM from_item, co
 }
 
 /*
- * select_folder_proc - ƒtƒHƒ‹ƒ_‘I‘ğƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+ * select_folder_proc - ãƒ•ã‚©ãƒ«ãƒ€é¸æŠã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -86,11 +86,11 @@ static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 	case WM_INITDIALOG:
 		SendMessage(GetDlgItem(hDlg, IDC_STATIC_MSG), WM_SETTEXT, 0, (LPARAM)message);
 
-		// ƒCƒ[ƒWƒŠƒXƒg‚Ìİ’è
+		// ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒªã‚¹ãƒˆã®è¨­å®š
 		TreeView_SetImageList(GetDlgItem(hDlg, IDC_TREE),
 			TreeView_GetImageList(from_treeview, TVSIL_NORMAL), TVSIL_NORMAL);
 
-		// ƒAƒCƒeƒ€‚ÌƒRƒs[
+		// ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚³ãƒ”ãƒ¼
 		treeview_copy_tree(from_treeview, from_root_item, GetDlgItem(hDlg, IDC_TREE), TVI_ROOT);
 		TreeView_Expand(GetDlgItem(hDlg, IDC_TREE),
 			TreeView_GetRoot(GetDlgItem(hDlg, IDC_TREE)), TVE_EXPAND);
@@ -107,7 +107,7 @@ static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 			break;
 
 		case IDOK:
-			// ‘I‘ğƒAƒCƒeƒ€‚Ìæ“¾
+			// é¸æŠã‚¢ã‚¤ãƒ†ãƒ ã®å–å¾—
 			ret_item = (HTREEITEM)treeview_get_lparam(GetDlgItem(hDlg, IDC_TREE),
 				TreeView_GetSelection(GetDlgItem(hDlg, IDC_TREE)));
 			EndDialog(hDlg, TRUE);
@@ -122,7 +122,7 @@ static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 }
 
 /*
- * select_folder - ƒtƒHƒ‹ƒ_‚Ì‘I‘ğ
+ * select_folder - ãƒ•ã‚©ãƒ«ãƒ€ã®é¸æŠ
  */
 HTREEITEM select_folder(const HINSTANCE hInst, const HWND hWnd, const HWND hTreeView, const HTREEITEM root_item, TCHAR *msg)
 {

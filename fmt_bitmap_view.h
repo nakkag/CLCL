@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CLCL
  *
  * fmt_bitmap_view.h

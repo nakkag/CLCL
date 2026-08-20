@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CLCL
  *
  * dpi.h
@@ -23,7 +23,7 @@
 #ifndef WM_DPICHANGED
 #define WM_DPICHANGED					0x02E0
 #endif
-// �q�E�B���h�E�ւ�DPI�ύX�ʒm
+// 子ウィンドウへのDPI変更通知
 #ifndef WM_DPICHANGED_BEFOREPARENT
 #define WM_DPICHANGED_BEFOREPARENT		0x02E2
 #endif

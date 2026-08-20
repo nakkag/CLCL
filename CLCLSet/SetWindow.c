@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCLSet
  *
  * SetWindow.c
@@ -31,7 +31,7 @@
 extern HINSTANCE hInst;
 extern int prop_ret;
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
@@ -42,7 +42,7 @@ static WINDOW_FILTER_INFO *listview_get_window(const HWND hListView, int *cnt);
 static void listview_free_window(const HWND hListView);
 
 /*
- * set_window_item_proc - ƒEƒBƒ“ƒhƒEƒtƒBƒ‹ƒ^‚Ì€–Ú‚ğİ’è
+ * set_window_item_proc - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ•ã‚£ãƒ«ã‚¿ã®é …ç›®ã‚’è¨­å®š
  */
 static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -76,7 +76,7 @@ static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 		lvc.iSubItem = i++;
 		ListView_InsertColumn(GetDlgItem(hDlg, IDC_LIST_WINDOW), lvc.iSubItem, &lvc);
 
-		// ƒŠƒXƒgƒrƒ…[‚ÌƒXƒ^ƒCƒ‹‚Ìİ’è
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚¹ã‚¿ã‚¤ãƒ«ã®è¨­å®š
 		SetWindowLong(GetDlgItem(hDlg, IDC_LIST_WINDOW), GWL_STYLE,
 			GetWindowLong(GetDlgItem(hDlg, IDC_LIST_WINDOW), GWL_STYLE) | LVS_SHOWSELALWAYS);
 		SendDlgItemMessage(hDlg, IDC_LIST_WINDOW, LVM_SETEXTENDEDLISTVIEWSTYLE, 0,
@@ -86,7 +86,7 @@ static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 		EnumWindows((WNDENUMPROC)enum_windows_proc, (LPARAM)GetDlgItem(hDlg, IDC_LIST_WINDOW));
 
 		if (lParam == 0) {
-			// V‹K’Ç‰Á
+			// æ–°è¦è¿½åŠ 
 			SetWindowLong(hDlg, GWL_USERDATA, 0);
 			break;
 		}
@@ -112,7 +112,7 @@ static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 		break;
 
 	case WM_DRAWITEM:
-		// ƒ{ƒ^ƒ“‚Ì•`‰æ
+		// ãƒœã‚¿ãƒ³ã®æç”»
 #ifdef OP_XP_STYLE
 		if (hTheme != 0) {
 			draw_theme_scroll((LPDRAWITEMSTRUCT)lParam, DFCS_SCROLLDOWN, hTheme);
@@ -126,7 +126,7 @@ static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 
 #ifdef OP_XP_STYLE
 	case WM_THEMECHANGED:
-		// ƒe[ƒ}‚Ì•ÏX
+		// ãƒ†ãƒ¼ãƒã®å¤‰æ›´
 		if (hTheme != 0) {
 			close_theme(hTheme);
 		}
@@ -174,7 +174,7 @@ static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 				wfi = mem_calloc(sizeof(WINDOW_FILTER_INFO));
 			}
 			if (wfi != NULL) {
-				// İ’èæ“¾
+				// è¨­å®šå–å¾—
 				alloc_get_text(GetDlgItem(hDlg, IDC_EDIT_TITLE), &wfi->title);
 				alloc_get_text(GetDlgItem(hDlg, IDC_EDIT_CLASSNAME), &wfi->class_name);
 
@@ -184,7 +184,7 @@ static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 			}
 
 			if (GetWindowLong(hDlg, GWL_USERDATA) == 0) {
-				// V‹K
+				// æ–°è¦
 				HWND pWnd = PropSheet_GetCurrentPageHwnd(GetParent(hDlg));
 				listview_set_window(GetDlgItem(pWnd, IDC_LIST_WINDOW), wfi, FALSE);
 			}
@@ -214,7 +214,7 @@ static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 }
 
 /*
- * listview_set_text - ListView‚ÌƒeƒLƒXƒg‚ğİ’è
+ * listview_set_text - ListViewã®ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®š
  */
 static void listview_set_text(const HWND hListView, const int i)
 {
@@ -223,9 +223,9 @@ static void listview_set_text(const HWND hListView, const int i)
 	if ((wfi = (WINDOW_FILTER_INFO *)listview_get_lparam(hListView, i)) == NULL) {
 		return;
 	}
-	// ƒ^ƒCƒgƒ‹
+	// ã‚¿ã‚¤ãƒˆãƒ«
 	ListView_SetItemText(hListView, i, 0, wfi->title);
-	// ƒNƒ‰ƒX–¼
+	// ã‚¯ãƒ©ã‚¹å
 	ListView_SetItemText(hListView, i, 1, wfi->class_name);
 
 	ListView_SetItemText(hListView, i, 2, (wfi->ignore != 0) ?
@@ -237,7 +237,7 @@ static void listview_set_text(const HWND hListView, const int i)
 }
 
 /*
- * listview_set_window - ListView‚ÉƒEƒBƒ“ƒhƒEƒtƒBƒ‹ƒ^î•ñ‚ğ’Ç‰Á‚·‚é
+ * listview_set_window - ListViewã«ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ•ã‚£ãƒ«ã‚¿æƒ…å ±ã‚’è¿½åŠ ã™ã‚‹
  */
 static void listview_set_window(const HWND hListView, WINDOW_FILTER_INFO *wfi, const BOOL copy)
 {
@@ -269,7 +269,7 @@ static void listview_set_window(const HWND hListView, WINDOW_FILTER_INFO *wfi, c
 }
 
 /*
- * listview_get_window - ƒEƒBƒ“ƒhƒEƒtƒBƒ‹ƒ^î•ñ‚Ìæ“¾
+ * listview_get_window - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ•ã‚£ãƒ«ã‚¿æƒ…å ±ã®å–å¾—
  */
 static WINDOW_FILTER_INFO *listview_get_window(const HWND hListView, int *cnt)
 {
@@ -281,7 +281,7 @@ static WINDOW_FILTER_INFO *listview_get_window(const HWND hListView, int *cnt)
 		return NULL;
 	}
 
-	// €–Ú‚Ìì¬
+	// é …ç›®ã®ä½œæˆ
 	if ((new_wfi = mem_calloc(sizeof(WINDOW_FILTER_INFO) * *cnt)) == NULL) {
 		*cnt = 0;
 		return NULL;
@@ -299,7 +299,7 @@ static WINDOW_FILTER_INFO *listview_get_window(const HWND hListView, int *cnt)
 }
 
 /*
- * listview_free_window - ƒEƒBƒ“ƒhƒEƒtƒBƒ‹ƒ^î•ñ‚Ì‰ğ•ú
+ * listview_free_window - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ•ã‚£ãƒ«ã‚¿æƒ…å ±ã®è§£æ”¾
  */
 static void listview_free_window(const HWND hListView)
 {
@@ -317,7 +317,7 @@ static void listview_free_window(const HWND hListView)
 }
 
 /*
- * set_window_proc - ƒEƒBƒ“ƒhƒEƒtƒBƒ‹ƒ^İ’è‚ÌƒvƒƒV[ƒWƒƒ
+ * set_window_proc - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ•ã‚£ãƒ«ã‚¿è¨­å®šã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 BOOL CALLBACK set_window_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -336,7 +336,7 @@ BOOL CALLBACK set_window_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 		hThemeUp = open_theme(GetDlgItem(hDlg, IDC_BUTTON_UP), L"SCROLLBAR");
 		hThemeDown = open_theme(GetDlgItem(hDlg, IDC_BUTTON_DOWN), L"SCROLLBAR");
 #endif	// OP_XP_STYLE
-		// ƒŠƒXƒgƒrƒ…[‚ÌƒJƒ‰ƒ€‚Ìİ’è
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚«ãƒ©ãƒ ã®è¨­å®š
 		i = 0;
 		lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
@@ -370,7 +370,7 @@ BOOL CALLBACK set_window_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 		lvc.iSubItem = i++;
 		ListView_InsertColumn(GetDlgItem(hDlg, IDC_LIST_WINDOW), lvc.iSubItem, &lvc);
 
-		// ƒŠƒXƒgƒrƒ…[‚ÌƒXƒ^ƒCƒ‹‚Ìİ’è
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚¹ã‚¿ã‚¤ãƒ«ã®è¨­å®š
 		SetWindowLong(GetDlgItem(hDlg, IDC_LIST_WINDOW), GWL_STYLE,
 			GetWindowLong(GetDlgItem(hDlg, IDC_LIST_WINDOW), GWL_STYLE) | LVS_SHOWSELALWAYS);
 		SendDlgItemMessage(hDlg, IDC_LIST_WINDOW, LVM_SETEXTENDEDLISTVIEWSTYLE, 0,
@@ -407,7 +407,7 @@ BOOL CALLBACK set_window_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 		default:
 			return FALSE;
 		}
-		// ƒ{ƒ^ƒ“‚Ì•`‰æ
+		// ãƒœã‚¿ãƒ³ã®æç”»
 #ifdef OP_XP_STYLE
 		if (hThemeUp != 0 && hThemeDown != 0) {
 			draw_theme_scroll((LPDRAWITEMSTRUCT)lParam, i, (i == DFCS_SCROLLUP) ? hThemeUp : hThemeDown);
@@ -421,7 +421,7 @@ BOOL CALLBACK set_window_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 #ifdef OP_XP_STYLE
 	case WM_THEMECHANGED:
-		// ƒe[ƒ}‚Ì•ÏX
+		// ãƒ†ãƒ¼ãƒã®å¤‰æ›´
 		if (hThemeUp != 0 && hThemeDown != 0) {
 			close_theme(hThemeUp);
 			close_theme(hThemeDown);

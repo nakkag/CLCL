@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Bitmap.c
@@ -23,7 +23,7 @@
 /* Local Function Prototypes */
 
 /*
- * bitmap_to_dib - ƒrƒbƒgƒ}ƒbƒv‚ğDIB‚É•ÏŠ·
+ * bitmap_to_dib - ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’DIBã«å¤‰æ›
  */
 BYTE *bitmap_to_dib(const HBITMAP hbmp, DWORD *size)
 {
@@ -36,7 +36,7 @@ BYTE *bitmap_to_dib(const HBITMAP hbmp, DWORD *size)
 	DWORD err;
 	int color_bit = 0;
 
-	// BITMAPî•ñæ“¾
+	// BITMAPæƒ…å ±å–å¾—
 	if (GetObject(hbmp, sizeof(BITMAP), &bmp) == 0) {
 		return NULL;
 	}
@@ -71,7 +71,7 @@ BYTE *bitmap_to_dib(const HBITMAP hbmp, DWORD *size)
 		SetLastError(err);
 		return NULL;
 	}
-	// DIBƒwƒbƒ_
+	// DIBãƒ˜ãƒƒãƒ€
 	((BITMAPINFO *)ret)->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	((BITMAPINFO *)ret)->bmiHeader.biWidth = bmp.bmWidth;
 	((BITMAPINFO *)ret)->bmiHeader.biHeight = bmp.bmHeight;
@@ -81,7 +81,7 @@ BYTE *bitmap_to_dib(const HBITMAP hbmp, DWORD *size)
 	((BITMAPINFO *)ret)->bmiHeader.biSizeImage = len * bmp.bmHeight;
 	((BITMAPINFO *)ret)->bmiHeader.biClrImportant = 0;
 
-	// DIBæ“¾
+	// DIBå–å¾—
 	if (GetDIBits(hdc, hbmp, 0, bmp.bmHeight, ret + hsize, (BITMAPINFO *)ret, DIB_RGB_COLORS) == 0) {
 		err = GetLastError();
 		ReleaseDC(NULL, hdc);
@@ -95,7 +95,7 @@ BYTE *bitmap_to_dib(const HBITMAP hbmp, DWORD *size)
 }
 
 /*
- * dib_to_bitmap - DIB‚ğƒrƒbƒgƒ}ƒbƒv‚É•ÏŠ·
+ * dib_to_bitmap - DIBã‚’ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã«å¤‰æ›
  */
 HBITMAP dib_to_bitmap(const BYTE *dib)
 {
@@ -109,7 +109,7 @@ HBITMAP dib_to_bitmap(const BYTE *dib)
 		return NULL;
 	}
 	
-	// ƒwƒbƒ_ƒTƒCƒYæ“¾
+	// ãƒ˜ãƒƒãƒ€ã‚µã‚¤ã‚ºå–å¾—
 	if ((color_bit = ((BITMAPINFOHEADER *)dib)->biClrUsed) == 0) {
 		color_bit = ((BITMAPINFOHEADER *)dib)->biPlanes * ((BITMAPINFOHEADER *)dib)->biBitCount;
 		if (color_bit == 1) {
@@ -128,7 +128,7 @@ HBITMAP dib_to_bitmap(const BYTE *dib)
 	}
 	hsize = sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * color_bit;
 
-	// ƒrƒbƒgƒ}ƒbƒv‚É•ÏŠ·
+	// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã«å¤‰æ›
 	ret = CreateDIBitmap(hdc, (BITMAPINFOHEADER *)dib, CBM_INIT, dib + hsize, (BITMAPINFO *)dib, DIB_RGB_COLORS);
 	if (ret == NULL) {
 		err = GetLastError();

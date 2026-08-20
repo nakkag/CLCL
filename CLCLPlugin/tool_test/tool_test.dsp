@@ -1,24 +1,24 @@
 # Microsoft Developer Studio Project File - Name="tool_test" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
-# ** �ҏW���Ȃ��ł������� **
+# ** 編集しないでください **
 
 # TARGTYPE "Win32 (x86) Dynamic-Link Library" 0x0102
 
 CFG=tool_test - Win32 Debug
-!MESSAGE ����͗L����Ҳ�̧�قł͂���܂���B ������ۼު�Ă�����ނ��邽�߂ɂ� NMAKE ���g�p���Ă��������B
-!MESSAGE [Ҳ�̧�ق̴���߰�] ����ނ��g�p���Ď��s���Ă�������
+!MESSAGE これは有効なﾒｲｸﾌｧｲﾙではありません。 このﾌﾟﾛｼﾞｪｸﾄをﾋﾞﾙﾄﾞするためには NMAKE を使用してください。
+!MESSAGE [ﾒｲｸﾌｧｲﾙのｴｸｽﾎﾟｰﾄ] ｺﾏﾝﾄﾞを使用して実行してください
 !MESSAGE 
 !MESSAGE NMAKE /f "tool_test.mak".
 !MESSAGE 
-!MESSAGE NMAKE �̎��s���ɍ\�����w��ł��܂�
-!MESSAGE ����� ײݏ��ϸۂ̐ݒ���`���܂��B��:
+!MESSAGE NMAKE の実行時に構成を指定できます
+!MESSAGE ｺﾏﾝﾄﾞ ﾗｲﾝ上でﾏｸﾛの設定を定義します。例:
 !MESSAGE 
 !MESSAGE NMAKE /f "tool_test.mak" CFG="tool_test - Win32 Debug"
 !MESSAGE 
-!MESSAGE �I���\������� Ӱ��:
+!MESSAGE 選択可能なﾋﾞﾙﾄﾞ ﾓｰﾄﾞ:
 !MESSAGE 
-!MESSAGE "tool_test - Win32 Release" ("Win32 (x86) Dynamic-Link Library" �p)
-!MESSAGE "tool_test - Win32 Debug" ("Win32 (x86) Dynamic-Link Library" �p)
+!MESSAGE "tool_test - Win32 Release" ("Win32 (x86) Dynamic-Link Library" 用)
+!MESSAGE "tool_test - Win32 Debug" ("Win32 (x86) Dynamic-Link Library" 用)
 !MESSAGE 
 
 # Begin Project

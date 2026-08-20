@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Caret.c
@@ -23,7 +23,7 @@
 #pragma comment(lib, "uuid.lib")
 
 /* Define */
-// ƒnƒ“ƒO‚µ‚Ä‚¢‚éƒEƒBƒ“ƒhƒE‚Ì”»’èŠÔ
+// ãƒãƒ³ã‚°ã—ã¦ã„ã‚‹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®åˆ¤å®šæ™‚é–“
 #define CARET_RESPONSE_TIMEOUT			200
 
 #ifndef UIA_TextPatternId
@@ -46,13 +46,13 @@ static BOOL caret_range_to_pos(IUIAutomationTextRange *range, POINT *pt);
 static BOOL caret_get_uia_pos(POINT *pt);
 
 /*
- * caret_point_check - ˆÊ’u‚ª‰æ–Ê“à‚É‚ ‚é‚©ƒ`ƒFƒbƒN
+ * caret_point_check - ä½ç½®ãŒç”»é¢å†…ã«ã‚ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
  */
 static BOOL caret_point_check(const POINT *pt)
 {
 	RECT vrect;
 
-	// ‰¼‘z‰æ–Ê‘S‘Ì‚Ì‹éŒ`
+	// ä»®æƒ³ç”»é¢å…¨ä½“ã®çŸ©å½¢
 	SetRect(&vrect,
 		GetSystemMetrics(SM_XVIRTUALSCREEN),
 		GetSystemMetrics(SM_YVIRTUALSCREEN),
@@ -62,7 +62,7 @@ static BOOL caret_point_check(const POINT *pt)
 }
 
 /*
- * caret_get_system_pos - ƒVƒXƒeƒ€ƒLƒƒƒŒƒbƒg‚©‚çˆÊ’u‚ğæ“¾
+ * caret_get_system_pos - ã‚·ã‚¹ãƒ†ãƒ ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‹ã‚‰ä½ç½®ã‚’å–å¾—
  */
 static BOOL caret_get_system_pos(const GUITHREADINFO *gti, POINT *pt)
 {
@@ -81,7 +81,7 @@ static BOOL caret_get_system_pos(const GUITHREADINFO *gti, POINT *pt)
 }
 
 /*
- * caret_get_msaa_pos - ƒAƒNƒZƒVƒrƒŠƒeƒB(MSAA)‚©‚çˆÊ’u‚ğæ“¾
+ * caret_get_msaa_pos - ã‚¢ã‚¯ã‚»ã‚·ãƒ“ãƒªãƒ†ã‚£(MSAA)ã‹ã‚‰ä½ç½®ã‚’å–å¾—
  */
 static BOOL caret_get_msaa_pos(const HWND focus_wnd, POINT *pt)
 {
@@ -107,7 +107,7 @@ static BOOL caret_get_msaa_pos(const HWND focus_wnd, POINT *pt)
 	if (_AccessibleObjectFromWindow == NULL) {
 		return FALSE;
 	}
-	// ƒLƒƒƒŒƒbƒg‚ÌƒIƒuƒWƒFƒNƒg‚ğæ“¾
+	// ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—
 	if (FAILED(_AccessibleObjectFromWindow(focus_wnd, (DWORD)OBJID_CARET,
 		&IID_IAccessible, (void **)&acc)) || acc == NULL) {
 		return FALSE;
@@ -128,7 +128,7 @@ static BOOL caret_get_msaa_pos(const HWND focus_wnd, POINT *pt)
 }
 
 /*
- * caret_rect_to_pos - ƒeƒLƒXƒg”ÍˆÍ‚Ì‹éŒ`‚©‚çˆÊ’u‚ğæ“¾
+ * caret_rect_to_pos - ãƒ†ã‚­ã‚¹ãƒˆç¯„å›²ã®çŸ©å½¢ã‹ã‚‰ä½ç½®ã‚’å–å¾—
  */
 static BOOL caret_rect_to_pos(IUIAutomationTextRange *range, POINT *pt)
 {
@@ -139,7 +139,7 @@ static BOOL caret_rect_to_pos(IUIAutomationTextRange *range, POINT *pt)
 	POINT p;
 	BOOL ret = FALSE;
 
-	// ‹éŒ`‚Í left, top, width, height ‚Ì•À‚Ñ‚Å•Ô‚³‚ê‚é
+	// çŸ©å½¢ã¯ left, top, width, height ã®ä¸¦ã³ã§è¿”ã•ã‚Œã‚‹
 	if (FAILED(IUIAutomationTextRange_GetBoundingRectangles(range, &sa)) || sa == NULL) {
 		return FALSE;
 	}
@@ -162,7 +162,7 @@ static BOOL caret_rect_to_pos(IUIAutomationTextRange *range, POINT *pt)
 }
 
 /*
- * caret_range_to_pos - ƒeƒLƒXƒg”ÍˆÍ‚©‚çˆÊ’u‚ğæ“¾
+ * caret_range_to_pos - ãƒ†ã‚­ã‚¹ãƒˆç¯„å›²ã‹ã‚‰ä½ç½®ã‚’å–å¾—
  */
 static BOOL caret_range_to_pos(IUIAutomationTextRange *range, POINT *pt)
 {
@@ -172,7 +172,7 @@ static BOOL caret_range_to_pos(IUIAutomationTextRange *range, POINT *pt)
 	if ((ret = caret_rect_to_pos(range, pt)) == TRUE) {
 		return TRUE;
 	}
-	// ‘I‘ğ‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Í1•¶š•ª‚ÉL‚°‚Ä‚©‚çˆÊ’u‚ğæ“¾‚·‚é
+	// é¸æŠã•ã‚Œã¦ã„ãªã„å ´åˆã¯1æ–‡å­—åˆ†ã«åºƒã’ã¦ã‹ã‚‰ä½ç½®ã‚’å–å¾—ã™ã‚‹
 	if (SUCCEEDED(IUIAutomationTextRange_Clone(range, &crange)) && crange != NULL) {
 		if (SUCCEEDED(IUIAutomationTextRange_ExpandToEnclosingUnit(crange, TextUnit_Character))) {
 			ret = caret_rect_to_pos(crange, pt);
@@ -183,7 +183,7 @@ static BOOL caret_range_to_pos(IUIAutomationTextRange *range, POINT *pt)
 }
 
 /*
- * caret_get_uia_pos - ƒAƒNƒZƒVƒrƒŠƒeƒB(UI Automation)‚©‚çˆÊ’u‚ğæ“¾
+ * caret_get_uia_pos - ã‚¢ã‚¯ã‚»ã‚·ãƒ“ãƒªãƒ†ã‚£(UI Automation)ã‹ã‚‰ä½ç½®ã‚’å–å¾—
  */
 static BOOL caret_get_uia_pos(POINT *pt)
 {
@@ -202,11 +202,11 @@ static BOOL caret_get_uia_pos(POINT *pt)
 		uia_automation = NULL;
 		return FALSE;
 	}
-	// ƒtƒH[ƒJƒX‚ğ‚Â—v‘f‚Ìæ“¾
+	// ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’æŒã¤è¦ç´ ã®å–å¾—
 	if (FAILED(IUIAutomation_GetFocusedElement(uia_automation, &element)) || element == NULL) {
 		return FALSE;
 	}
-	// ƒLƒƒƒŒƒbƒg‚ÌˆÊ’u‚©‚çæ“¾
+	// ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã®ä½ç½®ã‹ã‚‰å–å¾—
 	if (SUCCEEDED(IUIAutomationElement_GetCurrentPatternAs(element, UIA_TextPattern2Id,
 		&IID_IUIAutomationTextPattern2, (void **)&text2)) && text2 != NULL) {
 		if (SUCCEEDED(IUIAutomationTextPattern2_GetCaretRange(text2, &active, &range)) && range != NULL) {
@@ -216,7 +216,7 @@ static BOOL caret_get_uia_pos(POINT *pt)
 		}
 		IUIAutomationTextPattern2_Release(text2);
 	}
-	// ‘I‘ğ”ÍˆÍ‚ÌˆÊ’u‚©‚çæ“¾
+	// é¸æŠç¯„å›²ã®ä½ç½®ã‹ã‚‰å–å¾—
 	if (ret == FALSE &&
 		SUCCEEDED(IUIAutomationElement_GetCurrentPatternAs(element, UIA_TextPatternId,
 			&IID_IUIAutomationTextPattern, (void **)&text)) && text != NULL) {
@@ -235,7 +235,7 @@ static BOOL caret_get_uia_pos(POINT *pt)
 }
 
 /*
- * caret_get_pos - ƒLƒƒƒŒƒbƒg‚ÌˆÊ’u‚ğæ“¾
+ * caret_get_pos - ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã®ä½ç½®ã‚’å–å¾—
  */
 BOOL caret_get_pos(const HWND active_wnd, const HWND focus_wnd, POINT *pt)
 {
@@ -249,7 +249,7 @@ BOOL caret_get_pos(const HWND active_wnd, const HWND focus_wnd, POINT *pt)
 	ZeroMemory(&gti, sizeof(GUITHREADINFO));
 	gti.cbSize = sizeof(GUITHREADINFO);
 	if (GetGUIThreadInfo(GetWindowThreadProcessId(active_wnd, NULL), &gti) != FALSE) {
-		// ƒVƒXƒeƒ€ƒLƒƒƒŒƒbƒg‚©‚çæ“¾
+		// ã‚·ã‚¹ãƒ†ãƒ ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‹ã‚‰å–å¾—
 		if (caret_get_system_pos(&gti, pt) == TRUE) {
 			return TRUE;
 		}
@@ -257,11 +257,11 @@ BOOL caret_get_pos(const HWND active_wnd, const HWND focus_wnd, POINT *pt)
 			wnd = gti.hwndFocus;
 		}
 	}
-	// ƒVƒXƒeƒ€ƒLƒƒƒŒƒbƒg‚ğì¬‚µ‚È‚¢ƒAƒvƒŠƒP[ƒVƒ‡ƒ“(Chrome‚È‚Ç)‚Í
-	// ƒAƒNƒZƒVƒrƒŠƒeƒB‚©‚çˆÊ’u‚ğæ“¾‚·‚é
+	// ã‚·ã‚¹ãƒ†ãƒ ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‚’ä½œæˆã—ãªã„ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³(Chromeãªã©)ã¯
+	// ã‚¢ã‚¯ã‚»ã‚·ãƒ“ãƒªãƒ†ã‚£ã‹ã‚‰ä½ç½®ã‚’å–å¾—ã™ã‚‹
 	if (SendMessageTimeout(active_wnd, WM_NULL, 0, 0,
 		SMTO_ABORTIFHUNG | SMTO_BLOCK, CARET_RESPONSE_TIMEOUT, &res) == 0) {
-		// ‰“š‚µ‚È‚¢ƒEƒBƒ“ƒhƒE‚Íˆ—‚µ‚È‚¢
+		// å¿œç­”ã—ãªã„ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¯å‡¦ç†ã—ãªã„
 		return FALSE;
 	}
 	if (caret_get_msaa_pos(wnd, pt) == TRUE) {
@@ -271,7 +271,7 @@ BOOL caret_get_pos(const HWND active_wnd, const HWND focus_wnd, POINT *pt)
 }
 
 /*
- * caret_free - ƒLƒƒƒŒƒbƒgî•ñ‚Ì‰ğ•ú
+ * caret_free - ã‚­ãƒ£ãƒ¬ãƒƒãƒˆæƒ…å ±ã®è§£æ”¾
  */
 void caret_free(void)
 {

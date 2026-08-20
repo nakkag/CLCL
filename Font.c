@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Font.c
@@ -22,7 +22,7 @@
 /* Local Function Prototypes */
 
 /*
- * font_create - ƒtƒHƒ“ƒg‚ğì¬‚·‚é
+ * font_create - ãƒ•ã‚©ãƒ³ãƒˆã‚’ä½œæˆã™ã‚‹
  */
 HFONT font_create(const TCHAR *FontName, const int FontSize, const int Charset, const int weight, const BOOL italic, const BOOL fixed)
 {
@@ -30,7 +30,7 @@ HFONT font_create(const TCHAR *FontName, const int FontSize, const int Charset, 
 
 	ZeroMemory(&lf, sizeof(LOGFONT));
 
-	// ƒtƒHƒ“ƒg‚Ì‚‚³
+	// ãƒ•ã‚©ãƒ³ãƒˆã®é«˜ã•
 	lf.lfHeight = -MulDiv(FontSize, GetDpi(), 72);
 
 	lf.lfWidth = 0;

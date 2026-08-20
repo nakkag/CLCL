@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Window.c
@@ -21,13 +21,13 @@
 /* Define */
 
 /* Global Variables */
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* ocal Function Prototypes */
 
 /*
- * window_to_index - ƒEƒBƒ“ƒhƒEî•ñ‚ÌƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+ * window_to_index - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦æƒ…å ±ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
  */
 static int window_to_index(const HWND hWnd)
 {
@@ -45,7 +45,7 @@ static int window_to_index(const HWND hWnd)
 	GetClassName(hWnd, class_name, BUF_SIZE - 1);
 
 	for (i = 0; i < option.window_filter_cnt; i++) {
-		// ƒEƒBƒ“ƒhƒE‚Ìƒ^ƒCƒgƒ‹‚ÆƒNƒ‰ƒX–¼‚Ìƒ`ƒFƒbƒN
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¿ã‚¤ãƒˆãƒ«ã¨ã‚¯ãƒ©ã‚¹åã®ãƒã‚§ãƒƒã‚¯
 		if (((option.window_filter_info + i)->title == NULL ||
 			*(option.window_filter_info + i)->title == TEXT('\0') ||
 			str_match((option.window_filter_info + i)->title, title) == TRUE) &&
@@ -60,7 +60,7 @@ static int window_to_index(const HWND hWnd)
 }
 
 /*
- * window_ignore_check - œŠOƒEƒBƒ“ƒhƒE‚Ìƒ`ƒFƒbƒN
+ * window_ignore_check - é™¤å¤–ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒã‚§ãƒƒã‚¯
  */
 BOOL window_ignore_check(const HWND hWnd)
 {
@@ -73,7 +73,7 @@ BOOL window_ignore_check(const HWND hWnd)
 }
 
 /*
- * window_focus_check - ƒtƒH[ƒJƒXİ’è‚Ìƒ`ƒFƒbƒN
+ * window_focus_check - ãƒ•ã‚©ãƒ¼ã‚«ã‚¹è¨­å®šã®ãƒã‚§ãƒƒã‚¯
  */
 BOOL window_focus_check(const HWND hWnd)
 {
@@ -86,7 +86,7 @@ BOOL window_focus_check(const HWND hWnd)
 }
 
 /*
- * window_paste_check - “\‚è•t‚¯‚Ìƒ`ƒFƒbƒN
+ * window_paste_check - è²¼ã‚Šä»˜ã‘ã®ãƒã‚§ãƒƒã‚¯
  */
 BOOL window_paste_check(const HWND hWnd)
 {
