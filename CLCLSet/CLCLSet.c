@@ -30,6 +30,7 @@
 #include "..\Message.h"
 #include "..\File.h"
 #include "..\dpi.h"
+#include "..\DarkMode.h"
 
 #include "CLCLSet.h"
 #include "SetHistory.h"
@@ -75,6 +76,7 @@ static void init_themes(void);
 static void themes_free(void);
 #endif	// OP_XP_STYLE
 static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum);
+static int CALLBACK prop_sheet_proc(const HWND hDlg, const UINT msg, const LPARAM lParam);
 static int show_option(const HWND hWnd, const TCHAR *cmd_line);
 static void get_work_path(const HINSTANCE hInstance);
 
@@ -152,6 +154,10 @@ BOOL draw_theme_scroll(LPDRAWITEMSTRUCT lpDrawItem, UINT i, long hTheme)
 	static FARPROC _DrawThemeBackground;
 	DWORD state = 0;
 
+	if (dark_mode_is_dark() == TRUE) {
+		dark_mode_draw_arrow_button(lpDrawItem, i);
+		return TRUE;
+	}
 	if (hModThemes == NULL) {
 		return FALSE;
 	}
@@ -254,6 +260,10 @@ void draw_scroll_sontrol(LPDRAWITEMSTRUCT lpDrawItem, UINT i)
 {
 	#define FOCUSRECT_SIZE		3
 
+	if (dark_mode_is_dark() == TRUE) {
+		dark_mode_draw_arrow_button(lpDrawItem, i);
+		return;
+	}
 	if (lpDrawItem->itemState & ODS_DISABLED) {
 		// 使用不能 
 		// unavailable
@@ -538,6 +548,18 @@ LRESULT OptionNotifyProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /*
+ * prop_sheet_proc - プロパティシートのコールバック
+ */
+static int CALLBACK prop_sheet_proc(const HWND hDlg, const UINT msg, const LPARAM lParam)
+{
+	if (msg == PSCB_INITIALIZED) {
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
+	}
+	return 0;
+}
+
+/*
  * ViewProperties - オプションの画面の表示
  */
 static int show_option(const HWND hWnd, const TCHAR *cmd_line)
@@ -599,7 +621,8 @@ static int show_option(const HWND hWnd, const TCHAR *cmd_line)
 
 	ZeroMemory(&psh, sizeof(PROPSHEETHEADER));
 	psh.dwSize = sizeof_PROPSHEETHEADER;
-	psh.dwFlags = PSH_NOAPPLYNOW;
+	psh.dwFlags = PSH_NOAPPLYNOW | PSH_USECALLBACK;
+	psh.pfnCallback = prop_sheet_proc;
 	psh.hInstance = hInst;
 	psh.hwndParent = hWnd;
 	psh.pszCaption = message_get_res(IDS_OPTION_TITLE);
@@ -714,6 +737,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
 	// DPIの初期化
 	InitDpi();
+	// ダークモードの初期化
+	dark_mode_init();
 
 	// 設定取得
 	get_work_path(hInstance);
@@ -755,6 +780,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 		}
 	}
 	ini_free();
+	dark_mode_free();
 #ifdef OP_XP_STYLE
 	themes_free();
 #endif	// OP_XP_STYLE

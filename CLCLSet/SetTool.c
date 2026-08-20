@@ -21,6 +21,7 @@
 #include "..\Tool.h"
 #include "..\Message.h"
 #include "..\dpi.h"
+#include "..\DarkMode.h"
 
 #include "CLCLSet.h"
 #include "SelectKey.h"
@@ -175,6 +176,8 @@ static BOOL CALLBACK select_tools_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 		SetWindowText(hDlg, message_get_res(IDS_TOOL_SELECT_TITLE));
 		SetWindowText(GetDlgItem(hDlg, IDC_STATIC_MSG), message_get_res(IDS_TOOL_SELECT_MSG));
 
@@ -304,6 +307,8 @@ static BOOL CALLBACK select_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 		SetWindowText(hDlg, message_get_res(IDS_TOOL_SELECT_TITLE));
 		SetWindowText(GetDlgItem(hDlg, IDC_STATIC_MSG), message_get_res(IDS_TOOL_SELECT_MSG));
 
@@ -428,6 +433,8 @@ static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 		if (lParam == 0) {
 			// 新規追加
 			SendMessage(hDlg, WM_COMMAND, IDC_CHECK_MENU, 0);
@@ -748,6 +755,8 @@ BOOL CALLBACK set_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 		// D&Dを受け付ける
 		SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_ACCEPTFILES);
 #ifdef OP_XP_STYLE

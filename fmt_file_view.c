@@ -24,6 +24,7 @@
 #include "ListView.h"
 #include "fmt_file_view.h"
 #include "dpi.h"
+#include "DarkMode.h"
 
 #include "resource.h"
 
@@ -523,6 +524,17 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 	static BOOL modify;
 
 	switch (msg) {
+	case WM_ERASEBKGND:
+		// 背景の描画
+		if (dark_mode_is_dark() == TRUE) {
+			RECT erase_rect;
+
+			GetClientRect(hWnd, &erase_rect);
+			FillRect((HDC)wParam, &erase_rect, dark_mode_get_brush(COLOR_BTNFACE));
+			return TRUE;
+		}
+		return DefWindowProc(hWnd, msg, wParam, lParam);
+
 	case WM_CREATE:
 		hInst = ((LPCREATESTRUCT)lParam)->hInstance;
 

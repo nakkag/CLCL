@@ -25,6 +25,7 @@
 #include "Format.h"
 #include "Font.h"
 #include "dpi.h"
+#include "DarkMode.h"
 
 #include "resource.h"
 
@@ -216,6 +217,10 @@ static void menu_theme_open(const HWND hWnd)
 	}
 #endif	// MENU_COLOR
 	if (_MenuIsThemeActive() == FALSE) {
+		return;
+	}
+	// ダークモードの配色は独自描画で行う
+	if (dark_mode_is_dark() == TRUE) {
 		return;
 	}
 	if ((menu_theme = _MenuOpenThemeData(hWnd, L"MENU")) == NULL) {
@@ -1124,6 +1129,17 @@ HMENU menu_create(const HWND hWnd, MENU_INFO *menu_info, const int menu_cnt,
 	SelectObject(hdc, hRetFont);
 	DeleteObject(hFont);
 	ReleaseDC(hWnd, hdc);
+
+	if (dark_mode_is_dark() == TRUE) {
+		MENUINFO mi;
+
+		// メニューの背景色の設定
+		ZeroMemory(&mi, sizeof(mi));
+		mi.cbSize = sizeof(mi);
+		mi.fMask = MIM_BACKGROUND | MIM_APPLYTOSUBMENUS;
+		mi.hbrBack = dark_mode_get_brush(COLOR_MENU);
+		SetMenuInfo(hMenu, &mi);
+	}
 	return hMenu;
 }
 
@@ -1310,24 +1326,27 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 	int width, height;
 #ifdef MENU_COLOR
 	DWORD menu_color_back = (*option.menu_color_back.color_str != TEXT('\0')) ?
-		option.menu_color_back.color : GetSysColor(COLOR_MENU);
+		option.menu_color_back.color : dark_mode_get_color(COLOR_MENU);
 	DWORD menu_color_text = (*option.menu_color_text.color_str != TEXT('\0')) ?
-		option.menu_color_text.color : GetSysColor(COLOR_MENUTEXT);
+		option.menu_color_text.color : dark_mode_get_color(COLOR_MENUTEXT);
 	DWORD menu_color_highlight = (*option.menu_color_highlight.color_str != TEXT('\0')) ?
-		option.menu_color_highlight.color : GetSysColor(COLOR_HIGHLIGHT);
+		option.menu_color_highlight.color : dark_mode_get_color(COLOR_HIGHLIGHT);
 	DWORD menu_color_highlighttext = (*option.menu_color_highlighttext.color_str != TEXT('\0')) ?
-		option.menu_color_highlighttext.color : GetSysColor(COLOR_HIGHLIGHTTEXT);
+		option.menu_color_highlighttext.color : dark_mode_get_color(COLOR_HIGHLIGHTTEXT);
+	DWORD menu_color_format = (*option.menu_color_highlight.color_str != TEXT('\0')) ?
+		option.menu_color_highlight.color : dark_mode_get_accent_color();
 	DWORD menu_color_3d_shadow = (*option.menu_color_3d_shadow.color_str != TEXT('\0')) ?
-		option.menu_color_3d_shadow.color : GetSysColor(COLOR_3DSHADOW);
+		option.menu_color_3d_shadow.color : dark_mode_get_color(COLOR_3DSHADOW);
 	DWORD menu_color_3d_highlight = (*option.menu_color_3d_highlight.color_str != TEXT('\0')) ?
-		option.menu_color_3d_highlight.color : GetSysColor(COLOR_3DHIGHLIGHT);
+		option.menu_color_3d_highlight.color : dark_mode_get_color(COLOR_3DHIGHLIGHT);
 #else	// MENU_COLOR
-	DWORD menu_color_back = GetSysColor(COLOR_MENU);
-	DWORD menu_color_text = GetSysColor(COLOR_MENUTEXT);
-	DWORD menu_color_highlight = GetSysColor(COLOR_HIGHLIGHT);
-	DWORD menu_color_highlighttext = GetSysColor(COLOR_HIGHLIGHTTEXT);
-	DWORD menu_color_3d_shadow = GetSysColor(COLOR_3DSHADOW);
-	DWORD menu_color_3d_highlight = GetSysColor(COLOR_3DHIGHLIGHT);
+	DWORD menu_color_back = dark_mode_get_color(COLOR_MENU);
+	DWORD menu_color_text = dark_mode_get_color(COLOR_MENUTEXT);
+	DWORD menu_color_highlight = dark_mode_get_color(COLOR_HIGHLIGHT);
+	DWORD menu_color_highlighttext = dark_mode_get_color(COLOR_HIGHLIGHTTEXT);
+	DWORD menu_color_format = dark_mode_get_accent_color();
+	DWORD menu_color_3d_shadow = dark_mode_get_color(COLOR_3DSHADOW);
+	DWORD menu_color_3d_highlight = dark_mode_get_color(COLOR_3DHIGHLIGHT);
 #endif	// MENU_COLOR
 
 	mii = (MENU_ITEM_INFO *)ds->itemData;
@@ -1356,7 +1375,7 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 			text_color = menu_theme_text_color(MPI_HOT, menu_color_highlighttext);
 		} else {
 			text_color = (mii->show_format == TRUE) ?
-				menu_color_highlight : menu_theme_text_color(MPI_NORMAL, menu_color_text);
+				menu_color_format : menu_theme_text_color(MPI_NORMAL, menu_color_text);
 		}
 		SetTextColor(draw_dc, text_color);
 		SetBkMode(draw_dc, TRANSPARENT);
@@ -1375,7 +1394,7 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 		FillRect(draw_dc, &draw_rect, hBrush);
 		DeleteObject(hBrush);
 
-		text_color = (mii->show_format == TRUE) ? menu_color_highlight : menu_color_text;
+		text_color = (mii->show_format == TRUE) ? menu_color_format : menu_color_text;
 		SetTextColor(draw_dc, text_color);
 		SetBkColor(draw_dc, menu_color_back);
 	}

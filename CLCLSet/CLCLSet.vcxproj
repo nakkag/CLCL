@@ -135,6 +135,7 @@
   <ItemGroup>
     <ClCompile Include="..\Bitmap.c" />
     <ClCompile Include="..\ClipBoard.c" />
+    <ClCompile Include="..\DarkMode.c" />
     <ClCompile Include="..\Data.c" />
     <ClCompile Include="..\dpi.c" />
     <ClCompile Include="..\File.c" />
@@ -165,6 +166,7 @@
   <ItemGroup>
     <ClInclude Include="..\Bitmap.h" />
     <ClInclude Include="..\ClipBoard.h" />
+    <ClInclude Include="..\DarkMode.h" />
     <ClInclude Include="..\Data.h" />
     <ClInclude Include="..\dpi.h" />
     <ClInclude Include="..\File.h" />

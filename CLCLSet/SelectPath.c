@@ -18,6 +18,7 @@
 #include "..\Message.h"
 #include "..\Data.h"
 #include "..\dpi.h"
+#include "..\DarkMode.h"
 
 #include "resource.h"
 
@@ -269,6 +270,8 @@ static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 		// イメージリストの設定
 		TreeView_SetImageList(GetDlgItem(hDlg, IDC_TREE), create_imagelist(hInst), TVSIL_NORMAL);
 		// アイテムの作成

@@ -72,6 +72,9 @@
     <ClCompile Include="..\ClipBoard.c">
       <Filter>Source Files\CLCL Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\DarkMode.c">
+      <Filter>Source Files\CLCL Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\Data.c">
       <Filter>Source Files\CLCL Source Files</Filter>
     </ClCompile>
@@ -152,6 +155,9 @@
       <Filter>Header Files\CLCL Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\ClipBoard.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DarkMode.h">
       <Filter>Header Files\CLCL Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Data.h">

@@ -18,6 +18,7 @@
 #include "Ini.h"
 #include "Font.h"
 #include "dpi.h"
+#include "DarkMode.h"
 
 #include "resource.h"
 
@@ -135,12 +136,12 @@ static void tooltip_draw_text(const TOOLTIP_INFO *ti, const HDC hdc, RECT *rect)
 	HFONT hRetFont;
 #ifdef TOOLTIP_COLOR
 	DWORD color_infoback = (*option.tooltip_color_back.color_str != TEXT('\0')) ?
-		option.tooltip_color_back.color : GetSysColor(COLOR_INFOBK);
+		option.tooltip_color_back.color : dark_mode_get_color(COLOR_INFOBK);
 	DWORD color_infotext = (*option.tooltip_color_text.color_str != TEXT('\0')) ?
-		option.tooltip_color_text.color : GetSysColor(COLOR_INFOTEXT);
+		option.tooltip_color_text.color : dark_mode_get_color(COLOR_INFOTEXT);
 #else	// TOOLTIP_COLOR
-	DWORD color_infoback = GetSysColor(COLOR_INFOBK);
-	DWORD color_infotext = GetSysColor(COLOR_INFOTEXT);
+	DWORD color_infoback = dark_mode_get_color(COLOR_INFOBK);
+	DWORD color_infotext = dark_mode_get_color(COLOR_INFOTEXT);
 #endif	// TOOLTIP_COLOR
 
 	// 背景の塗りつぶし

@@ -25,6 +25,7 @@
 #include "Data.h"
 #include "Bitmap.h"
 #include "fmt_bitmap_view.h"
+#include "DarkMode.h"
 
 #include "resource.h"
 
@@ -55,7 +56,6 @@ typedef struct _BUFFER {
 	HDC draw_dc;
 	HBITMAP draw_bmp;
 	HBITMAP draw_ret_bmp;
-	HBRUSH draw_brush;
 
 	BOOL stretch_mode;
 	BOOL free;
@@ -113,8 +113,6 @@ static LRESULT CALLBACK bmpview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		ReleaseDC(hWnd, hdc);
 		SetStretchBltMode(bf->draw_dc, COLORONCOLOR);
 		SetBrushOrgEx(bf->draw_dc, 0, 0, NULL);
-		// 背景ブラシ
-		bf->draw_brush = CreateSolidBrush(GetSysColor(COLOR_BTNSHADOW));
 		// option
 		bf->stretch_mode = option.fmt_bmp_stretch_mode;
 		bf->scale = 100;
@@ -142,7 +140,6 @@ static LRESULT CALLBACK bmpview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			SelectObject(bf->draw_dc, bf->draw_ret_bmp);
 			DeleteObject(bf->draw_bmp);
 			DeleteDC(bf->draw_dc);
-			DeleteObject(bf->draw_brush);
 
 			option.fmt_bmp_stretch_mode = bf->stretch_mode;
 			mem_free(&bf);
@@ -242,7 +239,7 @@ static LRESULT CALLBACK bmpview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		hdc = BeginPaint(hWnd, &ps);
 		if (bf->stretch_mode == FALSE) {
 			// 背景塗りつぶし
-			FillRect(bf->draw_dc, &ps.rcPaint, bf->draw_brush);
+			FillRect(bf->draw_dc, &ps.rcPaint, dark_mode_get_brush(COLOR_BTNSHADOW));
 			if (bf->hbmp != NULL) {
 				int w, h;
 				mdc = CreateCompatibleDC(hdc);
@@ -549,7 +546,7 @@ static LRESULT CALLBACK bmpview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		GetClientRect(hWnd, &window_rect);
 		if (bf->hbmp == NULL) {
 			// 背景塗りつぶし
-			FillRect(bf->draw_dc, &window_rect, bf->draw_brush);
+			FillRect(bf->draw_dc, &window_rect, dark_mode_get_brush(COLOR_BTNSHADOW));
 			break;
 		}
 		// 画像情報取得

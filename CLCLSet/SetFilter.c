@@ -22,6 +22,7 @@
 #include "..\ClipBoard.h"
 #include "..\Message.h"
 #include "..\dpi.h"
+#include "..\DarkMode.h"
 
 #include "CLCLSet.h"
 
@@ -63,6 +64,8 @@ static BOOL CALLBACK set_filter_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 #ifdef OP_XP_STYLE
 		// XP
 		hTheme = open_theme(GetDlgItem(hDlg, IDC_BUTTON_FORMAT), L"SCROLLBAR");
@@ -345,6 +348,8 @@ BOOL CALLBACK set_filter_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 #ifdef OP_XP_STYLE
 		// XP
 		hThemeUp = open_theme(GetDlgItem(hDlg, IDC_BUTTON_UP), L"SCROLLBAR");

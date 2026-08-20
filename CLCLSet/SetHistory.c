@@ -16,6 +16,7 @@
 
 #include "..\General.h"
 #include "..\Ini.h"
+#include "..\DarkMode.h"
 
 #include "CLCLSet.h"
 
@@ -39,6 +40,8 @@ BOOL CALLBACK set_histroy_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 {
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 		// スピンコントロールの設定
 		SendDlgItemMessage(hDlg, IDC_SPIN_MAX, UDM_SETRANGE, 0, (LPARAM)MAKELONG(UD_MAXVAL, 1));
 		SendDlgItemMessage(hDlg, IDC_SPIN_ADD_INTERVAL, UDM_SETRANGE, 0, (LPARAM)MAKELONG(UD_MAXVAL, 0));

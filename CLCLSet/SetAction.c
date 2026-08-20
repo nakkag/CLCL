@@ -22,6 +22,7 @@
 #include "..\File.h"
 #include "..\Data.h"
 #include "..\dpi.h"
+#include "..\DarkMode.h"
 
 #include "CLCLSet.h"
 #include "SelectIcon.h"
@@ -82,6 +83,8 @@ static BOOL CALLBACK select_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 		SetWindowText(hDlg, message_get_res(IDS_TOOL_SELECT_TITLE));
 		SetWindowText(GetDlgItem(hDlg, IDC_STATIC_MSG), message_get_res(IDS_TOOL_SELECT_MSG));
 
@@ -773,6 +776,8 @@ static BOOL CALLBACK set_action_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 		// D&Dを受け付ける
 		SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_ACCEPTFILES);
 #ifdef OP_XP_STYLE
@@ -1136,9 +1141,9 @@ static BOOL CALLBACK set_action_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 			case CDDS_ITEMPREPAINT:
 				if (((LPNMTVCUSTOMDRAW)lParam)->nmcd.lItemlParam == 0) {
 					if (((LPNMTVCUSTOMDRAW)lParam)->nmcd.uItemState == (CDIS_FOCUS | CDIS_SELECTED)) {
-						((LPNMTVCUSTOMDRAW)lParam)->clrText = GetSysColor(COLOR_HIGHLIGHTTEXT);
+						((LPNMTVCUSTOMDRAW)lParam)->clrText = dark_mode_get_color(COLOR_HIGHLIGHTTEXT);
 					} else {   
-						((LPNMTVCUSTOMDRAW)lParam)->clrText = GetSysColor(COLOR_GRAYTEXT);
+						((LPNMTVCUSTOMDRAW)lParam)->clrText = dark_mode_get_color(COLOR_GRAYTEXT);
 					}
 				}
 				SetWindowLong(hDlg, DWL_MSGRESULT, CDRF_DODEFAULT);
@@ -1365,6 +1370,8 @@ BOOL CALLBACK set_action_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 #ifdef OP_XP_STYLE
 		// XP
 		hThemeUp = open_theme(GetDlgItem(hDlg, IDC_BUTTON_UP), L"SCROLLBAR");
@@ -1474,7 +1481,7 @@ BOOL CALLBACK set_action_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 			case CDDS_ITEMPREPAINT:
 				ai = (ACTION_INFO *)((LPNMLVCUSTOMDRAW)lParam)->nmcd.lItemlParam;
 				if (ai != NULL && ai->enable == 0) {
-					((LPNMLVCUSTOMDRAW)lParam)->clrText = GetSysColor(COLOR_GRAYTEXT);
+					((LPNMLVCUSTOMDRAW)lParam)->clrText = dark_mode_get_color(COLOR_GRAYTEXT);
 				}
 				SetWindowLong(hDlg, DWL_MSGRESULT, CDRF_DODEFAULT);
 				return TRUE;

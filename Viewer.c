@@ -46,6 +46,7 @@
 #include "SetHotkey.h"
 #include "OleDragDrop.h"
 #include "dpi.h"
+#include "DarkMode.h"
 #include "ViewerOLEDnD.h"
 #include "ViewerDnD.h"
 
@@ -2490,6 +2491,7 @@ static void viewer_reset_dpi(const HWND hWnd)
 	if (GetDlgItem(hWnd, ID_TOOLBAR) != NULL) {
 		DestroyWindow(GetDlgItem(hWnd, ID_TOOLBAR));
 		toolbar_create(hWnd, ID_TOOLBAR);
+		dark_mode_set_control(GetDlgItem(hWnd, ID_TOOLBAR));
 	}
 	// ステータスバーのパーツの再設定
 	statusbar_reset_parts(GetDlgItem(hWnd, ID_STATUSBAR));
@@ -2592,11 +2594,47 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 	case WM_CREATE:
 		// ウィンドウ作成
 		viewer_initialize(hWnd);
+		// ダークモードの設定
+		dark_mode_set_window(hWnd);
 		viewer_set_controls(hWnd);
 
 		FocusWnd = GetDlgItem(hWnd, ID_TREE);
 		SetFocus(FocusWnd);
 		break;
+
+	case WM_UAHDRAWMENU:
+	case WM_UAHDRAWMENUITEM:
+	case WM_NCPAINT:
+	case WM_NCACTIVATE:
+		// メニューバーの描画
+		{
+			LRESULT dark_ret;
+
+			if (dark_mode_menubar_message(hWnd, msg, wParam, lParam, &dark_ret) == TRUE) {
+				return dark_ret;
+			}
+		}
+		return DefWindowProc(hWnd, msg, wParam, lParam);
+
+	case WM_SETTINGCHANGE:
+	case WM_THEMECHANGED:
+		// 配色の変更
+		if (dark_mode_is_color_change(msg, lParam) == TRUE) {
+			dark_mode_update();
+			dark_mode_refresh_window(hWnd);
+		}
+		return DefWindowProc(hWnd, msg, wParam, lParam);
+
+	case WM_ERASEBKGND:
+		// 背景の描画
+		if (dark_mode_is_dark() == TRUE) {
+			RECT erase_rect;
+
+			GetClientRect(hWnd, &erase_rect);
+			FillRect((HDC)wParam, &erase_rect, dark_mode_get_brush(COLOR_BTNFACE));
+			return TRUE;
+		}
+		return DefWindowProc(hWnd, msg, wParam, lParam);
 
 	case WM_CLOSE:
 		// ウィンドウを閉じる
@@ -3085,6 +3123,15 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 			return statusbar_notify_proc(GetDlgItem(hWnd, ID_STATUSBAR), lParam);
 		}
 		// ツールバー
+		if (((NMHDR *)lParam)->hwndFrom == GetDlgItem(hWnd, ID_TOOLBAR) &&
+			((NMHDR *)lParam)->code == NM_CUSTOMDRAW) {
+			LRESULT dark_ret;
+
+			if (dark_mode_toolbar_customdraw(lParam, &dark_ret) == TRUE) {
+				return dark_ret;
+			}
+			break;
+		}
 		if (((NMHDR *)lParam)->code == TTN_NEEDTEXT) {
 			((TOOLTIPTEXT*)lParam)->hinst = hInst;
 			((TOOLTIPTEXT*)lParam)->lpszText = MAKEINTRESOURCE(((NMHDR *)lParam)->idFrom);
@@ -3190,9 +3237,9 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 					di = format_get_priority_highest(di);
 					if (di->menu_title == NULL && di->format_name != NULL) {
 						if (((LPNMTVCUSTOMDRAW)lParam)->nmcd.uItemState == (CDIS_FOCUS | CDIS_SELECTED)) {
-							((LPNMTVCUSTOMDRAW)lParam)->clrText = GetSysColor(COLOR_HIGHLIGHTTEXT);
+							((LPNMTVCUSTOMDRAW)lParam)->clrText = dark_mode_get_color(COLOR_HIGHLIGHTTEXT);
 						} else {
-							((LPNMTVCUSTOMDRAW)lParam)->clrText = GetSysColor(COLOR_HIGHLIGHT);
+							((LPNMTVCUSTOMDRAW)lParam)->clrText = dark_mode_get_accent_color();
 						}
 					}
 				}
@@ -3331,9 +3378,9 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 					di = format_get_priority_highest(di);
 					if (di->menu_title == NULL && di->format_name != NULL) {
 						if (((LPNMLVCUSTOMDRAW)lParam)->nmcd.uItemState == (CDIS_FOCUS | CDIS_SELECTED)) {
-							((LPNMLVCUSTOMDRAW)lParam)->clrText = GetSysColor(COLOR_HIGHLIGHTTEXT);
+							((LPNMLVCUSTOMDRAW)lParam)->clrText = dark_mode_get_color(COLOR_HIGHLIGHTTEXT);
 						} else {
-							((LPNMLVCUSTOMDRAW)lParam)->clrText = GetSysColor(COLOR_HIGHLIGHT);
+							((LPNMLVCUSTOMDRAW)lParam)->clrText = dark_mode_get_accent_color();
 						}
 					}
 				}

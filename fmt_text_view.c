@@ -26,6 +26,7 @@
 #include "Font.h"
 #include "fmt_text_view.h"
 #include "dpi.h"
+#include "DarkMode.h"
 
 #include "resource.h"
 
@@ -1460,7 +1461,7 @@ static void draw_rect(const HWND hWnd, const HDC mdc, const BUFFER *bf, const in
 	}
 	SetRect(&trect, left, top, right, bottom);
 
-	hBrush = CreateSolidBrush(GetSysColor(COLOR_HIGHLIGHT));
+	hBrush = CreateSolidBrush(dark_mode_get_color(COLOR_HIGHLIGHT));
 	FillRect(mdc, &trect, hBrush);
 	DeleteObject(hBrush);
 }
@@ -1476,15 +1477,15 @@ static int draw_string(const HWND hWnd, const HDC mdc, const BUFFER *bf, const R
 	GetTextExtentPoint32(bf->mdc, str, len, &sz);
 	if (left + sz.cx >= drect->left) {
 		if (sel == TRUE && (bf->no_hide_sel == TRUE || GetFocus() == hWnd)) {
-			SetTextColor(mdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
-			SetBkColor(mdc, GetSysColor(COLOR_HIGHLIGHT));
+			SetTextColor(mdc, dark_mode_get_color(COLOR_HIGHLIGHTTEXT));
+			SetBkColor(mdc, dark_mode_get_color(COLOR_HIGHLIGHT));
 			draw_rect(hWnd, mdc, bf, left, drect->top, left + sz.cx, drect->bottom);
 		}
 		SetRect(&rect, left, drect->top, left + sz.cx, drect->bottom);
 		ExtTextOut(mdc, left, top, 0, &rect, str, len, NULL);
 		if (sel == TRUE) {
-			SetTextColor(mdc, GetSysColor(COLOR_WINDOWTEXT));
-			SetBkColor(mdc, GetSysColor(COLOR_WINDOW));
+			SetTextColor(mdc, dark_mode_get_color(COLOR_WINDOWTEXT));
+			SetBkColor(mdc, dark_mode_get_color(COLOR_WINDOW));
 		}
 	}
 	return sz.cx;
@@ -2520,6 +2521,17 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		}
 		break;
 
+	case WM_ERASEBKGND:
+		// 背景の描画
+		if (dark_mode_is_dark() == TRUE) {
+			RECT erase_rect;
+
+			GetClientRect(hWnd, &erase_rect);
+			FillRect((HDC)wParam, &erase_rect, dark_mode_get_brush(COLOR_WINDOW));
+			return TRUE;
+		}
+		return DefWindowProc(hWnd, msg, wParam, lParam);
+
 	case WM_PAINT:
 		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) != NULL) {
 			PAINTSTRUCT ps;
@@ -2539,10 +2551,10 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 			}
 
 			bf->sel = FALSE;
-			SetTextColor(bf->mdc, GetSysColor(COLOR_WINDOWTEXT));
-			SetBkColor(bf->mdc, GetSysColor(COLOR_WINDOW));
+			SetTextColor(bf->mdc, dark_mode_get_color(COLOR_WINDOWTEXT));
+			SetBkColor(bf->mdc, dark_mode_get_color(COLOR_WINDOW));
 
-			hBrush = CreateSolidBrush(GetSysColor(COLOR_WINDOW));
+			hBrush = CreateSolidBrush(dark_mode_get_color(COLOR_WINDOW));
 			i = bf->pos_y + (ps.rcPaint.top / bf->font_height) - 1;
 			for (; i < bf->line_len && i < bf->pos_y + (ps.rcPaint.bottom / bf->font_height) + 1; i++) {
 				if (i == j) {

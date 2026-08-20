@@ -21,6 +21,7 @@
 #include "..\General.h"
 #include "..\Memory.h"
 #include "..\Message.h"
+#include "..\DarkMode.h"
 
 #include "SelectKey.h"
 
@@ -213,19 +214,19 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
 		// 背景の塗りつぶし
 		if (IsWindowEnabled(hWnd) == FALSE) {
-			hbrush = GetSysColorBrush(COLOR_BTNFACE);
+			hbrush = dark_mode_get_brush(COLOR_BTNFACE);
 		} else {
-			hbrush = GetSysColorBrush(COLOR_WINDOW);
+			hbrush = dark_mode_get_brush(COLOR_WINDOW);
 		}
 		FillRect(hdc, &rect, hbrush);
 
 		// テキストの描画
 		if (IsWindowEnabled(hWnd) == FALSE) {
-			SetTextColor(hdc, GetSysColor(COLOR_GRAYTEXT));
-			SetBkColor(hdc, GetSysColor(COLOR_BTNFACE));
+			SetTextColor(hdc, dark_mode_get_color(COLOR_GRAYTEXT));
+			SetBkColor(hdc, dark_mode_get_color(COLOR_BTNFACE));
 		} else {
-			SetTextColor(hdc, GetSysColor(COLOR_WINDOWTEXT));
-			SetBkColor(hdc, GetSysColor(COLOR_WINDOW));
+			SetTextColor(hdc, dark_mode_get_color(COLOR_WINDOWTEXT));
+			SetBkColor(hdc, dark_mode_get_color(COLOR_WINDOW));
 		}
 		hRetFont = SelectObject(hdc, (HFONT)SendMessage(GetParent(hWnd), WM_GETFONT, 0, 0));
 		GetTextExtentPoint32(hdc, buf, lstrlen(buf), &sz);
