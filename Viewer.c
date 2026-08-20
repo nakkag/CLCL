@@ -3239,7 +3239,7 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 						if (((LPNMTVCUSTOMDRAW)lParam)->nmcd.uItemState == (CDIS_FOCUS | CDIS_SELECTED)) {
 							((LPNMTVCUSTOMDRAW)lParam)->clrText = dark_mode_get_color(COLOR_HIGHLIGHTTEXT);
 						} else {
-							((LPNMTVCUSTOMDRAW)lParam)->clrText = dark_mode_get_color(COLOR_HIGHLIGHT);
+							((LPNMTVCUSTOMDRAW)lParam)->clrText = dark_mode_get_accent_color();
 						}
 					}
 				}
@@ -3380,7 +3380,7 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 						if (((LPNMLVCUSTOMDRAW)lParam)->nmcd.uItemState == (CDIS_FOCUS | CDIS_SELECTED)) {
 							((LPNMLVCUSTOMDRAW)lParam)->clrText = dark_mode_get_color(COLOR_HIGHLIGHTTEXT);
 						} else {
-							((LPNMLVCUSTOMDRAW)lParam)->clrText = dark_mode_get_color(COLOR_HIGHLIGHT);
+							((LPNMLVCUSTOMDRAW)lParam)->clrText = dark_mode_get_accent_color();
 						}
 					}
 				}

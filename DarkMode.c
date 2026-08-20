@@ -436,6 +436,15 @@ COLORREF dark_mode_get_color(const int index)
 }
 
 /*
+ * dark_mode_get_accent_color - 強調表示の文字色の取得
+ */
+COLORREF dark_mode_get_accent_color(void)
+{
+	// 選択色をそのまま文字色に使うと暗い背景では読みにくいため明るい青にする
+	return dark_mode_get_color((dark_mode_dark == TRUE) ? COLOR_HOTLIGHT : COLOR_HIGHLIGHT);
+}
+
+/*
  * dark_mode_get_brush - システムカラーのブラシの取得
  */
 HBRUSH dark_mode_get_brush(const int index)

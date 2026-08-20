@@ -1333,6 +1333,8 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 		option.menu_color_highlight.color : dark_mode_get_color(COLOR_HIGHLIGHT);
 	DWORD menu_color_highlighttext = (*option.menu_color_highlighttext.color_str != TEXT('\0')) ?
 		option.menu_color_highlighttext.color : dark_mode_get_color(COLOR_HIGHLIGHTTEXT);
+	DWORD menu_color_format = (*option.menu_color_highlight.color_str != TEXT('\0')) ?
+		option.menu_color_highlight.color : dark_mode_get_accent_color();
 	DWORD menu_color_3d_shadow = (*option.menu_color_3d_shadow.color_str != TEXT('\0')) ?
 		option.menu_color_3d_shadow.color : dark_mode_get_color(COLOR_3DSHADOW);
 	DWORD menu_color_3d_highlight = (*option.menu_color_3d_highlight.color_str != TEXT('\0')) ?
@@ -1342,6 +1344,7 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 	DWORD menu_color_text = dark_mode_get_color(COLOR_MENUTEXT);
 	DWORD menu_color_highlight = dark_mode_get_color(COLOR_HIGHLIGHT);
 	DWORD menu_color_highlighttext = dark_mode_get_color(COLOR_HIGHLIGHTTEXT);
+	DWORD menu_color_format = dark_mode_get_accent_color();
 	DWORD menu_color_3d_shadow = dark_mode_get_color(COLOR_3DSHADOW);
 	DWORD menu_color_3d_highlight = dark_mode_get_color(COLOR_3DHIGHLIGHT);
 #endif	// MENU_COLOR
@@ -1372,7 +1375,7 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 			text_color = menu_theme_text_color(MPI_HOT, menu_color_highlighttext);
 		} else {
 			text_color = (mii->show_format == TRUE) ?
-				menu_color_highlight : menu_theme_text_color(MPI_NORMAL, menu_color_text);
+				menu_color_format : menu_theme_text_color(MPI_NORMAL, menu_color_text);
 		}
 		SetTextColor(draw_dc, text_color);
 		SetBkMode(draw_dc, TRANSPARENT);
@@ -1391,7 +1394,7 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 		FillRect(draw_dc, &draw_rect, hBrush);
 		DeleteObject(hBrush);
 
-		text_color = (mii->show_format == TRUE) ? menu_color_highlight : menu_color_text;
+		text_color = (mii->show_format == TRUE) ? menu_color_format : menu_color_text;
 		SetTextColor(draw_dc, text_color);
 		SetBkColor(draw_dc, menu_color_back);
 	}

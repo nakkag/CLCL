@@ -33,6 +33,7 @@ BOOL dark_mode_update(void);
 BOOL dark_mode_is_color_change(const UINT msg, const LPARAM lParam);
 
 COLORREF dark_mode_get_color(const int index);
+COLORREF dark_mode_get_accent_color(void);
 HBRUSH dark_mode_get_brush(const int index);
 
 void dark_mode_set_window(const HWND hWnd);

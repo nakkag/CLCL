@@ -878,7 +878,7 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 
 	// アドレス表示
 	if (bf->lock == FALSE && option.bin_lock == 0) {
-		SetTextColor(mdc, dark_mode_get_color(COLOR_HIGHLIGHT));
+		SetTextColor(mdc, dark_mode_get_accent_color());
 	} else {
 		SetTextColor(mdc, dark_mode_get_color(COLOR_GRAYTEXT));
 	}
