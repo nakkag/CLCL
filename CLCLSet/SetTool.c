@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCLSet
  *
  * SetTool.c
@@ -34,7 +34,7 @@ extern HINSTANCE hInst;
 extern int prop_ret;
 extern TCHAR work_path[];
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
@@ -50,7 +50,7 @@ static TOOL_INFO *listview_get_tool(const HWND hListView, int *cnt);
 static void listview_free_tool(const HWND hListView);
 
 /*
- * dll_to_list - DLL“à‚ÌŠÖ”‚ğƒŠƒXƒgƒrƒ…[‚É•\¦
+ * dll_to_list - DLLå†…ã®é–¢æ•°ã‚’ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã«è¡¨ç¤º
  */
 static BOOL dll_to_list(const HWND hDlg, const TCHAR *lib_path, int *old)
 {
@@ -65,7 +65,7 @@ static BOOL dll_to_list(const HWND hDlg, const TCHAR *lib_path, int *old)
 	int call_type;
 	int i, j;
 
-	// ƒŠƒXƒgƒrƒ…[‚Ìİ’è
+	// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®è¨­å®š
 	i = 0;
 	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
@@ -87,14 +87,14 @@ static BOOL dll_to_list(const HWND hDlg, const TCHAR *lib_path, int *old)
 	lvc.iSubItem = i++;
 	ListView_InsertColumn(GetDlgItem(hDlg, IDC_LIST_HEADER), lvc.iSubItem, &lvc);
 
-	// ƒŠƒXƒgƒrƒ…[‚ÌƒXƒ^ƒCƒ‹‚Ìİ’è
+	// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚¹ã‚¿ã‚¤ãƒ«ã®è¨­å®š
 	SetWindowLong(GetDlgItem(hDlg, IDC_LIST_HEADER), GWL_STYLE,
 		GetWindowLong(GetDlgItem(hDlg, IDC_LIST_HEADER), GWL_STYLE) | LVS_SHOWSELALWAYS);
 	SendDlgItemMessage(hDlg, IDC_LIST_HEADER, LVM_SETEXTENDEDLISTVIEWSTYLE, 0,
 		LVS_EX_ONECLICKACTIVATE | LVS_EX_FULLROWSELECT |
 		SendDlgItemMessage(hDlg, IDC_LIST_HEADER, LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0));
 
-	// DLLƒ[ƒh
+	// DLLãƒ­ãƒ¼ãƒ‰
 	if ((lib = LoadLibrary(lib_path)) == NULL) {
 		message_get_error(GetLastError(), err_str);
 		if (*err_str != TEXT('\0')) {
@@ -102,7 +102,7 @@ static BOOL dll_to_list(const HWND hDlg, const TCHAR *lib_path, int *old)
 		}
 		return FALSE;
 	}
-	// ŠÖ”ƒAƒhƒŒƒXæ“¾
+	// é–¢æ•°ã‚¢ãƒ‰ãƒ¬ã‚¹å–å¾—
 	if ((func_get_tool_info = GetProcAddress(lib, "get_tool_info_w")) != NULL) {
 		*old = 0;
 	} else if ((func_get_tool_info = GetProcAddress(lib, "get_tool_info")) != NULL) {
@@ -119,7 +119,7 @@ static BOOL dll_to_list(const HWND hDlg, const TCHAR *lib_path, int *old)
 		*old = 1;
 	}
 
-	// ƒAƒCƒeƒ€‚Ì’Ç‰Á
+	// ã‚¢ã‚¤ãƒ†ãƒ ã®è¿½åŠ 
 	i = 0;
 	while (1) {
 		ZeroMemory(&tgi, sizeof(TOOL_GET_INFO));
@@ -161,7 +161,7 @@ static BOOL dll_to_list(const HWND hDlg, const TCHAR *lib_path, int *old)
 }
 
 /*
- * select_tools_proc - ƒc[ƒ‹‘I‘ğƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+ * select_tools_proc - ãƒ„ãƒ¼ãƒ«é¸æŠã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 static BOOL CALLBACK select_tools_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -182,7 +182,7 @@ static BOOL CALLBACK select_tools_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 			EndDialog(hDlg, FALSE);
 			break;
 		}
-		// ƒŠƒXƒgƒrƒ…[‚ÌƒXƒ^ƒCƒ‹‚Ìİ’è
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚¹ã‚¿ã‚¤ãƒ«ã®è¨­å®š
 		SetWindowLong(GetDlgItem(hDlg, IDC_LIST_HEADER), GWL_STYLE,
 			GetWindowLong(GetDlgItem(hDlg, IDC_LIST_HEADER), GWL_STYLE) & ~LVS_SINGLESEL);
 		ListView_SetItemState(GetDlgItem(hDlg, IDC_LIST_HEADER), -1, LVIS_SELECTED, LVIS_SELECTED);
@@ -229,7 +229,7 @@ static BOOL CALLBACK select_tools_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 			i = -1;
 			while ((i = ListView_GetNextItem(GetDlgItem(hDlg, IDC_LIST_HEADER), i, LVNI_SELECTED)) != -1) {
 				if ((ti = mem_calloc(sizeof(TOOL_INFO))) != NULL) {
-					// İ’èæ“¾
+					// è¨­å®šå–å¾—
 					ti->lib_file_path = alloc_copy(lib_path);
 
 					ListView_GetItemText(GetDlgItem(hDlg, IDC_LIST_HEADER), i, 0, buf, BUF_SIZE - 1);
@@ -265,7 +265,7 @@ static BOOL CALLBACK select_tools_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 					}
 					ti->old = old;
 
-					// V‹K’Ç‰Á
+					// æ–°è¦è¿½åŠ 
 					listview_set_tool(GetDlgItem(pWnd, IDC_LIST_TOOL), ti, FALSE);
 				}
 			}
@@ -275,11 +275,11 @@ static BOOL CALLBACK select_tools_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 		break;
 
 	case WM_GET_VERSION:
-		// ƒo[ƒWƒ‡ƒ“æ“¾
+		// ãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
 		return APP_VAR;
 
 	case WM_GET_WORKPATH:
-		// ì‹ÆƒfƒBƒŒƒNƒgƒŠæ“¾
+		// ä½œæ¥­ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå–å¾—
 		if (lParam == 0) {
 			break;
 		}
@@ -293,7 +293,7 @@ static BOOL CALLBACK select_tools_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 }
 
 /*
- * select_tool_proc - ƒc[ƒ‹‘I‘ğƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+ * select_tool_proc - ãƒ„ãƒ¼ãƒ«é¸æŠã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 static BOOL CALLBACK select_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -384,11 +384,11 @@ static BOOL CALLBACK select_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 		break;
 
 	case WM_GET_VERSION:
-		// ƒo[ƒWƒ‡ƒ“æ“¾
+		// ãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
 		return APP_VAR;
 
 	case WM_GET_WORKPATH:
-		// ì‹ÆƒfƒBƒŒƒNƒgƒŠæ“¾
+		// ä½œæ¥­ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå–å¾—
 		if (lParam == 0) {
 			break;
 		}
@@ -402,7 +402,7 @@ static BOOL CALLBACK select_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 }
 
 /*
- * set_call_type - ŒÄ‚Ño‚µ•û–@‚Ìİ’è
+ * set_call_type - å‘¼ã³å‡ºã—æ–¹æ³•ã®è¨­å®š
  */
 static void set_call_type(const HWND hDlg, const int call_type)
 {
@@ -418,7 +418,7 @@ static void set_call_type(const HWND hDlg, const int call_type)
 }
 
 /*
- * set_tool_item_proc - ƒc[ƒ‹‚Ì€–Ú‚ğİ’è
+ * set_tool_item_proc - ãƒ„ãƒ¼ãƒ«ã®é …ç›®ã‚’è¨­å®š
  */
 static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -429,7 +429,7 @@ static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 	switch (uMsg) {
 	case WM_INITDIALOG:
 		if (lParam == 0) {
-			// V‹K’Ç‰Á
+			// æ–°è¦è¿½åŠ 
 			SendMessage(hDlg, WM_COMMAND, IDC_CHECK_MENU, 0);
 			SetWindowLong(hDlg, GWL_USERDATA, 0);
 			break;
@@ -479,7 +479,7 @@ static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 			break;
 
 		case IDC_BUTTON_FILE_SELECT:
-			// ƒtƒ@ƒCƒ‹‘I‘ğ
+			// ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠ
 			SetFocus(GetDlgItem(hDlg, IDC_EDIT_LIB_PATH));
 			if (file_select(hDlg, TEXT("*.dll\0*.dll\0*.*\0*.*\0\0"), 1, buf) == -1) {
 				break;
@@ -488,7 +488,7 @@ static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 			SendDlgItemMessage(hDlg, IDC_EDIT_HEADER, WM_SETTEXT, 0, (LPARAM)TEXT(""));
 
 		case IDC_BUTTON_FUNC_SELECT:
-			// ƒc[ƒ‹‘I‘ğ
+			// ãƒ„ãƒ¼ãƒ«é¸æŠ
 			*buf = TEXT('\0');
 			SendDlgItemMessage(hDlg, IDC_EDIT_LIB_PATH, WM_GETTEXT, BUF_SIZE - 1, (LPARAM)buf);
 			if (DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_DIALOG_SELECT_FUNC), hDlg, select_tool_proc, (LPARAM)buf) == TRUE) {
@@ -509,7 +509,7 @@ static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 				ti = mem_calloc(sizeof(TOOL_INFO));
 			}
 			if (ti != NULL) {
-				// İ’èæ“¾
+				// è¨­å®šå–å¾—
 				alloc_get_text(GetDlgItem(hDlg, IDC_EDIT_TITLE), &ti->title);
 				alloc_get_text(GetDlgItem(hDlg, IDC_EDIT_LIB_PATH), &ti->lib_file_path);
 				alloc_get_text(GetDlgItem(hDlg, IDC_EDIT_HEADER), &ti->func_name);
@@ -538,7 +538,7 @@ static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 			}
 
 			if (GetWindowLong(hDlg, GWL_USERDATA) == 0) {
-				// V‹K
+				// æ–°è¦
 				HWND pWnd = PropSheet_GetCurrentPageHwnd(GetParent(hDlg));
 				listview_set_tool(GetDlgItem(pWnd, IDC_LIST_TOOL), ti, FALSE);
 			}
@@ -558,7 +558,7 @@ static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 }
 
 /*
- * show_property - Œ`®–ˆ‚ÌƒvƒƒpƒeƒB•\¦
+ * show_property - å½¢å¼æ¯ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£è¡¨ç¤º
  */
 static BOOL show_property(const HWND hDlg, TOOL_INFO *ti)
 {
@@ -570,7 +570,7 @@ static BOOL show_property(const HWND hDlg, TOOL_INFO *ti)
 	char cbuf[BUF_SIZE];
 	BOOL ret = FALSE;
 
-	// DLLƒ[ƒh
+	// DLLãƒ­ãƒ¼ãƒ‰
 	if ((lib = LoadLibrary(ti->lib_file_path)) == NULL) {
 		message_get_error(GetLastError(), err_str);
 		if (*err_str != TEXT('\0')) {
@@ -578,12 +578,12 @@ static BOOL show_property(const HWND hDlg, TOOL_INFO *ti)
 		}
 		return FALSE;
 	}
-	// ŠÖ”ƒAƒhƒŒƒXæ“¾
+	// é–¢æ•°ã‚¢ãƒ‰ãƒ¬ã‚¹å–å¾—
 	wsprintf(buf, TEXT("%s_property"), ti->func_name);
 	tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 	func_property = GetProcAddress(lib, cbuf);
 	if (func_property != NULL) {
-		// Àsî•ñ‚Ìİ’è
+		// å®Ÿè¡Œæƒ…å ±ã®è¨­å®š
 		if ((tei = mem_calloc(sizeof(TOOL_EXEC_INFO))) != NULL) {
 			tei->struct_size = sizeof(TOOL_EXEC_INFO);
 			tei->call_type = 0;
@@ -593,7 +593,7 @@ static BOOL show_property(const HWND hDlg, TOOL_INFO *ti)
 				tei->cmd_line = alloc_copy(ti->cmd_line);
 			}
 			mem_free(&ti->cmd_line);
-			// ƒvƒƒpƒeƒB•\¦
+			// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£è¡¨ç¤º
 			ret = func_property(hDlg, tei);
 			if (ti->old == 2) {
 				ti->cmd_line = alloc_char_to_tchar((char *)tei->cmd_line);
@@ -612,7 +612,7 @@ static BOOL show_property(const HWND hDlg, TOOL_INFO *ti)
 }
 
 /*
- * listview_set_text - ListView‚ÌƒeƒLƒXƒg‚ğİ’è
+ * listview_set_text - ListViewã®ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®š
  */
 static void listview_set_text(const HWND hListView, const int i)
 {
@@ -622,13 +622,13 @@ static void listview_set_text(const HWND hListView, const int i)
 	if ((ti = (TOOL_INFO *)listview_get_lparam(hListView, i)) == NULL) {
 		return;
 	}
-	// Œ`®–¼
+	// å½¢å¼å
 	ListView_SetItemText(hListView, i, 0, ti->title);
 	// DLL
 	ListView_SetItemText(hListView, i, 1, ti->lib_file_path);
-	// ŠÖ”–¼
+	// é–¢æ•°å
 	ListView_SetItemText(hListView, i, 2, ti->func_name);
-	// ƒzƒbƒgƒL[
+	// ãƒ›ãƒƒãƒˆã‚­ãƒ¼
 	if (ti->call_type & CALLTYPE_MENU) {
 		get_keyname(ti->modifiers, ti->virtkey, buf);
 	} else {
@@ -638,7 +638,7 @@ static void listview_set_text(const HWND hListView, const int i)
 }
 
 /*
- * listview_set_tool - ListView‚Éƒc[ƒ‹î•ñ‚ğ’Ç‰Á‚·‚é
+ * listview_set_tool - ListViewã«ãƒ„ãƒ¼ãƒ«æƒ…å ±ã‚’è¿½åŠ ã™ã‚‹
  */
 static void listview_set_tool(const HWND hListView, TOOL_INFO *ti, const BOOL copy)
 {
@@ -676,7 +676,7 @@ static void listview_set_tool(const HWND hListView, TOOL_INFO *ti, const BOOL co
 }
 
 /*
- * listview_get_tool - ƒc[ƒ‹î•ñ‚Ìæ“¾
+ * listview_get_tool - ãƒ„ãƒ¼ãƒ«æƒ…å ±ã®å–å¾—
  */
 static TOOL_INFO *listview_get_tool(const HWND hListView, int *cnt)
 {
@@ -688,7 +688,7 @@ static TOOL_INFO *listview_get_tool(const HWND hListView, int *cnt)
 		return NULL;
 	}
 
-	// €–Ú‚Ìì¬
+	// é …ç›®ã®ä½œæˆ
 	if ((new_ti = mem_calloc(sizeof(TOOL_INFO) * *cnt)) == NULL) {
 		*cnt = 0;
 		return NULL;
@@ -712,7 +712,7 @@ static TOOL_INFO *listview_get_tool(const HWND hListView, int *cnt)
 }
 
 /*
- * listview_free_tool - ƒc[ƒ‹î•ñ‚Ì‰ğ•ú
+ * listview_free_tool - ãƒ„ãƒ¼ãƒ«æƒ…å ±ã®è§£æ”¾
  */
 static void listview_free_tool(const HWND hListView)
 {
@@ -732,7 +732,7 @@ static void listview_free_tool(const HWND hListView)
 }
 
 /*
- * set_tool_proc - ƒc[ƒ‹İ’è‚ÌƒvƒƒV[ƒWƒƒ
+ * set_tool_proc - ãƒ„ãƒ¼ãƒ«è¨­å®šã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 BOOL CALLBACK set_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -748,14 +748,14 @@ BOOL CALLBACK set_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
-		// D&D‚ğó‚¯•t‚¯‚é
+		// D&Dã‚’å—ã‘ä»˜ã‘ã‚‹
 		SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_ACCEPTFILES);
 #ifdef OP_XP_STYLE
 		// XP
 		hThemeUp = open_theme(GetDlgItem(hDlg, IDC_BUTTON_UP), L"SCROLLBAR");
 		hThemeDown = open_theme(GetDlgItem(hDlg, IDC_BUTTON_DOWN), L"SCROLLBAR");
 #endif	// OP_XP_STYLE
-		// ƒŠƒXƒgƒrƒ…[‚ÌƒJƒ‰ƒ€‚Ìİ’è
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚«ãƒ©ãƒ ã®è¨­å®š
 		i = 0;
 		lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
@@ -783,7 +783,7 @@ BOOL CALLBACK set_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		lvc.iSubItem = i++;
 		ListView_InsertColumn(GetDlgItem(hDlg, IDC_LIST_TOOL), lvc.iSubItem, &lvc);
 
-		// ƒŠƒXƒgƒrƒ…[‚ÌƒXƒ^ƒCƒ‹‚Ìİ’è
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚¹ã‚¿ã‚¤ãƒ«ã®è¨­å®š
 		SetWindowLong(GetDlgItem(hDlg, IDC_LIST_TOOL), GWL_STYLE,
 			GetWindowLong(GetDlgItem(hDlg, IDC_LIST_TOOL), GWL_STYLE) | LVS_SHOWSELALWAYS);
 		SendDlgItemMessage(hDlg, IDC_LIST_TOOL, LVM_SETEXTENDEDLISTVIEWSTYLE, 0,
@@ -820,7 +820,7 @@ BOOL CALLBACK set_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		default:
 			return FALSE;
 		}
-		// ƒ{ƒ^ƒ“‚Ì•`‰æ
+		// ãƒœã‚¿ãƒ³ã®æç”»
 #ifdef OP_XP_STYLE
 		if (hThemeUp != 0 && hThemeDown != 0) {
 			draw_theme_scroll((LPDRAWITEMSTRUCT)lParam, i, (i == DFCS_SCROLLUP) ? hThemeUp : hThemeDown);
@@ -834,7 +834,7 @@ BOOL CALLBACK set_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 #ifdef OP_XP_STYLE
 	case WM_THEMECHANGED:
-		// ƒe[ƒ}‚Ì•ÏX
+		// ãƒ†ãƒ¼ãƒã®å¤‰æ›´
 		if (hThemeUp != 0 && hThemeDown != 0) {
 			close_theme(hThemeUp);
 			close_theme(hThemeDown);
@@ -971,11 +971,11 @@ BOOL CALLBACK set_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_GET_VERSION:
-		// ƒo[ƒWƒ‡ƒ“æ“¾
+		// ãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
 		return APP_VAR;
 
 	case WM_GET_WORKPATH:
-		// ì‹ÆƒfƒBƒŒƒNƒgƒŠæ“¾
+		// ä½œæ¥­ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå–å¾—
 		if (lParam == 0) {
 			break;
 		}

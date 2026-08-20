@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Format.h
@@ -17,13 +17,13 @@
 /* Define */
 
 /* Struct */
-// Œ`®–¼î•ñ
+// å½¢å¼åæƒ…å ±
 typedef struct _FORMAT_NAME {
 	TCHAR *format_name;
 	int format_name_hash;
 } FORMAT_NAME;
 
-// Œ`®î•ñ
+// å½¢å¼æƒ…å ±
 typedef struct _FORMAT_INFO {
 	TCHAR *format_name;
 
@@ -66,9 +66,9 @@ typedef struct _FORMAT_INFO {
 	FARPROC func_window_hide_data;
 } FORMAT_INFO;
 
-// Œ`®æ“¾î•ñ
+// å½¢å¼å–å¾—æƒ…å ±
 typedef struct _FORMAT_GET_INFO {
-	DWORD struct_size;					// \‘¢‘Ì‚ÌƒTƒCƒY
+	DWORD struct_size;					// æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º
 
 	TCHAR format_name[BUF_SIZE];
 	TCHAR func_header[BUF_SIZE];

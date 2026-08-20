@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * tool_template.c
@@ -22,23 +22,23 @@
 /* Local Function Prototypes */
 
 /*
- * get_tool_info_w - ƒc[ƒ‹î•ñæ“¾
+ * get_tool_info_w - ãƒ„ãƒ¼ãƒ«æƒ…å ±å–å¾—
  * Get tool information
  *
- *	ˆø” / argument:
- *		hWnd - ŒÄ‚Ño‚µŒ³ƒEƒBƒ“ƒhƒE / the calling window
- *		index - æ“¾‚ÌƒCƒ“ƒfƒbƒNƒX (0`) / the index of the acquisition (from 0)
- *		tgi - ƒc[ƒ‹æ“¾î•ñ / tool retrieval information
+ *	å¼•æ•° / argument:
+ *		hWnd - å‘¼ã³å‡ºã—å…ƒã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ / the calling window
+ *		index - å–å¾—ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ (0ï½) / the index of the acquisition (from 0)
+ *		tgi - ãƒ„ãƒ¼ãƒ«å–å¾—æƒ…å ± / tool retrieval information
  *
- *	–ß‚è’l / Return value:
- *		TRUE - Ÿ‚Éæ“¾‚·‚éƒc[ƒ‹‚ ‚è / has tools to get next
- *		FALSE - æ“¾‚ÌI—¹ / end of acquisition
+ *	æˆ»ã‚Šå€¤ / Return value:
+ *		TRUE - æ¬¡ã«å–å¾—ã™ã‚‹ãƒ„ãƒ¼ãƒ«ã‚ã‚Š / has tools to get next
+ *		FALSE - å–å¾—ã®çµ‚äº† / end of acquisition
  */
 __declspec(dllexport) BOOL CALLBACK get_tool_info_w(const HWND hWnd, const int index, TOOL_GET_INFO *tgi)
 {
 	switch (index) {
 	case 0:
-		lstrcpy(tgi->title, TEXT("ƒ^ƒCƒgƒ‹"));
+		lstrcpy(tgi->title, TEXT("ã‚¿ã‚¤ãƒˆãƒ«"));
 		lstrcpy(tgi->func_name, TEXT("func_tool"));
 		lstrcpy(tgi->cmd_line, TEXT(""));
 		tgi->call_type = CALLTYPE_MENU | CALLTYPE_VIEWER;	// CALLTYPE_
@@ -51,15 +51,15 @@ __declspec(dllexport) BOOL CALLBACK get_tool_info_w(const HWND hWnd, const int i
 }
 
 /*
- * func_tool - ƒc[ƒ‹ˆ—
+ * func_tool - ãƒ„ãƒ¼ãƒ«å‡¦ç†
  * Tool processing
  *
- *	ˆø” / argument:
- *		hWnd - ŒÄ‚Ño‚µŒ³ƒEƒBƒ“ƒhƒE / the calling window
- *		tei - ƒc[ƒ‹Àsî•ñ / tool execution information
- *		tdi - ƒc[ƒ‹—pƒAƒCƒeƒ€î•ñ / item information for tools
+ *	å¼•æ•° / argument:
+ *		hWnd - å‘¼ã³å‡ºã—å…ƒã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ / the calling window
+ *		tei - ãƒ„ãƒ¼ãƒ«å®Ÿè¡Œæƒ…å ± / tool execution information
+ *		tdi - ãƒ„ãƒ¼ãƒ«ç”¨ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ± / item information for tools
  *
- *	–ß‚è’l / Return value:
+ *	æˆ»ã‚Šå€¤ / Return value:
  *		TOOL_
  */
 __declspec(dllexport) int CALLBACK func_tool(const HWND hWnd, TOOL_EXEC_INFO *tei, TOOL_DATA_INFO *tdi)
@@ -68,16 +68,16 @@ __declspec(dllexport) int CALLBACK func_tool(const HWND hWnd, TOOL_EXEC_INFO *te
 }
 
 /*
- * func_tool_property - ƒvƒƒpƒeƒB•\¦
+ * func_tool_property - ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£è¡¨ç¤º
  * Show properties
  *
- *	ˆø” / argument:
- *		hWnd - ƒIƒvƒVƒ‡ƒ“ƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹ / handle of the options window
- *		tei - ƒc[ƒ‹Àsî•ñ / tool execution information
+ *	å¼•æ•° / argument:
+ *		hWnd - ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒãƒ³ãƒ‰ãƒ« / handle of the options window
+ *		tei - ãƒ„ãƒ¼ãƒ«å®Ÿè¡Œæƒ…å ± / tool execution information
  *
- *	–ß‚è’l / Return value:
- *		TRUE - ƒvƒƒpƒeƒB‚ ‚è / with properties
- *		FALSE - ƒvƒƒpƒeƒB‚È‚µ / no property
+ *	æˆ»ã‚Šå€¤ / Return value:
+ *		TRUE - ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚ã‚Š / with properties
+ *		FALSE - ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãªã— / no property
  */
 __declspec(dllexport) BOOL CALLBACK func_tool_property(const HWND hWnd, TOOL_EXEC_INFO *tei)
 {

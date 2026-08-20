@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Profile.c
@@ -52,26 +52,26 @@ static int key_find(const SECTION_INFO *si, const TCHAR *key_name);
 static BOOL profile_write_data(const TCHAR *section, const TCHAR *key, const TCHAR *str, const TCHAR *file_path);
 
 /*
- * trim - •¶š—ñ‚Ì‘OŒã‚Ì‹ó”’, Tab‚ğœ‹‚·‚é
+ * trim - æ–‡å­—åˆ—ã®å‰å¾Œã®ç©ºç™½, Tabã‚’é™¤å»ã™ã‚‹
  */
 static BOOL trim(TCHAR *buf)
 {
 	TCHAR *p, *r;
 
-	// ‘OŒã‚Ì‹ó”’‚ğœ‚¢‚½ƒ|ƒCƒ“ƒ^‚ğæ“¾
+	// å‰å¾Œã®ç©ºç™½ã‚’é™¤ã„ãŸãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—
 	for (p = buf; (*p == TEXT(' ') || *p == TEXT('\t')) && *p != TEXT('\0'); p++)
 		;
 	for (r = buf + lstrlen(buf) - 1; r > p && (*r == TEXT(' ') || *r == TEXT('\t')); r--)
 		;
 	*(r + 1) = TEXT('\0');
 
-	// Œ³‚Ì•¶š—ñ‚ÉƒRƒs[
+	// å…ƒã®æ–‡å­—åˆ—ã«ã‚³ãƒ”ãƒ¼
 	lstrcpy(buf, p);
 	return TRUE;
 }
 
 /*
- * str2hash - •¶š—ñ‚ÌƒnƒbƒVƒ…’l‚ğæ“¾
+ * str2hash - æ–‡å­—åˆ—ã®ãƒãƒƒã‚·ãƒ¥å€¤ã‚’å–å¾—
  */
 static int str2hash(const TCHAR *str)
 {
@@ -87,7 +87,7 @@ static int str2hash(const TCHAR *str)
 }
 
 /*
- * section_add - ƒZƒNƒVƒ‡ƒ“‚Ì’Ç‰Á
+ * section_add - ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®è¿½åŠ 
  */
 static BOOL section_add(const TCHAR *section_name)
 {
@@ -98,7 +98,7 @@ static BOOL section_add(const TCHAR *section_name)
 	}
 
 	if (section_size < section_count + 1) {
-		// ÄŠm•Û
+		// å†ç¢ºä¿
 		section_size += ALLOC_SIZE;
 		if ((tmp_section = (SECTION_INFO *)mem_calloc(sizeof(SECTION_INFO) * section_size)) == NULL) {
 			return FALSE;
@@ -109,7 +109,7 @@ static BOOL section_add(const TCHAR *section_name)
 		}
 		section_info = tmp_section;
 	}
-	// ƒZƒNƒVƒ‡ƒ“’Ç‰Á
+	// ã‚»ã‚¯ã‚·ãƒ§ãƒ³è¿½åŠ 
 	lstrcpyn((section_info + section_count)->section_name, section_name, BUF_SIZE);
 	trim((section_info + section_count)->section_name);
 	(section_info + section_count)->hash = str2hash((section_info + section_count)->section_name);
@@ -119,7 +119,7 @@ static BOOL section_add(const TCHAR *section_name)
 }
 
 /*
- * section_find - ƒZƒNƒVƒ‡ƒ“‚ÌŒŸõ
+ * section_find - ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®æ¤œç´¢
  */
 static int section_find(const TCHAR *section_name)
 {
@@ -143,7 +143,7 @@ static int section_find(const TCHAR *section_name)
 }
 
 /*
- * key_add - ƒL[‚Ì’Ç‰Á
+ * key_add - ã‚­ãƒ¼ã®è¿½åŠ 
  */
 static BOOL key_add(SECTION_INFO *si, const TCHAR *key_name, const TCHAR *str, const BOOL comment_flag)
 {
@@ -155,7 +155,7 @@ static BOOL key_add(SECTION_INFO *si, const TCHAR *key_name, const TCHAR *str, c
 	}
 
 	if (si->key_size < si->key_count + 1) {
-		// ÄŠm•Û
+		// å†ç¢ºä¿
 		si->key_size += ALLOC_SIZE;
 		if ((tmp_key = (KEY_INFO *)mem_calloc(sizeof(KEY_INFO) * si->key_size)) == NULL) {
 			return FALSE;
@@ -166,7 +166,7 @@ static BOOL key_add(SECTION_INFO *si, const TCHAR *key_name, const TCHAR *str, c
 		}
 		si->key_info = tmp_key;
 	}
-	// ƒL[’Ç‰Á
+	// ã‚­ãƒ¼è¿½åŠ 
 	(si->key_info + si->key_count)->string = (TCHAR *)mem_alloc(sizeof(TCHAR) * (lstrlen(str) + 1));
 	if ((si->key_info + si->key_count)->string == NULL) {
 		return FALSE;
@@ -184,7 +184,7 @@ static BOOL key_add(SECTION_INFO *si, const TCHAR *key_name, const TCHAR *str, c
 }
 
 /*
- * key_find - ƒL[‚ÌŒŸõ
+ * key_find - ã‚­ãƒ¼ã®æ¤œç´¢
  */
 static int key_find(const SECTION_INFO *si, const TCHAR *key_name)
 {
@@ -209,7 +209,7 @@ static int key_find(const SECTION_INFO *si, const TCHAR *key_name)
 }
 
 /*
- * profile_initialize - ‰Šú‰»
+ * profile_initialize - åˆæœŸåŒ–
  */
 BOOL profile_initialize(const TCHAR *path, const BOOL ReadFlag)
 {
@@ -226,23 +226,23 @@ BOOL profile_initialize(const TCHAR *path, const BOOL ReadFlag)
 		return TRUE;
 	}
 
-	// ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	hFile = CreateFile(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == NULL || hFile == (HANDLE)-1) {
 		return FALSE;
 	}
-	// Šm•Û‚·‚éƒTƒCƒY‚Ìæ“¾
+	// ç¢ºä¿ã™ã‚‹ã‚µã‚¤ã‚ºã®å–å¾—
 	if ((size_low = GetFileSize(hFile, &size_high)) == 0xFFFFFFFF) {
 		CloseHandle(hFile);
 		return FALSE;
 	}
 
-	// “Ç‚İæ‚é—Ìˆæ‚ÌŠm•Û
+	// èª­ã¿å–ã‚‹é ˜åŸŸã®ç¢ºä¿
 	if ((cbuf = (BYTE *)mem_alloc(size_low + sizeof(TCHAR))) == NULL) {
 		CloseHandle(hFile);
 		return FALSE;
 	}
-	// ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚Ş
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€
 	if (ReadFile(hFile, cbuf, size_low, &ret, NULL) == FALSE) {
 		mem_free(&cbuf);
 		CloseHandle(hFile);
@@ -252,16 +252,16 @@ BOOL profile_initialize(const TCHAR *path, const BOOL ReadFlag)
 
 #ifdef UNICODE
 	if(size_low > 2 && *cbuf == 0xFF && *(cbuf + 1) == 0xFE) {
-		// BOM‚ğƒXƒLƒbƒv
+		// BOMã‚’ã‚¹ã‚­ãƒƒãƒ—
 		len = (size_low - 2) / sizeof(TCHAR);
 		buf = (TCHAR *)(cbuf + 2);
 		*(buf + len) = TEXT('\0');
 	} else {
-		// Œ³ƒtƒ@ƒCƒ‹‚ğƒoƒbƒNƒAƒbƒv
+		// å…ƒãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—
 		TCHAR backup_path[MAX_PATH];
 		wsprintf(backup_path, TEXT("%s.back"), path);
 		CopyFile(path, backup_path, FALSE);
-		// Unicode‚É•ÏŠ·
+		// Unicodeã«å¤‰æ›
 		*(cbuf + size_low) = '\0';
 		len = MultiByteToWideChar(CP_ACP, 0, cbuf, -1, NULL, 0);
 		if ((buf = (TCHAR *)mem_alloc(sizeof(TCHAR) * (len + 1))) == NULL) {
@@ -281,7 +281,7 @@ BOOL profile_initialize(const TCHAR *path, const BOOL ReadFlag)
 	buf = cbuf;
 #endif
 
-	// ƒZƒNƒVƒ‡ƒ“‚ÌŠm•Û
+	// ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ç¢ºä¿
 	if ((section_info = (SECTION_INFO *)mem_calloc(sizeof(SECTION_INFO) * ALLOC_SIZE)) == NULL) {
 		mem_free(&cbuf);
 		return FALSE;
@@ -296,7 +296,7 @@ BOOL profile_initialize(const TCHAR *path, const BOOL ReadFlag)
 
 		switch (*p) {
 		case TEXT('['):
-			// ƒZƒNƒVƒ‡ƒ“‚Ì’Ç‰Á
+			// ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®è¿½åŠ 
 			if (p == r || *(r - 1) != TEXT(']')) {
 				break;
 			}
@@ -313,14 +313,14 @@ BOOL profile_initialize(const TCHAR *path, const BOOL ReadFlag)
 				break;
 			}
 			if (*p == TEXT('#')) {
-				// ƒRƒƒ“ƒg
+				// ã‚³ãƒ¡ãƒ³ãƒˆ
 				for (s = tmp; p < r; p++, s++) {
 					*s = *p;
 				}
 				*s = TEXT('\0');
 				key_add((section_info + section_count - 1), tmp, TEXT(""), TRUE);
 			} else {
-				// ƒL[‚Ì’Ç‰Á
+				// ã‚­ãƒ¼ã®è¿½åŠ 
 				for (s = tmp; p < r; p++, s++) {
 					if (*p == TEXT('=')) {
 						break;
@@ -347,7 +347,7 @@ BOOL profile_initialize(const TCHAR *path, const BOOL ReadFlag)
 }
 
 /*
- * profile_flush - ƒoƒbƒtƒ@‚ğƒtƒ@ƒCƒ‹‚É‘‚«‚Ş
+ * profile_flush - ãƒãƒƒãƒ•ã‚¡ã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã‚€
  */
 BOOL profile_flush(const TCHAR *path)
 {
@@ -361,13 +361,13 @@ BOOL profile_flush(const TCHAR *path)
 		return FALSE;
 	}
 
-	// •Û‘¶ƒTƒCƒY‚ÌŒvZ
+	// ä¿å­˜ã‚µã‚¤ã‚ºã®è¨ˆç®—
 	len = 0;
 	for (i = 0; i < section_count; i++) {
 		if ((section_info + i)->key_info == NULL) {
 			continue;
 		}
-		// ƒZƒNƒVƒ‡ƒ“–¼
+		// ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
 		if (i != 0) {
 			len += lstrlen((section_info + i)->section_name) + 4;
 		}
@@ -375,12 +375,12 @@ BOOL profile_flush(const TCHAR *path)
 			if (*((section_info + i)->key_info + j)->key_name == TEXT('\0')) {
 				continue;
 			}
-			// ƒL[–¼
+			// ã‚­ãƒ¼å
 			len += lstrlen(((section_info + i)->key_info + j)->key_name);
 			if (((section_info + i)->key_info + j)->comment_flag == FALSE) {
 				len++;
 				if (((section_info + i)->key_info + j)->string != NULL) {
-					// •¶š—ñ
+					// æ–‡å­—åˆ—
 					len += lstrlen(((section_info + i)->key_info + j)->string);
 				}
 			}
@@ -389,7 +389,7 @@ BOOL profile_flush(const TCHAR *path)
 		len += 2;
 	}
 
-	// •Û‘¶‚·‚é‚½‚ß‚Ì—Ìˆæ‚ÌŠm•Û
+	// ä¿å­˜ã™ã‚‹ãŸã‚ã®é ˜åŸŸã®ç¢ºä¿
 #ifdef UNICODE
 	if ((buf = (TCHAR *)mem_alloc(2 + sizeof(TCHAR) * (len + 1))) == NULL) {
 		return FALSE;
@@ -403,12 +403,12 @@ BOOL profile_flush(const TCHAR *path)
 		return FALSE;
 	}
 #endif
-	// •Û‘¶•¶š—ñ‚Ìì¬
+	// ä¿å­˜æ–‡å­—åˆ—ã®ä½œæˆ
 	for (i = 0; i < section_count; i++) {
 		if ((section_info + i)->key_info == NULL) {
 			continue;
 		}
-		// ƒZƒNƒVƒ‡ƒ“–¼
+		// ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
 		if (i != 0) {
 			*(p++) = TEXT('[');
 			lstrcpy(p, (section_info + i)->section_name);
@@ -421,13 +421,13 @@ BOOL profile_flush(const TCHAR *path)
 			if (*((section_info + i)->key_info + j)->key_name == TEXT('\0')) {
 				continue;
 			}
-			// ƒL[–¼
+			// ã‚­ãƒ¼å
 			lstrcpy(p, ((section_info + i)->key_info + j)->key_name);
 			p += lstrlen(p);
 			if (((section_info + i)->key_info + j)->comment_flag == FALSE) {
 				*(p++) = TEXT('=');
 				if (((section_info + i)->key_info + j)->string != NULL) {
-					// •¶š—ñ
+					// æ–‡å­—åˆ—
 					lstrcpy(p, ((section_info + i)->key_info + j)->string);
 					p += lstrlen(p);
 				}
@@ -440,13 +440,13 @@ BOOL profile_flush(const TCHAR *path)
 	}
 	*p = TEXT('\0');
 
-	// ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	hFile = CreateFile(path, GENERIC_READ | GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == NULL || hFile == (HANDLE)-1) {
 		mem_free(&buf);
 		return FALSE;
 	}
-	// ƒtƒ@ƒCƒ‹‚É‘‚«‚Ş
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã‚€
 #ifdef UNICODE
 	if (WriteFile(hFile, buf, 2 + sizeof(TCHAR) * len, &ret, NULL) == FALSE) {
 #else
@@ -456,16 +456,16 @@ BOOL profile_flush(const TCHAR *path)
 		CloseHandle(hFile);
 		return FALSE;
 	}
-	// ƒƒ‚ƒŠ‚Ì‰ğ•ú
+	// ãƒ¡ãƒ¢ãƒªã®è§£æ”¾
 	mem_free(&buf);
-	// ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚é
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹
 	FlushFileBuffers(hFile);
 	CloseHandle(hFile);
 	return TRUE;
 }
 
 /*
- * profile_free - İ’èî•ñ‚Ì‰ğ•ú
+ * profile_free - è¨­å®šæƒ…å ±ã®è§£æ”¾
  */
 void profile_free(void)
 {
@@ -478,7 +478,7 @@ void profile_free(void)
 		if ((section_info + i)->key_info == NULL) {
 			continue;
 		}
-		// ƒL[‚Ì‰ğ•ú
+		// ã‚­ãƒ¼ã®è§£æ”¾
 		for (j = 0; j < (section_info + i)->key_count; j++) {
 			if (((section_info + i)->key_info + j)->string != NULL) {
 				mem_free(&((section_info + i)->key_info + j)->string);
@@ -493,7 +493,7 @@ void profile_free(void)
 }
 
 /*
- * profile_get_string - •¶š—ñ‚Ìæ“¾
+ * profile_get_string - æ–‡å­—åˆ—ã®å–å¾—
  */
 long profile_get_string(const TCHAR *section, const TCHAR *key, const TCHAR *default_str, TCHAR *ret, const long size, const TCHAR *file_path)
 {
@@ -502,20 +502,20 @@ long profile_get_string(const TCHAR *section, const TCHAR *key, const TCHAR *def
 	int key_index;
 	int len;
 
-	// ƒZƒNƒVƒ‡ƒ“‚ÌŒŸõ
+	// ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®æ¤œç´¢
 	if ((section_index = section_find(section)) == -1) {
 		lstrcpyn(ret, default_str, size);
 		return lstrlen(ret);
 	}
 
-	// ƒL[‚ÌŒŸõ
+	// ã‚­ãƒ¼ã®æ¤œç´¢
 	key_index = key_find((section_info + section_index), key);
 	if (key_index == -1 || ((section_info + section_index)->key_info + key_index)->string == NULL) {
 		lstrcpyn(ret, default_str, size);
 		return lstrlen(ret);
 	}
 
-	// “à—e‚Ìæ“¾
+	// å†…å®¹ã®å–å¾—
 	buf = (TCHAR *)mem_alloc(sizeof(TCHAR) * (lstrlen(((section_info + section_index)->key_info + key_index)->string) + 1));
 	if (buf != NULL) {
 		lstrcpy(buf, ((section_info + section_index)->key_info + key_index)->string);
@@ -533,7 +533,7 @@ long profile_get_string(const TCHAR *section, const TCHAR *key, const TCHAR *def
 }
 
 /*
- * profile_alloc_string - ƒoƒbƒtƒ@‚ğŠm•Û‚µ‚Ä•¶š—ñ‚Ìæ“¾
+ * profile_alloc_string - ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿ã—ã¦æ–‡å­—åˆ—ã®å–å¾—
  */
 TCHAR *profile_alloc_string(const TCHAR *section, const TCHAR *key, const TCHAR *default_str, const TCHAR *file_path)
 {
@@ -542,7 +542,7 @@ TCHAR *profile_alloc_string(const TCHAR *section, const TCHAR *key, const TCHAR 
 	int key_index;
 	int len;
 
-	// ƒZƒNƒVƒ‡ƒ“‚ÌŒŸõ
+	// ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®æ¤œç´¢
 	if ((section_index = section_find(section)) == -1) {
 		if ((buf = (TCHAR *)mem_alloc(sizeof(TCHAR) * (lstrlen(default_str) + 1))) != NULL) {
 			lstrcpy(buf, default_str);
@@ -551,7 +551,7 @@ TCHAR *profile_alloc_string(const TCHAR *section, const TCHAR *key, const TCHAR 
 		return NULL;
 	}
 
-	// ƒL[‚ÌŒŸõ
+	// ã‚­ãƒ¼ã®æ¤œç´¢
 	key_index = key_find((section_info + section_index), key);
 	if (key_index == -1 || ((section_info + section_index)->key_info + key_index)->string == NULL) {
 		if ((buf = (TCHAR *)mem_alloc(sizeof(TCHAR) * (lstrlen(default_str) + 1))) != NULL) {
@@ -561,7 +561,7 @@ TCHAR *profile_alloc_string(const TCHAR *section, const TCHAR *key, const TCHAR 
 		return NULL;
 	}
 
-	// “à—e‚Ìæ“¾
+	// å†…å®¹ã®å–å¾—
 	buf = (TCHAR *)mem_alloc(sizeof(TCHAR) * (lstrlen(((section_info + section_index)->key_info + key_index)->string) + 1));
 	if (buf != NULL) {
 		lstrcpy(buf, ((section_info + section_index)->key_info + key_index)->string);
@@ -578,7 +578,7 @@ TCHAR *profile_alloc_string(const TCHAR *section, const TCHAR *key, const TCHAR 
 }
 
 /*
- * profile_free_string - ƒoƒbƒtƒ@‚Ì‰ğ•ú
+ * profile_free_string - ãƒãƒƒãƒ•ã‚¡ã®è§£æ”¾
  */
 void profile_free_string(TCHAR *buf)
 {
@@ -586,7 +586,7 @@ void profile_free_string(TCHAR *buf)
 }
 
 /*
- * profile_get_int - ”’l‚Ìæ“¾
+ * profile_get_int - æ•°å€¤ã®å–å¾—
  */
 int profile_get_int(const TCHAR *section, const TCHAR *key, const int default_str, const TCHAR *file_path)
 {
@@ -596,18 +596,18 @@ int profile_get_int(const TCHAR *section, const TCHAR *key, const int default_st
 	int ret;
 	int len;
 
-	// ƒZƒNƒVƒ‡ƒ“‚ÌŒŸõ
+	// ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®æ¤œç´¢
 	if ((section_index = section_find(section)) == -1) {
 		return default_str;
 	}
 
-	// ƒL[‚ÌŒŸõ
+	// ã‚­ãƒ¼ã®æ¤œç´¢
 	key_index = key_find((section_info + section_index), key);
 	if (key_index == -1 || ((section_info + section_index)->key_info + key_index)->string == NULL) {
 		return default_str;
 	}
 
-	// “à—e‚Ìæ“¾
+	// å†…å®¹ã®å–å¾—
 	buf = (TCHAR *)mem_alloc(sizeof(TCHAR) * (lstrlen(((section_info + section_index)->key_info + key_index)->string) + 1));
 	if (buf != NULL) {
 		lstrcpy(buf, ((section_info + section_index)->key_info + key_index)->string);
@@ -625,7 +625,7 @@ int profile_get_int(const TCHAR *section, const TCHAR *key, const int default_st
 }
 
 /*
- * profile_write_data - ƒf[ƒ^‚Ì‘‚«‚İ
+ * profile_write_data - ãƒ‡ãƒ¼ã‚¿ã®æ›¸ãè¾¼ã¿
  */
 static BOOL profile_write_data(const TCHAR *section, const TCHAR *key, const TCHAR *str, const TCHAR *file_path)
 {
@@ -638,7 +638,7 @@ static BOOL profile_write_data(const TCHAR *section, const TCHAR *key, const TCH
 	}
 
 	if (section_info == NULL) {
-		// ƒZƒNƒVƒ‡ƒ“‚ÌŠm•Û
+		// ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ç¢ºä¿
 		if ((section_info = (SECTION_INFO *)mem_calloc(sizeof(SECTION_INFO) * ALLOC_SIZE)) == NULL) {
 			return FALSE;
 		}
@@ -646,9 +646,9 @@ static BOOL profile_write_data(const TCHAR *section, const TCHAR *key, const TCH
 		section_size = ALLOC_SIZE;
 	}
 
-	// ƒZƒNƒVƒ‡ƒ“‚ÌŒŸõ
+	// ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®æ¤œç´¢
 	if ((section_index = section_find(section)) == -1) {
-		// ƒZƒNƒVƒ‡ƒ“‚Ì’Ç‰Á
+		// ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®è¿½åŠ 
 		if (section_add(section) == FALSE) {
 			return FALSE;
 		}
@@ -657,7 +657,7 @@ static BOOL profile_write_data(const TCHAR *section, const TCHAR *key, const TCH
 
 	if (key == NULL) {
 		if ((section_info + section_index)->key_info != NULL) {
-			// ƒL[‚Ìíœ
+			// ã‚­ãƒ¼ã®å‰Šé™¤
 			for (j = 0; j < (section_info + section_index)->key_count; j++) {
 				if (((section_info + section_index)->key_info + j)->string != NULL) {
 					mem_free(&((section_info + section_index)->key_info + j)->string);
@@ -671,12 +671,12 @@ static BOOL profile_write_data(const TCHAR *section, const TCHAR *key, const TCH
 		return TRUE;
 	}
 
-	// ƒL[‚ÌŒŸõ
+	// ã‚­ãƒ¼ã®æ¤œç´¢
 	if ((key_index = key_find((section_info + section_index), key)) == -1) {
-		// ƒL[‚Ì’Ç‰Á
+		// ã‚­ãƒ¼ã®è¿½åŠ 
 		return key_add((section_info + section_index), key, str, FALSE);
 	} else {
-		// “à—e‚Ì•ÏX
+		// å†…å®¹ã®å¤‰æ›´
 		if (((section_info + section_index)->key_info + key_index)->string != NULL) {
 			mem_free(&((section_info + section_index)->key_info + key_index)->string);
 		}
@@ -695,7 +695,7 @@ static BOOL profile_write_data(const TCHAR *section, const TCHAR *key, const TCH
 }
 
 /*
- * profile_write_string - •¶š—ñ‚Ì‘‚«‚İ
+ * profile_write_string - æ–‡å­—åˆ—ã®æ›¸ãè¾¼ã¿
  */
 BOOL profile_write_string(const TCHAR *section, const TCHAR *key, const TCHAR *str, const TCHAR *file_path)
 {
@@ -721,7 +721,7 @@ BOOL profile_write_string(const TCHAR *section, const TCHAR *key, const TCHAR *s
 }
 
 /*
- * profile_write_int - ”’l‚Ì‘‚«‚İ
+ * profile_write_int - æ•°å€¤ã®æ›¸ãè¾¼ã¿
  */
 BOOL profile_write_int(const TCHAR *section, const TCHAR *key, const int num, const TCHAR *file_path)
 {

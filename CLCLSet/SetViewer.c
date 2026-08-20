@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCLSet
  *
  * SetViewer.c
@@ -29,13 +29,13 @@
 extern HINSTANCE hInst;
 extern int prop_ret;
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
 
 /*
- * set_viewer_proc - ƒrƒ…[ƒAİ’è‚ÌƒvƒƒV[ƒWƒƒ
+ * set_viewer_proc - ãƒ“ãƒ¥ãƒ¼ã‚¢è¨­å®šã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 BOOL CALLBACK set_viewer_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -61,15 +61,15 @@ BOOL CALLBACK set_viewer_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 		for (p = option.tree_root_order; *p != TEXT('\0'); p++) {
 			switch (*p) {
-			// ƒNƒŠƒbƒvƒ{[ƒh
+			// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰
 			case TEXT('0'):
 				r = message_get_res(IDS_VIEWER_CLIPBOARD);
 				break;
-			// —š—ğ
+			// å±¥æ­´
 			case TEXT('1'):
 				r = message_get_res(IDS_VIEWER_HISTORY);
 				break;
-			// “o˜^ƒAƒCƒeƒ€
+			// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ 
 			case TEXT('2'):
 				r = message_get_res(IDS_VIEWER_REGIST);
 				break;

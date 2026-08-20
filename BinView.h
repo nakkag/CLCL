@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CLCL
  *
  * BinView.h

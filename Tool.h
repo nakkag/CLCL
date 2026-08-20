@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Tool.h
@@ -16,31 +16,31 @@
 #include "Data.h"
 
 /* Define */
-// ƒc[ƒ‹‚ğÀs‚·‚éƒ^ƒCƒ~ƒ“ƒO
+// ãƒ„ãƒ¼ãƒ«ã‚’å®Ÿè¡Œã™ã‚‹ã‚¿ã‚¤ãƒŸãƒ³ã‚°
 // When to run the tool
-#define CALLTYPE_MENU					1				// “®ìƒƒjƒ…[ / Operation menu
-#define CALLTYPE_VIEWER					2				// ƒrƒ…[ƒA‚Ìƒƒjƒ…[ / Viewer menu
-#define CALLTYPE_VIEWER_OPEN			4				// ƒrƒ…[ƒA‚ğŠJ‚¢‚½ / when viewer is opened
-#define CALLTYPE_VIEWER_CLOSE			8				// ƒrƒ…[ƒA‚ğ•Â‚¶‚é / when viewer is closed
-#define CALLTYPE_ADD_HISTORY			16				// ƒf[ƒ^‚ª—š—ğ‚É’Ç‰Á‚³‚ê‚é / when data is added to history
-#define CALLTYPE_ITEM_TO_CLIPBOARD		32				// ƒf[ƒ^‚ğƒNƒŠƒbƒvƒ{[ƒh‚É‘—‚é / when sending data to the clipboard
-#define CALLTYPE_START					64				// ‹N“® / at startup
-#define CALLTYPE_END					128				// I—¹ / when finished
+#define CALLTYPE_MENU					1				// å‹•ä½œãƒ¡ãƒ‹ãƒ¥ãƒ¼ / Operation menu
+#define CALLTYPE_VIEWER					2				// ãƒ“ãƒ¥ãƒ¼ã‚¢ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼ / Viewer menu
+#define CALLTYPE_VIEWER_OPEN			4				// ãƒ“ãƒ¥ãƒ¼ã‚¢ã‚’é–‹ã„ãŸæ™‚ / when viewer is opened
+#define CALLTYPE_VIEWER_CLOSE			8				// ãƒ“ãƒ¥ãƒ¼ã‚¢ã‚’é–‰ã˜ã‚‹æ™‚ / when viewer is closed
+#define CALLTYPE_ADD_HISTORY			16				// ãƒ‡ãƒ¼ã‚¿ãŒå±¥æ­´ã«è¿½åŠ ã•ã‚Œã‚‹æ™‚ / when data is added to history
+#define CALLTYPE_ITEM_TO_CLIPBOARD		32				// ãƒ‡ãƒ¼ã‚¿ã‚’ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«é€ã‚‹æ™‚ / when sending data to the clipboard
+#define CALLTYPE_START					64				// èµ·å‹•æ™‚ / at startup
+#define CALLTYPE_END					128				// çµ‚äº†æ™‚ / when finished
 // option only
-#define CALLTYPE_MENU_COPY_PASTE		256				// ƒRƒs[‚Æ“\‚è•t‚¯‚ğ‘—‚é / send copy and paste
+#define CALLTYPE_MENU_COPY_PASTE		256				// ã‚³ãƒ”ãƒ¼ã¨è²¼ã‚Šä»˜ã‘ã‚’é€ã‚‹ / send copy and paste
 // execute only
-#define CALLTYPE_HISTORY				512				// —š—ğ‚©‚ç‚ÌŒÄ‚Ño‚µ / call from history
-#define CALLTYPE_REGIST					1024			// “o˜^ƒAƒCƒeƒ€‚©‚ç‚ÌŒÄ‚Ño‚µ / call from registered item
+#define CALLTYPE_HISTORY				512				// å±¥æ­´ã‹ã‚‰ã®å‘¼ã³å‡ºã— / call from history
+#define CALLTYPE_REGIST					1024			// ç™»éŒ²ã‚¢ã‚¤ãƒ†ãƒ ã‹ã‚‰ã®å‘¼ã³å‡ºã— / call from registered item
 
-// ƒc[ƒ‹–ß‚è’l
+// ãƒ„ãƒ¼ãƒ«æˆ»ã‚Šå€¤
 // tool return value
-#define TOOL_ERROR						0				// ƒc[ƒ‹‚ÌƒGƒ‰[ / tool error
-#define TOOL_SUCCEED					1				// ƒc[ƒ‹‚Ì³íI—¹ / tool successfully completed
-#define TOOL_CANCEL						2				// ˆÈ~‚Ìˆ—‚ğƒLƒƒƒ“ƒZƒ‹ / cancel further processing
-#define TOOL_DATA_MODIFIED				4				// ƒf[ƒ^•ÏX‚ ‚è / data changed
+#define TOOL_ERROR						0				// ãƒ„ãƒ¼ãƒ«ã®ã‚¨ãƒ©ãƒ¼ / tool error
+#define TOOL_SUCCEED					1				// ãƒ„ãƒ¼ãƒ«ã®æ­£å¸¸çµ‚äº† / tool successfully completed
+#define TOOL_CANCEL						2				// ä»¥é™ã®å‡¦ç†ã‚’ã‚­ãƒ£ãƒ³ã‚»ãƒ« / cancel further processing
+#define TOOL_DATA_MODIFIED				4				// ãƒ‡ãƒ¼ã‚¿å¤‰æ›´ã‚ã‚Š / data changed
 
 
-// ƒc[ƒ‹ŒÄ‚Ño‚µ•û–@ (‹Œver)
+// ãƒ„ãƒ¼ãƒ«å‘¼ã³å‡ºã—æ–¹æ³• (æ—§ver)
 // Tool calling method (old ver)
 #define OLD_CALLTYPE_VIEWER				0
 #define OLD_CALLTYPE_ADD_HISTORY		1
@@ -50,13 +50,13 @@
 #define OLD_CALLTYPE_START				16
 #define OLD_CALLTYPE_END				32
 
-// ‹Œƒc[ƒ‹‚ÌŠÖ”Œ`®
+// æ—§ãƒ„ãƒ¼ãƒ«ã®é–¢æ•°å½¢å¼
 // Function format of old tool 
 typedef int (__cdecl *OLD_TOOL_FUNC)(HWND, void *, int, int);
 typedef int (__cdecl *OLD_GET_FUNC)(int, TCHAR *, TCHAR *, long *);
 
 /* Struct */
-// ƒc[ƒ‹î•ñ
+// ãƒ„ãƒ¼ãƒ«æƒ…å ±
 // Tool information
 typedef struct _TOOL_INFO {
 	TCHAR *title;
@@ -77,13 +77,13 @@ typedef struct _TOOL_INFO {
 
 	int old;
 
-	LPARAM lParam;						// ƒc[ƒ‹‚É‘Î‰‚·‚élong’l / Long value corresponding to the tool
+	LPARAM lParam;						// ãƒ„ãƒ¼ãƒ«ã«å¯¾å¿œã™ã‚‹longå€¤ / Long value corresponding to the tool
 } TOOL_INFO;
 
-// ƒc[ƒ‹æ“¾î•ñ
+// ãƒ„ãƒ¼ãƒ«å–å¾—æƒ…å ±
 // Tool acquisition information
 typedef struct _TOOL_GET_INFO {
-	DWORD struct_size;					// \‘¢‘Ì‚ÌƒTƒCƒY / Structure size
+	DWORD struct_size;					// æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º / Structure size
 
 	TCHAR title[BUF_SIZE];
 	TCHAR func_name[BUF_SIZE];
@@ -91,7 +91,7 @@ typedef struct _TOOL_GET_INFO {
 	int call_type;						// CALLTYPE_
 } TOOL_GET_INFO;
 typedef struct _TOOL_GET_INFO_A {
-	DWORD struct_size;					// \‘¢‘Ì‚ÌƒTƒCƒY / Structure size
+	DWORD struct_size;					// æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º / Structure size
 
 	char title[BUF_SIZE];
 	char func_name[BUF_SIZE];
@@ -99,22 +99,22 @@ typedef struct _TOOL_GET_INFO_A {
 	int call_type;						// CALLTYPE_
 } TOOL_GET_INFO_A;
 
-// ƒc[ƒ‹Àsî•ñ
+// ãƒ„ãƒ¼ãƒ«å®Ÿè¡Œæƒ…å ±
 // Tool execution information
 typedef struct _TOOL_EXEC_INFO {
-	DWORD struct_size;					// \‘¢‘Ì‚ÌƒTƒCƒY / Structure size
+	DWORD struct_size;					// æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º / Structure size
 
 	int call_type;						// CALLTYPE_
-	TCHAR *cmd_line;					// ƒc[ƒ‹İ’è‚Åw’è‚µ‚½ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ / Command line specified in tool settings
-	LPARAM lParam;						// ƒc[ƒ‹‚É‘Î‰‚·‚élong’l / long value corresponding to the tool
+	TCHAR *cmd_line;					// ãƒ„ãƒ¼ãƒ«è¨­å®šã§æŒ‡å®šã—ãŸã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ / Command line specified in tool settings
+	LPARAM lParam;						// ãƒ„ãƒ¼ãƒ«ã«å¯¾å¿œã™ã‚‹longå€¤ / long value corresponding to the tool
 } TOOL_EXEC_INFO;
 
-// ƒc[ƒ‹—pƒAƒCƒeƒ€î•ñ
+// ãƒ„ãƒ¼ãƒ«ç”¨ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±
 // Item information for tools
 typedef struct _TOOL_DATA_INFO {
-	DWORD struct_size;					// \‘¢‘Ì‚ÌƒTƒCƒY / Structure size
+	DWORD struct_size;					// æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º / Structure size
 
-	struct _DATA_INFO *di;				// ƒAƒCƒeƒ€î•ñ / Item information
+	struct _DATA_INFO *di;				// ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ± / Item information
 
 	struct _TOOL_DATA_INFO *child;
 	struct _TOOL_DATA_INFO *next;

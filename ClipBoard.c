@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * ClipBoard.c
@@ -52,7 +52,7 @@ static BOOL should_ignore()
 	for (UINT fmt = EnumClipboardFormats(0); fmt != 0; fmt = EnumClipboardFormats(fmt)) {
 		if (fmt == exclude_monitoring || fmt == clipboard_viewer_ignore) {
 			HANDLE h = GetClipboardData(fmt);
-			// ƒtƒH[ƒ}ƒbƒg‚ª ExcludeClipboardContentFromMonitorProcessing ‚Ìƒf[ƒ^‚ª‘¶İ‚·‚éê‡‚Í–³‹‚·‚éB
+			// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãŒ ExcludeClipboardContentFromMonitorProcessing ã®ãƒ‡ãƒ¼ã‚¿ãŒå­˜åœ¨ã™ã‚‹å ´åˆã¯ç„¡è¦–ã™ã‚‹ã€‚
 			if (h != 0)
 				return TRUE;
 		}
@@ -75,7 +75,7 @@ static BOOL should_ignore()
 }
 
 /*
- * clipboard_get_format - ƒNƒŠƒbƒvƒ{[ƒhŒ`®–¼‚Ìæ“¾
+ * clipboard_get_format - ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰å½¢å¼åã®å–å¾—
  */
 UINT clipboard_get_format(const UINT format, TCHAR *type_name)
 {
@@ -112,7 +112,7 @@ UINT clipboard_get_format(const UINT format, TCHAR *type_name)
 	};
 
 	if (format != 0) {
-		// format ‚©‚ç–¼‘O‚ğæ“¾
+		// format ã‹ã‚‰åå‰ã‚’å–å¾—
 		*type_name = TEXT('\0');
 		if (GetClipboardFormatName(format, type_name, BUF_SIZE - 1) != 0) {
 			return 0;
@@ -128,7 +128,7 @@ UINT clipboard_get_format(const UINT format, TCHAR *type_name)
 		}
 
 	} else {
-		// –¼‘O‚©‚ç format ‚ğæ“¾
+		// åå‰ã‹ã‚‰ format ã‚’å–å¾—
 		for (i = 0; (fi + i)->format != 0; i++) {
 			if (lstrcmpi(type_name, (fi + i)->name) == 0) {
 				return ((int)(fi + i)->format);
@@ -139,7 +139,7 @@ UINT clipboard_get_format(const UINT format, TCHAR *type_name)
 }
 
 /*
- * clipboard_get_datainfo - ƒNƒŠƒbƒvƒ{[ƒh‚Ì“à—e‚©‚çƒf[ƒ^ƒŠƒXƒg‚ğì¬
+ * clipboard_get_datainfo - ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã®å†…å®¹ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ãƒªã‚¹ãƒˆã‚’ä½œæˆ
  */
 DATA_INFO *clipboard_get_datainfo(const BOOL use_filter, const BOOL get_data, TCHAR *err_str)
 {
@@ -157,30 +157,30 @@ DATA_INFO *clipboard_get_datainfo(const BOOL use_filter, const BOOL get_data, TC
 	while ((format = EnumClipboardFormats(format)) != 0) {
 		clipboard_get_format(format, buf);
 
-		// ƒtƒBƒ‹ƒ^ (Œ`®)
+		// ãƒ•ã‚£ãƒ«ã‚¿ (å½¢å¼)
 		if (use_filter == TRUE && filter_format_check(buf) == FALSE) {
 			continue;
 		}
 
-		// ƒAƒCƒeƒ€‚Ìì¬
+		// ã‚¢ã‚¤ãƒ†ãƒ ã®ä½œæˆ
 		if ((new_item = data_create_data(format, buf, NULL, 0, FALSE, err_str)) == NULL) {
 			return NULL;
 		}
 		if (get_data == TRUE) {
-			// ƒNƒŠƒbƒvƒ{[ƒhƒf[ƒ^‚ÌƒRƒs[
+			// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ãƒ‡ãƒ¼ã‚¿ã®ã‚³ãƒ”ãƒ¼
 			if ((data = GetClipboardData(format)) != NULL &&
 				(new_item->data = format_copy_data(new_item->format_name, data, &new_item->size)) == NULL) {
 				new_item->data = clipboard_copy_data(format, data, &new_item->size);
 			}
 		}
 		
-		// ƒtƒBƒ‹ƒ^ (ƒTƒCƒY)
+		// ãƒ•ã‚£ãƒ«ã‚¿ (ã‚µã‚¤ã‚º)
 		if (use_filter == TRUE && filter_size_check(new_item->format_name, new_item->size) == FALSE) {
 			data_free(new_item);
 			continue;
 		}
 
-		// ƒŠƒXƒg‚É’Ç‰Á
+		// ãƒªã‚¹ãƒˆã«è¿½åŠ 
 		if (ret_di == NULL) {
 			ret_di = new_item;
 		} else {
@@ -192,17 +192,17 @@ DATA_INFO *clipboard_get_datainfo(const BOOL use_filter, const BOOL get_data, TC
 }
 
 /*
- * clipboard_to_item - ƒNƒŠƒbƒvƒ{[ƒh‚Ìƒf[ƒ^‚©‚çƒAƒCƒeƒ€‚ğì¬
+ * clipboard_to_item - ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã®ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã‚’ä½œæˆ
  */
 DATA_INFO *clipboard_to_item(TCHAR *err_str)
 {
 	DATA_INFO *new_item;
 
-	// ƒAƒCƒeƒ€‚Ìì¬
+	// ã‚¢ã‚¤ãƒ†ãƒ ã®ä½œæˆ
 	if ((new_item = data_create_item(NULL, TRUE, err_str)) == NULL) {
 		return NULL;
 	}
-	// ƒNƒŠƒbƒvƒ{[ƒhƒf[ƒ^æ“¾
+	// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ãƒ‡ãƒ¼ã‚¿å–å¾—
 	if ((new_item->child = clipboard_get_datainfo(TRUE, TRUE, err_str)) == NULL) {
 		data_free(new_item);
 		return NULL;
@@ -211,18 +211,18 @@ DATA_INFO *clipboard_to_item(TCHAR *err_str)
 }
 
 /*
- * clipboard_set_data - ƒNƒŠƒbƒvƒ{[ƒh‚Éƒf[ƒ^‚ğİ’è
+ * clipboard_set_data - ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«ãƒ‡ãƒ¼ã‚¿ã‚’è¨­å®š
  */
 static BOOL clipboard_set_data(const UINT format, const TCHAR *name, const HANDLE data, TCHAR *err_str)
 {
 	UINT fmt = format;
 
-	// ƒNƒŠƒbƒvƒ{[ƒhŒ`®‚ğæ“¾
+	// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰å½¢å¼ã‚’å–å¾—
 	if (fmt == 0 && (fmt = RegisterClipboardFormat(name)) == 0) {
 		message_get_error(GetLastError(), err_str);
 		return FALSE;
 	}
-	// ƒNƒŠƒbƒvƒ{[ƒh‚Éƒf[ƒ^‚ğİ’è
+	// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«ãƒ‡ãƒ¼ã‚¿ã‚’è¨­å®š
 	if (SetClipboardData(fmt, data) == NULL && data != NULL) {
 		message_get_error(GetLastError(), err_str);
 		return FALSE;
@@ -231,7 +231,7 @@ static BOOL clipboard_set_data(const UINT format, const TCHAR *name, const HANDL
 }
 
 /*
- * clipboard_set_datainfo - ƒNƒŠƒbƒvƒ{[ƒh‚Éƒf[ƒ^‚ğİ’è
+ * clipboard_set_datainfo - ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«ãƒ‡ãƒ¼ã‚¿ã‚’è¨­å®š
  */
 BOOL clipboard_set_datainfo(const HWND hWnd, DATA_INFO *set_di, TCHAR *err_str)
 {
@@ -240,7 +240,7 @@ BOOL clipboard_set_datainfo(const HWND hWnd, DATA_INFO *set_di, TCHAR *err_str)
 	if (set_di == NULL) {
 		return FALSE;
 	}
-	// ƒNƒŠƒbƒvƒ{[ƒh‚Ì‰Šú‰»
+	// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã®åˆæœŸåŒ–
 	if (OpenClipboard(hWnd) == FALSE) {
 		message_get_error(GetLastError(), err_str);
 		return FALSE;
@@ -252,7 +252,7 @@ BOOL clipboard_set_datainfo(const HWND hWnd, DATA_INFO *set_di, TCHAR *err_str)
 	}
 	switch (set_di->type) {
 	case TYPE_ITEM:
-		// qƒAƒCƒeƒ€‚ğ‘S‚Ä’Ç‰Á
+		// å­ã‚¢ã‚¤ãƒ†ãƒ ã‚’å…¨ã¦è¿½åŠ 
 		for (di = set_di->child; di != NULL; di = di->next) {
 			if (clipboard_set_data(di->format, di->format_name, di->data, err_str) == FALSE) {
 				CloseClipboard();
@@ -263,7 +263,7 @@ BOOL clipboard_set_datainfo(const HWND hWnd, DATA_INFO *set_di, TCHAR *err_str)
 		break;
 
 	case TYPE_DATA:
-		// 1Œ‚Ì‚İ’Ç‰Á
+		// 1ä»¶ã®ã¿è¿½åŠ 
 		if (clipboard_set_data(set_di->format, set_di->format_name, set_di->data, err_str) == FALSE) {
 			CloseClipboard();
 			return FALSE;
@@ -276,7 +276,7 @@ BOOL clipboard_set_datainfo(const HWND hWnd, DATA_INFO *set_di, TCHAR *err_str)
 }
 
 /*
- * clipboard_copy_data - ƒNƒŠƒbƒvƒ{[ƒhƒf[ƒ^‚ÌƒRƒs[‚ğì¬
+ * clipboard_copy_data - ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ãƒ‡ãƒ¼ã‚¿ã®ã‚³ãƒ”ãƒ¼ã‚’ä½œæˆ
  */
 HANDLE clipboard_copy_data(const UINT format, const HANDLE data, DWORD *ret_size)
 {
@@ -291,7 +291,7 @@ HANDLE clipboard_copy_data(const UINT format, const HANDLE data, DWORD *ret_size
 
 	switch (format) {
 	case CF_PALETTE:
-		// ƒpƒŒƒbƒg
+		// ãƒ‘ãƒ¬ãƒƒãƒˆ
 		pcnt = 0;
 		if (GetObject(data, sizeof(WORD), &pcnt) == 0) {
 			return NULL;
@@ -314,7 +314,7 @@ HANDLE clipboard_copy_data(const UINT format, const HANDLE data, DWORD *ret_size
 
 	case CF_DSPBITMAP:
 	case CF_BITMAP:
-		// ƒrƒbƒgƒ}ƒbƒv
+		// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—
 		if ((to_mem = bitmap_to_dib(data, ret_size)) == NULL) {
 			return NULL;
 		}
@@ -328,16 +328,16 @@ HANDLE clipboard_copy_data(const UINT format, const HANDLE data, DWORD *ret_size
 
 	case CF_DSPMETAFILEPICT:
 	case CF_METAFILEPICT:
-		// ƒRƒs[Œ³ƒƒbƒN
+		// ã‚³ãƒ”ãƒ¼å…ƒãƒ­ãƒƒã‚¯
 		if ((from_mem = GlobalLock(data)) == NULL) {
 			return NULL;
 		}
-		// ƒƒ^ƒtƒ@ƒCƒ‹
+		// ãƒ¡ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«
 		if ((ret = GlobalAlloc(GHND, sizeof(METAFILEPICT))) == NULL) {
 			GlobalUnlock(data);
 			return NULL;
 		}
-		// ƒRƒs[æƒƒbƒN
+		// ã‚³ãƒ”ãƒ¼å…ˆãƒ­ãƒƒã‚¯
 		if ((to_mem = GlobalLock(ret)) == NULL) {
 			GlobalFree(ret);
 			GlobalUnlock(data);
@@ -347,50 +347,50 @@ HANDLE clipboard_copy_data(const UINT format, const HANDLE data, DWORD *ret_size
 		if ((((METAFILEPICT *)to_mem)->hMF = CopyMetaFile(((METAFILEPICT *)from_mem)->hMF, NULL)) != NULL) {
 			*ret_size = sizeof(METAFILEPICT) + GetMetaFileBitsEx(((METAFILEPICT *)to_mem)->hMF, 0, NULL);
 		}
-		// ƒƒbƒN‰ğœ
+		// ãƒ­ãƒƒã‚¯è§£é™¤
 		GlobalUnlock(ret);
 		GlobalUnlock(data);
 		break;
 
 	case CF_DSPENHMETAFILE:
 	case CF_ENHMETAFILE:
-		// Šg’£ƒƒ^ƒtƒ@ƒCƒ‹
+		// æ‹¡å¼µãƒ¡ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«
 		if ((ret = CopyEnhMetaFile(data, NULL)) != NULL) {
 			*ret_size = GetEnhMetaFileBits(ret, 0, NULL);
 		}
 		break;
 
 	default:
-		// ‚»‚Ì‘¼
-		// ƒƒ‚ƒŠƒ`ƒFƒbƒN
+		// ãã®ä»–
+		// ãƒ¡ãƒ¢ãƒªãƒã‚§ãƒƒã‚¯
 		if (IsBadReadPtr(data, 1) == TRUE) {
 			return NULL;
 		}
-		// ƒTƒCƒYæ“¾
+		// ã‚µã‚¤ã‚ºå–å¾—
 		if ((*ret_size = GlobalSize(data)) == 0) {
 			return NULL;
 		}
-		// ƒRƒs[Œ³ƒƒbƒN
+		// ã‚³ãƒ”ãƒ¼å…ƒãƒ­ãƒƒã‚¯
 		if ((from_mem = GlobalLock(data)) == NULL) {
 			return NULL;
 		}
 
-		// ƒRƒs[æŠm•Û
+		// ã‚³ãƒ”ãƒ¼å…ˆç¢ºä¿
 		if ((ret = GlobalAlloc(GHND, *ret_size)) == NULL) {
 			GlobalUnlock(data);
 			return NULL;
 		}
-		// ƒRƒs[æƒƒbƒN
+		// ã‚³ãƒ”ãƒ¼å…ˆãƒ­ãƒƒã‚¯
 		if ((to_mem = GlobalLock(ret)) == NULL) {
 			GlobalFree(ret);
 			GlobalUnlock(data);
 			return NULL;
 		}
 
-		// ƒRƒs[
+		// ã‚³ãƒ”ãƒ¼
 		CopyMemory(to_mem, from_mem, *ret_size);
 
-		// ƒƒbƒN‰ğœ
+		// ãƒ­ãƒƒã‚¯è§£é™¤
 		GlobalUnlock(ret);
 		GlobalUnlock(data);
 		break;
@@ -399,7 +399,7 @@ HANDLE clipboard_copy_data(const UINT format, const HANDLE data, DWORD *ret_size
 }
 
 /*
- * clipboard_data_to_bytes - ƒf[ƒ^‚ğƒoƒCƒg—ñ‚É•ÏŠ·
+ * clipboard_data_to_bytes - ãƒ‡ãƒ¼ã‚¿ã‚’ãƒã‚¤ãƒˆåˆ—ã«å¤‰æ›
  */
 BYTE *clipboard_data_to_bytes(const DATA_INFO *di, DWORD *ret_size)
 {
@@ -414,7 +414,7 @@ BYTE *clipboard_data_to_bytes(const DATA_INFO *di, DWORD *ret_size)
 
 	switch (di->format) {
 	case CF_PALETTE:
-		// ƒpƒŒƒbƒg
+		// ãƒ‘ãƒ¬ãƒƒãƒˆ
 		i = 0;
 		GetObject(di->data, sizeof(WORD), &i);
 		size = sizeof(LOGPALETTE) + (sizeof(PALETTEENTRY) * i);
@@ -428,7 +428,7 @@ BYTE *clipboard_data_to_bytes(const DATA_INFO *di, DWORD *ret_size)
 
 	case CF_DSPBITMAP:
 	case CF_BITMAP:
-		// ƒrƒbƒgƒ}ƒbƒv
+		// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—
 		if ((ret = bitmap_to_dib(di->data, &size)) == NULL) {
 			break;
 		}
@@ -439,7 +439,7 @@ BYTE *clipboard_data_to_bytes(const DATA_INFO *di, DWORD *ret_size)
 
 	case CF_DSPMETAFILEPICT:
 	case CF_METAFILEPICT:
-		// ƒƒ^ƒtƒ@ƒCƒ‹
+		// ãƒ¡ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«
 		if ((tmp = GlobalLock(di->data)) == NULL) {
 			break;
 		}
@@ -460,7 +460,7 @@ BYTE *clipboard_data_to_bytes(const DATA_INFO *di, DWORD *ret_size)
 
 	case CF_DSPENHMETAFILE:
 	case CF_ENHMETAFILE:
-		// Šg’£ƒƒ^ƒtƒ@ƒCƒ‹
+		// æ‹¡å¼µãƒ¡ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«
 		size = GetEnhMetaFileBits(di->data, 0, NULL);
 		if ((ret = mem_alloc(size)) == NULL) {
 			break;
@@ -472,7 +472,7 @@ BYTE *clipboard_data_to_bytes(const DATA_INFO *di, DWORD *ret_size)
 		break;
 
 	default:
-		// ‚»‚Ì‘¼
+		// ãã®ä»–
 		if ((tmp = GlobalLock(di->data)) == NULL) {
 			break;
 		}
@@ -492,7 +492,7 @@ BYTE *clipboard_data_to_bytes(const DATA_INFO *di, DWORD *ret_size)
 }
 
 /*
- * clipboard_bytes_to_data - ƒoƒCƒg—ñ‚ğƒf[ƒ^‚É•ÏŠ·
+ * clipboard_bytes_to_data - ãƒã‚¤ãƒˆåˆ—ã‚’ãƒ‡ãƒ¼ã‚¿ã«å¤‰æ›
  */
 HANDLE clipboard_bytes_to_data(TCHAR *format_name, const BYTE *data, DWORD *size)
 {
@@ -504,13 +504,13 @@ HANDLE clipboard_bytes_to_data(TCHAR *format_name, const BYTE *data, DWORD *size
 	}
 	switch (clipboard_get_format(0, format_name)) {
 	case CF_PALETTE:
-		// ƒpƒŒƒbƒg
+		// ãƒ‘ãƒ¬ãƒƒãƒˆ
 		ret = CreatePalette((LOGPALETTE *)data);
 		break;
 
 	case CF_DSPBITMAP:
 	case CF_BITMAP:
-		// ƒrƒbƒgƒ}ƒbƒv
+		// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—
 		ret = dib_to_bitmap(data);
 		break;
 
@@ -519,7 +519,7 @@ HANDLE clipboard_bytes_to_data(TCHAR *format_name, const BYTE *data, DWORD *size
 
 	case CF_DSPMETAFILEPICT:
 	case CF_METAFILEPICT:
-		// ƒƒ^ƒtƒ@ƒCƒ‹
+		// ãƒ¡ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«
 		if ((ret = GlobalAlloc(GHND, sizeof(METAFILEPICT))) == NULL) {
 			break;
 		}
@@ -545,19 +545,19 @@ HANDLE clipboard_bytes_to_data(TCHAR *format_name, const BYTE *data, DWORD *size
 		break;
 
 	default:
-		// ‚»‚Ì‘¼
-		// ƒRƒs[æŠm•Û
+		// ãã®ä»–
+		// ã‚³ãƒ”ãƒ¼å…ˆç¢ºä¿
 		if ((ret = GlobalAlloc(GHND, *size)) == NULL) {
 			return NULL;
 		}
-		// ƒRƒs[æƒƒbƒN
+		// ã‚³ãƒ”ãƒ¼å…ˆãƒ­ãƒƒã‚¯
 		if ((to_mem = GlobalLock(ret)) == NULL) {
 			GlobalFree(ret);
 			return NULL;
 		}
-		// ƒRƒs[
+		// ã‚³ãƒ”ãƒ¼
 		CopyMemory(to_mem, data, *size);
-		// ƒƒbƒN‰ğœ
+		// ãƒ­ãƒƒã‚¯è§£é™¤
 		GlobalUnlock(ret);
 		break;
 	}
@@ -565,7 +565,7 @@ HANDLE clipboard_bytes_to_data(TCHAR *format_name, const BYTE *data, DWORD *size
 }
 
 /*
- * clipboard_data_to_file - ƒf[ƒ^‚ğƒtƒ@ƒCƒ‹‚É•Û‘¶
+ * clipboard_data_to_file - ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜
  */
 BOOL clipboard_data_to_file(DATA_INFO *di, const TCHAR *file_name, const int filter_index, TCHAR *err_str)
 {
@@ -587,7 +587,7 @@ BOOL clipboard_data_to_file(DATA_INFO *di, const TCHAR *file_name, const int fil
 
 	case CF_DSPMETAFILEPICT:
 	case CF_METAFILEPICT:
-		// ƒƒ^ƒtƒ@ƒCƒ‹
+		// ãƒ¡ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«
 		if ((tmp = GlobalLock(di->data)) == NULL) {
 			message_get_error(GetLastError(), err_str);
 			return FALSE;
@@ -604,7 +604,7 @@ BOOL clipboard_data_to_file(DATA_INFO *di, const TCHAR *file_name, const int fil
 
 	case CF_DSPENHMETAFILE:
 	case CF_ENHMETAFILE:
-		// Šg’£ƒƒ^ƒtƒ@ƒCƒ‹
+		// æ‹¡å¼µãƒ¡ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«
 		if ((enh_meta = CopyEnhMetaFile(di->data, file_name)) == NULL) {
 			message_get_error(GetLastError(), err_str);
 			return FALSE;
@@ -613,13 +613,13 @@ BOOL clipboard_data_to_file(DATA_INFO *di, const TCHAR *file_name, const int fil
 		break;
 
 	default:
-		// ‚»‚Ì‘¼
-		// ƒf[ƒ^‚ğƒoƒCƒg—ñ‚É•ÏŠ·
+		// ãã®ä»–
+		// ãƒ‡ãƒ¼ã‚¿ã‚’ãƒã‚¤ãƒˆåˆ—ã«å¤‰æ›
 		if ((tmp = clipboard_data_to_bytes(di, &size)) == NULL) {
 			message_get_error(GetLastError(), err_str);
 			return FALSE;
 		}
-		// ƒtƒ@ƒCƒ‹‚É‘‚«‚Ş
+		// ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã‚€
 		if (file_write_buf(file_name, tmp, di->size, err_str) == FALSE) {
 			mem_free(&tmp);
 			return FALSE;
@@ -631,7 +631,7 @@ BOOL clipboard_data_to_file(DATA_INFO *di, const TCHAR *file_name, const int fil
 }
 
 /*
- * clipboard_file_to_data - ƒtƒ@ƒCƒ‹‚©‚çƒf[ƒ^‚ğì¬
+ * clipboard_file_to_data - ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’ä½œæˆ
  */
 HANDLE clipboard_file_to_data(const TCHAR *file_name, TCHAR *format_name, DWORD *ret_size, TCHAR *err_str)
 {
@@ -646,7 +646,7 @@ HANDLE clipboard_file_to_data(const TCHAR *file_name, TCHAR *format_name, DWORD 
 
 	case CF_DSPMETAFILEPICT:
 	case CF_METAFILEPICT:
-		// ƒƒ^ƒtƒ@ƒCƒ‹
+		// ãƒ¡ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«
 		if ((ret = GlobalAlloc(GHND, sizeof(METAFILEPICT))) == NULL) {
 			message_get_error(GetLastError(), err_str);
 			return NULL;
@@ -675,12 +675,12 @@ HANDLE clipboard_file_to_data(const TCHAR *file_name, TCHAR *format_name, DWORD 
 		break;
 
 	default:
-		// ‚»‚Ì‘¼
-		// ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
+		// ãã®ä»–
+		// ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿
 		if ((data = file_read_buf(file_name, &size, err_str)) == NULL) {
 			return NULL;
 		}
-		// ƒoƒCƒg—ñ‚ğƒf[ƒ^‚É•ÏŠ·
+		// ãƒã‚¤ãƒˆåˆ—ã‚’ãƒ‡ãƒ¼ã‚¿ã«å¤‰æ›
 		ret = clipboard_bytes_to_data(format_name, data, &size);
 		mem_free(&data);
 		break;
@@ -692,7 +692,7 @@ HANDLE clipboard_file_to_data(const TCHAR *file_name, TCHAR *format_name, DWORD 
 }
 
 /*
- * clipboard_free_data - ƒNƒŠƒbƒvƒ{[ƒhŒ`®–ˆ‚Ìƒƒ‚ƒŠ‚Ì‰ğ•ú
+ * clipboard_free_data - ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰å½¢å¼æ¯ã®ãƒ¡ãƒ¢ãƒªã®è§£æ”¾
  */
 BOOL clipboard_free_data(TCHAR *format_name, HANDLE data)
 {
@@ -705,13 +705,13 @@ BOOL clipboard_free_data(TCHAR *format_name, HANDLE data)
 
 	switch (clipboard_get_format(0, format_name)) {
 	case CF_PALETTE:
-		// ƒpƒŒƒbƒg
+		// ãƒ‘ãƒ¬ãƒƒãƒˆ
 		ret = DeleteObject((HGDIOBJ)data);
 		break;
 
 	case CF_DSPBITMAP:
 	case CF_BITMAP:
-		// ƒrƒbƒgƒ}ƒbƒv
+		// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—
 		ret = DeleteObject((HGDIOBJ)data);
 		break;
 
@@ -720,7 +720,7 @@ BOOL clipboard_free_data(TCHAR *format_name, HANDLE data)
 
 	case CF_DSPMETAFILEPICT:
 	case CF_METAFILEPICT:
-		// ƒƒ^ƒtƒ@ƒCƒ‹
+		// ãƒ¡ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«
 		if ((mem = GlobalLock(data)) != NULL) {
 			DeleteMetaFile(((METAFILEPICT *)mem)->hMF);
 			GlobalUnlock(data);
@@ -732,12 +732,12 @@ BOOL clipboard_free_data(TCHAR *format_name, HANDLE data)
 
 	case CF_DSPENHMETAFILE:
 	case CF_ENHMETAFILE:
-		// Šg’£ƒƒ^ƒtƒ@ƒCƒ‹
+		// æ‹¡å¼µãƒ¡ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«
 		ret = DeleteEnhMetaFile((HENHMETAFILE)data);
 		break;
 
 	default:
-		// ‚»‚Ì‘¼
+		// ãã®ä»–
 		if (GlobalFree((HGLOBAL)data) == NULL) {
 			ret = TRUE;
 		}

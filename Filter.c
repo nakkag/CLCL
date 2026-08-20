@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Filter.c
@@ -24,7 +24,7 @@
 /* Define */
 
 /* Global Variables */
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
@@ -32,7 +32,7 @@ static BOOL filter_save_check(const TCHAR *format_name);
 static DATA_INFO *filter_item_copy(const DATA_INFO *di, TCHAR *err_str);
 
 /*
- * filter_get_index - ƒtƒBƒ‹ƒ^î•ñ‚ÌƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+ * filter_get_index - ãƒ•ã‚£ãƒ«ã‚¿æƒ…å ±ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
  */
 int filter_get_index(const TCHAR *format_name, const int name_hash)
 {
@@ -62,7 +62,7 @@ int filter_get_index(const TCHAR *format_name, const int name_hash)
 }
 
 /*
- * filter_format_check - Œ`®‚Ìƒ`ƒFƒbƒN
+ * filter_format_check - å½¢å¼ã®ãƒã‚§ãƒƒã‚¯
  */
 BOOL filter_format_check(const TCHAR *format_name)
 {
@@ -75,7 +75,7 @@ BOOL filter_format_check(const TCHAR *format_name)
 }
 
 /*
- * filter_size_check - ƒTƒCƒY‚Ìƒ`ƒFƒbƒN
+ * filter_size_check - ã‚µã‚¤ã‚ºã®ãƒã‚§ãƒƒã‚¯
  */
 BOOL filter_size_check(const TCHAR *format_name, const DWORD size)
 {
@@ -94,7 +94,7 @@ BOOL filter_size_check(const TCHAR *format_name, const DWORD size)
 }
 
 /*
- * filter_save_check - Œ`®‚Ì•Û‘¶ƒ`ƒFƒbƒN
+ * filter_save_check - å½¢å¼ã®ä¿å­˜ãƒã‚§ãƒƒã‚¯
  */
 static BOOL filter_save_check(const TCHAR *format_name)
 {
@@ -108,7 +108,7 @@ static BOOL filter_save_check(const TCHAR *format_name)
 }
 
 /*
- * filter_list_save_check - •Û‘¶ƒtƒBƒ‹ƒ^‚ª—LŒø‚ªƒ`ƒFƒbƒN
+ * filter_list_save_check - ä¿å­˜ãƒ•ã‚£ãƒ«ã‚¿ãŒæœ‰åŠ¹ãŒãƒã‚§ãƒƒã‚¯
  */
 BOOL filter_list_save_check(DATA_INFO *di)
 {
@@ -124,7 +124,7 @@ BOOL filter_list_save_check(DATA_INFO *di)
 
 		case TYPE_ITEM:
 			for (cdi = di->child; cdi != NULL; cdi = cdi->next) {
-				// •Û‘¶ƒtƒBƒ‹ƒ^‚Ìƒ`ƒFƒbƒN
+				// ä¿å­˜ãƒ•ã‚£ãƒ«ã‚¿ã®ãƒã‚§ãƒƒã‚¯
 				if (filter_save_check(cdi->format_name) == FALSE) {
 					return TRUE;
 				}
@@ -136,7 +136,7 @@ BOOL filter_list_save_check(DATA_INFO *di)
 }
 
 /*
- * filter_item_copy - ƒtƒBƒ‹ƒ^‚ğ‚©‚¯‚ÄƒAƒCƒeƒ€‚ÌƒRƒs[
+ * filter_item_copy - ãƒ•ã‚£ãƒ«ã‚¿ã‚’ã‹ã‘ã¦ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚³ãƒ”ãƒ¼
  */
 static DATA_INFO *filter_item_copy(const DATA_INFO *di, TCHAR *err_str)
 {
@@ -167,7 +167,7 @@ static DATA_INFO *filter_item_copy(const DATA_INFO *di, TCHAR *err_str)
 		new_item->plugin_param = di->plugin_param;
 
 		for (cdi = di->child; cdi != NULL; cdi = cdi->next) {
-			// •Û‘¶ƒtƒBƒ‹ƒ^‚Ìƒ`ƒFƒbƒN
+			// ä¿å­˜ãƒ•ã‚£ãƒ«ã‚¿ã®ãƒã‚§ãƒƒã‚¯
 			if (filter_save_check(cdi->format_name) == TRUE) {
 				if ((copy_di = data_item_copy(cdi, FALSE, FALSE, err_str)) == NULL) {
 					data_free(new_item);
@@ -192,7 +192,7 @@ static DATA_INFO *filter_item_copy(const DATA_INFO *di, TCHAR *err_str)
 }
 
 /*
- * filter_list_copy - ƒtƒBƒ‹ƒ^‚ğ‚©‚¯‚ÄƒAƒCƒeƒ€ƒŠƒXƒg‚ÌƒRƒs[
+ * filter_list_copy - ãƒ•ã‚£ãƒ«ã‚¿ã‚’ã‹ã‘ã¦ã‚¢ã‚¤ãƒ†ãƒ ãƒªã‚¹ãƒˆã®ã‚³ãƒ”ãƒ¼
  */
 DATA_INFO *filter_list_copy(DATA_INFO *di, TCHAR *err_str)
 {

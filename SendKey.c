@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * SendKey.c
@@ -63,7 +63,7 @@
 #define SC_PRINTSCREEN				0x37
 
 /* Global Variables */
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
@@ -71,7 +71,7 @@ static int sendkey_window_to_index(const HWND hWnd, const int st);
 static void sendkey_send(const int wait, const UINT modifiers, const UINT virtkey);
 
 /*
- * sendkey_window_to_index - ƒEƒBƒ“ƒhƒE‚Éƒ}ƒbƒ`‚·‚éƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+ * sendkey_window_to_index - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«ãƒãƒƒãƒã™ã‚‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
  */
 static int sendkey_window_to_index(const HWND hWnd, const int st)
 {
@@ -89,7 +89,7 @@ static int sendkey_window_to_index(const HWND hWnd, const int st)
 	GetClassName(hWnd, class_name, BUF_SIZE - 1);
 
 	for (i = st + 1; i < option.sendkey_cnt; i++) {
-		// ƒEƒBƒ“ƒhƒE‚Ìƒ^ƒCƒgƒ‹‚ÆƒNƒ‰ƒX–¼‚Ìƒ`ƒFƒbƒN
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¿ã‚¤ãƒˆãƒ«ã¨ã‚¯ãƒ©ã‚¹åã®ãƒã‚§ãƒƒã‚¯
 		if (((option.sendkey_info + i)->title == NULL ||
 			*(option.sendkey_info + i)->title == TEXT('\0') ||
 			str_match((option.sendkey_info + i)->title, title) == TRUE) &&
@@ -104,7 +104,7 @@ static int sendkey_window_to_index(const HWND hWnd, const int st)
 }
 
 /*
- * get_extended_key - KEYEVENTF_EXTENDEDKEY‚Ì•t‰Áƒ`ƒFƒbƒN
+ * get_extended_key - KEYEVENTF_EXTENDEDKEYã®ä»˜åŠ ãƒã‚§ãƒƒã‚¯
  */
 static int get_extended_key(BYTE vk)
 {
@@ -157,7 +157,7 @@ static int get_extended_key(BYTE vk)
 }
 
 /*
- * get_scan_code - SCANƒR[ƒhæ“¾
+ * get_scan_code - SCANã‚³ãƒ¼ãƒ‰å–å¾—
  */
 static BYTE get_scan_code(BYTE vk)
 {
@@ -198,14 +198,14 @@ static BYTE get_scan_code(BYTE vk)
 }
 
 /*
- * sendkey_send - ƒL[‚ğ‘—M
+ * sendkey_send - ã‚­ãƒ¼ã‚’é€ä¿¡
  */
 static void sendkey_send(const int wait, const UINT modifiers, const UINT virtkey)
 {
 	// wait
 	Sleep(wait);
 
-	// ‘g‚İ‡‚í‚¹ƒL[‰Ÿ‰º
+	// çµ„ã¿åˆã‚ã›ã‚­ãƒ¼æŠ¼ä¸‹
 	if (modifiers & MOD_ALT) {
 		keybd_event(VK_MENU, get_scan_code(VK_MENU), get_extended_key(VK_MENU), 0);
 	}
@@ -218,10 +218,10 @@ static void sendkey_send(const int wait, const UINT modifiers, const UINT virtke
 	if (modifiers & MOD_WIN) {
 		keybd_event(VK_LWIN, get_scan_code(VK_LWIN), get_extended_key(VK_LWIN), 0);
 	}
-	// ƒL[‘—M
+	// ã‚­ãƒ¼é€ä¿¡
 	keybd_event((BYTE)virtkey, get_scan_code(virtkey), get_extended_key(virtkey), 0);
 	keybd_event((BYTE)virtkey, get_scan_code(virtkey), get_extended_key(virtkey) | KEYEVENTF_KEYUP, 0);
-	// ‘g‚İ‡‚í‚¹ƒL[‰ğœ
+	// çµ„ã¿åˆã‚ã›ã‚­ãƒ¼è§£é™¤
 	if (modifiers & MOD_ALT) {
 		keybd_event(VK_MENU, get_scan_code(VK_MENU), get_extended_key(VK_MENU) | KEYEVENTF_KEYUP, 0);
 	}
@@ -237,7 +237,7 @@ static void sendkey_send(const int wait, const UINT modifiers, const UINT virtke
 }
 
 /*
- * sendkey_copy - ƒRƒs[ƒL[‚ğ‘—M
+ * sendkey_copy - ã‚³ãƒ”ãƒ¼ã‚­ãƒ¼ã‚’é€ä¿¡
  */
 BOOL sendkey_copy(const HWND hWnd)
 {
@@ -248,7 +248,7 @@ BOOL sendkey_copy(const HWND hWnd)
 	while (i != -1) {
 		if ((option.sendkey_info + i)->copy_modifiers != 0 ||
 			(option.sendkey_info + i)->copy_virtkey != 0) {
-			// ƒRƒs[
+			// ã‚³ãƒ”ãƒ¼
 			sendkey_send((option.sendkey_info + i)->copy_wait,
 				(option.sendkey_info + i)->copy_modifiers,
 				(option.sendkey_info + i)->copy_virtkey);
@@ -257,7 +257,7 @@ BOOL sendkey_copy(const HWND hWnd)
 		i = sendkey_window_to_index(hWnd, i);
 	}
 	if (send_flag == FALSE) {
-		// ƒfƒtƒHƒ‹ƒg‚ÌƒRƒs[
+		// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚³ãƒ”ãƒ¼
 		sendkey_send(option.def_copy_wait,
 			option.def_copy_modifiers, option.def_copy_virtkey);
 	}
@@ -265,7 +265,7 @@ BOOL sendkey_copy(const HWND hWnd)
 }
 
 /*
- * sendkey_paste - “\‚è•t‚¯ƒL[‚ğ‘—M
+ * sendkey_paste - è²¼ã‚Šä»˜ã‘ã‚­ãƒ¼ã‚’é€ä¿¡
  */
 BOOL sendkey_paste(const HWND hWnd)
 {
@@ -276,7 +276,7 @@ BOOL sendkey_paste(const HWND hWnd)
 	while (i != -1) {
 		if ((option.sendkey_info + i)->paste_modifiers != 0 ||
 			(option.sendkey_info + i)->paste_virtkey != 0) {
-			// “\‚è•t‚¯
+			// è²¼ã‚Šä»˜ã‘
 			sendkey_send((option.sendkey_info + i)->paste_wait,
 				(option.sendkey_info + i)->paste_modifiers,
 				(option.sendkey_info + i)->paste_virtkey);
@@ -285,7 +285,7 @@ BOOL sendkey_paste(const HWND hWnd)
 		i = sendkey_window_to_index(hWnd, i);
 	}
 	if (send_flag == FALSE) {
-		// ƒfƒtƒHƒ‹ƒg‚Ì“\‚è•t‚¯
+		// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®è²¼ã‚Šä»˜ã‘
 		sendkey_send(option.def_paste_wait,
 			option.def_paste_modifiers, option.def_paste_virtkey);
 	}

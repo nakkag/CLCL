@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * gdip.cpp
@@ -43,7 +43,7 @@ static pGdipDisposeImage _GdipDisposeImage;
 /* Local Function Prototypes */
 
 /*
- * init_gdip - GDI+‚Ì‰Šú‰»
+ * init_gdip - GDI+ã®åˆæœŸåŒ–
  */
 void init_gdip()
 {
@@ -57,7 +57,7 @@ void init_gdip()
 }
 
 /*
- * shutdown_gdip - GDI+‚ÌI—¹ˆ—
+ * shutdown_gdip - GDI+ã®çµ‚äº†å‡¦ç†
  */
 void shutdown_gdip()
 {
@@ -66,7 +66,7 @@ void shutdown_gdip()
 }
 
 /*
- * save_jpeg - HBITMAP‚ğJPEG‚Å•Û‘¶
+ * save_jpeg - HBITMAPã‚’JPEGã§ä¿å­˜
  */
 int save_jpeg(HBITMAP hBmp, LPCWSTR lpszFilename, ULONG uQuality)
 {
@@ -90,7 +90,7 @@ int save_jpeg(HBITMAP hBmp, LPCWSTR lpszFilename, ULONG uQuality)
 }
 
 /*
- * save_png - HBITMAP‚ğPNG‚Å•Û‘¶
+ * save_png - HBITMAPã‚’PNGã§ä¿å­˜
  */
 int save_png(HBITMAP hBmp, LPCWSTR lpszFilename)
 {
@@ -108,7 +108,7 @@ int save_png(HBITMAP hBmp, LPCWSTR lpszFilename)
 }
 
 /*
- * draw_image_file - ‰æ‘œƒtƒ@ƒCƒ‹‚ğHBITMAP‚É•ÏŠ·
+ * draw_image_file - ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ã‚’HBITMAPã«å¤‰æ›
  */
 HBITMAP image_to_bitmap(HDC hdc, LPCWSTR lpszFilename)
 {

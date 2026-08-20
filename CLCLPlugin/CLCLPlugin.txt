@@ -4,91 +4,91 @@
 WM_GET_VERSION
   wParam - 0
   lParam - 0
-  �߂�l - (int)�o�[�W����
-  �@�\:
-    CLCL�̃o�[�W�������擾���܂��B
+  戻り値 - (int)バージョン
+  機能:
+    CLCLのバージョンを取得します。
 
 WM_GET_WORKPATH
   wParam - 0
-  lParam - (TCHAR *)��ƃf�B���N�g���̃p�X (OUT)
-  �߂�l - 0
-  �@�\:
-    ��ƃf�B���N�g���̃p�X���擾���܂��B
-    �����ݒ�ł� "CLCL.exe������f�B���N�g��\���[�U��" �ɂȂ�܂��B
+  lParam - (TCHAR *)作業ディレクトリのパス (OUT)
+  戻り値 - 0
+  機能:
+    作業ディレクトリのパスを取得します。
+    初期設定では "CLCL.exeがあるディレクトリ\ユーザ名" になります。
 
 WM_GET_CLIPBOARD_WATCH
   wParam - 0
   lParam - 0
-  �߂�l - (int)0 - �Ď����Ă��Ȃ��A1 - �Ď���
-  �@�\:
-    �N���b�v�{�[�h�̊Ď���Ԃ��擾���܂��B
+  戻り値 - (int)0 - 監視していない、1 - 監視中
+  機能:
+    クリップボードの監視状態を取得します。
 
 WM_SET_CLIPBOARD_WATCH
-  wParam - (int)0 - �����A1 - �Ď�
+  wParam - (int)0 - 解除、1 - 監視
   lParam - 0
-  �߂�l - 0
-  �@�\:
-    �N���b�v�{�[�h�̊Ď���؂�ւ��܂��B
+  戻り値 - 0
+  機能:
+    クリップボードの監視を切り替えます。
 
 WM_GET_FORMAT_ICON
-  wParam - (int)�A�C�R���̃T�C�Y
-  lParam - (TCHAR *)�`����
-  �߂�l - (HICON)�A�C�R���̃n���h��
-  �@�\:
-    �`���p�A�C�R�����擾���܂��B
-    �A�C�R���̃n���h���͗��p���I���Ɣj�����Ă��������B
+  wParam - (int)アイコンのサイズ
+  lParam - (TCHAR *)形式名
+  戻り値 - (HICON)アイコンのハンドル
+  機能:
+    形式用アイコンを取得します。
+    アイコンのハンドルは利用し終わると破棄してください。
 
 WM_ENABLE_ACCELERATOR
-  wParam - (BOOL)TRUE - �L���AFALSE - ����
+  wParam - (BOOL)TRUE - 有効、FALSE - 無効
   lParam - 0
-  �߂�l - 0
-  �@�\:
-    �A�N�Z�����[�^�̗L���E������؂�ւ��܂��B
+  戻り値 - 0
+  機能:
+    アクセラレータの有効・無効を切り替えます。
 
 WM_REGIST_HOTKEY
   wParam - 0
   lParam - 0
-  �߂�l - 0
-  �@�\:
-    �z�b�g�L�[��o�^���܂��B
+  戻り値 - 0
+  機能:
+    ホットキーを登録します。
 
 WM_UNREGIST_HOTKEY
   wParam - 0
   lParam - 0
-  �߂�l - 0
-  �@�\:
-    �z�b�g�L�[���������܂��B
+  戻り値 - 0
+  機能:
+    ホットキーを解除します。
 
 
 ----[Option]----------------------------
 
 WM_OPTION_SHOW
   wParam - 0
-  lParam - (TCHAR *)�\���^�u
-  �߂�l - 0
-  �@�\:
-    �I�v�V������ʂ�\�����܂��B
+  lParam - (TCHAR *)表示タブ
+  戻り値 - 0
+  機能:
+    オプション画面を表示します。
 
 WM_OPTION_GET
   wParam - 0
   lParam - 0
-  �߂�l - (OPTION_INFO *)�I�v�V�������
-  �@�\:
-    �I�v�V�������擾���܂��B
+  戻り値 - (OPTION_INFO *)オプション情報
+  機能:
+    オプションを取得します。
 
 WM_OPTION_LOAD
   wParam - 0
   lParam - 0
-  �߂�l - 0
-  �@�\:
-    �I�v�V�������ēǂݍ��݂��܂��B
+  戻り値 - 0
+  機能:
+    オプションを再読み込みします。
 
 WM_OPTION_SAVE
   wParam - 0
   lParam - 0
-  �߂�l - 0
-  �@�\:
-    �I�v�V������ۑ����܂��B
+  戻り値 - 0
+  機能:
+    オプションを保存します。
 
 
 ----[history & regist]----------------------------
@@ -96,181 +96,181 @@ WM_OPTION_SAVE
 WM_HISTORY_CHANGED
   wParam - 0
   lParam - 0
-  �߂�l - 0
-  �@�\:
-    �����A�C�e���̕ύX��ʒm���܂��B
-    ����𑗂�ƃr���[�A�ŕ\���̍X�V�����܂��B
+  戻り値 - 0
+  機能:
+    履歴アイテムの変更を通知します。
+    これを送るとビューアで表示の更新をします。
 
 WM_HISTORY_GET_ROOT
   wParam - 0
   lParam - 0
-  �߂�l - (DATA_INFO *)�����A�C�e���̃��[�g
-  �@�\:
-    �����A�C�e�����擾���܂��B
+  戻り値 - (DATA_INFO *)履歴アイテムのルート
+  機能:
+    履歴アイテムを取得します。
 
 WM_HISTORY_LOAD
-  wParam - (int)0 - �I�v�V�����ɏ]���A1 - �����I�ɍēǂݍ���
+  wParam - (int)0 - オプションに従う、1 - 強制的に再読み込み
   lParam - 0
-  �߂�l - (BOOL)TRUE - �����AFALSE - ���s
-  �@�\:
-    ���݂̗�����j�����ė������ēǂݍ��݂��܂��B
+  戻り値 - (BOOL)TRUE - 成功、FALSE - 失敗
+  機能:
+    現在の履歴を破棄して履歴を再読み込みします。
 
 WM_HISTORY_SAVE
-  wParam - (int)0 - �I�v�V�����ɏ]���A1 - �����I�ɕۑ�
+  wParam - (int)0 - オプションに従う、1 - 強制的に保存
   lParam - 0
-  �߂�l - (BOOL)TRUE - �����AFALSE - ���s
-  �@�\:
-    ������ۑ����܂��B
+  戻り値 - (BOOL)TRUE - 成功、FALSE - 失敗
+  機能:
+    履歴を保存します。
 
 WM_REGIST_CHANGED
   wParam - 0
   lParam - 0
-  �߂�l - 0
-  �@�\:
-    �o�^�A�C�e���̕ύX��ʒm���܂��B
-    ����𑗂�ƃr���[�A�ŕ\���̍X�V�����܂��B
+  戻り値 - 0
+  機能:
+    登録アイテムの変更を通知します。
+    これを送るとビューアで表示の更新をします。
 
 WM_REGIST_GET_ROOT
   wParam - 0
   lParam - 0
-  �߂�l - (DATA_INFO *)�o�^�A�C�e���̃��[�g
-  �@�\:
-    �o�^�A�C�e�����擾���܂��B
+  戻り値 - (DATA_INFO *)登録アイテムのルート
+  機能:
+    登録アイテムを取得します。
 
 WM_REGIST_LOAD
   wParam - 0
   lParam - 0
-  �߂�l - (BOOL)TRUE - �����AFALSE - ���s
-  �@�\:
-    ���݂̓o�^�A�C�e����j�����ēo�^�A�C�e����ǂݍ��݂��܂��B
+  戻り値 - (BOOL)TRUE - 成功、FALSE - 失敗
+  機能:
+    現在の登録アイテムを破棄して登録アイテムを読み込みします。
 
 WM_REGIST_SAVE
   wParam - 0
   lParam - 0
-  �߂�l - (BOOL)TRUE - �����AFALSE - ���s
-  �@�\:
-    �o�^�A�C�e����ۑ����܂��B
+  戻り値 - (BOOL)TRUE - 成功、FALSE - 失敗
+  機能:
+    登録アイテムを保存します。
 
 
 ----[Item]----------------------------
 
 WM_ITEM_TO_CLIPBOARD
   wParam - 0
-  lParam - (DATA_INFO *)�A�C�e��
-  �߂�l - (BOOL)TRUE - �����AFALSE - ���s
-  �@�\:
-    �A�C�e�����N���b�v�{�[�h�ɑ���܂��B
+  lParam - (DATA_INFO *)アイテム
+  戻り値 - (BOOL)TRUE - 成功、FALSE - 失敗
+  機能:
+    アイテムをクリップボードに送ります。
 
 WM_ITEM_CREATE
-  wParam - (int)�쐬������ (TYPE_DATA or TYPE_ITEM or TYPE_FOLDER)
-  lParam - wParam �ɂ���ĕω�
-               TYPE_DATA - (TCHAR *)�`����
-               TYPE_ITEM - (TCHAR *)�^�C�g��
-               TYPE_FOLDER - (TCHAR *)�^�C�g��
-  �߂�l - (DATA_INFO *)�쐬�����A�C�e��
-  �@�\:
-    �A�C�e�����쐬���܂��B
+  wParam - (int)作成する種類 (TYPE_DATA or TYPE_ITEM or TYPE_FOLDER)
+  lParam - wParam によって変化
+               TYPE_DATA - (TCHAR *)形式名
+               TYPE_ITEM - (TCHAR *)タイトル
+               TYPE_FOLDER - (TCHAR *)タイトル
+  戻り値 - (DATA_INFO *)作成したアイテム
+  機能:
+    アイテムを作成します。
 
 WM_ITEM_COPY
   wParam - 0
-  lParam - (DATA_INFO *)�R�s�[���A�C�e��
-  �߂�l - (DATA_INFO *)�R�s�[�����A�C�e��
-  �@�\:
-    �A�C�e���̃R�s�[���쐬���܂��B
+  lParam - (DATA_INFO *)コピー元アイテム
+  戻り値 - (DATA_INFO *)コピーしたアイテム
+  機能:
+    アイテムのコピーを作成します。
 
 WM_ITEM_FREE
   wParam - 0
-  lParam - (DATA_INFO *)�������A�C�e��
-  �߂�l - 0
-  �@�\:
-    �A�C�e����������܂��B
-    next��child�ɐݒ肳�ꂽ�A�C�e����������邽�߃��X�g����1�A�C�e���݂̂����
-    ����ꍇ�́A���X�g����A�C�e�����폜���Ă��炱�̃��b�Z�[�W���Ă�ł��������B
+  lParam - (DATA_INFO *)解放するアイテム
+  戻り値 - 0
+  機能:
+    アイテムを解放します。
+    nextとchildに設定されたアイテムも解放するためリスト中の1アイテムのみを解放
+    する場合は、リストからアイテムを削除してからこのメッセージを呼んでください。
 
 WM_ITEM_FREE_DATA
-  wParam - (TCHAR *)�`����
-  lParam - (HANDLE)�������f�[�^
-  �߂�l - 0
-  �@�\:
-    �f�[�^��������܂��B
-    �A�C�e���Ɋ܂܂�� di->data ��������鎞�ɌĂт܂��B
+  wParam - (TCHAR *)形式名
+  lParam - (HANDLE)解放するデータ
+  戻り値 - 0
+  機能:
+    データを解放します。
+    アイテムに含まれる di->data を解放する時に呼びます。
 
 WM_ITEM_CHECK
   wParam - 0
-  lParam - (DATA_INFO *)�`�F�b�N����A�C�e��
-  �߂�l - (int)-1 - ���݂��Ȃ��A0 - �����ɑ��݂���A1 - �o�^�A�C�e���ɑ��݂���
-  �@�\:
-    �A�C�e���̑��݂��`�F�b�N���܂��B
+  lParam - (DATA_INFO *)チェックするアイテム
+  戻り値 - (int)-1 - 存在しない、0 - 履歴に存在する、1 - 登録アイテムに存在する
+  機能:
+    アイテムの存在をチェックします。
 
 WM_ITEM_TO_BYTES
-  wParam - (DWORD *)�ϊ���̃T�C�Y (OUT)
-  lParam - (DATA_INFO *)�ϊ�����A�C�e��
-  �߂�l - (BYTE *)�ϊ���̃o�C�g��
-  �@�\:
-    �A�C�e�����o�C�g���ϊ����܂��B
+  wParam - (DWORD *)変換後のサイズ (OUT)
+  lParam - (DATA_INFO *)変換するアイテム
+  戻り値 - (BYTE *)変換後のバイト列
+  機能:
+    アイテムをバイト列を変換します。
 
 WM_ITEM_FROM_BYTES
-  wParam - (BYTE *)�ϊ�����o�C�g��
-  lParam - (DATA_INFO *)�ݒ肷��A�C�e��
-  �߂�l - 0
-  �@�\:
-    �o�C�g�񂩂�f�[�^���쐬���A�C�e���ɐݒ肵�܂��B
+  wParam - (BYTE *)変換するバイト列
+  lParam - (DATA_INFO *)設定するアイテム
+  戻り値 - 0
+  機能:
+    バイト列からデータを作成しアイテムに設定します。
 
 WM_ITEM_TO_FILE
-  wParam - (TCHAR *)�t�@�C����
-  lParam - (DATA_INFO *)�ۑ�����A�C�e��
-  �߂�l - (BOOL)TRUE - �����AFALSE - ���s
-  �@�\:
-    �A�C�e�����t�@�C���ɕۑ����܂��B
+  wParam - (TCHAR *)ファイル名
+  lParam - (DATA_INFO *)保存するアイテム
+  戻り値 - (BOOL)TRUE - 成功、FALSE - 失敗
+  機能:
+    アイテムをファイルに保存します。
 
 WM_ITEM_FROM_FILE
-  wParam - (TCHAR *)�t�@�C����
-  lParam - (DATA_INFO *)�ݒ肷��A�C�e��
-  �߂�l - (BOOL)TRUE - �����AFALSE - ���s
-  �@�\:
-    �t�@�C������f�[�^���쐬���ăA�C�e���ɐݒ肵�܂��B
+  wParam - (TCHAR *)ファイル名
+  lParam - (DATA_INFO *)設定するアイテム
+  戻り値 - (BOOL)TRUE - 成功、FALSE - 失敗
+  機能:
+    ファイルからデータを作成してアイテムに設定します。
 
 WM_ITEM_GET_PARENT
   wParam - 0
-  lParam - (DATA_INFO *)�e�A�C�e�����擾����A�C�e��
-  �߂�l - (DATA_INFO *)�e�A�C�e���A������Ȃ��ꍇ�� NULL ��Ԃ��B
-  �@�\:
-    �A�C�e���̐e�A�C�e�����擾���܂��B
+  lParam - (DATA_INFO *)親アイテムを取得するアイテム
+  戻り値 - (DATA_INFO *)親アイテム、見つからない場合は NULL を返す。
+  機能:
+    アイテムの親アイテムを取得します。
 
 WM_ITEM_GET_FORMAT_TO_ITEM
-  wParam - (TCHAR *)�`����
-  lParam - (DATA_INFO *)�A�C�e�����
-  �߂�l - (DATA_INFO *)TYPE_DATA�̃A�C�e��
-  �@�\:
-    �w��̌`�������A�C�e�����猟������B
+  wParam - (TCHAR *)形式名
+  lParam - (DATA_INFO *)アイテム情報
+  戻り値 - (DATA_INFO *)TYPE_DATAのアイテム
+  機能:
+    指定の形式名をアイテムから検索する。
 
 WM_ITEM_GET_PRIORITY_HIGHEST
   wParam - 0
-  lParam - (DATA_INFO *)TYPE_ITEM�̃A�C�e��
-  �߂�l - (DATA_INFO *)TYPE_DATA�̃A�C�e��
-  �@�\:
-    �D�揇�ʂ̍����`���̃A�C�e�����擾���܂��B
+  lParam - (DATA_INFO *)TYPE_ITEMのアイテム
+  戻り値 - (DATA_INFO *)TYPE_DATAのアイテム
+  機能:
+    優先順位の高い形式のアイテムを取得します。
 
 WM_ITEM_GET_TITLE
-  wParam - (TCHAR *)�^�C�g�� (OUT)
-  lParam - (DATA_INFO *)�^�C�g�����擾����A�C�e��
-  �߂�l - 0
-  �@�\:
-    �A�C�e���̃^�C�g�����擾���܂��B
+  wParam - (TCHAR *)タイトル (OUT)
+  lParam - (DATA_INFO *)タイトルを取得するアイテム
+  戻り値 - 0
+  機能:
+    アイテムのタイトルを取得します。
 
 WM_ITEM_GET_OPEN_INFO
-  wParam - (OPENFILENAME *)�t�@�C����� (OUT)
-  lParam - (TCHAR *)�`����
-  �߂�l - (int)-1 - �R�����_�C�A���O��\�����Ȃ��A0 - ���ݒ�A1 - �ݒ�ς�
-  �@�\:
-    �`�����̃t�@�C�����J�������擾���܂��B
+  wParam - (OPENFILENAME *)ファイル情報 (OUT)
+  lParam - (TCHAR *)形式名
+  戻り値 - (int)-1 - コモンダイアログを表示しない、0 - 未設定、1 - 設定済み
+  機能:
+    形式毎のファイルを開く情報を取得します。
 
 WM_ITEM_GET_SAVE_INFO
-  wParam - (OPENFILENAME *)�t�@�C����� (OUT)
-  lParam - (DATA_INFO )�ۑ������擾����A�C�e��
-  �߂�l - (int)-1 - �R�����_�C�A���O��\�����Ȃ��A0 - ���ݒ�A1 - �ݒ�ς�
-  �@�\:
-    �A�C�e���̃t�@�C���ۑ������擾���܂��B
+  wParam - (OPENFILENAME *)ファイル情報 (OUT)
+  lParam - (DATA_INFO )保存情報を取得するアイテム
+  戻り値 - (int)-1 - コモンダイアログを表示しない、0 - 未設定、1 - 設定済み
+  機能:
+    アイテムのファイル保存情報を取得します。
 
 
 ----[Viewer]----------------------------
@@ -278,36 +278,36 @@ WM_ITEM_GET_SAVE_INFO
 WM_VIEWER_SHOW
   wParam - 0
   lParam - 0
-  �߂�l - �Ȃ�
-  �@�\:
-    �r���[�A��\�����܂��B
+  戻り値 - なし
+  機能:
+    ビューアを表示します。
 
 WM_VIEWER_GET_HWND
   wParam - 0
   lParam - 0
-  �߂�l - (HWND)�r���[�A�̃E�B���h�E�n���h���A�\������Ă��Ȃ��ꍇ��NULL��Ԃ�
-  �@�\:
-    �r���[�A�̃E�B���h�E�n���h�����擾���܂��B
+  戻り値 - (HWND)ビューアのウィンドウハンドル、表示されていない場合はNULLを返す
+  機能:
+    ビューアのウィンドウハンドルを取得します。
 
 WM_VIEWER_GET_MAIN_HWND
   wParam - 0
   lParam - 0
-  �߂�l - (HWND)���C���E�B���h�E�n���h��
-  �@�\:
-    ���C���E�B���h�E�n���h�����擾���܂��B
+  戻り値 - (HWND)メインウィンドウハンドル
+  機能:
+    メインウィンドウハンドルを取得します。
 
 WM_VIEWER_GET_SELECTION
   wParam - 0
   lParam - 0
-  �߂�l - (DATA_INFO *)�r���[�A�őI�𒆂̃A�C�e�����
-  �@�\:
-    �r���[�A�őI������Ă���A�C�e�������擾���܂��B
-    �r���[�A���\������Ă��Ȃ��ꍇ�◚��o�^�A�C�e���ȊO�̃A�C�e�����I�������
-    ����ꍇ�́ANULL ��Ԃ��B
+  戻り値 - (DATA_INFO *)ビューアで選択中のアイテム情報
+  機能:
+    ビューアで選択されているアイテム情報を取得します。
+    ビューアが表示されていない場合や履歴登録アイテム以外のアイテムが選択されて
+    いる場合は、NULL を返す。
 
 WM_VIEWER_SELECT_ITEM
   wParam - 0
-  lParam - (DATA_INFO *)�I������A�C�e�����
-  �߂�l - (BOOL)TRUE - �I�������AFALSE - �I���ł��Ȃ�����
-  �@�\:
-    �r���[�A�ŃA�C�e����I����Ԃɂ��܂��B
+  lParam - (DATA_INFO *)選択するアイテム情報
+  戻り値 - (BOOL)TRUE - 選択した、FALSE - 選択できなかった
+  機能:
+    ビューアでアイテムを選択状態にします。

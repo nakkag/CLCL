@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Memory.c
@@ -33,7 +33,7 @@ static int address_index;
 #endif	// _DEBUG
 
 /*
- * mem_alloc - ƒoƒbƒtƒ@‚ğŠm•Û
+ * mem_alloc - ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
  */
 void *mem_alloc(const DWORD size)
 {
@@ -59,7 +59,7 @@ void *mem_alloc(const DWORD size)
 }
 
 /*
- * mem_calloc - ‰Šú‰»‚µ‚Äƒoƒbƒtƒ@‚ğŠm•Û
+ * mem_calloc - åˆæœŸåŒ–ã—ã¦ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
  */
 void *mem_calloc(const DWORD size)
 {
@@ -85,7 +85,7 @@ void *mem_calloc(const DWORD size)
 }
 
 /*
- * mem_free - ƒoƒbƒtƒ@‚ğ‰ğ•ú
+ * mem_free - ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
  */
 void mem_free(void **mem)
 {
@@ -111,7 +111,7 @@ void mem_free(void **mem)
 }
 
 /*
- * mem_debug - ƒƒ‚ƒŠî•ñ‚Ì•\¦
+ * mem_debug - ãƒ¡ãƒ¢ãƒªæƒ…å ±ã®è¡¨ç¤º
  */
 #ifdef _DEBUG
 void mem_debug(void)
@@ -141,7 +141,7 @@ void mem_debug(void)
 #endif	// _DEBUG
 
 /*
- * mem_cmp - ƒƒ‚ƒŠ‚Ì”äŠr
+ * mem_cmp - ãƒ¡ãƒ¢ãƒªã®æ¯”è¼ƒ
  */
 int mem_cmp(const BYTE *mem1, const DWORD size1, const BYTE *mem2, const DWORD size2)
 {
@@ -152,7 +152,7 @@ int mem_cmp(const BYTE *mem1, const DWORD size1, const BYTE *mem2, const DWORD s
 }
 
 /*
- * alloc_copy - ƒoƒbƒtƒ@‚ğŠm•Û‚µ‚Ä•¶š—ñ‚ğƒRƒs[‚·‚é
+ * alloc_copy - ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿ã—ã¦æ–‡å­—åˆ—ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹
  */
 TCHAR *alloc_copy(const TCHAR *buf)
 {
@@ -169,7 +169,7 @@ TCHAR *alloc_copy(const TCHAR *buf)
 }
 
 /*
- * alloc_copy_n - ƒoƒbƒtƒ@‚ğŠm•Û‚µ‚Äw’è’·‚³•ª‚Ì•¶š—ñ‚ğƒRƒs[‚·‚é
+ * alloc_copy_n - ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿ã—ã¦æŒ‡å®šé•·ã•åˆ†ã®æ–‡å­—åˆ—ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹
  */
 TCHAR *alloc_copy_n(const TCHAR *buf, const int size)
 {
@@ -186,7 +186,7 @@ TCHAR *alloc_copy_n(const TCHAR *buf, const int size)
 }
 
 /*
- * alloc_tchar_to_char - ƒƒ‚ƒŠ‚ğŠm•Û‚µ‚Ä TCHAR ‚ğ char ‚É•ÏŠ·‚·‚é
+ * alloc_tchar_to_char - ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã—ã¦ TCHAR ã‚’ char ã«å¤‰æ›ã™ã‚‹
  */
 #ifdef UNICODE
 char *alloc_tchar_to_char(const TCHAR *str)
@@ -204,7 +204,7 @@ char *alloc_tchar_to_char(const TCHAR *str)
 #endif
 
 /*
- * alloc_char_to_tchar - ƒƒ‚ƒŠ‚ğŠm•Û‚µ‚Ä char ‚ğ TCHAR ‚É•ÏŠ·‚·‚é
+ * alloc_char_to_tchar - ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã—ã¦ char ã‚’ TCHAR ã«å¤‰æ›ã™ã‚‹
  */
 #ifdef UNICODE
 TCHAR *alloc_char_to_tchar(const char *str)

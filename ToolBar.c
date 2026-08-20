@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * ToolBar.c
@@ -24,7 +24,7 @@
 #define BITMAP_CNT						7
 
 #define TOOLBAR_INDENT					Scale(5)
-// ƒc[ƒ‹ƒo[‚Ìƒrƒbƒgƒ}ƒbƒv‚ÌŠî€ƒTƒCƒY
+// ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ã®åŸºæº–ã‚µã‚¤ã‚º
 #define TOOLBAR_BITMAP_SIZE				16
 
 /* Global Variables */
@@ -43,13 +43,13 @@ static TBBUTTON tbb[] = {
 // extern
 extern HINSTANCE hInst;
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
 
 /*
- * toolbar_create - StatusBar‚Ìì¬
+ * toolbar_create - StatusBarã®ä½œæˆ
  */
 HWND toolbar_create(const HWND hWnd, const int id)
 {
@@ -57,7 +57,7 @@ HWND toolbar_create(const HWND hWnd, const int id)
 	int bmp_size;
 	int bmp_id;
 
-	// ƒrƒbƒgƒ}ƒbƒv‚Ì‘I‘ð
+	// ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ã®é¸æŠž
 	bmp_size = Scale(TOOLBAR_BITMAP_SIZE);
 	if (bmp_size >= 40) {
 		bmp_size = 48;

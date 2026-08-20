@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Frame.h
@@ -15,7 +15,7 @@
 #include "dpi.h"
 
 /* Define */
-#define FRAME_CNT						Scale(2)				// ‹«ŠEƒtƒŒ[ƒ€”
+#define FRAME_CNT						Scale(2)				// å¢ƒç•Œãƒ•ãƒ¬ãƒ¼ãƒ æ•°
 
 /* Struct */
 

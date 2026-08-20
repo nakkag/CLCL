@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * SelectFormat.c
@@ -27,14 +27,14 @@
 static TCHAR str_format[BUF_SIZE];
 static TCHAR str_file[MAX_PATH];
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
 static BOOL CALLBACK select_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 /*
- * select_format_proc - ƒtƒH[ƒ}ƒbƒg‘I‘ğƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+ * select_format_proc - ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆé¸æŠã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 static BOOL CALLBACK select_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -45,7 +45,7 @@ static BOOL CALLBACK select_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
-		// Œ»İ“o˜^‚³‚ê‚Ä‚¢‚éŒ`®‚ğƒRƒ“ƒ{ƒ{ƒbƒNƒX‚Éİ’è
+		// ç¾åœ¨ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹å½¢å¼ã‚’ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã«è¨­å®š
 		for (i = 0; i < option.format_cnt; i++) {
 			if ((option.format_info + i)->fn == NULL) {
 				continue;
@@ -89,7 +89,7 @@ static BOOL CALLBACK select_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 		case IDC_BUTTON_FILE_SELECT:
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_FORMAT), WM_GETTEXT, BUF_SIZE - 1, (LPARAM)buf);
 
-			// ƒtƒ@ƒCƒ‹‚Ì‘I‘ğ
+			// ãƒ•ã‚¡ã‚¤ãƒ«ã®é¸æŠ
 			ZeroMemory(&of, sizeof(OPENFILENAME));
 			of.lStructSize = sizeof(OPENFILENAME);
 			of.hInstance = NULL;
@@ -128,7 +128,7 @@ static BOOL CALLBACK select_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 }
 
 /*
- * select_format - ƒtƒH[ƒ}ƒbƒg‚Ì‘I‘ğ
+ * select_format - ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã®é¸æŠ
  */
 BOOL select_format(const HINSTANCE hInst, const HWND hWnd, TCHAR *ret, TCHAR *file_name)
 {

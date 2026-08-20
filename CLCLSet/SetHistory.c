@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCLSet
  *
  * SetHistory.c
@@ -27,19 +27,19 @@
 extern HINSTANCE hInst;
 extern int prop_ret;
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
 
 /*
- * set_histroy_proc - —š—ğİ’è‚ÌƒvƒƒV[ƒWƒƒ
+ * set_histroy_proc - å±¥æ­´è¨­å®šã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 BOOL CALLBACK set_histroy_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg) {
 	case WM_INITDIALOG:
-		// ƒXƒsƒ“ƒRƒ“ƒgƒ[ƒ‹‚Ìİ’è
+		// ã‚¹ãƒ”ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è¨­å®š
 		SendDlgItemMessage(hDlg, IDC_SPIN_MAX, UDM_SETRANGE, 0, (LPARAM)MAKELONG(UD_MAXVAL, 1));
 		SendDlgItemMessage(hDlg, IDC_SPIN_ADD_INTERVAL, UDM_SETRANGE, 0, (LPARAM)MAKELONG(UD_MAXVAL, 0));
 

@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCLHook
  *
  * Hook.c
@@ -35,7 +35,7 @@ HINSTANCE hInstDLL;
 /* Local Function Prototypes **/
 
 /*
- * DllMain - ƒƒCƒ“
+ * DllMain - ãƒ¡ã‚¤ãƒ³
  */
 int WINAPI DllMain(HINSTANCE hInstance, DWORD dwNotification, LPVOID lpReserved)
 {
@@ -47,7 +47,7 @@ int WINAPI DllMain(HINSTANCE hInstance, DWORD dwNotification, LPVOID lpReserved)
 }
 
 /*
- * key_hook_proc - ƒtƒbƒNƒvƒƒV[ƒWƒƒ
+ * key_hook_proc - ãƒ•ãƒƒã‚¯ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 LRESULT CALLBACK key_hook_proc(INT nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -58,14 +58,14 @@ LRESULT CALLBACK key_hook_proc(INT nCode, WPARAM wParam, LPARAM lParam)
 }
 
 /*
- * set_hook - ƒtƒbƒN‚ÌŠJn
+ * set_hook - ãƒ•ãƒƒã‚¯ã®é–‹å§‹
  */
 __declspec(dllexport) BOOL CALLBACK SetHook(const HWND hWnd, const int msg)
 {
 	call_wnd = hWnd;
 	msg_id = msg;
 
-	//ƒtƒbƒN‚ğŠJn‚·‚é
+	//ãƒ•ãƒƒã‚¯ã‚’é–‹å§‹ã™ã‚‹
 	next_hook = SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)key_hook_proc, hInstDLL, 0);
 	if (next_hook == NULL) {
 		return FALSE;
@@ -74,12 +74,12 @@ __declspec(dllexport) BOOL CALLBACK SetHook(const HWND hWnd, const int msg)
 }
 
 /*
- * UnHook - ƒtƒbƒN‚Ì‰ğœ
+ * UnHook - ãƒ•ãƒƒã‚¯ã®è§£é™¤
  */
 __declspec(dllexport) void CALLBACK UnHook(void)
 {
 	if (next_hook != NULL) {
-		//ƒtƒbƒN‚ğ‰ğœ‚·‚é
+		//ãƒ•ãƒƒã‚¯ã‚’è§£é™¤ã™ã‚‹
 		UnhookWindowsHookEx(next_hook);
 	}
 }

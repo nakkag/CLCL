@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CLCLSet
  *
  * CLCLSet.h

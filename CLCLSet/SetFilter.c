@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCLSet
  *
  * SetFilter.c
@@ -36,7 +36,7 @@ extern int prop_ret;
 
 extern TCHAR cmd_filter[];
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
@@ -47,7 +47,7 @@ static FILTER_INFO *listview_get_filter(const HWND hListView, int *cnt);
 static void listview_free_filter(const HWND hListView);
 
 /*
- * set_filter_item_proc - ƒtƒBƒ‹ƒ^‚Ì€–Ú‚ğİ’è
+ * set_filter_item_proc - ãƒ•ã‚£ãƒ«ã‚¿ã®é …ç›®ã‚’è¨­å®š
  */
 static BOOL CALLBACK set_filter_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -67,11 +67,11 @@ static BOOL CALLBACK set_filter_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 		// XP
 		hTheme = open_theme(GetDlgItem(hDlg, IDC_BUTTON_FORMAT), L"SCROLLBAR");
 #endif	// OP_XP_STYLE
-		// ƒXƒsƒ“ƒRƒ“ƒgƒ[ƒ‹‚Ìİ’è
+		// ã‚¹ãƒ”ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è¨­å®š
 		SendDlgItemMessage(hDlg, IDC_SPIN_SIZE, UDM_SETRANGE, 0, (LPARAM)MAKELONG(UD_MAXVAL, 0));
 
 		if (lParam == 0) {
-			// V‹K’Ç‰Á
+			// æ–°è¦è¿½åŠ 
 			if (*cmd_filter != TEXT('\0')) {
 				SendDlgItemMessage(hDlg, IDC_EDIT_FORMAT_NAME, WM_SETTEXT, 0, (LPARAM)cmd_filter);
 				*cmd_filter = TEXT('\0');
@@ -108,7 +108,7 @@ static BOOL CALLBACK set_filter_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 		break;
 
 	case WM_DRAWITEM:
-		// ƒ{ƒ^ƒ“‚Ì•`‰æ
+		// ãƒœã‚¿ãƒ³ã®æç”»
 #ifdef OP_XP_STYLE
 		if (hTheme != 0) {
 			draw_theme_scroll((LPDRAWITEMSTRUCT)lParam, DFCS_SCROLLRIGHT, hTheme);
@@ -122,7 +122,7 @@ static BOOL CALLBACK set_filter_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 
 #ifdef OP_XP_STYLE
 	case WM_THEMECHANGED:
-		// ƒe[ƒ}‚Ì•ÏX
+		// ãƒ†ãƒ¼ãƒã®å¤‰æ›´
 		if (hTheme != 0) {
 			close_theme(hTheme);
 		}
@@ -133,11 +133,11 @@ static BOOL CALLBACK set_filter_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDC_BUTTON_FORMAT:
-			// Œ`®‘I‘ğ
+			// å½¢å¼é¸æŠ
 			if (OpenClipboard(hDlg) == FALSE) {
 				break;
 			}
-			// ƒƒjƒ…[‚Ìì¬
+			// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ä½œæˆ
 			hMenu = CreatePopupMenu();
 			format = 0;
 			ret = 1;
@@ -151,7 +151,7 @@ static BOOL CALLBACK set_filter_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 				break;
 			}
 
-			// ƒƒjƒ…[‚Ì•\¦
+			// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®è¡¨ç¤º
 			GetWindowRect(GetDlgItem(hDlg, LOWORD(wParam)), (LPRECT)&button_rect);
 			ret = TrackPopupMenu(hMenu, TPM_TOPALIGN | TPM_RETURNCMD, button_rect.right, button_rect.top, 0, hDlg, NULL);
 			if (ret > 0) {
@@ -180,7 +180,7 @@ static BOOL CALLBACK set_filter_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 				fi = mem_calloc(sizeof(FILTER_INFO));
 			}
 			if (fi != NULL) {
-				// İ’èæ“¾
+				// è¨­å®šå–å¾—
 				alloc_get_text(GetDlgItem(hDlg, IDC_EDIT_FORMAT_NAME), &fi->format_name);
 				fi->action = IsDlgButtonChecked(hDlg, IDC_RADIO_IGNORE);
 				fi->save = !IsDlgButtonChecked(hDlg, IDC_CHECK_NOSAVE);
@@ -188,7 +188,7 @@ static BOOL CALLBACK set_filter_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 			}
 
 			if (GetWindowLong(hDlg, GWL_USERDATA) == 0) {
-				// V‹K
+				// æ–°è¦
 				HWND pWnd = PropSheet_GetCurrentPageHwnd(GetParent(hDlg));
 				listview_set_filter(GetDlgItem(pWnd, IDC_LIST_FILTER), fi, FALSE);
 			}
@@ -218,7 +218,7 @@ static BOOL CALLBACK set_filter_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 }
 
 /*
- * listview_set_text - ListView‚ÌƒeƒLƒXƒg‚ğİ’è
+ * listview_set_text - ListViewã®ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®š
  */
 static void listview_set_text(const HWND hListView, const int i)
 {
@@ -229,10 +229,10 @@ static void listview_set_text(const HWND hListView, const int i)
 	if ((fi = (FILTER_INFO *)listview_get_lparam(hListView, i)) == NULL) {
 		return;
 	}
-	// Œ`®–¼
+	// å½¢å¼å
 	ListView_SetItemText(hListView, i, 0, fi->format_name);
 
-	// “®ì
+	// å‹•ä½œ
 	if (fi->action == FILTER_ACTION_ADD) {
 		if (fi->save == FILTER_SAVE_SAVE) {
 			p = message_get_res(IDS_FILTER_ACTION_ADD);
@@ -244,13 +244,13 @@ static void listview_set_text(const HWND hListView, const int i)
 	}
 	ListView_SetItemText(hListView, i, 1, p);
 
-	// §ŒÀƒTƒCƒY
+	// åˆ¶é™ã‚µã‚¤ã‚º
 	wsprintf(buf, TEXT("%d"), fi->limit_size);
 	ListView_SetItemText(hListView, i, 2, buf);
 }
 
 /*
- * listview_set_filter - ListView‚ÉƒtƒBƒ‹ƒ^î•ñ‚ğ’Ç‰Á‚·‚é
+ * listview_set_filter - ListViewã«ãƒ•ã‚£ãƒ«ã‚¿æƒ…å ±ã‚’è¿½åŠ ã™ã‚‹
  */
 static void listview_set_filter(const HWND hListView, FILTER_INFO *fi, const BOOL copy)
 {
@@ -283,7 +283,7 @@ static void listview_set_filter(const HWND hListView, FILTER_INFO *fi, const BOO
 }
 
 /*
- * listview_get_filter - ƒtƒBƒ‹ƒ^î•ñ‚Ìæ“¾
+ * listview_get_filter - ãƒ•ã‚£ãƒ«ã‚¿æƒ…å ±ã®å–å¾—
  */
 static FILTER_INFO *listview_get_filter(const HWND hListView, int *cnt)
 {
@@ -295,7 +295,7 @@ static FILTER_INFO *listview_get_filter(const HWND hListView, int *cnt)
 		return NULL;
 	}
 
-	// €–Ú‚Ìì¬
+	// é …ç›®ã®ä½œæˆ
 	if ((new_fi = mem_calloc(sizeof(FILTER_INFO) * *cnt)) == NULL) {
 		*cnt = 0;
 		return NULL;
@@ -314,7 +314,7 @@ static FILTER_INFO *listview_get_filter(const HWND hListView, int *cnt)
 }
 
 /*
- * listview_free_filter - ƒtƒBƒ‹ƒ^î•ñ‚Ì‰ğ•ú
+ * listview_free_filter - ãƒ•ã‚£ãƒ«ã‚¿æƒ…å ±ã®è§£æ”¾
  */
 static void listview_free_filter(const HWND hListView)
 {
@@ -331,7 +331,7 @@ static void listview_free_filter(const HWND hListView)
 }
 
 /*
- * set_filter_proc - ƒtƒBƒ‹ƒ^İ’è‚ÌƒvƒƒV[ƒWƒƒ
+ * set_filter_proc - ãƒ•ã‚£ãƒ«ã‚¿è¨­å®šã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 BOOL CALLBACK set_filter_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -356,7 +356,7 @@ BOOL CALLBACK set_filter_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 			CheckDlgButton(hDlg, IDC_RADIO_ALL_IGNORE, 1);
 		}
 
-		// ƒŠƒXƒgƒrƒ…[‚ÌƒJƒ‰ƒ€‚Ìİ’è
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚«ãƒ©ãƒ ã®è¨­å®š
 		i = 0;
 		lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
@@ -378,7 +378,7 @@ BOOL CALLBACK set_filter_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 		lvc.iSubItem = i++;
 		ListView_InsertColumn(GetDlgItem(hDlg, IDC_LIST_FILTER), lvc.iSubItem, &lvc);
 
-		// ƒŠƒXƒgƒrƒ…[‚ÌƒXƒ^ƒCƒ‹‚Ìİ’è
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚¹ã‚¿ã‚¤ãƒ«ã®è¨­å®š
 		SetWindowLong(GetDlgItem(hDlg, IDC_LIST_FILTER), GWL_STYLE,
 			GetWindowLong(GetDlgItem(hDlg, IDC_LIST_FILTER), GWL_STYLE) | LVS_SHOWSELALWAYS);
 		SendDlgItemMessage(hDlg, IDC_LIST_FILTER, LVM_SETEXTENDEDLISTVIEWSTYLE, 0,
@@ -419,7 +419,7 @@ BOOL CALLBACK set_filter_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 		default:
 			return FALSE;
 		}
-		// ƒ{ƒ^ƒ“‚Ì•`‰æ
+		// ãƒœã‚¿ãƒ³ã®æç”»
 #ifdef OP_XP_STYLE
 		if (hThemeUp != 0 && hThemeDown != 0) {
 			draw_theme_scroll((LPDRAWITEMSTRUCT)lParam, i, (i == DFCS_SCROLLUP) ? hThemeUp : hThemeDown);
@@ -433,7 +433,7 @@ BOOL CALLBACK set_filter_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 #ifdef OP_XP_STYLE
 	case WM_THEMECHANGED:
-		// ƒe[ƒ}‚Ì•ÏX
+		// ãƒ†ãƒ¼ãƒã®å¤‰æ›´
 		if (hThemeUp != 0 && hThemeDown != 0) {
 			close_theme(hThemeUp);
 			close_theme(hThemeDown);
@@ -466,12 +466,12 @@ BOOL CALLBACK set_filter_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 		case ID_ADD_TIMER:
 			KillTimer(hDlg, wParam);
 			if ((i = filter_get_index(cmd_filter, 0)) == -1) {
-				// ’Ç‰Á
+				// è¿½åŠ 
 				SendMessage(hDlg, WM_COMMAND, IDC_BUTTON_ADD, 0);
 			} else {
 				ListView_SetItemState(GetDlgItem(hDlg, IDC_LIST_FILTER), i,
 					LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
-				// •ÒW
+				// ç·¨é›†
 				SendMessage(hDlg, WM_COMMAND, IDC_BUTTON_EDIT, 0);
 			}
 			break;

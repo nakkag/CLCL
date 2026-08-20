@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCL
  *
  * Tool.c
@@ -28,11 +28,11 @@
 extern DATA_INFO history_data;
 extern DATA_INFO regist_data;
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 // option
 extern OPTION_INFO option;
 
-// ‹Œƒc[ƒ‹‚Ìƒf[ƒ^î•ñ
+// æ—§ãƒ„ãƒ¼ãƒ«ã®ãƒ‡ãƒ¼ã‚¿æƒ…å ±
 // Data information of old tool 
 typedef struct _CLIPINFO {
 	unsigned int Type;
@@ -48,7 +48,7 @@ static void tool_data_reflect(const int call_type, TOOL_DATA_INFO *tdi);
 static int tool_call_func_old(const HWND hWnd, const TOOL_INFO *ti, const int call_type, TOOL_DATA_INFO *tdi);
 
 /*
- * tool_title_to_index - ƒ^ƒCƒgƒ‹‚©‚çƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+ * tool_title_to_index - ã‚¿ã‚¤ãƒˆãƒ«ã‹ã‚‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
  * Get index from title
  */
 int tool_title_to_index(const TCHAR *title)
@@ -67,7 +67,7 @@ int tool_title_to_index(const TCHAR *title)
 }
 
 /*
- * tool_initialize - ƒc[ƒ‹î•ñ‚Ì‰Šú‰»
+ * tool_initialize - ãƒ„ãƒ¼ãƒ«æƒ…å ±ã®åˆæœŸåŒ–
  * Initialize tool information
  */
 BOOL tool_initialize(TCHAR *err_str)
@@ -82,7 +82,7 @@ BOOL tool_initialize(TCHAR *err_str)
 			*(option.tool_info + i)->lib_file_path == TEXT('\0')) {
 			continue;
 		}
-		// ƒ‚ƒWƒ…[ƒ‹ƒnƒ“ƒhƒ‹æ“¾
+		// ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒãƒ³ãƒ‰ãƒ«å–å¾—
 		// Get module handle
 		lib = (option.tool_info + i)->lib = LoadLibrary((option.tool_info + i)->lib_file_path);
 		if (lib == NULL) {
@@ -90,7 +90,7 @@ BOOL tool_initialize(TCHAR *err_str)
 			wsprintf(err_str, TEXT("%s\r\n%s"), buf, (option.tool_info + i)->lib_file_path);
 			return FALSE;
 		}
-		// Œ`®–ˆ‚ÌŠÖ”ƒAƒhƒŒƒXæ“¾
+		// å½¢å¼æ¯ã®é–¢æ•°ã‚¢ãƒ‰ãƒ¬ã‚¹å–å¾—
 		// Get function address for each format
 		tchar_to_char((option.tool_info + i)->func_name, cbuf, BUF_SIZE - 1);
 		if ((option.tool_info + i)->old == 0 || (option.tool_info + i)->old == 2) {
@@ -109,7 +109,7 @@ BOOL tool_initialize(TCHAR *err_str)
 }
 
 /*
- * tool_data_copy - ƒc[ƒ‹—pƒAƒCƒeƒ€‚ÌƒRƒs[‚ğì¬
+ * tool_data_copy - ãƒ„ãƒ¼ãƒ«ç”¨ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚³ãƒ”ãƒ¼ã‚’ä½œæˆ
  * Make a copy of the tool item
  */
 TOOL_DATA_INFO *tool_data_copy(DATA_INFO *di, const BOOL next_copy)
@@ -135,7 +135,7 @@ TOOL_DATA_INFO *tool_data_copy(DATA_INFO *di, const BOOL next_copy)
 }
 
 /*
- * tool_data_free - ƒc[ƒ‹—pƒAƒCƒeƒ€‚Ì‰ğ•ú
+ * tool_data_free - ãƒ„ãƒ¼ãƒ«ç”¨ã‚¢ã‚¤ãƒ†ãƒ ã®è§£æ”¾
  * Release tool items
  */
 void tool_data_free(TOOL_DATA_INFO *tdi)
@@ -153,7 +153,7 @@ void tool_data_free(TOOL_DATA_INFO *tdi)
 }
 
 /*
- * tool_data_reflect - ƒc[ƒ‹—pƒAƒCƒeƒ€‚ğÀ‘Ì‚É”½‰f
+ * tool_data_reflect - ãƒ„ãƒ¼ãƒ«ç”¨ã‚¢ã‚¤ãƒ†ãƒ ã‚’å®Ÿä½“ã«åæ˜ 
  * Reflect tool items in the entity
  */
 static void tool_data_reflect(const int call_type, TOOL_DATA_INFO *tdi)
@@ -165,7 +165,7 @@ static void tool_data_reflect(const int call_type, TOOL_DATA_INFO *tdi)
 		if (((call_type & CALLTYPE_MENU) || (call_type & CALLTYPE_VIEWER)) &&
 			(((call_type & CALLTYPE_HISTORY) && data_check(&history_data, di) == NULL) ||
 			((call_type & CALLTYPE_REGIST) && data_check(&regist_data, di) == NULL))) {
-			// ƒŠƒXƒg’†‚Éƒf[ƒ^‚ªŒ©‚Â‚©‚ç‚È‚¢
+			// ãƒªã‚¹ãƒˆä¸­ã«ãƒ‡ãƒ¼ã‚¿ãŒè¦‹ã¤ã‹ã‚‰ãªã„
 			// No data found in the list
 			continue;
 		}
@@ -177,7 +177,7 @@ static void tool_data_reflect(const int call_type, TOOL_DATA_INFO *tdi)
 }
 
 /*
- * tool_call_func_old - ‹Œƒc[ƒ‹‚ÌŒÄ‚Ño‚µ
+ * tool_call_func_old - æ—§ãƒ„ãƒ¼ãƒ«ã®å‘¼ã³å‡ºã—
  * Calling old tools
  */
 static int tool_call_func_old(const HWND hWnd, const TOOL_INFO *ti, const int call_type, TOOL_DATA_INFO *tdi)
@@ -264,7 +264,7 @@ static int tool_call_func_old(const HWND hWnd, const TOOL_INFO *ti, const int ca
 }
 
 /*
- * tool_execute - ƒc[ƒ‹‚ÌŒÄ‚Ño‚µ
+ * tool_execute - ãƒ„ãƒ¼ãƒ«ã®å‘¼ã³å‡ºã—
  * Calling a tool
  */
 int tool_execute(const HWND hWnd, TOOL_INFO *ti, const int call_type, DATA_INFO *di, TOOL_DATA_INFO *tdi)
@@ -278,12 +278,12 @@ int tool_execute(const HWND hWnd, TOOL_INFO *ti, const int call_type, DATA_INFO 
 		return TOOL_ERROR;
 	}
 
-	// ƒc[ƒ‹—pƒAƒCƒeƒ€‚Ìİ’è
+	// ãƒ„ãƒ¼ãƒ«ç”¨ã‚¢ã‚¤ãƒ†ãƒ ã®è¨­å®š
 	// Tool item settings
 	if (tdi == NULL) {
 		wk_tdi = tool_data_copy(di, FALSE);
 	}
-	// ƒtƒ‰ƒO‚Ìİ’è
+	// ãƒ•ãƒ©ã‚°ã®è¨­å®š
 	// Flag setting
 	if (wk_tdi != NULL && ((ctype & CALLTYPE_MENU) || (ctype & CALLTYPE_VIEWER))) {
 		if (data_check(&history_data, wk_tdi->di) != NULL) {
@@ -293,7 +293,7 @@ int tool_execute(const HWND hWnd, TOOL_INFO *ti, const int call_type, DATA_INFO 
 		}
 	}
 
-	// Àsî•ñ‚Ìİ’è
+	// å®Ÿè¡Œæƒ…å ±ã®è¨­å®š
 	// Execution information setting
 	if ((tei = mem_calloc(sizeof(TOOL_EXEC_INFO))) == NULL) {
 		if (tdi == NULL) {
@@ -313,12 +313,12 @@ int tool_execute(const HWND hWnd, TOOL_INFO *ti, const int call_type, DATA_INFO 
 
 	if (ti->old == 0 || ti->old == 2) {
 		if (ti->func != NULL) {
-			// ƒc[ƒ‹‚ÌŒÄ‚Ño‚µ
+			// ãƒ„ãƒ¼ãƒ«ã®å‘¼ã³å‡ºã—
 			// Calling a tool
 			ret = ti->func(hWnd, tei, wk_tdi);
 		}
 	} else {
-		// ‹Œƒc[ƒ‹‚ÌŒÄ‚Ño‚µ
+		// æ—§ãƒ„ãƒ¼ãƒ«ã®å‘¼ã³å‡ºã—
 		// Calling old tools
 		ret = tool_call_func_old(hWnd, ti, ctype, wk_tdi);
 	}
@@ -342,7 +342,7 @@ int tool_execute(const HWND hWnd, TOOL_INFO *ti, const int call_type, DATA_INFO 
 }
 
 /*
- * tool_execute_all - ŒÄ‚Ño‚µ•û–@‚Éƒ}ƒbƒ`‚·‚éƒc[ƒ‹‚ÌÀs
+ * tool_execute_all - å‘¼ã³å‡ºã—æ–¹æ³•ã«ãƒãƒƒãƒã™ã‚‹ãƒ„ãƒ¼ãƒ«ã®å®Ÿè¡Œ
  * Executing a tool that matches the calling method
  */
 int tool_execute_all(const HWND hWnd, const int call_type, DATA_INFO *di)

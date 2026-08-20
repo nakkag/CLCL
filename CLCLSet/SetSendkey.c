@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCLSet
  *
  * SetSendkey.c
@@ -32,7 +32,7 @@
 extern HINSTANCE hInst;
 extern int prop_ret;
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
@@ -43,7 +43,7 @@ static SENDKEY_INFO *listview_get_sendkey(const HWND hListView, int *cnt);
 static void listview_free_sendkey(const HWND hListView);
 
 /*
- * set_sendkey_item_proc - ƒL[İ’è‚Ì€–Ú‚ğİ’è
+ * set_sendkey_item_proc - ã‚­ãƒ¼è¨­å®šã®é …ç›®ã‚’è¨­å®š
  */
 static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -62,7 +62,7 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 		// XP
 		hTheme = open_theme(GetDlgItem(hDlg, IDC_BUTTON_SELECT), L"SCROLLBAR");
 #endif	// OP_XP_STYLE
-		// ƒXƒsƒ“ƒRƒ“ƒgƒ[ƒ‹‚Ìİ’è
+		// ã‚¹ãƒ”ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è¨­å®š
 		SendDlgItemMessage(hDlg, IDC_SPIN_COPY_WAIT, UDM_SETRANGE, 0, (LPARAM)MAKELONG(UD_MAXVAL, 0));
 		SendDlgItemMessage(hDlg, IDC_SPIN_PASTE_WAIT, UDM_SETRANGE, 0, (LPARAM)MAKELONG(UD_MAXVAL, 0));
 
@@ -81,7 +81,7 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 		lvc.iSubItem = i++;
 		ListView_InsertColumn(GetDlgItem(hDlg, IDC_LIST_WINDOW), lvc.iSubItem, &lvc);
 
-		// ƒŠƒXƒgƒrƒ…[‚ÌƒXƒ^ƒCƒ‹‚Ìİ’è
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚¹ã‚¿ã‚¤ãƒ«ã®è¨­å®š
 		SetWindowLong(GetDlgItem(hDlg, IDC_LIST_WINDOW), GWL_STYLE,
 			GetWindowLong(GetDlgItem(hDlg, IDC_LIST_WINDOW), GWL_STYLE) | LVS_SHOWSELALWAYS);
 		SendDlgItemMessage(hDlg, IDC_LIST_WINDOW, LVM_SETEXTENDEDLISTVIEWSTYLE, 0,
@@ -91,7 +91,7 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 		EnumWindows((WNDENUMPROC)enum_windows_proc, (LPARAM)GetDlgItem(hDlg, IDC_LIST_WINDOW));
 
 		if (lParam == 0) {
-			// V‹K’Ç‰Á
+			// æ–°è¦è¿½åŠ 
 			SetDlgItemInt(hDlg, IDC_EDIT_COPY_WAIT, DEFAULT_COPY_WAIT, FALSE);
 			SetDlgItemInt(hDlg, IDC_EDIT_PASTE_WAIT, DEFAULT_PASTE_WAIT, FALSE);
 			SetWindowLong(hDlg, GWL_USERDATA, 0);
@@ -102,7 +102,7 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 		SendDlgItemMessage(hDlg, IDC_EDIT_TITLE, WM_SETTEXT, 0, (LPARAM)si->title);
 		SendDlgItemMessage(hDlg, IDC_EDIT_CLASSNAME, WM_SETTEXT, 0, (LPARAM)si->class_name);
 
-		// ƒRƒs[
+		// ã‚³ãƒ”ãƒ¼
 		i = 0;
 		if (si->copy_modifiers & MOD_SHIFT) {
 			i |= HOTKEYF_SHIFT;
@@ -122,7 +122,7 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 		}
 		SetDlgItemInt(hDlg, IDC_EDIT_COPY_WAIT, si->copy_wait, FALSE);
 
-		// “\‚è•t‚¯
+		// è²¼ã‚Šä»˜ã‘
 		i = 0;
 		if (si->paste_modifiers & MOD_SHIFT) {
 			i |= HOTKEYF_SHIFT;
@@ -155,7 +155,7 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 		break;
 
 	case WM_DRAWITEM:
-		// ƒ{ƒ^ƒ“‚Ì•`‰æ
+		// ãƒœã‚¿ãƒ³ã®æç”»
 #ifdef OP_XP_STYLE
 		if (hTheme != 0) {
 			draw_theme_scroll((LPDRAWITEMSTRUCT)lParam, DFCS_SCROLLDOWN, hTheme);
@@ -169,7 +169,7 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 
 #ifdef OP_XP_STYLE
 	case WM_THEMECHANGED:
-		// ƒe[ƒ}‚Ì•ÏX
+		// ãƒ†ãƒ¼ãƒã®å¤‰æ›´
 		if (hTheme != 0) {
 			close_theme(hTheme);
 		}
@@ -217,11 +217,11 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 				si = mem_calloc(sizeof(SENDKEY_INFO));
 			}
 			if (si != NULL) {
-				// İ’èæ“¾
+				// è¨­å®šå–å¾—
 				alloc_get_text(GetDlgItem(hDlg, IDC_EDIT_TITLE), &si->title);
 				alloc_get_text(GetDlgItem(hDlg, IDC_EDIT_CLASSNAME), &si->class_name);
 
-				// ƒRƒs[
+				// ã‚³ãƒ”ãƒ¼
 				i = SendDlgItemMessage(hDlg,IDC_HOTKEY_COPY, HKM_GETHOTKEY, 0, 0);
 				si->copy_virtkey = LOBYTE(i);
 				i = HIBYTE(i);
@@ -231,7 +231,7 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 					((i & HOTKEYF_WIN) ? MOD_WIN : 0);
 				si->copy_wait = GetDlgItemInt(hDlg, IDC_EDIT_COPY_WAIT, NULL, FALSE);
 
-				// “\‚è•t‚¯
+				// è²¼ã‚Šä»˜ã‘
 				i = SendDlgItemMessage(hDlg,IDC_HOTKEY_PASTE, HKM_GETHOTKEY, 0, 0);
 				si->paste_virtkey = LOBYTE(i);
 				i = HIBYTE(i);
@@ -243,7 +243,7 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 			}
 
 			if (GetWindowLong(hDlg, GWL_USERDATA) == 0) {
-				// V‹K
+				// æ–°è¦
 				HWND pWnd = PropSheet_GetCurrentPageHwnd(GetParent(hDlg));
 				listview_set_sendkey(GetDlgItem(pWnd, IDC_LIST_SENDKEY), si, FALSE);
 			}
@@ -273,7 +273,7 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 }
 
 /*
- * listview_set_text - ListView‚ÌƒeƒLƒXƒg‚ğİ’è
+ * listview_set_text - ListViewã®ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®š
  */
 static void listview_set_text(const HWND hListView, const int i)
 {
@@ -283,22 +283,22 @@ static void listview_set_text(const HWND hListView, const int i)
 	if ((si = (SENDKEY_INFO *)listview_get_lparam(hListView, i)) == NULL) {
 		return;
 	}
-	// ƒ^ƒCƒgƒ‹
+	// ã‚¿ã‚¤ãƒˆãƒ«
 	ListView_SetItemText(hListView, i, 0, si->title);
-	// ƒNƒ‰ƒX–¼
+	// ã‚¯ãƒ©ã‚¹å
 	ListView_SetItemText(hListView, i, 1, si->class_name);
 
-	// ƒRƒs[
+	// ã‚³ãƒ”ãƒ¼
 	get_keyname(si->copy_modifiers, si->copy_virtkey, buf);
 	ListView_SetItemText(hListView, i, 2, buf);
 
-	// “\‚è•t‚¯
+	// è²¼ã‚Šä»˜ã‘
 	get_keyname(si->paste_modifiers, si->paste_virtkey, buf);
 	ListView_SetItemText(hListView, i, 3, buf);
 }
 
 /*
- * listview_set_sendkey - ListView‚ÉƒL[İ’è‚ğ’Ç‰Á‚·‚é
+ * listview_set_sendkey - ListViewã«ã‚­ãƒ¼è¨­å®šã‚’è¿½åŠ ã™ã‚‹
  */
 static void listview_set_sendkey(const HWND hListView, SENDKEY_INFO *si, const BOOL copy)
 {
@@ -330,7 +330,7 @@ static void listview_set_sendkey(const HWND hListView, SENDKEY_INFO *si, const B
 }
 
 /*
- * listview_get_sendkey - ƒL[İ’è‚Ìæ“¾
+ * listview_get_sendkey - ã‚­ãƒ¼è¨­å®šã®å–å¾—
  */
 static SENDKEY_INFO *listview_get_sendkey(const HWND hListView, int *cnt)
 {
@@ -342,7 +342,7 @@ static SENDKEY_INFO *listview_get_sendkey(const HWND hListView, int *cnt)
 		return NULL;
 	}
 
-	// €–Ú‚Ìì¬
+	// é …ç›®ã®ä½œæˆ
 	if ((new_si = mem_calloc(sizeof(SENDKEY_INFO) * *cnt)) == NULL) {
 		*cnt = 0;
 		return NULL;
@@ -360,7 +360,7 @@ static SENDKEY_INFO *listview_get_sendkey(const HWND hListView, int *cnt)
 }
 
 /*
- * listview_free_sendkey - ƒL[İ’è‚Ì‰ğ•ú
+ * listview_free_sendkey - ã‚­ãƒ¼è¨­å®šã®è§£æ”¾
  */
 static void listview_free_sendkey(const HWND hListView)
 {
@@ -378,7 +378,7 @@ static void listview_free_sendkey(const HWND hListView)
 }
 
 /*
- * set_sendkey_proc - ƒL[İ’è‚ÌƒvƒƒV[ƒWƒƒ
+ * set_sendkey_proc - ã‚­ãƒ¼è¨­å®šã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 BOOL CALLBACK set_sendkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -397,11 +397,11 @@ BOOL CALLBACK set_sendkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		hThemeUp = open_theme(GetDlgItem(hDlg, IDC_BUTTON_UP), L"SCROLLBAR");
 		hThemeDown = open_theme(GetDlgItem(hDlg, IDC_BUTTON_DOWN), L"SCROLLBAR");
 #endif	// OP_XP_STYLE
-		// ƒXƒsƒ“ƒRƒ“ƒgƒ[ƒ‹‚Ìİ’è
+		// ã‚¹ãƒ”ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è¨­å®š
 		SendDlgItemMessage(hDlg, IDC_SPIN_COPY_WAIT, UDM_SETRANGE, 0, (LPARAM)MAKELONG(UD_MAXVAL, 0));
 		SendDlgItemMessage(hDlg, IDC_SPIN_PASTE_WAIT, UDM_SETRANGE, 0, (LPARAM)MAKELONG(UD_MAXVAL, 0));
 
-		// ƒRƒs[
+		// ã‚³ãƒ”ãƒ¼
 		i = 0;
 		if (option.def_copy_modifiers & MOD_SHIFT) {
 			i |= HOTKEYF_SHIFT;
@@ -421,7 +421,7 @@ BOOL CALLBACK set_sendkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		}
 		SetDlgItemInt(hDlg, IDC_EDIT_COPY_WAIT, option.def_copy_wait, FALSE);
 
-		// “\‚è•t‚¯
+		// è²¼ã‚Šä»˜ã‘
 		i = 0;
 		if (option.def_paste_modifiers & MOD_SHIFT) {
 			i |= HOTKEYF_SHIFT;
@@ -441,7 +441,7 @@ BOOL CALLBACK set_sendkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		}
 		SetDlgItemInt(hDlg, IDC_EDIT_PASTE_WAIT, option.def_paste_wait, FALSE);
 
-		// ƒŠƒXƒgƒrƒ…[‚ÌƒJƒ‰ƒ€‚Ìİ’è
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚«ãƒ©ãƒ ã®è¨­å®š
 		i = 0;
 		lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
@@ -469,7 +469,7 @@ BOOL CALLBACK set_sendkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		lvc.iSubItem = i++;
 		ListView_InsertColumn(GetDlgItem(hDlg, IDC_LIST_SENDKEY), lvc.iSubItem, &lvc);
 
-		// ƒŠƒXƒgƒrƒ…[‚ÌƒXƒ^ƒCƒ‹‚Ìİ’è
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚¹ã‚¿ã‚¤ãƒ«ã®è¨­å®š
 		SetWindowLong(GetDlgItem(hDlg, IDC_LIST_SENDKEY), GWL_STYLE,
 			GetWindowLong(GetDlgItem(hDlg, IDC_LIST_SENDKEY), GWL_STYLE) | LVS_SHOWSELALWAYS);
 		SendDlgItemMessage(hDlg, IDC_LIST_SENDKEY, LVM_SETEXTENDEDLISTVIEWSTYLE, 0,
@@ -506,7 +506,7 @@ BOOL CALLBACK set_sendkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		default:
 			return FALSE;
 		}
-		// ƒ{ƒ^ƒ“‚Ì•`‰æ
+		// ãƒœã‚¿ãƒ³ã®æç”»
 #ifdef OP_XP_STYLE
 		if (hThemeUp != 0 && hThemeDown != 0) {
 			draw_theme_scroll((LPDRAWITEMSTRUCT)lParam, i, (i == DFCS_SCROLLUP) ? hThemeUp : hThemeDown);
@@ -520,7 +520,7 @@ BOOL CALLBACK set_sendkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 #ifdef OP_XP_STYLE
 	case WM_THEMECHANGED:
-		// ƒe[ƒ}‚Ì•ÏX
+		// ãƒ†ãƒ¼ãƒã®å¤‰æ›´
 		if (hThemeUp != 0 && hThemeDown != 0) {
 			close_theme(hThemeUp);
 			close_theme(hThemeDown);
@@ -603,7 +603,7 @@ BOOL CALLBACK set_sendkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			break;
 
 		case IDOK:
-			// ƒRƒs[
+			// ã‚³ãƒ”ãƒ¼
 			i = SendDlgItemMessage(hDlg,IDC_HOTKEY_COPY, HKM_GETHOTKEY, 0, 0);
 			option.def_copy_virtkey = LOBYTE(i);
 			i = HIBYTE(i);
@@ -613,7 +613,7 @@ BOOL CALLBACK set_sendkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				((i & HOTKEYF_WIN) ? MOD_WIN : 0);
 			option.def_copy_wait = GetDlgItemInt(hDlg, IDC_EDIT_COPY_WAIT, NULL, FALSE);
 
-			// “\‚è•t‚¯
+			// è²¼ã‚Šä»˜ã‘
 			i = SendDlgItemMessage(hDlg,IDC_HOTKEY_PASTE, HKM_GETHOTKEY, 0, 0);
 			option.def_paste_virtkey = LOBYTE(i);
 			i = HIBYTE(i);

@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * CLCLSet
  *
  * SetFormat.c
@@ -37,7 +37,7 @@ extern TCHAR work_path[];
 
 extern TCHAR cmd_format[];
 
-// ƒIƒvƒVƒ‡ƒ“
+// ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
@@ -53,7 +53,7 @@ static FORMAT_INFO *listview_get_format(const HWND hListView, int *cnt);
 static void listview_free_format(const HWND hListView);
 
 /*
- * get_format_header - “à•”Œ`®‚ğˆ—‚·‚éƒwƒbƒ_‚Ìæ“¾
+ * get_format_header - å†…éƒ¨å½¢å¼ã‚’å‡¦ç†ã™ã‚‹ãƒ˜ãƒƒãƒ€ã®å–å¾—
  */
 static BOOL CALLBACK get_format_header(const HWND hWnd, const int index, FORMAT_GET_INFO *fgi)
 {
@@ -80,7 +80,7 @@ static BOOL CALLBACK get_format_header(const HWND hWnd, const int index, FORMAT_
 }
 
 /*
- * dll_to_list - DLL“à‚ÌŠÖ”‚ğƒŠƒXƒgƒrƒ…[‚É•\¦
+ * dll_to_list - DLLå†…ã®é–¢æ•°ã‚’ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã«è¡¨ç¤º
  */
 static BOOL dll_to_list(const HWND hDlg, const FARPROC func_get_format_header)
 {
@@ -89,7 +89,7 @@ static BOOL dll_to_list(const HWND hDlg, const FARPROC func_get_format_header)
 	FORMAT_GET_INFO fgi;
 	int i, j;
 
-	// ƒŠƒXƒgƒrƒ…[‚Ìİ’è
+	// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®è¨­å®š
 	i = 0;
 	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
@@ -111,14 +111,14 @@ static BOOL dll_to_list(const HWND hDlg, const FARPROC func_get_format_header)
 	lvc.iSubItem = i++;
 	ListView_InsertColumn(GetDlgItem(hDlg, IDC_LIST_HEADER), lvc.iSubItem, &lvc);
 
-	// ƒŠƒXƒgƒrƒ…[‚ÌƒXƒ^ƒCƒ‹‚Ìİ’è
+	// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚¹ã‚¿ã‚¤ãƒ«ã®è¨­å®š
 	SetWindowLong(GetDlgItem(hDlg, IDC_LIST_HEADER), GWL_STYLE,
 		GetWindowLong(GetDlgItem(hDlg, IDC_LIST_HEADER), GWL_STYLE) | LVS_SHOWSELALWAYS);
 	SendDlgItemMessage(hDlg, IDC_LIST_HEADER, LVM_SETEXTENDEDLISTVIEWSTYLE, 0,
 		LVS_EX_ONECLICKACTIVATE | LVS_EX_FULLROWSELECT |
 		SendDlgItemMessage(hDlg, IDC_LIST_HEADER, LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0));
 
-	// ƒAƒCƒeƒ€‚ğ’Ç‰Á
+	// ã‚¢ã‚¤ãƒ†ãƒ ã‚’è¿½åŠ 
 	i = 0;
 	while (1) {
 		ZeroMemory(&fgi, sizeof(FORMAT_GET_INFO));
@@ -140,7 +140,7 @@ static BOOL dll_to_list(const HWND hDlg, const FARPROC func_get_format_header)
 }
 
 /*
- * select_headers_proc - ƒwƒbƒ_‘I‘ğƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+ * select_headers_proc - ãƒ˜ãƒƒãƒ€é¸æŠã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 static BOOL CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -158,7 +158,7 @@ static BOOL CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
 		SetWindowText(hDlg, message_get_res(IDS_FORMAT_SELECT_TITLE));
 		SetWindowText(GetDlgItem(hDlg, IDC_STATIC_MSG), message_get_res(IDS_FORMAT_SELECT_MSG));
 
-		// DLLƒ[ƒh
+		// DLLãƒ­ãƒ¼ãƒ‰
 		if ((lib = LoadLibrary((TCHAR *)lParam)) == NULL) {
 			message_get_error(GetLastError(), err_str);
 			if (*err_str != TEXT('\0')) {
@@ -167,7 +167,7 @@ static BOOL CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
 			EndDialog(hDlg, FALSE);
 			break;
 		}
-		// ŠÖ”ƒAƒhƒŒƒXæ“¾
+		// é–¢æ•°ã‚¢ãƒ‰ãƒ¬ã‚¹å–å¾—
 		if ((func_get_format_header = GetProcAddress(lib, "get_format_header")) == NULL) {
 			message_get_error(GetLastError(), err_str);
 			if (*err_str != TEXT('\0')) {
@@ -178,13 +178,13 @@ static BOOL CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
 			break;
 		}
 
-		// ƒwƒbƒ_ˆê——‚ğƒŠƒXƒgƒrƒ…[‚Éİ’è
+		// ãƒ˜ãƒƒãƒ€ä¸€è¦§ã‚’ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã«è¨­å®š
 		if (dll_to_list(hDlg, func_get_format_header) == FALSE) {
 			FreeLibrary(lib);
 			EndDialog(hDlg, FALSE);
 			break;
 		}
-		// ƒŠƒXƒgƒrƒ…[‚ÌƒXƒ^ƒCƒ‹‚Ìİ’è
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚¹ã‚¿ã‚¤ãƒ«ã®è¨­å®š
 		SetWindowLong(GetDlgItem(hDlg, IDC_LIST_HEADER), GWL_STYLE,
 			GetWindowLong(GetDlgItem(hDlg, IDC_LIST_HEADER), GWL_STYLE) & ~LVS_SINGLESEL);
 		ListView_SetItemState(GetDlgItem(hDlg, IDC_LIST_HEADER), -1, LVIS_SELECTED, LVIS_SELECTED);
@@ -232,14 +232,14 @@ static BOOL CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
 			i = -1;
 			while ((i = ListView_GetNextItem(GetDlgItem(hDlg, IDC_LIST_HEADER), i, LVNI_SELECTED)) != -1) {
 				if ((fi = mem_calloc(sizeof(FORMAT_INFO))) != NULL) {
-					// İ’èæ“¾
+					// è¨­å®šå–å¾—
 					ListView_GetItemText(GetDlgItem(hDlg, IDC_LIST_HEADER), i, 0, buf, BUF_SIZE - 1);
 					fi->format_name = alloc_copy(buf);
 					fi->lib_file_path = alloc_copy(lib_path);
 					ListView_GetItemText(GetDlgItem(hDlg, IDC_LIST_HEADER), i, 1, buf, BUF_SIZE - 1);
 					fi->func_header = alloc_copy(buf);
 
-					// V‹K’Ç‰Á
+					// æ–°è¦è¿½åŠ 
 					listview_set_format(GetDlgItem(pWnd, IDC_LIST_FORMAT), fi, FALSE);
 				}
 			}
@@ -249,11 +249,11 @@ static BOOL CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
 		break;
 
 	case WM_GET_VERSION:
-		// ƒo[ƒWƒ‡ƒ“æ“¾
+		// ãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
 		return APP_VAR;
 
 	case WM_GET_WORKPATH:
-		// ì‹ÆƒfƒBƒŒƒNƒgƒŠæ“¾
+		// ä½œæ¥­ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå–å¾—
 		if (lParam == 0) {
 			break;
 		}
@@ -267,7 +267,7 @@ static BOOL CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
 }
 
 /*
- * select_header_proc - ƒwƒbƒ_‘I‘ğƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+ * select_header_proc - ãƒ˜ãƒƒãƒ€é¸æŠã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 static BOOL CALLBACK select_header_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -286,7 +286,7 @@ static BOOL CALLBACK select_header_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 			lib = NULL;
 			func_get_format_header = get_format_header;
 		} else {
-			// DLLƒ[ƒh
+			// DLLãƒ­ãƒ¼ãƒ‰
 			if ((lib = LoadLibrary((TCHAR *)lParam)) == NULL) {
 				message_get_error(GetLastError(), err_str);
 				if (*err_str != TEXT('\0')) {
@@ -295,7 +295,7 @@ static BOOL CALLBACK select_header_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 				EndDialog(hDlg, FALSE);
 				break;
 			}
-			// ŠÖ”ƒAƒhƒŒƒXæ“¾
+			// é–¢æ•°ã‚¢ãƒ‰ãƒ¬ã‚¹å–å¾—
 			if ((func_get_format_header = GetProcAddress(lib, "get_format_header")) == NULL) {
 				message_get_error(GetLastError(), err_str);
 				if (*err_str != TEXT('\0')) {
@@ -307,7 +307,7 @@ static BOOL CALLBACK select_header_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 			}
 		}
 
-		// ƒwƒbƒ_ˆê——‚ğƒŠƒXƒgƒrƒ…[‚Éİ’è
+		// ãƒ˜ãƒƒãƒ€ä¸€è¦§ã‚’ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã«è¨­å®š
 		if (dll_to_list(hDlg, func_get_format_header) == FALSE) {
 			if (lib != NULL) {
 				FreeLibrary(lib);
@@ -366,11 +366,11 @@ static BOOL CALLBACK select_header_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 		break;
 
 	case WM_GET_VERSION:
-		// ƒo[ƒWƒ‡ƒ“æ“¾
+		// ãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
 		return APP_VAR;
 
 	case WM_GET_WORKPATH:
-		// ì‹ÆƒfƒBƒŒƒNƒgƒŠæ“¾
+		// ä½œæ¥­ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå–å¾—
 		if (lParam == 0) {
 			break;
 		}
@@ -384,7 +384,7 @@ static BOOL CALLBACK select_header_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 }
 
 /*
- * set_format_item_proc - Œ`®‚Ì€–Ú‚ğİ’è
+ * set_format_item_proc - å½¢å¼ã®é …ç›®ã‚’è¨­å®š
  */
 static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -405,7 +405,7 @@ static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 		hTheme = open_theme(GetDlgItem(hDlg, IDC_BUTTON_FORMAT), L"SCROLLBAR");
 #endif	// OP_XP_STYLE
 		if (lParam == 0) {
-			// V‹K’Ç‰Á
+			// æ–°è¦è¿½åŠ 
 			if (*cmd_format != TEXT('\0')) {
 				SendDlgItemMessage(hDlg, IDC_EDIT_FORMAT_NAME, WM_SETTEXT, 0, (LPARAM)cmd_format);
 				*cmd_format = TEXT('\0');
@@ -432,7 +432,7 @@ static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 		break;
 
 	case WM_DRAWITEM:
-		// ƒ{ƒ^ƒ“‚Ì•`‰æ
+		// ãƒœã‚¿ãƒ³ã®æç”»
 #ifdef OP_XP_STYLE
 		if (hTheme != 0) {
 			draw_theme_scroll((LPDRAWITEMSTRUCT)lParam, DFCS_SCROLLRIGHT, hTheme);
@@ -446,7 +446,7 @@ static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 
 #ifdef OP_XP_STYLE
 	case WM_THEMECHANGED:
-		// ƒe[ƒ}‚Ì•ÏX
+		// ãƒ†ãƒ¼ãƒã®å¤‰æ›´
 		if (hTheme != 0) {
 			close_theme(hTheme);
 		}
@@ -457,11 +457,11 @@ static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDC_BUTTON_FORMAT:
-			// Œ`®‘I‘ğ
+			// å½¢å¼é¸æŠ
 			if (OpenClipboard(hDlg) == FALSE) {
 				break;
 			}
-			// ƒƒjƒ…[‚Ìì¬
+			// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ä½œæˆ
 			hMenu = CreatePopupMenu();
 			format = 0;
 			ret = 1;
@@ -475,7 +475,7 @@ static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 				break;
 			}
 
-			// ƒƒjƒ…[‚Ì•\¦
+			// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®è¡¨ç¤º
 			GetWindowRect(GetDlgItem(hDlg, LOWORD(wParam)), (LPRECT)&button_rect);
 			ret = TrackPopupMenu(hMenu, TPM_TOPALIGN | TPM_RETURNCMD, button_rect.right, button_rect.top, 0, hDlg, NULL);
 			if (ret > 0) {
@@ -486,7 +486,7 @@ static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 			break;
 
 		case IDC_BUTTON_FILE_SELECT:
-			// ƒtƒ@ƒCƒ‹‘I‘ğ
+			// ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠ
 			SetFocus(GetDlgItem(hDlg, IDC_EDIT_LIB_PATH));
 			if (file_select(hDlg, TEXT("*.dll\0*.dll\0*.*\0*.*\0\0"), 1, buf) == -1) {
 				break;
@@ -495,7 +495,7 @@ static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 			SendDlgItemMessage(hDlg, IDC_EDIT_HEADER, WM_SETTEXT, 0, (LPARAM)TEXT(""));
 
 		case IDC_BUTTON_FUNC_SELECT:
-			// ƒwƒbƒ_‘I‘ğ
+			// ãƒ˜ãƒƒãƒ€é¸æŠ
 			*buf = TEXT('\0');
 			SendDlgItemMessage(hDlg, IDC_EDIT_LIB_PATH, WM_GETTEXT, BUF_SIZE - 1, (LPARAM)buf);
 			if (DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_DIALOG_SELECT_FUNC), hDlg, select_header_proc, (LPARAM)buf) == TRUE) {
@@ -516,14 +516,14 @@ static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 				fi = mem_calloc(sizeof(FORMAT_INFO));
 			}
 			if (fi != NULL) {
-				// İ’èæ“¾
+				// è¨­å®šå–å¾—
 				alloc_get_text(GetDlgItem(hDlg, IDC_EDIT_FORMAT_NAME), &fi->format_name);
 				alloc_get_text(GetDlgItem(hDlg, IDC_EDIT_LIB_PATH), &fi->lib_file_path);
 				alloc_get_text(GetDlgItem(hDlg, IDC_EDIT_HEADER), &fi->func_header);
 			}
 
 			if (GetWindowLong(hDlg, GWL_USERDATA) == 0) {
-				// V‹K
+				// æ–°è¦
 				HWND pWnd = PropSheet_GetCurrentPageHwnd(GetParent(hDlg));
 				listview_set_format(GetDlgItem(pWnd, IDC_LIST_FORMAT), fi, FALSE);
 			}
@@ -553,13 +553,13 @@ static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 }
 
 /*
- * set_format_property_proc - “à•”Œ`®‚ÌƒvƒƒpƒeƒB‚ğİ’è
+ * set_format_property_proc - å†…éƒ¨å½¢å¼ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’è¨­å®š
  */
 static BOOL CALLBACK set_format_property_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg) {
 	case WM_INITDIALOG:
-		// ƒXƒsƒ“ƒRƒ“ƒgƒ[ƒ‹‚Ìİ’è
+		// ã‚¹ãƒ”ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è¨­å®š
 		SendDlgItemMessage(hDlg, IDC_SPIN_TOOLTIP_SIZE, UDM_SETRANGE, 0, (LPARAM)MAKELONG(UD_MAXVAL, 0));
 
 		SetDlgItemInt(hDlg, IDC_EDIT_TOOLTIP_SIZE, option.fmt_txt_menu_tooltip_size, FALSE);
@@ -589,7 +589,7 @@ static BOOL CALLBACK set_format_property_proc(HWND hDlg, UINT uMsg, WPARAM wPara
 }
 
 /*
- * show_property - Œ`®–ˆ‚ÌƒvƒƒpƒeƒB•\¦
+ * show_property - å½¢å¼æ¯ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£è¡¨ç¤º
  */
 static BOOL show_property(const HWND hDlg, const FORMAT_INFO *fi)
 {
@@ -608,7 +608,7 @@ static BOOL show_property(const HWND hDlg, const FORMAT_INFO *fi)
 			MessageBox(hDlg, message_get_res(IDS_FORMAT_NON_PROP), WINDOW_TITLE, MB_OK | MB_ICONEXCLAMATION);
 		}
 	} else {
-		// DLLƒ[ƒh
+		// DLLãƒ­ãƒ¼ãƒ‰
 		if ((lib = LoadLibrary(fi->lib_file_path)) == NULL) {
 			message_get_error(GetLastError(), err_str);
 			if (*err_str != TEXT('\0')) {
@@ -616,11 +616,11 @@ static BOOL show_property(const HWND hDlg, const FORMAT_INFO *fi)
 			}
 			return FALSE;
 		}
-		// ŠÖ”ƒAƒhƒŒƒXæ“¾
+		// é–¢æ•°ã‚¢ãƒ‰ãƒ¬ã‚¹å–å¾—
 		wsprintf(buf, TEXT("%sshow_property"), fi->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		if ((func_show_property = GetProcAddress(lib, cbuf)) != NULL) {
-			// ƒvƒƒpƒeƒB•\¦
+			// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£è¡¨ç¤º
 			ret = func_show_property(hDlg);
 		}
 		FreeLibrary(lib);
@@ -632,7 +632,7 @@ static BOOL show_property(const HWND hDlg, const FORMAT_INFO *fi)
 }
 
 /*
- * listview_set_text - ListView‚ÌƒeƒLƒXƒg‚ğİ’è
+ * listview_set_text - ListViewã®ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®š
  */
 static void listview_set_text(const HWND hListView, const int i)
 {
@@ -641,16 +641,16 @@ static void listview_set_text(const HWND hListView, const int i)
 	if ((fi = (FORMAT_INFO *)listview_get_lparam(hListView, i)) == NULL) {
 		return;
 	}
-	// Œ`®–¼
+	// å½¢å¼å
 	ListView_SetItemText(hListView, i, 0, fi->format_name);
 	// DLL
 	ListView_SetItemText(hListView, i, 1, fi->lib_file_path);
-	// ƒwƒbƒ_
+	// ãƒ˜ãƒƒãƒ€
 	ListView_SetItemText(hListView, i, 2, fi->func_header);
 }
 
 /*
- * listview_set_format - ListView‚ÉŒ`®î•ñ‚ğ’Ç‰Á‚·‚é
+ * listview_set_format - ListViewã«å½¢å¼æƒ…å ±ã‚’è¿½åŠ ã™ã‚‹
  */
 static void listview_set_format(const HWND hListView, FORMAT_INFO *fi, const BOOL copy)
 {
@@ -682,7 +682,7 @@ static void listview_set_format(const HWND hListView, FORMAT_INFO *fi, const BOO
 }
 
 /*
- * listview_get_format - Œ`®î•ñ‚Ìæ“¾
+ * listview_get_format - å½¢å¼æƒ…å ±ã®å–å¾—
  */
 static FORMAT_INFO *listview_get_format(const HWND hListView, int *cnt)
 {
@@ -694,7 +694,7 @@ static FORMAT_INFO *listview_get_format(const HWND hListView, int *cnt)
 		return NULL;
 	}
 
-	// €–Ú‚Ìì¬
+	// é …ç›®ã®ä½œæˆ
 	if ((new_fi = mem_calloc(sizeof(FORMAT_INFO) * *cnt)) == NULL) {
 		*cnt = 0;
 		return NULL;
@@ -712,7 +712,7 @@ static FORMAT_INFO *listview_get_format(const HWND hListView, int *cnt)
 }
 
 /*
- * listview_free_format - Œ`®î•ñ‚Ì‰ğ•ú
+ * listview_free_format - å½¢å¼æƒ…å ±ã®è§£æ”¾
  */
 static void listview_free_format(const HWND hListView)
 {
@@ -731,7 +731,7 @@ static void listview_free_format(const HWND hListView)
 }
 
 /*
- * set_format_proc - Œ`®İ’è‚ÌƒvƒƒV[ƒWƒƒ
+ * set_format_proc - å½¢å¼è¨­å®šã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 BOOL CALLBACK set_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -747,14 +747,14 @@ BOOL CALLBACK set_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
-		// D&D‚ğó‚¯•t‚¯‚é
+		// D&Dã‚’å—ã‘ä»˜ã‘ã‚‹
 		SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_ACCEPTFILES);
 #ifdef OP_XP_STYLE
 		// XP
 		hThemeUp = open_theme(GetDlgItem(hDlg, IDC_BUTTON_UP), L"SCROLLBAR");
 		hThemeDown = open_theme(GetDlgItem(hDlg, IDC_BUTTON_DOWN), L"SCROLLBAR");
 #endif	// OP_XP_STYLE
-		// ƒŠƒXƒgƒrƒ…[‚ÌƒJƒ‰ƒ€‚Ìİ’è
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚«ãƒ©ãƒ ã®è¨­å®š
 		i = 0;
 		lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
@@ -776,7 +776,7 @@ BOOL CALLBACK set_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 		lvc.iSubItem = i++;
 		ListView_InsertColumn(GetDlgItem(hDlg, IDC_LIST_FORMAT), lvc.iSubItem, &lvc);
 
-		// ƒŠƒXƒgƒrƒ…[‚ÌƒXƒ^ƒCƒ‹‚Ìİ’è
+		// ãƒªã‚¹ãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚¹ã‚¿ã‚¤ãƒ«ã®è¨­å®š
 		SetWindowLong(GetDlgItem(hDlg, IDC_LIST_FORMAT), GWL_STYLE,
 			GetWindowLong(GetDlgItem(hDlg, IDC_LIST_FORMAT), GWL_STYLE) | LVS_SHOWSELALWAYS);
 		SendDlgItemMessage(hDlg, IDC_LIST_FORMAT, LVM_SETEXTENDEDLISTVIEWSTYLE, 0,
@@ -817,7 +817,7 @@ BOOL CALLBACK set_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 		default:
 			return FALSE;
 		}
-		// ƒ{ƒ^ƒ“‚Ì•`‰æ
+		// ãƒœã‚¿ãƒ³ã®æç”»
 #ifdef OP_XP_STYLE
 		if (hThemeUp != 0 && hThemeDown != 0) {
 			draw_theme_scroll((LPDRAWITEMSTRUCT)lParam, i, (i == DFCS_SCROLLUP) ? hThemeUp : hThemeDown);
@@ -831,7 +831,7 @@ BOOL CALLBACK set_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 #ifdef OP_XP_STYLE
 	case WM_THEMECHANGED:
-		// ƒe[ƒ}‚Ì•ÏX
+		// ãƒ†ãƒ¼ãƒã®å¤‰æ›´
 		if (hThemeUp != 0 && hThemeDown != 0) {
 			close_theme(hThemeUp);
 			close_theme(hThemeDown);
@@ -876,10 +876,10 @@ BOOL CALLBACK set_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 		case ID_ADD_TIMER:
 			KillTimer(hDlg, wParam);
 			if ((i = format_get_index(cmd_format, 0)) == -1) {
-				// ’Ç‰Á
+				// è¿½åŠ 
 				SendMessage(hDlg, WM_COMMAND, IDC_BUTTON_ADD, 0);
 			} else {
-				// •ÒW
+				// ç·¨é›†
 				ListView_SetItemState(GetDlgItem(hDlg, IDC_LIST_FORMAT), i,
 					LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
 				SendMessage(hDlg, WM_COMMAND, IDC_BUTTON_EDIT, 0);
@@ -971,11 +971,11 @@ BOOL CALLBACK set_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 		break;
 
 	case WM_GET_VERSION:
-		// ƒo[ƒWƒ‡ƒ“æ“¾
+		// ãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
 		return APP_VAR;
 
 	case WM_GET_WORKPATH:
-		// ì‹ÆƒfƒBƒŒƒNƒgƒŠæ“¾
+		// ä½œæ¥­ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå–å¾—
 		if (lParam == 0) {
 			break;
 		}
