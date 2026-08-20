@@ -15,6 +15,7 @@
 
 #include "Viewer.h"
 #include "Container.h"
+#include "dpi.h"
 
 /* Define */
 #define WINDOW_CLASS					TEXT("CLCLContainer")
@@ -89,6 +90,15 @@ static LRESULT CALLBACK container_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		cWnd = GetWindow(hWnd, GW_CHILD);
 		while (cWnd != NULL) {
 			ShowWindow(cWnd, SW_HIDE);
+			cWnd = GetWindow(cWnd, GW_HWNDNEXT);
+		}
+		break;
+
+	case WM_DPICHANGED_AFTERPARENT:
+		// 形式毎のウィンドウへ通知
+		cWnd = GetWindow(hWnd, GW_CHILD);
+		while (cWnd != NULL) {
+			SendMessage(cWnd, msg, wParam, lParam);
 			cWnd = GetWindow(cWnd, GW_HWNDNEXT);
 		}
 		break;

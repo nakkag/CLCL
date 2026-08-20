@@ -14,10 +14,15 @@
 #undef	_INC_OLE
 #include <commctrl.h>
 
+#include "..\dpi.h"
+
 #include "resource.h"
 
 /* Define */
 #define BUF_SIZE						256
+
+// アイコン一覧に表示するアイコンのサイズ
+#define ICONSIZE						32
 
 #define WM_LV_EVENT						(WM_APP + 100)
 
@@ -145,7 +150,7 @@ static int set_list_icon(const HWND hListView, const TCHAR *path, const int inde
 
 	// イメージリストの作成、設定
 	if ((icon_list = ListView_GetImageList(hListView, LVSIL_NORMAL)) == NULL) {
-		icon_list = ImageList_Create(32, 32, ILC_COLOR16 | ILC_MASK, 0, 0);
+		icon_list = ImageList_Create(Scale(ICONSIZE), Scale(ICONSIZE), ILC_COLOR32 | ILC_MASK, 0, 0);
 		ImageList_SetBkColor(icon_list, GetSysColor(COLOR_WINDOW));
 		ListView_SetImageList(hListView, icon_list, LVSIL_NORMAL);
 	} else {

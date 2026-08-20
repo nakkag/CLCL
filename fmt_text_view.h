@@ -117,6 +117,8 @@ typedef struct _BUFFER {
 	int bottom_margin;
 	// 行間
 	int spacing;
+	// フォントを作成したときのDPI
+	UINT font_dpi;
 
 	// 描画用情報
 	HDC mdc;

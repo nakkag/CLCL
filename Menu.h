@@ -86,6 +86,8 @@ typedef struct _MENU_INFO {
 
 /* Function Prototypes */
 void menu_free(void);
+void menu_free_icons(void);
+void menu_set_dpi(const POINT *mpos);
 int menu_show(const HWND hWnd, const HMENU hMenu, const POINT *mpos);
 MENU_ITEM_INFO *menu_get_info(const UINT id);
 TCHAR *menu_get_keyname(const UINT modifiers, const UINT virtkey);

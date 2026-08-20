@@ -19,6 +19,7 @@
 
 /* Function Prototypes */
 HWND statusbar_create(const HWND hWnd, const int id);
+void statusbar_reset_parts(const HWND hStatusBar);
 BOOL statusbar_set_text(const HWND hWnd, const HWND hStatusBar);
 LRESULT statusbar_notify_proc(const HWND hStatusBar, LPARAM lParam);
 

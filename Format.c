@@ -20,6 +20,7 @@
 #include "Ini.h"
 #include "Message.h"
 #include "Format.h"
+#include "dpi.h"
 
 /* Define */
 
@@ -396,7 +397,7 @@ BOOL format_get_menu_icon(DATA_INFO *di)
 	if (i == -1 || (option.format_info + i)->func_get_menu_icon == NULL) {
 		return FALSE;
 	}
-	return (BOOL)((option.format_info + i)->func_get_menu_icon)(di, option.menu_icon_size);
+	return (BOOL)((option.format_info + i)->func_get_menu_icon)(di, Scale(option.menu_icon_size));
 }
 
 /*
@@ -413,7 +414,8 @@ BOOL format_get_menu_bitmap(DATA_INFO *di)
 	if (i == -1 || (option.format_info + i)->func_get_menu_bitmap == NULL) {
 		return FALSE;
 	}
-	return (BOOL)((option.format_info + i)->func_get_menu_bitmap)(di, option.menu_bitmap_width, option.menu_bitmap_height);
+	return (BOOL)((option.format_info + i)->func_get_menu_bitmap)(di,
+		Scale(option.menu_bitmap_width), Scale(option.menu_bitmap_height));
 }
 
 /*

@@ -17,6 +17,7 @@
 #include "Memory.h"
 #include "Ini.h"
 #include "Font.h"
+#include "dpi.h"
 
 #include "resource.h"
 
@@ -31,6 +32,9 @@
 
 #define MOUSE_INTERVAL					100
 
+// ツールチップのマージン
+#define TOOLTIP_MARGIN_X				Scale(option.tooltip_margin_x)
+#define TOOLTIP_MARGIN_Y				Scale(option.tooltip_margin_y)
 
 #ifndef SPI_GETTOOLTIPANIMATION
 #define SPI_GETTOOLTIPANIMATION			0x00001016
@@ -59,12 +63,16 @@ typedef struct _TOOLTIP_INFO {
 	HWND hWnd;
 } TOOLTIP_INFO;
 
+// ツールチップのフォントを作成したときのDPI
+static UINT tooltip_font_dpi;
+
 // オプション
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
 static int tooltip_get_cursor_height(const HCURSOR hcursor);
 static void tooltip_draw_text(const TOOLTIP_INFO *ti, const HDC hdc, RECT *rect);
+static void tooltip_create_font(TOOLTIP_INFO *ti);
 static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 /*
@@ -144,10 +152,10 @@ static void tooltip_draw_text(const TOOLTIP_INFO *ti, const HDC hdc, RECT *rect)
 		// テキストの描画
 		hRetFont = SelectObject(hdc, (ti->hfont != NULL) ? ti->hfont : GetStockObject(DEFAULT_GUI_FONT));
 		SetRect(rect,
-			rect->left + option.tooltip_margin_x,
-			rect->top + option.tooltip_margin_y,
-			rect->right - option.tooltip_margin_x,
-			rect->bottom - option.tooltip_margin_y);
+			rect->left + TOOLTIP_MARGIN_X,
+			rect->top + TOOLTIP_MARGIN_Y,
+			rect->right - TOOLTIP_MARGIN_X,
+			rect->bottom - TOOLTIP_MARGIN_Y);
 
 		SetTextColor(hdc, color_infotext);
 		SetBkColor(hdc, color_infoback);
@@ -163,14 +171,42 @@ static void tooltip_draw_text(const TOOLTIP_INFO *ti, const HDC hdc, RECT *rect)
 }
 
 /*
+ * tooltip_create_font - ツールチップのフォントの作成
+ */
+static void tooltip_create_font(TOOLTIP_INFO *ti)
+{
+	NONCLIENTMETRICS ncMetrics;
+
+	if (ti == NULL) {
+		return;
+	}
+	if (ti->hfont != NULL) {
+		DeleteObject(ti->hfont);
+		ti->hfont = NULL;
+	}
+	if (*option.tooltip_font_name != TEXT('\0')) {
+		// フォント作成
+		ti->hfont = font_create(option.tooltip_font_name,
+			option.tooltip_font_size, option.tooltip_font_charset, option.tooltip_font_weight,
+			(option.tooltip_font_italic == 0) ? FALSE : TRUE, FALSE);
+	} else {
+		if (GetNonClientMetricsDpi(&ncMetrics) != FALSE) {
+			// デフォルトのフォント作成
+			ti->hfont = CreateFontIndirect(&ncMetrics.lfStatusFont);
+		}
+	}
+	tooltip_font_dpi = GetDpi();
+}
+
+/*
  * tooltip_proc - ツールチップ
  */
 static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	NONCLIENTMETRICS ncMetrics;
 	PAINTSTRUCT ps;
 	DRAWTEXTPARAMS dtp;
 	RECT rect;
+	RECT mrect;
 	POINT pt;
 	HDC hdc;
 	HFONT hRetFont;
@@ -181,19 +217,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		if ((ti = mem_calloc(sizeof(TOOLTIP_INFO))) == NULL) {
 			return -1;
 		}
-		if (*option.tooltip_font_name != TEXT('\0')) {
-			// フォント作成
-			ti->hfont = font_create(option.tooltip_font_name,
-				option.tooltip_font_size, option.tooltip_font_charset, option.tooltip_font_weight,
-				(option.tooltip_font_italic == 0) ? FALSE : TRUE, FALSE);
-		} else {
-			ncMetrics.cbSize = sizeof(NONCLIENTMETRICS);
-			if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS,
-				sizeof(NONCLIENTMETRICS), &ncMetrics, 0) == TRUE) {
-				// デフォルトのフォント作成
-				ti->hfont = CreateFontIndirect(&ncMetrics.lfStatusFont);
-			}
-		}
+		tooltip_create_font(ti);
 		// tooltip info to window long
 		SetWindowLong(hWnd, GWL_USERDATA, (LPARAM)ti);
 		break;
@@ -221,16 +245,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			wParam != SPI_SETNONCLIENTMETRICS) {
 			break;
 		}
-		if (ti->hfont != NULL) {
-			DeleteObject(ti->hfont);
-			ti->hfont = NULL;
-		}
-		ncMetrics.cbSize = sizeof(NONCLIENTMETRICS);
-		if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS,
-			sizeof(NONCLIENTMETRICS), &ncMetrics, 0) == TRUE) {
-			// デフォルトのフォント作成
-			ti->hfont = CreateFontIndirect(&ncMetrics.lfStatusFont);
-		}
+		tooltip_create_font(ti);
 		break;
 
 #ifdef TOOLTIP_ANIMATE
@@ -334,6 +349,11 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 				}
 			}
 
+			// 表示するモニタのDPIに合わせる
+			if (SetDpiFromPoint(ti->pt) != tooltip_font_dpi) {
+				tooltip_create_font(ti);
+			}
+
 			// サイズ取得
 			hdc = GetDC(hWnd);
 			hRetFont = SelectObject(hdc, (ti->hfont != NULL) ? ti->hfont : GetStockObject(DEFAULT_GUI_FONT));
@@ -352,26 +372,29 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			SetRect(&rect,
 				ti->pt.x,
 				ti->pt.y + ti->top,
-				rect.right + (option.tooltip_margin_x * 2) + 2,
-				rect.bottom + (option.tooltip_margin_y * 2) + 2);
+				rect.right + (TOOLTIP_MARGIN_X * 2) + 2,
+				rect.bottom + (TOOLTIP_MARGIN_Y * 2) + 2);
+
+			// 表示するモニタの矩形を取得
+			GetMonitorRectFromPoint(ti->pt, &mrect);
 
 			// 横位置の補正
-			if (rect.left + rect.right > GetSystemMetrics(SM_CXSCREEN)) {
-				rect.left = GetSystemMetrics(SM_CXSCREEN) - rect.right;
+			if (rect.left + rect.right > mrect.right) {
+				rect.left = mrect.right - rect.right;
 			}
-			if (rect.left < 0) {
-				rect.left = 0;
+			if (rect.left < mrect.left) {
+				rect.left = mrect.left;
 			}
 
 			// 縦位置の補正
-			if (rect.top + rect.bottom > GetSystemMetrics(SM_CYSCREEN)) {
+			if (rect.top + rect.bottom > mrect.bottom) {
 				rect.top = ti->pt.y - rect.bottom;
 			}
-			if (rect.top < 0) {
-				rect.top = GetSystemMetrics(SM_CYSCREEN) - rect.bottom;
+			if (rect.top < mrect.top) {
+				rect.top = mrect.bottom - rect.bottom;
 			}
-			if (rect.top < 0) {
-				rect.top = 0;
+			if (rect.top < mrect.top) {
+				rect.top = mrect.top;
 			}
 
 			// ウィンドウの位置とサイズを設定

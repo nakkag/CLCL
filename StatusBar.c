@@ -22,6 +22,7 @@
 #include "Menu.h"
 #include "Viewer.h"
 #include "TreeView.h"
+#include "StatusBar.h"
 #include "dpi.h"
 
 #include "resource.h"
@@ -52,7 +53,6 @@ static void statusbar_get_size_text(const int size, TCHAR *ret);
 HWND statusbar_create(const HWND hWnd, const int id)
 {
 	HWND hStatusBar;
-	int width[] = {Scale(150), Scale(270), -1};
 
 	if ((hStatusBar = CreateStatusWindow(WS_CHILD | SBT_TOOLTIPS, TEXT(""), hWnd, id)) == NULL) {
 		return NULL;
@@ -62,8 +62,21 @@ HWND statusbar_create(const HWND hWnd, const int id)
 		ShowWindow(hStatusBar, SW_SHOW);
 	}
 	// パーツの設定
-	SendMessage(hStatusBar, SB_SETPARTS, (WPARAM)sizeof(width) / sizeof(int), (LPARAM)width);
+	statusbar_reset_parts(hStatusBar);
 	return hStatusBar;
+}
+
+/*
+ * statusbar_reset_parts - StatusBarのパーツを現在のDPIに合わせる
+ */
+void statusbar_reset_parts(const HWND hStatusBar)
+{
+	int width[] = {Scale(150), Scale(270), -1};
+
+	if (hStatusBar == NULL) {
+		return;
+	}
+	SendMessage(hStatusBar, SB_SETPARTS, (WPARAM)sizeof(width) / sizeof(int), (LPARAM)width);
 }
 
 /*

@@ -25,6 +25,7 @@
 #include "Ini.h"
 #include "Font.h"
 #include "fmt_text_view.h"
+#include "dpi.h"
 
 #include "resource.h"
 
@@ -128,13 +129,10 @@ static BOOL font_select(const HWND hWnd)
 {
 	CHOOSEFONT cf;
 	LOGFONT lf;
-	HDC hdc;
 
 	// フォント情報の作成
 	ZeroMemory(&lf, sizeof(LOGFONT));
-	hdc = GetDC(NULL);
-	lf.lfHeight = -(int)((option.fmt_txt_font_size * GetDeviceCaps(hdc, LOGPIXELSY)) / 72);
-	ReleaseDC(NULL, hdc);
+	lf.lfHeight = -MulDiv(option.fmt_txt_font_size, GetDpi(), 72);
 	lf.lfWeight = option.fmt_txt_font_weight;
 	lf.lfItalic = option.fmt_txt_font_italic;
 	lf.lfCharSet = option.fmt_txt_font_charset;
@@ -2001,6 +1999,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		bf->hfont = font_create(option.fmt_txt_font_name, option.fmt_txt_font_size, option.fmt_txt_font_charset,
 			option.fmt_txt_font_weight, (option.fmt_txt_font_italic == 0) ? FALSE : TRUE, FALSE);
 		bf->ret_font = SelectObject(bf->mdc, bf->hfont);
+		bf->font_dpi = GetDpi();
 		draw_free(bf);
 		draw_init(hWnd, bf);
 
@@ -2651,6 +2650,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 			}
 			bf->hfont = CreateFontIndirect((CONST LOGFONT *)&lf);
 			bf->ret_font = SelectObject(bf->mdc, bf->hfont);
+			bf->font_dpi = GetDpi();
 
 			SendMessage(hWnd, WM_REFLECT, 0, 0);
 			draw_free(bf);
@@ -3079,6 +3079,24 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 			break;
 		}
 		*((BUFFER **)lParam) = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA);
+		break;
+
+	case WM_DPICHANGED_AFTERPARENT:
+		// フォントの作り直し
+		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
+			SetDpiFromWindow(hWnd) == bf->font_dpi) {
+			break;
+		}
+		{
+			HFONT hFont = font_create(option.fmt_txt_font_name, option.fmt_txt_font_size,
+				option.fmt_txt_font_charset, option.fmt_txt_font_weight,
+				(option.fmt_txt_font_italic == 0) ? FALSE : TRUE, FALSE);
+			if (hFont != NULL) {
+				SendMessage(hWnd, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+				DeleteObject(hFont);
+			}
+		}
+		InvalidateRect(hWnd, NULL, TRUE);
 		break;
 
 	case WM_REFLECT:

@@ -196,31 +196,31 @@ BOOL ini_get_option(TCHAR *err_str)
 	// menu
 	option.menu_text_format = profile_alloc_string(TEXT("menu"), TEXT("text_format"), TEXT("&%1d. %t"), ini_path);
 	option.menu_intact_item_title = profile_get_int(TEXT("menu"), TEXT("intact_item_title"), 0, ini_path);
-	option.menu_text_margin_left = Scale(profile_get_int(TEXT("menu"), TEXT("text_margin_left"), 4, ini_path));
-	option.menu_text_margin_right = Scale(profile_get_int(TEXT("menu"), TEXT("text_margin_right"), 15, ini_path));
-	option.menu_text_margin_y = Scale(profile_get_int(TEXT("menu"), TEXT("text_margin_y"), 2, ini_path));
-	option.menu_separator_height = Scale(profile_get_int(TEXT("menu"), TEXT("separator_height"), 9, ini_path));
-	option.menu_separator_margin_left = Scale(profile_get_int(TEXT("menu"), TEXT("separator_margin_left"), 1, ini_path));
-	option.menu_separator_margin_right = Scale(profile_get_int(TEXT("menu"), TEXT("separator_margin_right"), 1, ini_path));
-	option.menu_max_width = Scale(profile_get_int(TEXT("menu"), TEXT("max_width"), 200, ini_path));
+	option.menu_text_margin_left = profile_get_int(TEXT("menu"), TEXT("text_margin_left"), 4, ini_path);
+	option.menu_text_margin_right = profile_get_int(TEXT("menu"), TEXT("text_margin_right"), 15, ini_path);
+	option.menu_text_margin_y = profile_get_int(TEXT("menu"), TEXT("text_margin_y"), 2, ini_path);
+	option.menu_separator_height = profile_get_int(TEXT("menu"), TEXT("separator_height"), 9, ini_path);
+	option.menu_separator_margin_left = profile_get_int(TEXT("menu"), TEXT("separator_margin_left"), 1, ini_path);
+	option.menu_separator_margin_right = profile_get_int(TEXT("menu"), TEXT("separator_margin_right"), 1, ini_path);
+	option.menu_max_width = profile_get_int(TEXT("menu"), TEXT("max_width"), 200, ini_path);
 	if (option.menu_max_width <= 0) {
-		option.menu_max_width = Scale(200);
+		option.menu_max_width = 200;
 	}
 	option.menu_break = profile_get_int(TEXT("menu"), TEXT("break"), 1, ini_path);
 	option.menu_show_icon = profile_get_int(TEXT("menu"), TEXT("show_icon"), 1, ini_path);
-	option.menu_icon_size = Scale(profile_get_int(TEXT("menu"), TEXT("icon_size"), 16, ini_path));
+	option.menu_icon_size = profile_get_int(TEXT("menu"), TEXT("icon_size"), 16, ini_path);
 	if (option.menu_icon_size <= 0) {
-		option.menu_icon_size = Scale(16);
+		option.menu_icon_size = 16;
 	}
-	option.menu_icon_margin = Scale(profile_get_int(TEXT("menu"), TEXT("icon_margin"), 2, ini_path));
+	option.menu_icon_margin = profile_get_int(TEXT("menu"), TEXT("icon_margin"), 2, ini_path);
 	option.menu_show_bitmap = profile_get_int(TEXT("menu"), TEXT("show_bitmap"), 1, ini_path);
-	option.menu_bitmap_width = Scale(profile_get_int(TEXT("menu"), TEXT("bitmap_width"), 32, ini_path));
+	option.menu_bitmap_width = profile_get_int(TEXT("menu"), TEXT("bitmap_width"), 32, ini_path);
 	if (option.menu_bitmap_width <= 0) {
-		option.menu_bitmap_width = Scale(32);
+		option.menu_bitmap_width = 32;
 	}
-	option.menu_bitmap_height = Scale(profile_get_int(TEXT("menu"), TEXT("bitmap_height"), 32, ini_path));
+	option.menu_bitmap_height = profile_get_int(TEXT("menu"), TEXT("bitmap_height"), 32, ini_path);
 	if (option.menu_bitmap_height <= 0) {
-		option.menu_bitmap_height = Scale(32);
+		option.menu_bitmap_height = 32;
 	}
 	option.menu_show_tooltip = profile_get_int(TEXT("menu"), TEXT("show_tooltip"), 1, ini_path);
 	option.menu_show_hotkey = profile_get_int(TEXT("menu"), TEXT("show_hotkey"), 1, ini_path);
@@ -252,8 +252,8 @@ BOOL ini_get_option(TCHAR *err_str)
 	// tooltip
 	option.tooltip_show_delay = profile_get_int(TEXT("tooltip"), TEXT("show_delay"), 500, ini_path);
 	option.tooltip_tab_length = profile_get_int(TEXT("tooltip"), TEXT("tab_length"), 4, ini_path);
-	option.tooltip_margin_x = Scale(profile_get_int(TEXT("tooltip"), TEXT("margin_x"), 2, ini_path));
-	option.tooltip_margin_y = Scale(profile_get_int(TEXT("tooltip"), TEXT("margin_y"), 2, ini_path));
+	option.tooltip_margin_x = profile_get_int(TEXT("tooltip"), TEXT("margin_x"), 2, ini_path);
+	option.tooltip_margin_y = profile_get_int(TEXT("tooltip"), TEXT("margin_y"), 2, ini_path);
 	option.tooltip_font_name = profile_alloc_string(TEXT("tooltip"), TEXT("font_name"), TEXT(""), ini_path);
 	option.tooltip_font_size = profile_get_int(TEXT("tooltip"), TEXT("font_size"), 9, ini_path);
 	option.tooltip_font_weight = profile_get_int(TEXT("tooltip"), TEXT("font_weight"), 0, ini_path);
@@ -665,13 +665,13 @@ BOOL ini_get_option(TCHAR *err_str)
 	option.viewer_delete_confirm = profile_get_int(TEXT("viewer"), TEXT("delete_confirm"), 1, ini_path);
 
 	GetWindowRect(GetDesktopWindow(), &desktop_rect);
-	option.viewer_rect.left = Scale(profile_get_int(TEXT("viewer"), TEXT("left"), 0, ini_path));
-	option.viewer_rect.top = Scale(profile_get_int(TEXT("viewer"), TEXT("top"), 0, ini_path));
-	option.viewer_rect.right = Scale(profile_get_int(TEXT("viewer"), TEXT("right"), 550, ini_path));
-	option.viewer_rect.bottom = Scale(profile_get_int(TEXT("viewer"), TEXT("bottom"), 400, ini_path));
-	option.viewer_sep_size = Scale(profile_get_int(TEXT("viewer"), TEXT("sep_size"), 150, ini_path));
+	option.viewer_rect.left = profile_get_int(TEXT("viewer"), TEXT("left"), 0, ini_path);
+	option.viewer_rect.top = profile_get_int(TEXT("viewer"), TEXT("top"), 0, ini_path);
+	option.viewer_rect.right = profile_get_int(TEXT("viewer"), TEXT("right"), 550, ini_path);
+	option.viewer_rect.bottom = profile_get_int(TEXT("viewer"), TEXT("bottom"), 400, ini_path);
+	option.viewer_sep_size = profile_get_int(TEXT("viewer"), TEXT("sep_size"), 150, ini_path);
 	if (option.viewer_sep_size < 1 || (option.viewer_rect.right > 0 && option.viewer_sep_size > option.viewer_rect.right)) {
-		option.viewer_sep_size = Scale(150);
+		option.viewer_sep_size = 150;
 	}
 
 	// treeview
@@ -689,10 +689,10 @@ BOOL ini_get_option(TCHAR *err_str)
 
 	// listview
 	option.list_default_action = profile_get_int(TEXT("listview"), TEXT("default_action"), 0, ini_path);
-	option.list_column_data = Scale(profile_get_int(TEXT("listview"), TEXT("column_data"), 150, ini_path));
-	option.list_column_size = Scale(profile_get_int(TEXT("listview"), TEXT("column_size"), 100, ini_path));
-	option.list_column_date = Scale(profile_get_int(TEXT("listview"), TEXT("column_date"), 100, ini_path));
-	option.list_column_window = Scale(profile_get_int(TEXT("listview"), TEXT("column_window"), 100, ini_path));
+	option.list_column_data = profile_get_int(TEXT("listview"), TEXT("column_data"), 150, ini_path);
+	option.list_column_size = profile_get_int(TEXT("listview"), TEXT("column_size"), 100, ini_path);
+	option.list_column_date = profile_get_int(TEXT("listview"), TEXT("column_date"), 100, ini_path);
+	option.list_column_window = profile_get_int(TEXT("listview"), TEXT("column_window"), 100, ini_path);
 	option.list_font_name = profile_alloc_string(TEXT("listview"), TEXT("font_name"), TEXT(""), ini_path);
 	option.list_font_size = profile_get_int(TEXT("listview"), TEXT("font_size"), 9, ini_path);
 	option.list_font_weight = profile_get_int(TEXT("listview"), TEXT("font_weight"), 0, ini_path);
@@ -721,9 +721,9 @@ BOOL ini_get_option(TCHAR *err_str)
 	option.fmt_bmp_stretch_mode = profile_get_int(TEXT("fmt_bitmap"), TEXT("stretch_mode"), 0, ini_path);
 
 	// file format
-	option.fmt_file_column_name = Scale(profile_get_int(TEXT("fmt_file"), TEXT("column_name"), 200, ini_path));
-	option.fmt_file_column_folder = Scale(profile_get_int(TEXT("fmt_file"), TEXT("column_folder"), 200, ini_path));
-	option.fmt_file_column_type = Scale(profile_get_int(TEXT("fmt_file"), TEXT("column_type"), 100, ini_path));
+	option.fmt_file_column_name = profile_get_int(TEXT("fmt_file"), TEXT("column_name"), 200, ini_path);
+	option.fmt_file_column_folder = profile_get_int(TEXT("fmt_file"), TEXT("column_folder"), 200, ini_path);
+	option.fmt_file_column_type = profile_get_int(TEXT("fmt_file"), TEXT("column_type"), 100, ini_path);
 	option.fmt_file_font_name = profile_alloc_string(TEXT("fmt_file"), TEXT("font_name"), TEXT(""), ini_path);
 	option.fmt_file_font_size = profile_get_int(TEXT("fmt_file"), TEXT("font_size"), 9, ini_path);
 	option.fmt_file_font_weight = profile_get_int(TEXT("fmt_file"), TEXT("font_weight"), 0, ini_path);
@@ -813,20 +813,20 @@ BOOL ini_put_option(void)
 	// menu
 	profile_write_string(TEXT("menu"), TEXT("text_format"), option.menu_text_format, ini_path);
 	profile_write_int(TEXT("menu"), TEXT("intact_item_title"), option.menu_intact_item_title, ini_path);
-	profile_write_int(TEXT("menu"), TEXT("text_margin_left"), UnScale(option.menu_text_margin_left), ini_path);
-	profile_write_int(TEXT("menu"), TEXT("text_margin_right"), UnScale(option.menu_text_margin_right), ini_path);
-	profile_write_int(TEXT("menu"), TEXT("text_margin_y"), UnScale(option.menu_text_margin_y), ini_path);
-	profile_write_int(TEXT("menu"), TEXT("separator_height"), UnScale(option.menu_separator_height), ini_path);
-	profile_write_int(TEXT("menu"), TEXT("separator_margin_left"), UnScale(option.menu_separator_margin_left), ini_path);
-	profile_write_int(TEXT("menu"), TEXT("separator_margin_right"), UnScale(option.menu_separator_margin_right), ini_path);
-	profile_write_int(TEXT("menu"), TEXT("max_width"), UnScale(option.menu_max_width), ini_path);
+	profile_write_int(TEXT("menu"), TEXT("text_margin_left"), option.menu_text_margin_left, ini_path);
+	profile_write_int(TEXT("menu"), TEXT("text_margin_right"), option.menu_text_margin_right, ini_path);
+	profile_write_int(TEXT("menu"), TEXT("text_margin_y"), option.menu_text_margin_y, ini_path);
+	profile_write_int(TEXT("menu"), TEXT("separator_height"), option.menu_separator_height, ini_path);
+	profile_write_int(TEXT("menu"), TEXT("separator_margin_left"), option.menu_separator_margin_left, ini_path);
+	profile_write_int(TEXT("menu"), TEXT("separator_margin_right"), option.menu_separator_margin_right, ini_path);
+	profile_write_int(TEXT("menu"), TEXT("max_width"), option.menu_max_width, ini_path);
 	profile_write_int(TEXT("menu"), TEXT("break"), option.menu_break, ini_path);
 	profile_write_int(TEXT("menu"), TEXT("show_icon"), option.menu_show_icon, ini_path);
-	profile_write_int(TEXT("menu"), TEXT("icon_size"), UnScale(option.menu_icon_size), ini_path);
-	profile_write_int(TEXT("menu"), TEXT("icon_margin"), UnScale(option.menu_icon_margin), ini_path);
+	profile_write_int(TEXT("menu"), TEXT("icon_size"), option.menu_icon_size, ini_path);
+	profile_write_int(TEXT("menu"), TEXT("icon_margin"), option.menu_icon_margin, ini_path);
 	profile_write_int(TEXT("menu"), TEXT("show_bitmap"), option.menu_show_bitmap, ini_path);
-	profile_write_int(TEXT("menu"), TEXT("bitmap_width"), UnScale(option.menu_bitmap_width), ini_path);
-	profile_write_int(TEXT("menu"), TEXT("bitmap_height"), UnScale(option.menu_bitmap_height), ini_path);
+	profile_write_int(TEXT("menu"), TEXT("bitmap_width"), option.menu_bitmap_width, ini_path);
+	profile_write_int(TEXT("menu"), TEXT("bitmap_height"), option.menu_bitmap_height, ini_path);
 	profile_write_int(TEXT("menu"), TEXT("show_tooltip"), option.menu_show_tooltip, ini_path);
 	profile_write_int(TEXT("menu"), TEXT("show_hotkey"), option.menu_show_hotkey, ini_path);
 	profile_write_int(TEXT("menu"), TEXT("show_tool_menu"), option.menu_show_tool_menu, ini_path);
@@ -851,8 +851,8 @@ BOOL ini_put_option(void)
 	// tooltip
 	profile_write_int(TEXT("tooltip"), TEXT("show_delay"), option.tooltip_show_delay, ini_path);
 	profile_write_int(TEXT("tooltip"), TEXT("tab_length"), option.tooltip_tab_length, ini_path);
-	profile_write_int(TEXT("tooltip"), TEXT("margin_x"), UnScale(option.tooltip_margin_x), ini_path);
-	profile_write_int(TEXT("tooltip"), TEXT("margin_y"), UnScale(option.tooltip_margin_y), ini_path);
+	profile_write_int(TEXT("tooltip"), TEXT("margin_x"), option.tooltip_margin_x, ini_path);
+	profile_write_int(TEXT("tooltip"), TEXT("margin_y"), option.tooltip_margin_y, ini_path);
 	profile_write_string(TEXT("tooltip"), TEXT("font_name"), option.tooltip_font_name, ini_path);
 	profile_write_int(TEXT("tooltip"), TEXT("font_size"), option.tooltip_font_size, ini_path);
 	profile_write_int(TEXT("tooltip"), TEXT("font_weight"), option.tooltip_font_weight, ini_path);
@@ -1012,11 +1012,11 @@ BOOL ini_put_option(void)
 	profile_write_int(TEXT("viewer"), TEXT("show_toolbar"), option.viewer_show_toolbar, ini_path);
 	profile_write_int(TEXT("viewer"), TEXT("show_statusbar"), option.viewer_show_statusbar, ini_path);
 	profile_write_int(TEXT("viewer"), TEXT("delete_confirm"), option.viewer_delete_confirm, ini_path);
-	profile_write_int(TEXT("viewer"), TEXT("left"), UnScale(option.viewer_rect.left), ini_path);
-	profile_write_int(TEXT("viewer"), TEXT("top"), UnScale(option.viewer_rect.top), ini_path);
-	profile_write_int(TEXT("viewer"), TEXT("right"), UnScale(option.viewer_rect.right), ini_path);
-	profile_write_int(TEXT("viewer"), TEXT("bottom"), UnScale(option.viewer_rect.bottom), ini_path);
-	profile_write_int(TEXT("viewer"), TEXT("sep_size"), UnScale(option.viewer_sep_size), ini_path);
+	profile_write_int(TEXT("viewer"), TEXT("left"), option.viewer_rect.left, ini_path);
+	profile_write_int(TEXT("viewer"), TEXT("top"), option.viewer_rect.top, ini_path);
+	profile_write_int(TEXT("viewer"), TEXT("right"), option.viewer_rect.right, ini_path);
+	profile_write_int(TEXT("viewer"), TEXT("bottom"), option.viewer_rect.bottom, ini_path);
+	profile_write_int(TEXT("viewer"), TEXT("sep_size"), option.viewer_sep_size, ini_path);
 #endif	// OPTION_SET
 
 	// treeview
@@ -1037,10 +1037,10 @@ BOOL ini_put_option(void)
 	// listview
 	profile_write_int(TEXT("listview"), TEXT("default_action"), option.list_default_action, ini_path);
 #ifndef OPTION_SET
-	profile_write_int(TEXT("listview"), TEXT("column_data"), UnScale(option.list_column_data), ini_path);
-	profile_write_int(TEXT("listview"), TEXT("column_size"), UnScale(option.list_column_size), ini_path);
-	profile_write_int(TEXT("listview"), TEXT("column_date"), UnScale(option.list_column_date), ini_path);
-	profile_write_int(TEXT("listview"), TEXT("column_window"), UnScale(option.list_column_window), ini_path);
+	profile_write_int(TEXT("listview"), TEXT("column_data"), option.list_column_data, ini_path);
+	profile_write_int(TEXT("listview"), TEXT("column_size"), option.list_column_size, ini_path);
+	profile_write_int(TEXT("listview"), TEXT("column_date"), option.list_column_date, ini_path);
+	profile_write_int(TEXT("listview"), TEXT("column_window"), option.list_column_window, ini_path);
 #endif	// OPTION_SET
 	profile_write_string(TEXT("listview"), TEXT("font_name"), option.list_font_name, ini_path);
 	profile_write_int(TEXT("listview"), TEXT("font_size"), option.list_font_size, ini_path);
@@ -1077,9 +1077,9 @@ BOOL ini_put_option(void)
 
 	// file format
 #ifndef OPTION_SET
-	profile_write_int(TEXT("fmt_file"), TEXT("column_data"), UnScale(option.fmt_file_column_name), ini_path);
-	profile_write_int(TEXT("fmt_file"), TEXT("column_size"), UnScale(option.fmt_file_column_folder), ini_path);
-	profile_write_int(TEXT("fmt_file"), TEXT("column_type"), UnScale(option.fmt_file_column_type), ini_path);
+	profile_write_int(TEXT("fmt_file"), TEXT("column_data"), option.fmt_file_column_name, ini_path);
+	profile_write_int(TEXT("fmt_file"), TEXT("column_size"), option.fmt_file_column_folder, ini_path);
+	profile_write_int(TEXT("fmt_file"), TEXT("column_type"), option.fmt_file_column_type, ini_path);
 #endif	// OPTION_SET
 	profile_write_string(TEXT("fmt_file"), TEXT("font_name"), option.fmt_file_font_name, ini_path);
 	profile_write_int(TEXT("fmt_file"), TEXT("font_size"), option.fmt_file_font_size, ini_path);
