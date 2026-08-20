@@ -61,6 +61,8 @@
 #define SUBCLASS_ID_TAB					2
 #define SUBCLASS_ID_GROUPBOX			3
 #define SUBCLASS_ID_STATUSBAR			4
+#define SUBCLASS_ID_HEADER				5
+#define SUBCLASS_ID_NOTIFY				6
 
 // 多重適用の防止用プロパティ
 #define DARK_MODE_PROP					TEXT("CLCLDarkMode")
@@ -155,6 +157,10 @@ static void dark_mode_set_theme(const HWND hWnd, const WCHAR *theme);
 static void dark_mode_set_titlebar(const HWND hWnd);
 static BOOL CALLBACK dark_mode_enum_child_proc(HWND hWnd, LPARAM lParam);
 static void dark_mode_set_groupbox(const HWND hWnd);
+static void dark_mode_set_header(const HWND hHeader);
+static void dark_mode_set_tooltip(const HWND hToolTip);
+static void dark_mode_set_notify(const HWND hWnd);
+static void dark_mode_draw_header(const HWND hWnd);
 static void dark_mode_draw_groupbox(const HWND hWnd);
 static void dark_mode_draw_tab(const HWND hWnd);
 static void dark_mode_draw_statusbar(const HWND hWnd);
@@ -165,6 +171,10 @@ static LRESULT CALLBACK dark_mode_tab_proc(HWND hWnd, UINT msg, WPARAM wParam, L
 static LRESULT CALLBACK dark_mode_groupbox_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam,
 	UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 static LRESULT CALLBACK dark_mode_statusbar_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam,
+	UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
+static LRESULT CALLBACK dark_mode_header_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam,
+	UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
+static LRESULT CALLBACK dark_mode_notify_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam,
 	UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 static BOOL dark_mode_draw_menubar(const HWND hWnd, const UAHMENU *pum);
 static BOOL dark_mode_draw_menubar_item(const UAHDRAWMENUITEM *pumdi);
@@ -503,7 +513,6 @@ static void dark_mode_set_titlebar(const HWND hWnd)
 void dark_mode_set_control(const HWND hWnd)
 {
 	TCHAR class_name[DARK_BUF_SIZE];
-	HWND hHeader;
 
 	if (dark_mode_support == FALSE || hWnd == NULL) {
 		return;
@@ -518,14 +527,19 @@ void dark_mode_set_control(const HWND hWnd)
 		ListView_SetBkColor(hWnd, dark_mode_get_color(COLOR_WINDOW));
 		ListView_SetTextBkColor(hWnd, dark_mode_get_color(COLOR_WINDOW));
 		ListView_SetTextColor(hWnd, dark_mode_get_color(COLOR_WINDOWTEXT));
-		if ((hHeader = ListView_GetHeader(hWnd)) != NULL) {
-			dark_mode_allow_window(hHeader);
-			dark_mode_set_theme(hHeader, L"DarkMode_ItemsView");
-		}
+		dark_mode_set_header(ListView_GetHeader(hWnd));
+		dark_mode_set_tooltip(ListView_GetToolTips(hWnd));
+		dark_mode_set_notify(hWnd);
 	} else if (lstrcmpi(class_name, WC_TREEVIEW) == 0) {
 		dark_mode_set_theme(hWnd, L"DarkMode_Explorer");
 		TreeView_SetBkColor(hWnd, dark_mode_get_color(COLOR_WINDOW));
 		TreeView_SetTextColor(hWnd, dark_mode_get_color(COLOR_WINDOWTEXT));
+		dark_mode_set_tooltip(TreeView_GetToolTips(hWnd));
+		dark_mode_set_notify(hWnd);
+	} else if (lstrcmpi(class_name, WC_HEADER) == 0) {
+		dark_mode_set_header(hWnd);
+	} else if (lstrcmpi(class_name, TOOLTIPS_CLASS) == 0) {
+		dark_mode_set_tooltip(hWnd);
 	} else if (lstrcmpi(class_name, CLASS_EDIT) == 0 || lstrcmpi(class_name, CLASS_COMBOBOX) == 0 ||
 		lstrcmpi(class_name, WC_COMBOBOXEX) == 0 || lstrcmpi(class_name, CLASS_LISTBOX) == 0) {
 		dark_mode_set_theme(hWnd, L"DarkMode_CFD");
@@ -536,11 +550,14 @@ void dark_mode_set_control(const HWND hWnd)
 		dark_mode_set_tab(hWnd);
 	} else if (lstrcmpi(class_name, STATUSCLASSNAME) == 0) {
 		dark_mode_set_statusbar(hWnd);
+		dark_mode_set_notify(hWnd);
 	} else if (lstrcmpi(class_name, TOOLBARCLASSNAME) == 0) {
 		// 独自の配色を使うためビジュアルスタイルを無効にする
 		if (_SetWindowTheme != NULL) {
 			_SetWindowTheme(hWnd, (dark_mode_dark == TRUE) ? L"" : NULL, (dark_mode_dark == TRUE) ? L"" : NULL);
 		}
+		dark_mode_set_tooltip((HWND)SendMessage(hWnd, TB_GETTOOLTIPS, 0, 0));
+		dark_mode_set_notify(hWnd);
 	} else {
 		dark_mode_set_theme(hWnd, L"DarkMode_Explorer");
 	}
@@ -628,6 +645,57 @@ void dark_mode_set_statusbar(const HWND hStatusBar)
 		SetWindowSubclass(hStatusBar, dark_mode_statusbar_proc, SUBCLASS_ID_STATUSBAR, 0);
 	}
 	InvalidateRect(hStatusBar, NULL, TRUE);
+}
+
+/*
+ * dark_mode_set_header - ヘッダに配色を設定する
+ */
+static void dark_mode_set_header(const HWND hHeader)
+{
+	if (hHeader == NULL) {
+		return;
+	}
+	dark_mode_allow_window(hHeader);
+	dark_mode_set_theme(hHeader, L"DarkMode_ItemsView");
+	if (GetProp(hHeader, DARK_MODE_PROP) == NULL) {
+		SetProp(hHeader, DARK_MODE_PROP, (HANDLE)1);
+		SetWindowSubclass(hHeader, dark_mode_header_proc, SUBCLASS_ID_HEADER, 0);
+	}
+	InvalidateRect(hHeader, NULL, TRUE);
+}
+
+/*
+ * dark_mode_set_tooltip - ツールチップに配色を設定する
+ */
+static void dark_mode_set_tooltip(const HWND hToolTip)
+{
+	const HANDLE mode = (HANDLE)((dark_mode_dark == TRUE) ? 1 : 2);
+
+	// 表示の度に呼ばれるため配色が変わっていない場合は何もしない
+	if (hToolTip == NULL || GetProp(hToolTip, DARK_MODE_PROP) == mode) {
+		return;
+	}
+	SetProp(hToolTip, DARK_MODE_PROP, mode);
+	dark_mode_allow_window(hToolTip);
+	// 配色を指定するためビジュアルスタイルを無効にする
+	if (_SetWindowTheme != NULL) {
+		_SetWindowTheme(hToolTip,
+			(dark_mode_dark == TRUE) ? L"" : NULL, (dark_mode_dark == TRUE) ? L"" : NULL);
+	}
+	SendMessage(hToolTip, TTM_SETTIPBKCOLOR, (WPARAM)dark_mode_get_color(COLOR_INFOBK), 0);
+	SendMessage(hToolTip, TTM_SETTIPTEXTCOLOR, (WPARAM)dark_mode_get_color(COLOR_INFOTEXT), 0);
+}
+
+/*
+ * dark_mode_set_notify - 子コントロールの通知を処理するように設定する
+ */
+static void dark_mode_set_notify(const HWND hWnd)
+{
+	if (hWnd == NULL) {
+		return;
+	}
+	// 同じプロシージャとIDの登録は上書きされるため多重にはならない
+	SetWindowSubclass(hWnd, dark_mode_notify_proc, SUBCLASS_ID_NOTIFY, 0);
 }
 
 /*
@@ -927,6 +995,148 @@ static LRESULT CALLBACK dark_mode_statusbar_proc(HWND hWnd, UINT msg, WPARAM wPa
 		if (dark_mode_dark == TRUE) {
 			dark_mode_draw_statusbar(hWnd);
 			return 0;
+		}
+		break;
+	}
+	return DefSubclassProc(hWnd, msg, wParam, lParam);
+}
+
+/*
+ * dark_mode_draw_header - ヘッダの描画
+ */
+static void dark_mode_draw_header(const HWND hWnd)
+{
+	PAINTSTRUCT ps;
+	HDC hdc, mdc;
+	HBITMAP hBmp, hRetBmp;
+	HFONT hFont, hRetFont;
+	TEXTMETRIC tm;
+	RECT client_rect, item_rect, sep_rect;
+	TCHAR buf[DARK_BUF_SIZE];
+	HDITEM hdi;
+	DWORD flags;
+	int width, height;
+	int margin;
+	int cnt, i;
+
+	if ((hdc = BeginPaint(hWnd, &ps)) == NULL) {
+		return;
+	}
+	GetClientRect(hWnd, &client_rect);
+	width = client_rect.right - client_rect.left;
+	height = client_rect.bottom - client_rect.top;
+
+	if ((mdc = CreateCompatibleDC(hdc)) == NULL) {
+		EndPaint(hWnd, &ps);
+		return;
+	}
+	if ((hBmp = CreateCompatibleBitmap(hdc, width, height)) == NULL) {
+		DeleteDC(mdc);
+		EndPaint(hWnd, &ps);
+		return;
+	}
+	hRetBmp = SelectObject(mdc, hBmp);
+
+	// 背景
+	FillRect(mdc, &client_rect, dark_mode_get_brush(COLOR_BTNFACE));
+
+	hFont = (HFONT)SendMessage(hWnd, WM_GETFONT, 0, 0);
+	hRetFont = (hFont != NULL) ? SelectObject(mdc, hFont) : NULL;
+	GetTextMetrics(mdc, &tm);
+	margin = tm.tmAveCharWidth;
+	SetBkMode(mdc, TRANSPARENT);
+	SetTextColor(mdc, dark_mode_get_color(COLOR_BTNTEXT));
+
+	cnt = Header_GetItemCount(hWnd);
+	for (i = 0; i < cnt; i++) {
+		if (Header_GetItemRect(hWnd, i, &item_rect) == FALSE) {
+			continue;
+		}
+		// 区切り
+		SetRect(&sep_rect, item_rect.right - 1, item_rect.top + margin / 2,
+			item_rect.right, item_rect.bottom - margin / 2);
+		FillRect(mdc, &sep_rect, dark_mode_get_brush(COLOR_3DLIGHT));
+
+		*buf = TEXT('\0');
+		ZeroMemory(&hdi, sizeof(hdi));
+		hdi.mask = HDI_TEXT | HDI_FORMAT;
+		hdi.pszText = buf;
+		hdi.cchTextMax = DARK_BUF_SIZE - 1;
+		if (Header_GetItem(hWnd, i, &hdi) == FALSE || *buf == TEXT('\0')) {
+			continue;
+		}
+		switch (hdi.fmt & HDF_JUSTIFYMASK) {
+		case HDF_RIGHT:
+			flags = DT_RIGHT;
+			break;
+
+		case HDF_CENTER:
+			flags = DT_CENTER;
+			break;
+
+		default:
+			flags = DT_LEFT;
+			break;
+		}
+		item_rect.left += margin;
+		item_rect.right -= margin;
+		DrawText(mdc, buf, lstrlen(buf), &item_rect,
+			flags | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX | DT_END_ELLIPSIS);
+	}
+	if (hRetFont != NULL) {
+		SelectObject(mdc, hRetFont);
+	}
+
+	BitBlt(hdc, 0, 0, width, height, mdc, 0, 0, SRCCOPY);
+	SelectObject(mdc, hRetBmp);
+	DeleteObject(hBmp);
+	DeleteDC(mdc);
+	EndPaint(hWnd, &ps);
+}
+
+/*
+ * dark_mode_header_proc - ヘッダのサブクラスプロシージャ
+ */
+static LRESULT CALLBACK dark_mode_header_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam,
+	UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+{
+	switch (msg) {
+	case WM_NCDESTROY:
+		RemoveProp(hWnd, DARK_MODE_PROP);
+		RemoveWindowSubclass(hWnd, dark_mode_header_proc, uIdSubclass);
+		break;
+
+	case WM_ERASEBKGND:
+		if (dark_mode_dark == TRUE) {
+			return TRUE;
+		}
+		break;
+
+	case WM_PAINT:
+		if (dark_mode_dark == TRUE) {
+			dark_mode_draw_header(hWnd);
+			return 0;
+		}
+		break;
+	}
+	return DefSubclassProc(hWnd, msg, wParam, lParam);
+}
+
+/*
+ * dark_mode_notify_proc - 子コントロールの通知を処理するサブクラスプロシージャ
+ */
+static LRESULT CALLBACK dark_mode_notify_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam,
+	UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+{
+	switch (msg) {
+	case WM_NCDESTROY:
+		RemoveWindowSubclass(hWnd, dark_mode_notify_proc, uIdSubclass);
+		break;
+
+	case WM_NOTIFY:
+		// ツールチップは表示の直前に作成されることがあるため都度設定する
+		if (((NMHDR *)lParam)->code == TTN_SHOW) {
+			dark_mode_set_tooltip(((NMHDR *)lParam)->hwndFrom);
 		}
 		break;
 	}
