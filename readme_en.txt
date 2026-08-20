@@ -363,6 +363,8 @@ CLCL.exe [/vwnx]
 	  that matches the current scaling.
 	- Fixed clipped text and overlapping controls in the Options of the
 	  English version by using the system UI font for the dialogs.
+	- Changed the Japanese dialogs to DS_SHELLFONT so that they are
+	  displayed with the shell dialog font of the OS.
 	- Added an option to show the menu without taking the focus away
 	  from the window you are working in. (Options - Menu - Attach to
 	  the process to show the menu)
