@@ -98,6 +98,8 @@ static MENU_ITEM_INFO *menu_create_info(MENU_INFO *menu_info, const int menu_cnt
 static BOOL menu_set_item(const HDC hdc, const HMENU hMenu, MENU_ITEM_INFO *mii, const int cnt);
 static int menu_draw_bitmap(const HDC draw_dc, const DATA_INFO *di, const int height);
 static BOOL menu_draw_ckeck(const HDC draw_dc, const int left, const int top, const int right, const int bottom);
+static int menu_get_arrow_size(void);
+static void menu_draw_arrow(const HDC draw_dc, const RECT *rect, const COLORREF color);
 static TCHAR menu_get_accelerator(TCHAR *str);
 #ifdef OP_XP_STYLE
 static void menu_theme_open(const HWND hWnd);
@@ -1251,6 +1253,45 @@ static BOOL menu_draw_ckeck(const HDC draw_dc, const int left, const int top, co
 }
 
 /*
+ * menu_get_arrow_size - サブメニューの矢印の領域の幅を取得
+ */
+static int menu_get_arrow_size(void)
+{
+	int size = GetSystemMetrics(SM_CXMENUCHECK);
+	int dpi_size = GetSystemMetricsDpi(SM_CXMENUCHECK);
+
+	return (size < dpi_size) ? dpi_size : size;
+}
+
+/*
+ * menu_draw_arrow - サブメニューの矢印を描画
+ */
+static void menu_draw_arrow(const HDC draw_dc, const RECT *rect, const COLORREF color)
+{
+	LOGFONT lf;
+	HFONT hFont, hRetFont;
+	int width = rect->right - rect->left;
+	int height = rect->bottom - rect->top;
+	int size = (width < height) ? width : height;
+
+	ZeroMemory(&lf, sizeof(lf));
+	lf.lfHeight = size;
+	lf.lfWeight = FW_NORMAL;
+	lf.lfCharSet = DEFAULT_CHARSET;
+	lstrcpy(lf.lfFaceName, TEXT("Marlett"));
+	if ((hFont = CreateFontIndirect(&lf)) == NULL) {
+		return;
+	}
+	hRetFont = SelectObject(draw_dc, hFont);
+	SetTextColor(draw_dc, color);
+	SetBkMode(draw_dc, TRANSPARENT);
+	// Marlettの'8'がサブメニューの矢印
+	TextOut(draw_dc, rect->left + (width - size) / 2, rect->top + (height - size) / 2, TEXT("8"), 1);
+	SelectObject(draw_dc, hRetFont);
+	DeleteObject(hFont);
+}
+
+/*
  * menu_drawitem - メニュー項目を描画
  */
 BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
@@ -1263,6 +1304,8 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 	HPEN hPen, hRetPen;
 	RECT draw_rect;
 	SIZE sz;
+	COLORREF text_color;
+	int arrow_size = 0;
 	int left_margin;
 	int width, height;
 #ifdef MENU_COLOR
@@ -1310,12 +1353,12 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 		_MenuDrawThemeBackground(menu_theme, draw_dc, MENU_POPUPBACKGROUND, 0, &draw_rect, NULL);
 		if (ds->itemState & ODS_SELECTED) {
 			_MenuDrawThemeBackground(menu_theme, draw_dc, MENU_POPUPITEM, MPI_HOT, &draw_rect, NULL);
-			SetTextColor(draw_dc, menu_theme_text_color(MPI_HOT, menu_color_highlighttext));
-		} else if (mii->show_format == TRUE) {
-			SetTextColor(draw_dc, menu_color_highlight);
+			text_color = menu_theme_text_color(MPI_HOT, menu_color_highlighttext);
 		} else {
-			SetTextColor(draw_dc, menu_theme_text_color(MPI_NORMAL, menu_color_text));
+			text_color = (mii->show_format == TRUE) ?
+				menu_color_highlight : menu_theme_text_color(MPI_NORMAL, menu_color_text);
 		}
+		SetTextColor(draw_dc, text_color);
 		SetBkMode(draw_dc, TRANSPARENT);
 	} else
 #endif	// OP_XP_STYLE
@@ -1324,18 +1367,16 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 		FillRect(draw_dc, &draw_rect, hBrush);
 		DeleteObject(hBrush);
 
-		SetTextColor(draw_dc, menu_color_highlighttext);
+		text_color = menu_color_highlighttext;
+		SetTextColor(draw_dc, text_color);
 		SetBkColor(draw_dc, menu_color_highlight);
 	} else {
 		hBrush = CreateSolidBrush(menu_color_back);
 		FillRect(draw_dc, &draw_rect, hBrush);
 		DeleteObject(hBrush);
 
-		if (mii->show_format == TRUE) {
-			SetTextColor(draw_dc, menu_color_highlight);
-		} else {
-			SetTextColor(draw_dc, menu_color_text);
-		}
+		text_color = (mii->show_format == TRUE) ? menu_color_highlight : menu_color_text;
+		SetTextColor(draw_dc, text_color);
 		SetBkColor(draw_dc, menu_color_back);
 	}
 
@@ -1449,11 +1490,25 @@ BOOL menu_drawitem(const DRAWITEMSTRUCT *ds)
 #endif	// OP_XP_STYLE
 	}
 
+	if (mii->flag & MF_POPUP) {
+		// サブメニューの矢印
+		arrow_size = menu_get_arrow_size();
+		SetRect(&draw_rect, width - arrow_size, 0, width, height);
+		menu_draw_arrow(draw_dc, &draw_rect, text_color);
+	}
+
 	// メニューに描画
 	BitBlt(ds->hDC,
 		ds->rcItem.left, ds->rcItem.top,
 		ds->rcItem.right, ds->rcItem.bottom,
 		draw_dc, 0, 0, SRCCOPY);
+
+	if (mii->flag & MF_POPUP) {
+		// 矢印の領域をクリップして、描画後にシステムが描画する矢印を表示しないようにする
+		ExcludeClipRect(ds->hDC,
+			ds->rcItem.right - arrow_size, ds->rcItem.top,
+			ds->rcItem.right, ds->rcItem.bottom);
+	}
 
 	SelectObject(draw_dc, hrBmp);
 	DeleteObject(hDrawBmp);
