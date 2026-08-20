@@ -134,6 +134,7 @@ static BOOL caret_rect_to_pos(IUIAutomationTextRange *range, POINT *pt)
 {
 	SAFEARRAY *sa = NULL;
 	double *rects = NULL;
+	VARTYPE vt = VT_EMPTY;
 	LONG lb = 0, ub = -1;
 	POINT p;
 	BOOL ret = FALSE;
@@ -142,7 +143,9 @@ static BOOL caret_rect_to_pos(IUIAutomationTextRange *range, POINT *pt)
 	if (FAILED(IUIAutomationTextRange_GetBoundingRectangles(range, &sa)) || sa == NULL) {
 		return FALSE;
 	}
-	if (SUCCEEDED(SafeArrayGetLBound(sa, 1, &lb)) && SUCCEEDED(SafeArrayGetUBound(sa, 1, &ub)) &&
+	if (SafeArrayGetDim(sa) == 1 &&
+		SUCCEEDED(SafeArrayGetVartype(sa, &vt)) && vt == VT_R8 &&
+		SUCCEEDED(SafeArrayGetLBound(sa, 1, &lb)) && SUCCEEDED(SafeArrayGetUBound(sa, 1, &ub)) &&
 		ub - lb + 1 >= 4 && SUCCEEDED(SafeArrayAccessData(sa, (void **)&rects))) {
 		if (*(rects + 3) > 0) {
 			p.x = (LONG)*(rects + 0);

@@ -694,7 +694,7 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 	CopyMemory(&fi, &focus_info, sizeof(FOCUS_INFO));
 	if (caret == TRUE || fi.active_wnd == NULL) {
 		// フォーカス情報取得
-		get_focus_info(&fi, (ai->caret == 1) ? caret : FALSE);
+		get_focus_info(&fi, (ai->caret != 0) ? caret : FALSE);
 	}
 	if (ai->caret == 0 || fi.caret == FALSE) {
 		caret_flag = FALSE;
