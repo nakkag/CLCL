@@ -75,6 +75,9 @@
 // 未割り当ての仮想キーを使う(文字を生成しないのでビープが鳴らない)
 #define MENU_MASK_VK					0xE8
 
+// アタッチ表示でメニューが即座に閉じられたと判断する時間(ミリ秒)
+#define MENU_ATTACH_RETRY_TIME			200
+
 #define key_wait()						while (GetAsyncKeyState(VK_MENU) < 0 || \
 											GetAsyncKeyState(VK_CONTROL) < 0 || \
 											GetAsyncKeyState(VK_SHIFT) < 0 || \
@@ -492,6 +495,10 @@ static BOOL menu_attach_begin(const HWND hWnd, const HWND active_wnd, const BOOL
 		menu_attach_end();
 		return FALSE;
 	}
+	// アクティブウィンドウがメニューモード(Alt単独押しのラッチ等)のままだと
+	// これから表示するメニューが即座に閉じられるため解除しておく
+	SendMessageTimeout(active_wnd, WM_CANCELMODE, 0, 0,
+		SMTO_ABORTIFHUNG | SMTO_BLOCK, 200, &dwres);
 	return TRUE;
 }
 
@@ -608,6 +615,7 @@ static BOOL show_tool_menu(const HWND hWnd, DATA_INFO *di, const int paste, cons
 {
 	MENU_ITEM_INFO *mii;
 	MENU_INFO mi;
+	DWORD tick;
 	int ret;
 	BOOL attached;
 	BOOL shift_key;
@@ -636,7 +644,16 @@ static BOOL show_tool_menu(const HWND hWnd, DATA_INFO *di, const int paste, cons
 	if (attached == FALSE) {
 		_SetForegroundWindow(hWnd);
 	}
+	tick = GetTickCount();
 	ret = menu_show(hWnd, popup_menu, NULL);
+	if (attached == TRUE && ret == 0 && GetTickCount() - tick < MENU_ATTACH_RETRY_TIME) {
+		// アクティブウィンドウ側の入力状態によってメニューが表示直後に
+		// 閉じられた場合はアタッチを解除して従来の方法で再表示する
+		menu_attach_end();
+		attached = FALSE;
+		_SetForegroundWindow(hWnd);
+		ret = menu_show(hWnd, popup_menu, NULL);
+	}
 	// 入力キューがアタッチされているうちにキーの状態を取得しておく
 	shift_key = (GetKeyState(VK_SHIFT) < 0) ? TRUE : FALSE;
 	menu_attach_end();
@@ -675,6 +692,7 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 {
 	MENU_ITEM_INFO *mii;
 	FOCUS_INFO fi;
+	DWORD tick;
 	int ret;
 	BOOL caret_flag = caret;
 	BOOL attached;
@@ -723,7 +741,17 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 		_SetForegroundWindow(hWnd);
 		ShowWindow(hWnd, SW_HIDE);
 	}
+	tick = GetTickCount();
 	ret = menu_show(hWnd, popup_menu, (caret_flag == TRUE) ? &fi.cpos : NULL);
+	if (attached == TRUE && ret == 0 && GetTickCount() - tick < MENU_ATTACH_RETRY_TIME) {
+		// アクティブウィンドウ側の入力状態によってメニューが表示直後に
+		// 閉じられた場合はアタッチを解除して従来の方法で再表示する
+		menu_attach_end();
+		attached = FALSE;
+		_SetForegroundWindow(hWnd);
+		ShowWindow(hWnd, SW_HIDE);
+		ret = menu_show(hWnd, popup_menu, (caret_flag == TRUE) ? &fi.cpos : NULL);
+	}
 	// 入力キューがアタッチされているうちにキーの状態を取得しておく
 	shift_key = (GetKeyState(VK_SHIFT) < 0) ? TRUE : FALSE;
 	ctrl_key = (GetKeyState(VK_CONTROL) < 0) ? TRUE : FALSE;
