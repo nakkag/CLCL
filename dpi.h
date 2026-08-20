@@ -23,6 +23,13 @@
 #ifndef WM_DPICHANGED
 #define WM_DPICHANGED					0x02E0
 #endif
+// 子ウィンドウへのDPI変更通知
+#ifndef WM_DPICHANGED_BEFOREPARENT
+#define WM_DPICHANGED_BEFOREPARENT		0x02E2
+#endif
+#ifndef WM_DPICHANGED_AFTERPARENT
+#define WM_DPICHANGED_AFTERPARENT		0x02E3
+#endif
 
 /* Struct */
 typedef enum PROCESS_DPI_AWARENESS {

@@ -57,7 +57,7 @@ HWND toolbar_create(const HWND hWnd, const int id)
 	int bmp_size;
 	int bmp_id;
 
-	// 現在のDPIでのサイズに近いビットマップを選択する (16/32/48の3種類)
+	// ビットマップの選択
 	bmp_size = Scale(TOOLBAR_BITMAP_SIZE);
 	if (bmp_size >= 40) {
 		bmp_size = 48;

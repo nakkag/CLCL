@@ -42,8 +42,6 @@ extern OPTION_INFO option;
 
 /*
  * listview_set_font - リストビューのフォントの設定
- *
- *	フォントは現在のDPIで作成されるためDPIが変わった場合も呼び出す
  */
 void listview_set_font(const HWND hListView)
 {

@@ -58,8 +58,6 @@ __declspec(dllexport) BOOL CALLBACK bitmap_initialize(void)
 
 /*
  * bitmap_load_icon - 形式用のアイコンの読み込み
- *
- *	DPIによって必要なサイズが変わるためサイズが違う場合は読み込み直す
  */
 static HICON bitmap_load_icon(const int icon_size)
 {

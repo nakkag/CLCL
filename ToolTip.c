@@ -32,7 +32,7 @@
 
 #define MOUSE_INTERVAL					100
 
-// ツールチップのマージンはDPIに合わせてスケール変換する
+// ツールチップのマージン
 #define TOOLTIP_MARGIN_X				Scale(option.tooltip_margin_x)
 #define TOOLTIP_MARGIN_Y				Scale(option.tooltip_margin_y)
 
@@ -172,8 +172,6 @@ static void tooltip_draw_text(const TOOLTIP_INFO *ti, const HDC hdc, RECT *rect)
 
 /*
  * tooltip_create_font - ツールチップのフォントの作成
- *
- *	フォントは現在のDPIで作成されるためDPIが変わった場合も呼び出す
  */
 static void tooltip_create_font(TOOLTIP_INFO *ti)
 {
@@ -377,7 +375,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 				rect.right + (TOOLTIP_MARGIN_X * 2) + 2,
 				rect.bottom + (TOOLTIP_MARGIN_Y * 2) + 2);
 
-			// 表示するモニタの矩形を取得 (マルチモニタ対応)
+			// 表示するモニタの矩形を取得
 			GetMonitorRectFromPoint(ti->pt, &mrect);
 
 			// 横位置の補正

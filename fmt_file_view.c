@@ -515,6 +515,8 @@ static BOOL lv_show_menu(const HWND hWnd, const HWND hListView, const BOOL lock)
 static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static HFONT lv_font;
+	// lv_fontを作成したときのDPI
+	static UINT lv_font_dpi;
 	HIMAGELIST icon_list;
 	LV_COLUMN lvc;
 	RECT window_rect;
@@ -552,6 +554,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 				SendMessage(GetDlgItem(hWnd, IDC_LIST_FILE), WM_SETFONT, (WPARAM)lv_font, MAKELPARAM(TRUE, 0));
 			}
 		}
+		lv_font_dpi = GetDpi();
 
 		// ImageListの取得
 		icon_list = (HIMAGELIST)SHGetFileInfo(TEXT(""), 0,
@@ -577,6 +580,27 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 		lvc.pszText = message_get_res(IDS_FILE_LIST_TYPE);
 		lvc.iSubItem = 2;
 		ListView_InsertColumn(GetDlgItem(hWnd, IDC_LIST_FILE), lvc.iSubItem, &lvc);
+		break;
+
+	case WM_DPICHANGED_AFTERPARENT:
+		// フォントとカラム幅の作り直し
+		if (SetDpiFromWindow(hWnd) == lv_font_dpi) {
+			break;
+		}
+		if (*option.fmt_file_font_name != TEXT('\0')) {
+			if (lv_font != NULL) {
+				DeleteObject(lv_font);
+			}
+			lv_font = font_create(option.fmt_file_font_name, option.fmt_file_font_size, option.fmt_file_font_charset,
+				option.fmt_file_font_weight, (option.fmt_file_font_italic == 0) ? FALSE : TRUE, FALSE);
+			if (lv_font != NULL) {
+				SendMessage(GetDlgItem(hWnd, IDC_LIST_FILE), WM_SETFONT, (WPARAM)lv_font, MAKELPARAM(TRUE, 0));
+			}
+		}
+		lv_font_dpi = GetDpi();
+		ListView_SetColumnWidth(GetDlgItem(hWnd, IDC_LIST_FILE), 0, Scale(option.fmt_file_column_name));
+		ListView_SetColumnWidth(GetDlgItem(hWnd, IDC_LIST_FILE), 1, Scale(option.fmt_file_column_folder));
+		ListView_SetColumnWidth(GetDlgItem(hWnd, IDC_LIST_FILE), 2, Scale(option.fmt_file_column_type));
 		break;
 
 	case WM_CLOSE:

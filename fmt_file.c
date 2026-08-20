@@ -47,8 +47,6 @@ __declspec(dllexport) BOOL CALLBACK file_initialize(void)
 
 /*
  * file_load_icon - 形式用のアイコンの読み込み
- *
- *	DPIによって必要なサイズが変わるためサイズが違う場合は読み込み直す
  */
 static HICON file_load_icon(const int icon_size)
 {

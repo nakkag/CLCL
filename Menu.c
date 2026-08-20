@@ -29,7 +29,7 @@
 #include "resource.h"
 
 /* Define */
-// メニューのサイズはDPIに合わせてスケール変換する
+// メニューのサイズ
 #define MENU_TEXT_MARGIN_LEFT		Scale(option.menu_text_margin_left)
 #define MENU_TEXT_MARGIN_RIGHT		Scale(option.menu_text_margin_right)
 #define MENU_TEXT_MARGIN_Y			Scale(option.menu_text_margin_y)
@@ -49,7 +49,7 @@ static int menu_item_cnt;
 // メニューを表示するモニタの矩形
 static RECT menu_monitor_rect;
 
-// メニューに表示する既定のアイコン (現在のDPIに合わせて読み込む)
+// メニューに表示する既定のアイコン
 static HICON menu_icon_default;
 static HICON menu_icon_folder;
 static int menu_icon_load_size;
@@ -129,8 +129,6 @@ void menu_free_icons(void)
 
 /*
  * menu_load_icons - メニューに表示する既定のアイコンの読み込み
- *
- *	DPIやアイコンサイズが変わった場合は読み込み直す
  */
 static void menu_load_icons(void)
 {
@@ -154,7 +152,7 @@ static void menu_get_show_point(const POINT *mpos, POINT *ret)
 {
 	RECT vrect;
 
-	// 仮想画面全体の矩形 (マルチモニタ対応)
+	// 仮想画面全体の矩形
 	SetRect(&vrect,
 		GetSystemMetrics(SM_XVIRTUALSCREEN),
 		GetSystemMetrics(SM_YVIRTUALSCREEN),
@@ -170,8 +168,6 @@ static void menu_get_show_point(const POINT *mpos, POINT *ret)
 
 /*
  * menu_set_dpi - メニューを表示するモニタのDPIを設定する
- *
- *	メニューの項目サイズを計算する前に呼び出す
  */
 void menu_set_dpi(const POINT *mpos)
 {
@@ -250,8 +246,6 @@ static HICON menu_read_icon(const TCHAR *file_name, const int index, const int i
 	DWORD ret = 0;
 	if ((ret = ExpandEnvironmentStrings(file_name, expanded_name, MAX_PATH)) == 0 || ret > MAX_PATH)
 		return NULL;
-	// 要求されたサイズに近い方のアイコンを取得する (DPIによって小アイコンのサイズは変わる)
-	// pick the icon size closest to the requested one (the small icon size depends on the DPI)
 	large_icon = (icon_size > GetSystemMetricsDpi(SM_CXSMICON)) ? TRUE : FALSE;
 
 	// ファイルからアイコン取得
@@ -969,11 +963,11 @@ HMENU menu_create(const HWND hWnd, MENU_INFO *menu_info, const int menu_cnt,
 	HFONT hFont, hRetFont;
 	int id = 0;
 
-	// メニューを表示するモニタのDPIに合わせる
+	// 表示するモニタのDPIに合わせる
 	if (IsRectEmpty(&menu_monitor_rect) != FALSE) {
 		menu_set_dpi(NULL);
 	}
-	// 既定のアイコンを現在のDPIに合わせて読み込む
+	// 既定のアイコンの読み込み
 	menu_load_icons();
 	// メニュー作成
 	if ((hMenu = CreatePopupMenu()) == NULL) {

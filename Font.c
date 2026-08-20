@@ -30,7 +30,7 @@ HFONT font_create(const TCHAR *FontName, const int FontSize, const int Charset, 
 
 	ZeroMemory(&lf, sizeof(LOGFONT));
 
-	// 現在の描画対象のDPIでフォントを作成する
+	// フォントの高さ
 	lf.lfHeight = -MulDiv(FontSize, GetDpi(), 72);
 
 	lf.lfWidth = 0;

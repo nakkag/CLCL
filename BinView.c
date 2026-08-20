@@ -53,6 +53,10 @@
 #define EM_CANREDO						(WM_USER + 85)
 #endif
 
+// 行間と左マージン
+#define LINE_SPACING					2
+#define LEFT_MARGIN						2
+
 #define RESERVE_BUF						1024
 #define RESERVE_UNDO					256
 
@@ -121,6 +125,8 @@ typedef struct _BUFFER {
 	int spacing;
 	// 左マージン
 	int left_margin;
+	// フォントを作成したときのDPI
+	UINT font_dpi;
 
 	// ロック状態
 	BOOL lock;
@@ -177,6 +183,7 @@ static BOOL draw_init(const HWND hWnd, BUFFER *bf);
 static void draw_free(BUFFER *bf);
 static BOOL binview_font_exist(const TCHAR *font_name);
 static HFONT binview_create_alt_font(void);
+static void binview_reset_font(const HWND hWnd, BUFFER *bf);
 static void binview_draw_unicode(const HWND hWnd, const HDC mdc, const BUFFER *bf,
 	const int i, const int sel, int offset, const int height);
 static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const int i);
@@ -727,6 +734,43 @@ static HFONT binview_create_alt_font(void)
 }
 
 /*
+ * binview_reset_font - フォントと文字サイズの設定
+ */
+static void binview_reset_font(const HWND hWnd, BUFFER *bf)
+{
+	TEXTMETRIC tm;
+
+	if (bf == NULL) {
+		return;
+	}
+	if (bf->hfont != NULL) {
+		SelectObject(bf->mdc, bf->ret_font);
+		DeleteObject(bf->hfont);
+		bf->hfont = NULL;
+	}
+	if (bf->hfont_alt != NULL) {
+		DeleteObject(bf->hfont_alt);
+		bf->hfont_alt = NULL;
+	}
+	// フォント作成
+	bf->hfont = font_create(option.bin_font_name, option.bin_font_size, option.bin_font_charset,
+		option.bin_font_weight, (option.bin_font_italic == 0) ? FALSE : TRUE, TRUE);
+	bf->ret_font = SelectObject(bf->mdc, bf->hfont);
+	bf->hfont_alt = binview_create_alt_font();
+	bf->font_dpi = GetDpi();
+
+	draw_free(bf);
+	draw_init(hWnd, bf);
+
+	// Metrics
+	GetTextMetrics(bf->mdc, &tm);
+	bf->spacing = Scale(LINE_SPACING);
+	bf->font_height = tm.tmHeight + bf->spacing;
+	bf->char_width = tm.tmAveCharWidth;
+	bf->left_margin = Scale(LEFT_MARGIN);
+}
+
+/*
  * binview_draw_unicode - UNICODE テキストのキャラクタ表示
  */
 static void binview_draw_unicode(const HWND hWnd, const HDC mdc, const BUFFER *bf,
@@ -998,7 +1042,6 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc;
-	TEXTMETRIC tm;
 	RECT rect;
 	BUFFER *bf;
 	int i;
@@ -1025,20 +1068,8 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		// 背景ブラシ
 		bf->hbrush = CreateSolidBrush(GetSysColor(COLOR_WINDOW));
 
-		// フォント作成
-		bf->hfont = font_create(option.bin_font_name, option.bin_font_size, option.bin_font_charset,
-			option.bin_font_weight, (option.bin_font_italic == 0) ? FALSE : TRUE, TRUE);
-		bf->ret_font = SelectObject(bf->mdc, bf->hfont);
-		bf->hfont_alt = binview_create_alt_font();
-		draw_free(bf);
-		draw_init(hWnd, bf);
-
-		// Metrics
-		GetTextMetrics(bf->mdc, &tm);
-		bf->spacing = 2;
-		bf->font_height = tm.tmHeight + bf->spacing;
-		bf->char_width = tm.tmAveCharWidth;
-		bf->left_margin = 2;
+		// フォントと文字サイズの設定
+		binview_reset_font(hWnd, bf);
 
 		SetMapMode(bf->mdc, MM_TEXT);
 		SetTextCharacterExtra(bf->mdc, 0);
@@ -1049,6 +1080,17 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		// buffer info to window long
 		SetWindowLong(hWnd, GWL_USERDATA, (LPARAM)bf);
 		ImmAssociateContext(hWnd, (HIMC)NULL);
+		break;
+
+	case WM_DPICHANGED_AFTERPARENT:
+		// フォントと文字サイズの作り直し
+		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
+			SetDpiFromWindow(hWnd) == bf->font_dpi) {
+			break;
+		}
+		binview_reset_font(hWnd, bf);
+		SendMessage(hWnd, WM_SET_SCROLLBAR, 0, 0);
+		InvalidateRect(hWnd, NULL, TRUE);
 		break;
 
 	case WM_CLOSE:
@@ -1603,25 +1645,8 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			case 2:
 				// フォント
 				if (binview_select_font(hWnd) == TRUE) {
-					if (bf->hfont != NULL) {
-						SelectObject(bf->mdc, bf->ret_font);
-						DeleteObject(bf->hfont);
-					}
-					if (bf->hfont_alt != NULL) {
-						DeleteObject(bf->hfont_alt);
-					}
-					// フォント作成
-					bf->hfont = font_create(option.bin_font_name, option.bin_font_size, option.bin_font_charset,
-						option.bin_font_weight, (option.bin_font_italic == 0) ? FALSE : TRUE, TRUE);
-					bf->ret_font = SelectObject(bf->mdc, bf->hfont);
-					bf->hfont_alt = binview_create_alt_font();
-					// Metrics
-					GetTextMetrics(bf->mdc, &tm);
-					bf->font_height = tm.tmHeight + bf->spacing;
-					bf->char_width = tm.tmAveCharWidth;
+					binview_reset_font(hWnd, bf);
 					SendMessage(hWnd, WM_SET_SCROLLBAR, 0, 0);
-					draw_free(bf);
-					draw_init(hWnd, bf);
 					InvalidateRect(hWnd, NULL, FALSE);
 				}
 				break;

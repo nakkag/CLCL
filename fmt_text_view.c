@@ -1999,6 +1999,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 		bf->hfont = font_create(option.fmt_txt_font_name, option.fmt_txt_font_size, option.fmt_txt_font_charset,
 			option.fmt_txt_font_weight, (option.fmt_txt_font_italic == 0) ? FALSE : TRUE, FALSE);
 		bf->ret_font = SelectObject(bf->mdc, bf->hfont);
+		bf->font_dpi = GetDpi();
 		draw_free(bf);
 		draw_init(hWnd, bf);
 
@@ -2649,6 +2650,7 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 			}
 			bf->hfont = CreateFontIndirect((CONST LOGFONT *)&lf);
 			bf->ret_font = SelectObject(bf->mdc, bf->hfont);
+			bf->font_dpi = GetDpi();
 
 			SendMessage(hWnd, WM_REFLECT, 0, 0);
 			draw_free(bf);
@@ -3077,6 +3079,24 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 			break;
 		}
 		*((BUFFER **)lParam) = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA);
+		break;
+
+	case WM_DPICHANGED_AFTERPARENT:
+		// ƒtƒHƒ“ƒg‚Ìì‚è’¼‚µ
+		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
+			SetDpiFromWindow(hWnd) == bf->font_dpi) {
+			break;
+		}
+		{
+			HFONT hFont = font_create(option.fmt_txt_font_name, option.fmt_txt_font_size,
+				option.fmt_txt_font_charset, option.fmt_txt_font_weight,
+				(option.fmt_txt_font_italic == 0) ? FALSE : TRUE, FALSE);
+			if (hFont != NULL) {
+				SendMessage(hWnd, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+				DeleteObject(hFont);
+			}
+		}
+		InvalidateRect(hWnd, NULL, TRUE);
 		break;
 
 	case WM_REFLECT:

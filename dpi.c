@@ -26,7 +26,7 @@
 // GetDpiForMonitor の MONITOR_DPI_TYPE
 #define MDT_EFFECTIVE_DPI			0
 
-// 想定するDPIの範囲 (50% - 1000%)
+// DPIの範囲
 #define DPI_MIN						48
 #define DPI_MAX						960
 
@@ -44,7 +44,6 @@ static HMODULE hModShcore;
 
 // 現在の描画対象のDPI
 static UINT m_nDpi = USER_DEFAULT_SCREEN_DPI;
-// マニフェストで最低でもシステムDPI対応を宣言しているため初期値はシステムDPI対応とする
 static PROCESS_DPI_AWARENESS m_Awareness = PROCESS_SYSTEM_DPI_AWARE;
 
 /* Local Function Prototypes */
@@ -61,8 +60,6 @@ static UINT get_monitor_dpi(const HMONITOR hMonitor);
 
 /*
  * get_monitor_dpi - モニタのDPIの取得
- *
- *	取得できない場合は 0 を返す
  */
 static UINT get_monitor_dpi(const HMONITOR hMonitor)
 {
@@ -85,7 +82,7 @@ void InitDpi()
 	HMODULE hModUser32;
 	UINT dpi = 0;
 
-	// Windows 10 1607以降のAPI
+	// user32.dllのAPI
 	hModUser32 = GetModuleHandle(TEXT("user32.dll"));
 	if (hModUser32 != NULL) {
 		_GetDpiForWindow = (GETDPIFORWINDOW)GetProcAddress(hModUser32, "GetDpiForWindow");
@@ -93,7 +90,7 @@ void InitDpi()
 		_GetSystemMetricsForDpi = (GETSYSTEMMETRICSFORDPI)GetProcAddress(hModUser32, "GetSystemMetricsForDpi");
 		_SystemParametersInfoForDpi = (SYSTEMPARAMETERSINFOFORDPI)GetProcAddress(hModUser32, "SystemParametersInfoForDpi");
 	}
-	// Windows 8.1以降のAPI
+	// shcore.dllのAPI
 	if ((hModShcore = LoadLibrary(TEXT("shcore.dll"))) != NULL) {
 		_GetDpiForMonitor = (GETDPIFORMONITOR)GetProcAddress(hModShcore, "GetDpiForMonitor");
 		_GetProcessDpiAwareness = (GETPROCESSDPIAWARENESS)GetProcAddress(hModShcore, "GetProcessDpiAwareness");
@@ -103,13 +100,12 @@ void InitDpi()
 	// DPI対応レベルの取得
 	GetAwareness();
 
-	// 初期DPIはプライマリモニタから取得する
+	// プライマリモニタのDPIを取得
 	dpi = get_monitor_dpi(MonitorFromWindow(NULL, MONITOR_DEFAULTTOPRIMARY));
 	if (dpi == 0 && _GetDpiForSystem != NULL) {
 		dpi = _GetDpiForSystem();
 	}
 	if (dpi == 0) {
-		// APIが使用できない場合はデバイスコンテキストから取得する
 		HDC hdc = GetDC(NULL);
 		if (hdc != NULL) {
 			dpi = GetDeviceCaps(hdc, LOGPIXELSX);
@@ -155,12 +151,10 @@ UINT GetDpi()
 void SetDpi(const UINT dpi)
 {
 	if (m_Awareness == PROCESS_DPI_UNAWARE) {
-		// DPI非対応の場合はスケール変換しない
 		m_nDpi = USER_DEFAULT_SCREEN_DPI;
 		return;
 	}
 	if (dpi < DPI_MIN || dpi > DPI_MAX) {
-		// 取得に失敗した場合は現在の値を維持する
 		return;
 	}
 	m_nDpi = dpi;
@@ -184,8 +178,6 @@ void SetScale(UINT iDPI)
 
 /*
  * GetWindowDpi - ウィンドウのDPIの取得
- *
- *	取得できない場合は 0 を返す
  */
 UINT GetWindowDpi(const HWND hWnd)
 {
@@ -203,8 +195,6 @@ UINT GetWindowDpi(const HWND hWnd)
 
 /*
  * GetPointDpi - 座標が含まれるモニタのDPIの取得
- *
- *	取得できない場合は 0 を返す
  */
 UINT GetPointDpi(const POINT pt)
 {
@@ -239,7 +229,6 @@ PROCESS_DPI_AWARENESS GetAwareness()
 	if (_GetProcessDpiAwareness == NULL) {
 		return m_Awareness;
 	}
-	// プロセスハンドルにNULLを指定すると自プロセスが対象になる
 	if (_GetProcessDpiAwareness(NULL, &awareness) == S_OK) {
 		m_Awareness = awareness;
 	}
@@ -300,7 +289,6 @@ BOOL GetMonitorRectFromPoint(const POINT pt, RECT *pRect)
 	hMonitor = MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
 	mi.cbSize = sizeof(MONITORINFO);
 	if (hMonitor == NULL || GetMonitorInfo(hMonitor, &mi) == FALSE) {
-		// 取得できない場合はプライマリモニタのサイズを返す
 		SetRect(pRect, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
 		return FALSE;
 	}

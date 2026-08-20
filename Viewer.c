@@ -2486,7 +2486,7 @@ static void viewer_reset_dpi(const HWND hWnd)
 	hTreeView = GetDlgItem(hWnd, ID_TREE);
 	hListView = GetDlgItem(GetDlgItem(hWnd, ID_CONTAINER), ID_LIST);
 
-	// ツールバーの作り直し (DPIによって使用するビットマップが変わる)
+	// ツールバーの作り直し
 	if (GetDlgItem(hWnd, ID_TOOLBAR) != NULL) {
 		DestroyWindow(GetDlgItem(hWnd, ID_TOOLBAR));
 		toolbar_create(hWnd, ID_TOOLBAR);
@@ -2515,6 +2515,9 @@ static void viewer_reset_dpi(const HWND hWnd)
 		ListView_SetColumnWidth(hListView, 2, Scale(option.list_column_date));
 		ListView_SetColumnWidth(hListView, 3, Scale(option.list_column_window));
 	}
+
+	// 形式毎のウィンドウへDPIの変更を通知
+	SendMessage(GetDlgItem(hWnd, ID_CONTAINER), WM_DPICHANGED_AFTERPARENT, 0, 0);
 
 	// コントロールの再配置
 	viewer_set_controls(hWnd);
@@ -2689,10 +2692,10 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 		break;
 
 	case WM_DPICHANGED:
-		// DPIの変更 (モニタ間の移動、表示スケールの変更)
+		// DPIの変更
 		SetDpi(HIWORD(wParam));
 		if (lParam != 0) {
-			// OSが提示するウィンドウサイズに変更する
+			// ウィンドウサイズの変更
 			RECT *new_rect;
 
 			new_rect = (RECT *)lParam;
@@ -2701,7 +2704,7 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 				new_rect->right - new_rect->left, new_rect->bottom - new_rect->top,
 				SWP_NOZORDER | SWP_NOACTIVATE);
 		}
-		// DPIに依存するコントロールを作り直す
+		// コントロールの作り直し
 		viewer_reset_dpi(hWnd);
 		break;
 
@@ -2710,8 +2713,7 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 		if (IsWindowVisible(hWnd) != 0 && IsIconic(hWnd) == 0 && IsZoomed(hWnd) == 0) {
 			SetDpiFromWindow(hWnd);
 			GetWindowRect(hWnd, (LPRECT)&option.viewer_rect);
-			// 位置はそのまま、サイズはDPIに依存しない値で保存する
-			option.viewer_rect.right = UnScale(option.viewer_rect.right - option.viewer_rect.left);
+				option.viewer_rect.right = UnScale(option.viewer_rect.right - option.viewer_rect.left);
 			option.viewer_rect.bottom = UnScale(option.viewer_rect.bottom - option.viewer_rect.top);
 		}
 		break;
@@ -3589,7 +3591,7 @@ HWND viewer_create(const HWND pWnd, const int CmdShow)
 
 	main_wnd = pWnd;
 
-	// 表示するモニタのDPIに合わせる (サイズはDPIに依存しない値で保存されている)
+	// 表示するモニタのDPIに合わせる
 	pt.x = option.viewer_rect.left;
 	pt.y = option.viewer_rect.top;
 	SetDpiFromPoint(pt);

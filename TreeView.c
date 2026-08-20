@@ -53,8 +53,6 @@ extern OPTION_INFO option;
 
 /*
  * treeview_set_font - ツリービューのフォントの設定
- *
- *	フォントは現在のDPIで作成されるためDPIが変わった場合も呼び出す
  */
 void treeview_set_font(const HWND hTreeView)
 {

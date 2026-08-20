@@ -22,7 +22,7 @@
 #include "resource.h"
 
 /* Define */
-// イメージリストのアイコンサイズ (シェルの小アイコンと同じサイズにする)
+// イメージリストのアイコンサイズ
 #define SICONSIZE			GetSystemMetricsDpi(SM_CXSMICON)
 
 /* Global Variables */

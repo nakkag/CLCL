@@ -618,7 +618,7 @@ static BOOL show_tool_menu(const HWND hWnd, DATA_INFO *di, const int paste, cons
 	if (popup_menu != NULL) {
 		return FALSE;
 	}
-	// メニューを表示するモニタのDPIに合わせる
+	// 表示するモニタのDPIに合わせる
 	menu_set_dpi(NULL);
 	// メニュー作成
 	ZeroMemory(&mi, sizeof(MENU_INFO));
@@ -706,7 +706,7 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 	// キー初期化
 	GetAsyncKeyState(VK_RBUTTON);
 
-	// メニューを表示するモニタのDPIに合わせる
+	// 表示するモニタのDPIに合わせる
 	menu_set_dpi((caret_flag == TRUE) ? &fi.cpos : NULL);
 	// メニュー作成
 	popup_menu = menu_create(hWnd, ai->menu_info, ai->menu_cnt, history_data.child, regist_data.child);
@@ -1333,8 +1333,6 @@ static void unregist_hook(void)
 
 /*
  * load_tray_icon - タスクトレイのアイコンの読み込み
- *
- *	タスクトレイのアイコンのサイズはDPIによって変わる
  */
 static void load_tray_icon(void)
 {
@@ -1575,7 +1573,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 	case WM_DPICHANGED:
 	case WM_DISPLAYCHANGE:
-		// DPIや画面構成の変更に合わせてタスクトレイのアイコンを読み込み直す
+		// タスクトレイのアイコンの読み込み
 		if (msg == WM_DPICHANGED) {
 			SetDpi(HIWORD(wParam));
 		}
