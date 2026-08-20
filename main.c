@@ -1601,7 +1601,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			dark_mode_update();
 			dark_mode_refresh_window(hWnd);
 		}
-		break;
+		return DefWindowProc(hWnd, msg, wParam, lParam);
 
 	case WM_QUERYENDSESSION:
 		// Windows終了

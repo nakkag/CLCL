@@ -2623,7 +2623,7 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 			dark_mode_update();
 			dark_mode_refresh_window(hWnd);
 		}
-		break;
+		return DefWindowProc(hWnd, msg, wParam, lParam);
 
 	case WM_ERASEBKGND:
 		// 背景の描画
