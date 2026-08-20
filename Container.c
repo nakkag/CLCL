@@ -16,6 +16,7 @@
 #include "Viewer.h"
 #include "Container.h"
 #include "dpi.h"
+#include "DarkMode.h"
 
 /* Define */
 #define WINDOW_CLASS					TEXT("CLCLContainer")
@@ -63,6 +64,15 @@ static LRESULT CALLBACK container_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
 	case WM_KILLFOCUS:
 		break;
+
+	case WM_ERASEBKGND:
+		// 背景の描画
+		if (dark_mode_is_dark() == TRUE) {
+			GetClientRect(hWnd, (LPRECT)&window_rect);
+			FillRect((HDC)wParam, &window_rect, dark_mode_get_brush(COLOR_BTNFACE));
+			return TRUE;
+		}
+		return DefWindowProc(hWnd, msg, wParam, lParam);
 
 	case WM_SIZE:
 		// サイズ変更

@@ -30,6 +30,9 @@
     <ClCompile Include="Container.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DarkMode.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Data.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -167,6 +170,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Container.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DarkMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Data.h">

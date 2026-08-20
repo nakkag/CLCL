@@ -28,6 +28,7 @@
 #include "Font.h"
 #include "BinView.h"
 #include "dpi.h"
+#include "DarkMode.h"
 
 #include "resource.h"
 
@@ -111,7 +112,6 @@ typedef struct _BUFFER {
 	// 描画用情報
 	HDC mdc;
 	HBITMAP ret_bmp;
-	HBRUSH hbrush;
 	HFONT hfont;
 	HFONT ret_font;
 	// サロゲート ペア表示用の代替フォント
@@ -818,19 +818,19 @@ static void binview_draw_unicode(const HWND hWnd, const HDC mdc, const BUFFER *b
 		if (sel >= j && sel < j + len) {
 			// 選択文字
 			if (GetFocus() == hWnd) {
-				hbr = CreateSolidBrush(GetSysColor(COLOR_HIGHLIGHT));
-				SetTextColor(mdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
-				SetBkColor(mdc, GetSysColor(COLOR_HIGHLIGHT));
+				hbr = CreateSolidBrush(dark_mode_get_color(COLOR_HIGHLIGHT));
+				SetTextColor(mdc, dark_mode_get_color(COLOR_HIGHLIGHTTEXT));
+				SetBkColor(mdc, dark_mode_get_color(COLOR_HIGHLIGHT));
 			} else {
-				hbr = CreateSolidBrush(GetSysColor(COLOR_3DFACE));
-				SetBkColor(mdc, GetSysColor(COLOR_3DFACE));
+				hbr = CreateSolidBrush(dark_mode_get_color(COLOR_3DFACE));
+				SetBkColor(mdc, dark_mode_get_color(COLOR_3DFACE));
 			}
 			SetRect(&drect, offset - 1, 0, offset + (len * bf->char_width), bf->font_height);
 			FillRect(mdc, &drect, hbr);
 			DeleteObject(hbr);
 		} else {
-			SetTextColor(mdc, GetSysColor(COLOR_WINDOWTEXT));
-			SetBkColor(mdc, GetSysColor(COLOR_WINDOW));
+			SetTextColor(mdc, dark_mode_get_color(COLOR_WINDOWTEXT));
+			SetBkColor(mdc, dark_mode_get_color(COLOR_WINDOW));
 		}
 
 		if (skip == FALSE) {
@@ -874,20 +874,20 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 	height = bf->spacing / 2;
 
 	// 背景色
-	SetBkColor(mdc, GetSysColor(COLOR_WINDOW));
+	SetBkColor(mdc, dark_mode_get_color(COLOR_WINDOW));
 
 	// アドレス表示
 	if (bf->lock == FALSE && option.bin_lock == 0) {
-		SetTextColor(mdc, GetSysColor(COLOR_HIGHLIGHT));
+		SetTextColor(mdc, dark_mode_get_color(COLOR_HIGHLIGHT));
 	} else {
-		SetTextColor(mdc, GetSysColor(COLOR_GRAYTEXT));
+		SetTextColor(mdc, dark_mode_get_color(COLOR_GRAYTEXT));
 	}
 	itox(i * LINE_LEN, ADDRESS_LEN, buf);
 	TextOut(mdc, offset, height, buf, ADDRESS_LEN);
 	offset += (ADDRESS_LEN * bf->char_width) + (2 * bf->char_width);
 
 	// 16進表示
-	SetTextColor(mdc, GetSysColor(COLOR_WINDOWTEXT));
+	SetTextColor(mdc, dark_mode_get_color(COLOR_WINDOWTEXT));
 	p = (BYTE *)bf->data + (i * LINE_LEN);
 	r = cbuf;
 	s = buf;
@@ -929,24 +929,24 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 		if (p == bf->sp) {
 			// 選択文字
 			if (GetFocus() == hWnd) {
-				hbr = CreateSolidBrush(GetSysColor(COLOR_HIGHLIGHT));
+				hbr = CreateSolidBrush(dark_mode_get_color(COLOR_HIGHLIGHT));
 			} else {
-				hbr = CreateSolidBrush(GetSysColor(COLOR_3DFACE));
+				hbr = CreateSolidBrush(dark_mode_get_color(COLOR_3DFACE));
 			}
 			SetRect(&drect, offset - 1, 0, offset + (2 * bf->char_width) + 1, bf->font_height);
 			if (bf->insert_mode == FALSE) {
 				// 上書きモード
 				FillRect(mdc, &drect, hbr);
 				if (GetFocus() == hWnd) {
-					SetTextColor(mdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
-					SetBkColor(mdc, GetSysColor(COLOR_HIGHLIGHT));
+					SetTextColor(mdc, dark_mode_get_color(COLOR_HIGHLIGHTTEXT));
+					SetBkColor(mdc, dark_mode_get_color(COLOR_HIGHLIGHT));
 				} else {
-					SetTextColor(mdc, GetSysColor(COLOR_BTNTEXT));
-					SetBkColor(mdc, GetSysColor(COLOR_3DFACE));
+					SetTextColor(mdc, dark_mode_get_color(COLOR_BTNTEXT));
+					SetBkColor(mdc, dark_mode_get_color(COLOR_3DFACE));
 				}
 				TextOut(mdc, offset, height, buf, 2);
-				SetTextColor(mdc, GetSysColor(COLOR_WINDOWTEXT));
-				SetBkColor(mdc, GetSysColor(COLOR_WINDOW));
+				SetTextColor(mdc, dark_mode_get_color(COLOR_WINDOWTEXT));
+				SetBkColor(mdc, dark_mode_get_color(COLOR_WINDOW));
 			} else {
 				FrameRect(mdc, &drect, hbr);
 				TextOut(mdc, offset, height, buf, 2);
@@ -985,19 +985,19 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 		}
 		if (j == sel || (len == 2 && j + 1 == sel)) {
 			if (GetFocus() == hWnd) {
-				hbr = CreateSolidBrush(GetSysColor(COLOR_HIGHLIGHT));
-				SetTextColor(mdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
-				SetBkColor(mdc, GetSysColor(COLOR_HIGHLIGHT));
+				hbr = CreateSolidBrush(dark_mode_get_color(COLOR_HIGHLIGHT));
+				SetTextColor(mdc, dark_mode_get_color(COLOR_HIGHLIGHTTEXT));
+				SetBkColor(mdc, dark_mode_get_color(COLOR_HIGHLIGHT));
 			} else {
-				hbr = CreateSolidBrush(GetSysColor(COLOR_3DFACE));
-				SetBkColor(mdc, GetSysColor(COLOR_3DFACE));
+				hbr = CreateSolidBrush(dark_mode_get_color(COLOR_3DFACE));
+				SetBkColor(mdc, dark_mode_get_color(COLOR_3DFACE));
 			}
 			SetRect(&drect, offset - 1, 0, offset + (len * bf->char_width), bf->font_height);
 			FillRect(mdc, &drect, hbr);
 			DeleteObject(hbr);
 		} else {
-			SetTextColor(mdc, GetSysColor(COLOR_WINDOWTEXT));
-			SetBkColor(mdc, GetSysColor(COLOR_WINDOW));
+			SetTextColor(mdc, dark_mode_get_color(COLOR_WINDOWTEXT));
+			SetBkColor(mdc, dark_mode_get_color(COLOR_WINDOW));
 		}
 		TextOut(mdc, offset, height, s, 1);
 		offset += len * bf->char_width;
@@ -1013,19 +1013,19 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 		}
 		if (s - tp == sel || (len == 2 && s - tp + 1 == sel)) {
 			if (GetFocus() == hWnd) {
-				hbr = CreateSolidBrush(GetSysColor(COLOR_HIGHLIGHT));
-				SetTextColor(mdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
-				SetBkColor(mdc, GetSysColor(COLOR_HIGHLIGHT));
+				hbr = CreateSolidBrush(dark_mode_get_color(COLOR_HIGHLIGHT));
+				SetTextColor(mdc, dark_mode_get_color(COLOR_HIGHLIGHTTEXT));
+				SetBkColor(mdc, dark_mode_get_color(COLOR_HIGHLIGHT));
 			} else {
-				hbr = CreateSolidBrush(GetSysColor(COLOR_3DFACE));
-				SetBkColor(mdc, GetSysColor(COLOR_3DFACE));
+				hbr = CreateSolidBrush(dark_mode_get_color(COLOR_3DFACE));
+				SetBkColor(mdc, dark_mode_get_color(COLOR_3DFACE));
 			}
 			SetRect(&drect, offset - 1, 0, offset + (len * bf->char_width), bf->font_height);
 			FillRect(mdc, &drect, hbr);
 			DeleteObject(hbr);
 		} else {
-			SetTextColor(mdc, GetSysColor(COLOR_WINDOWTEXT));
-			SetBkColor(mdc, GetSysColor(COLOR_WINDOW));
+			SetTextColor(mdc, dark_mode_get_color(COLOR_WINDOWTEXT));
+			SetBkColor(mdc, dark_mode_get_color(COLOR_WINDOW));
 		}
 		TextOut(mdc, offset, height, s, len);
 		offset += len * bf->char_width;
@@ -1064,9 +1064,6 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		bf->mdc = CreateCompatibleDC(hdc);
 		ReleaseDC(hWnd, hdc);
 		draw_init(hWnd, bf);
-
-		// 背景ブラシ
-		bf->hbrush = CreateSolidBrush(GetSysColor(COLOR_WINDOW));
 
 		// フォントと文字サイズの設定
 		binview_reset_font(hWnd, bf);
@@ -1115,8 +1112,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 				DeleteObject(bf->hfont_alt);
 			}
 			DeleteDC(bf->mdc);
-			DeleteObject(bf->hbrush);
-			mem_free(&bf->data);
+				mem_free(&bf->data);
 			mem_free(&bf->undo);
 			mem_free(&bf);
 		}
@@ -1473,7 +1469,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			bf->dbcs = FALSE;
 			for (; i < bf->pos_y + (ps.rcPaint.bottom / bf->font_height) + 1; i++) {
 				// 背景塗りつぶし
-				FillRect(bf->mdc, &rect, bf->hbrush);
+				FillRect(bf->mdc, &rect, dark_mode_get_brush(COLOR_WINDOW));
 				// draw line
 				binview_draw_line(hWnd, bf->mdc, bf, i);
 				BitBlt(hdc,

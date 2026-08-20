@@ -18,6 +18,7 @@
 #include "..\Memory.h"
 #include "..\Ini.h"
 #include "..\Message.h"
+#include "..\DarkMode.h"
 
 #include "CLCLSet.h"
 
@@ -46,6 +47,8 @@ BOOL CALLBACK set_viewer_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 		CheckDlgButton(hDlg, IDC_CHECK_TOGGLE, option.viewer_toggle);
 		CheckDlgButton(hDlg, IDC_CHECK_CLIP_EXPAND, option.tree_clip_expand);
 		CheckDlgButton(hDlg, IDC_CHECK_HISTORY_EXPAND, option.tree_history_expand);

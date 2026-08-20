@@ -16,6 +16,7 @@
 
 #include "General.h"
 #include "Data.h"
+#include "DarkMode.h"
 
 #include "resource.h"
 
@@ -36,6 +37,8 @@ static BOOL CALLBACK set_hotkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 		if ((di = (DATA_INFO *)lParam) == NULL) {
 			EndDialog(hDlg, FALSE);
 			break;

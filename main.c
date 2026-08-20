@@ -45,6 +45,7 @@
 #include "ToolTip.h"
 #include "Caret.h"
 #include "dpi.h"
+#include "DarkMode.h"
 
 #include "resource.h"
 
@@ -1585,9 +1586,20 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 	switch (msg) {
 	case WM_CREATE:
 		WM_TASKBARCREATED = RegisterWindowMessage(TEXT("TaskbarCreated"));
+		// ダークモードの設定
+		dark_mode_set_window(hWnd);
 		// ウィンドウ作成
 		if (winodw_initialize(hWnd) == FALSE) {
 			return -1;
+		}
+		break;
+
+	case WM_SETTINGCHANGE:
+	case WM_THEMECHANGED:
+		// 配色の変更
+		if (dark_mode_is_color_change(msg, lParam) == TRUE) {
+			dark_mode_update();
+			dark_mode_refresh_window(hWnd);
 		}
 		break;
 
@@ -2620,6 +2632,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
 	// DPIの初期化
 	InitDpi();
+	// ダークモードの初期化
+	dark_mode_init();
 	// CommonControlの初期化
 	InitCommonControls();
 	// OLEの初期化
@@ -2665,6 +2679,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
 	// 設定の解放
 	ini_free();
+	dark_mode_free();
 	OleUninitialize();
 	if (hMutex != NULL) {
 		CloseHandle(hMutex);

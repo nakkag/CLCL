@@ -18,6 +18,7 @@
 #include "Ini.h"
 #include "Message.h"
 #include "Format.h"
+#include "DarkMode.h"
 
 #include "resource.h"
 
@@ -45,6 +46,8 @@ static BOOL CALLBACK select_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 		// 現在登録されている形式をコンボボックスに設定
 		for (i = 0; i < option.format_cnt; i++) {
 			if ((option.format_info + i)->fn == NULL) {

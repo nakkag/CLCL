@@ -20,6 +20,7 @@
 #include "..\SendKey.h"
 #include "..\Message.h"
 #include "..\dpi.h"
+#include "..\DarkMode.h"
 
 #include "CLCLSet.h"
 #include "SelectKey.h"
@@ -58,6 +59,8 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 #ifdef OP_XP_STYLE
 		// XP
 		hTheme = open_theme(GetDlgItem(hDlg, IDC_BUTTON_SELECT), L"SCROLLBAR");
@@ -392,6 +395,8 @@ BOOL CALLBACK set_sendkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 #ifdef OP_XP_STYLE
 		// XP
 		hThemeUp = open_theme(GetDlgItem(hDlg, IDC_BUTTON_UP), L"SCROLLBAR");

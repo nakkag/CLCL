@@ -18,6 +18,7 @@
 #include "..\Ini.h"
 #include "..\Message.h"
 #include "..\dpi.h"
+#include "..\DarkMode.h"
 
 #include "CLCLSet.h"
 
@@ -49,6 +50,8 @@ BOOL CALLBACK set_menu_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
+		// ダークモードの設定
+		dark_mode_set_dialog(hDlg);
 #ifdef OP_XP_STYLE
 		// XP
 		hTheme = open_theme(GetDlgItem(hDlg, IDC_BUTTON_FORMAT_SELECT), L"SCROLLBAR");
