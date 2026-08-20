@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClCompile Include="BinView.c" />
     <ClCompile Include="Bitmap.c" />
+    <ClCompile Include="Caret.c" />
     <ClCompile Include="ClipBoard.c" />
     <ClCompile Include="Container.c" />
     <ClCompile Include="Data.c" />
@@ -192,6 +193,7 @@
   <ItemGroup>
     <ClInclude Include="BinView.h" />
     <ClInclude Include="Bitmap.h" />
+    <ClInclude Include="Caret.h" />
     <ClInclude Include="ClipBoard.h" />
     <ClInclude Include="Container.h" />
     <ClInclude Include="Data.h" />

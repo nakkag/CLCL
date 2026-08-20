@@ -43,6 +43,7 @@
 #include "Container.h"
 #include "BinView.h"
 #include "ToolTip.h"
+#include "Caret.h"
 #include "dpi.h"
 
 #include "resource.h"
@@ -135,7 +136,7 @@ static HWND menu_key_wnd;
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
-static void get_focus_info(FOCUS_INFO *fi);
+static void get_focus_info(FOCUS_INFO *fi, const BOOL caret);
 static void set_focus_info(const FOCUS_INFO *fi);
 static BOOL tray_message(const HWND hWnd, const DWORD dwMessage, const UINT uID, const HICON hIcon, const TCHAR *pszTip);
 static void set_tray_icon(const HWND hWnd, const HICON hIcon, const TCHAR *buf);
@@ -361,20 +362,16 @@ BOOL _SetForegroundWindow(const HWND hWnd)
 /*
  * get_focus_info - フォーカス情報を取得
  */
-static void get_focus_info(FOCUS_INFO *fi)
+static void get_focus_info(FOCUS_INFO *fi, const BOOL caret)
 {
 	// フォーカスを持つウィンドウの取得
 	fi->active_wnd = GetForegroundWindow();
 	AttachThreadInput(GetWindowThreadProcessId(fi->active_wnd, NULL), GetCurrentThreadId(), TRUE);
 	fi->focus_wnd = GetFocus();
-	// キャレット位置取得
-	if (GetCaretPos(&fi->cpos) == TRUE && (fi->cpos.x > 0 || fi->cpos.y > 0)) {
-		ClientToScreen(fi->focus_wnd, &fi->cpos);
-		fi->caret = TRUE;
-	} else {
-		fi->caret = FALSE;
-	}
 	AttachThreadInput(GetWindowThreadProcessId(fi->active_wnd, NULL), GetCurrentThreadId(), FALSE);
+	// キャレット位置取得
+	fi->cpos.x = fi->cpos.y = 0;
+	fi->caret = (caret == TRUE) ? caret_get_pos(fi->active_wnd, fi->focus_wnd, &fi->cpos) : FALSE;
 }
 
 /*
@@ -697,7 +694,7 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 	CopyMemory(&fi, &focus_info, sizeof(FOCUS_INFO));
 	if (caret == TRUE || fi.active_wnd == NULL) {
 		// フォーカス情報取得
-		get_focus_info(&fi);
+		get_focus_info(&fi, (ai->caret != 0) ? caret : FALSE);
 	}
 	if (ai->caret == 0 || fi.caret == FALSE) {
 		caret_flag = FALSE;
@@ -1542,6 +1539,8 @@ static BOOL winodw_end(const HWND hWnd)
 	DestroyIcon(icon_clip_ban);
 	// メニューに表示する既定のアイコンの解放
 	menu_free_icons();
+	// キャレット情報の解放
+	caret_free();
 	return TRUE;
 }
 
@@ -1889,7 +1888,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 				while (mouse_wnd != NULL && mouse_wnd != active_wnd) mouse_wnd = GetParent(mouse_wnd);
 				if (active_wnd != focus_info.active_wnd && active_wnd != hWnd && active_wnd != mouse_wnd) {
 					// フォーカス情報取得
-					get_focus_info(&focus_info);
+					get_focus_info(&focus_info, FALSE);
 				}
 			}
 			break;
