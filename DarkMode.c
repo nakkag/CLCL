@@ -16,6 +16,7 @@
 #include <tchar.h>
 
 #include "DarkMode.h"
+#include "dpi.h"
 
 /* Define */
 #define DARK_BUF_SIZE					256
@@ -41,6 +42,11 @@
 #define DWMWA_DARK_MODE_OLD				19
 #define DWMWA_DARK_MODE					20
 
+// ラジオボタンのグリフの基準サイズ
+#define RADIO_GLYPH_SIZE				12
+// ラジオボタンの文字の基準オフセット
+#define RADIO_TEXT_MARGIN				17
+
 // ダークモードの配色
 #define DARK_COLOR_WINDOW				RGB(32, 32, 32)
 #define DARK_COLOR_FACE					RGB(43, 43, 43)
@@ -63,6 +69,7 @@
 #define SUBCLASS_ID_STATUSBAR			4
 #define SUBCLASS_ID_HEADER				5
 #define SUBCLASS_ID_NOTIFY				6
+#define SUBCLASS_ID_RADIO				7
 
 // 多重適用の防止用プロパティ
 #define DARK_MODE_PROP					TEXT("CLCLDarkMode")
@@ -157,6 +164,8 @@ static void dark_mode_set_theme(const HWND hWnd, const WCHAR *theme);
 static void dark_mode_set_titlebar(const HWND hWnd);
 static BOOL CALLBACK dark_mode_enum_child_proc(HWND hWnd, LPARAM lParam);
 static void dark_mode_set_groupbox(const HWND hWnd);
+static void dark_mode_set_radio(const HWND hWnd);
+static void dark_mode_draw_radio(const HWND hWnd);
 static void dark_mode_set_header(const HWND hHeader);
 static void dark_mode_set_tooltip(const HWND hToolTip);
 static void dark_mode_set_notify(const HWND hWnd);
@@ -169,6 +178,8 @@ static LRESULT CALLBACK dark_mode_dialog_proc(HWND hWnd, UINT msg, WPARAM wParam
 static LRESULT CALLBACK dark_mode_tab_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam,
 	UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 static LRESULT CALLBACK dark_mode_groupbox_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam,
+	UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
+static LRESULT CALLBACK dark_mode_radio_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam,
 	UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 static LRESULT CALLBACK dark_mode_statusbar_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam,
 	UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
@@ -553,8 +564,21 @@ void dark_mode_set_control(const HWND hWnd)
 		lstrcmpi(class_name, WC_COMBOBOXEX) == 0 || lstrcmpi(class_name, CLASS_LISTBOX) == 0) {
 		dark_mode_set_theme(hWnd, L"DarkMode_CFD");
 	} else if (lstrcmpi(class_name, CLASS_BUTTON) == 0) {
-		dark_mode_set_theme(hWnd, L"DarkMode_Explorer");
-		dark_mode_set_groupbox(hWnd);
+		switch (GetWindowLong(hWnd, GWL_STYLE) & BS_TYPEMASK) {
+		case BS_RADIOBUTTON:
+		case BS_AUTORADIOBUTTON:
+			// ダークのテーマにはラジオボタンの配色がなく文字が黒くなるため独自に描画する
+			dark_mode_set_radio(hWnd);
+			break;
+
+		case BS_GROUPBOX:
+			dark_mode_set_groupbox(hWnd);
+			break;
+
+		default:
+			dark_mode_set_theme(hWnd, L"DarkMode_Explorer");
+			break;
+		}
 	} else if (lstrcmpi(class_name, WC_TABCONTROL) == 0) {
 		dark_mode_set_tab(hWnd);
 	} else if (lstrcmpi(class_name, STATUSCLASSNAME) == 0) {
@@ -720,6 +744,18 @@ static void dark_mode_set_groupbox(const HWND hWnd)
 	}
 	SetProp(hWnd, DARK_MODE_PROP, (HANDLE)1);
 	SetWindowSubclass(hWnd, dark_mode_groupbox_proc, SUBCLASS_ID_GROUPBOX, 0);
+}
+
+/*
+ * dark_mode_set_radio - ラジオボタンに配色を設定する
+ */
+static void dark_mode_set_radio(const HWND hWnd)
+{
+	if (GetProp(hWnd, DARK_MODE_PROP) != NULL) {
+		return;
+	}
+	SetProp(hWnd, DARK_MODE_PROP, (HANDLE)1);
+	SetWindowSubclass(hWnd, dark_mode_radio_proc, SUBCLASS_ID_RADIO, 0);
 }
 
 /*
@@ -1203,6 +1239,129 @@ static void dark_mode_draw_groupbox(const HWND hWnd)
 		SelectObject(hdc, hRetFont);
 	}
 	EndPaint(hWnd, &ps);
+}
+
+/*
+ * dark_mode_draw_radio - ラジオボタンの描画
+ */
+static void dark_mode_draw_radio(const HWND hWnd)
+{
+	PAINTSTRUCT ps;
+	HDC hdc;
+	HFONT hFont, hRetFont;
+	HBRUSH hBrush, hRetBrush;
+	HPEN hPen, hRetPen;
+	RECT client_rect, glyph_rect, text_rect;
+	TCHAR buf[DARK_BUF_SIZE];
+	COLORREF text_color;
+	DWORD flags = DT_LEFT | DT_VCENTER | DT_SINGLELINE;
+	int size;
+	int len;
+
+	if ((hdc = BeginPaint(hWnd, &ps)) == NULL) {
+		return;
+	}
+	GetClientRect(hWnd, &client_rect);
+
+	// 背景
+	FillRect(hdc, &client_rect, dark_mode_get_brush(COLOR_BTNFACE));
+
+	text_color = (IsWindowEnabled(hWnd) == FALSE) ?
+		dark_mode_get_color(COLOR_GRAYTEXT) : dark_mode_get_color(COLOR_BTNTEXT);
+
+	// グリフ
+	size = Scale(RADIO_GLYPH_SIZE);
+	SetRect(&glyph_rect, 0,
+		(client_rect.top + client_rect.bottom) / 2 - size / 2, size,
+		(client_rect.top + client_rect.bottom) / 2 - size / 2 + size);
+	hPen = CreatePen(PS_SOLID, 1, text_color);
+	hRetPen = SelectObject(hdc, hPen);
+	hRetBrush = SelectObject(hdc, dark_mode_get_brush(COLOR_WINDOW));
+	Ellipse(hdc, glyph_rect.left, glyph_rect.top, glyph_rect.right, glyph_rect.bottom);
+	SelectObject(hdc, hRetBrush);
+	SelectObject(hdc, hRetPen);
+	DeleteObject(hPen);
+	if (SendMessage(hWnd, BM_GETCHECK, 0, 0) == BST_CHECKED) {
+		// チェックの点
+		COLORREF check_color = (IsWindowEnabled(hWnd) == FALSE) ?
+			dark_mode_get_color(COLOR_GRAYTEXT) : dark_mode_get_accent_color();
+
+		InflateRect(&glyph_rect, -size / 4, -size / 4);
+		hBrush = CreateSolidBrush(check_color);
+		hPen = CreatePen(PS_SOLID, 1, check_color);
+		hRetBrush = SelectObject(hdc, hBrush);
+		hRetPen = SelectObject(hdc, hPen);
+		Ellipse(hdc, glyph_rect.left, glyph_rect.top, glyph_rect.right, glyph_rect.bottom);
+		SelectObject(hdc, hRetPen);
+		SelectObject(hdc, hRetBrush);
+		DeleteObject(hPen);
+		DeleteObject(hBrush);
+	}
+
+	// テキスト
+	hFont = (HFONT)SendMessage(hWnd, WM_GETFONT, 0, 0);
+	hRetFont = (hFont != NULL) ? SelectObject(hdc, hFont) : NULL;
+	SetBkMode(hdc, TRANSPARENT);
+	SetTextColor(hdc, text_color);
+
+	*buf = TEXT('\0');
+	GetWindowText(hWnd, buf, DARK_BUF_SIZE - 1);
+	len = lstrlen(buf);
+	text_rect = client_rect;
+	text_rect.left += Scale(RADIO_TEXT_MARGIN);
+	if (LOWORD(SendMessage(hWnd, WM_QUERYUISTATE, 0, 0)) & UISF_HIDEACCEL) {
+		flags |= DT_HIDEPREFIX;
+	}
+	DrawText(hdc, buf, len, &text_rect, flags);
+
+	// フォーカス
+	if (GetFocus() == hWnd &&
+		!(LOWORD(SendMessage(hWnd, WM_QUERYUISTATE, 0, 0)) & UISF_HIDEFOCUS)) {
+		RECT focus_rect = text_rect;
+
+		DrawText(hdc, buf, len, &focus_rect, flags | DT_CALCRECT);
+		focus_rect.top = client_rect.top;
+		focus_rect.bottom = client_rect.bottom;
+		InflateRect(&focus_rect, 1, 0);
+		if (focus_rect.right > client_rect.right) {
+			focus_rect.right = client_rect.right;
+		}
+		DrawFocusRect(hdc, &focus_rect);
+	}
+	if (hRetFont != NULL) {
+		SelectObject(hdc, hRetFont);
+	}
+	EndPaint(hWnd, &ps);
+}
+
+/*
+ * dark_mode_radio_proc - ラジオボタンのサブクラスプロシージャ
+ */
+static LRESULT CALLBACK dark_mode_radio_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam,
+	UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+{
+	switch (msg) {
+	case WM_NCDESTROY:
+		RemoveProp(hWnd, DARK_MODE_PROP);
+		RemoveWindowSubclass(hWnd, dark_mode_radio_proc, uIdSubclass);
+		break;
+
+	case WM_PAINT:
+		if (dark_mode_dark == TRUE) {
+			dark_mode_draw_radio(hWnd);
+			return 0;
+		}
+		break;
+
+	case WM_SETFOCUS:
+	case WM_KILLFOCUS:
+		// フォーカス枠を描き直す
+		if (dark_mode_dark == TRUE) {
+			InvalidateRect(hWnd, NULL, TRUE);
+		}
+		break;
+	}
+	return DefSubclassProc(hWnd, msg, wParam, lParam);
 }
 
 /*
