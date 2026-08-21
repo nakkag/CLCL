@@ -180,13 +180,9 @@ BOOL ini_get_option(TCHAR *err_str)
 	option.main_clipboard_rechain_minute = profile_get_int(TEXT("main"), TEXT("clipboard_rechain_minute"), 1, ini_path);
 	option.main_show_trayicon = profile_get_int(TEXT("main"), TEXT("show_trayicon"), 1, ini_path);
 	option.main_show_viewer = profile_get_int(TEXT("main"), TEXT("show_viewer"), 0, ini_path);
-
-	// Currently there is no GUI element to set or change the language.
-	// So it need not to be included in OPTION_INFO.
-	TCHAR localename[LOCALE_NAME_MAX_LENGTH];
-	int cnt = profile_get_string(TEXT("main"), TEXT("language"), TEXT(""), localename, LOCALE_NAME_MAX_LENGTH - 1, ini_path);
+	int cnt = profile_get_string(TEXT("main"), TEXT("language"), TEXT(""), option.main_language, LOCALE_NAME_MAX_LENGTH, ini_path);
 	if (cnt > 0) {
-		ini_set_language(localename);
+		ini_set_language(option.main_language);
 	}
 
 	// data
@@ -808,6 +804,7 @@ BOOL ini_put_option(void)
 	profile_write_int(TEXT("main"), TEXT("clipboard_rechain_minute"), option.main_clipboard_rechain_minute, ini_path);
 	profile_write_int(TEXT("main"), TEXT("show_trayicon"), option.main_show_trayicon, ini_path);
 	profile_write_int(TEXT("main"), TEXT("show_viewer"), option.main_show_viewer, ini_path);
+	profile_write_string(TEXT("main"), TEXT("language"), option.main_language, ini_path);
 
 	// data
 	profile_write_string(TEXT("data"), TEXT("date_format"), option.data_date_format, ini_path);
@@ -1253,7 +1250,6 @@ BOOL ini_free(void)
  */
 void ini_set_language(const TCHAR* locale_name)
 {
-#if (defined(_MSC_VER) && _MSC_VER >=  1930)
 	// According to Microsoft documentation 
 	// Ver 5.0 refers to Windows 2000, Ver 5.1 refers to Windows XP
 	// Ver 6.0 refers to Windows Vista
@@ -1269,18 +1265,17 @@ void ini_set_language(const TCHAR* locale_name)
 			case 1031: // German (Germany)
 			case 1033: // English (United States)
 			case 1041: // Japanese
-			case 1049: // Russian
+			case 1058: // Ukrainian
+			case 0x0804: // Chinese (Simplified)
 				langid = SetThreadUILanguage(langid);
 				// TODO: error handling
 				break;
-			case 1058: // Ukrainian
 			default:
 				// language specific resources not yet available
 				break;
 			}
 		}
 	}
-#endif
 }
 
 /* End of source */
