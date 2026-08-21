@@ -151,6 +151,7 @@
 #define IDC_CHECK_ATTACH_PROCESS        1117
 #define IDC_LIST_ICON                   1127
 #define IDC_EDIT_FILE                   1128
+#define IDC_UI_LANGUAGE                 1131
 #define IDS_MENU_FORMAT_1               2001
 #define IDS_MENU_FORMAT_2               2002
 #define IDS_MENU_FORMAT_3               2003
@@ -162,6 +163,11 @@
 #define IDS_MENU_FORMAT_9               2009
 #define IDS_MENU_FORMAT_10              2010
 #define IDS_MENU_FORMAT_11              2011
+#define IDS_MAIN_JAPANESE               2049
+#define IDS_MAIN_ENGLISH                2050
+#define IDS_MAIN_GERMAN                 2051
+#define IDS_MAIN_UKRAINIAN              2052
+#define IDS_MAIN_SIMP_CHINESE           2053
 #define IDS_VIEWER_CLIPBOARD            3000
 #define IDS_VIEWER_HISTORY              3001
 #define IDS_VIEWER_REGIST               3002

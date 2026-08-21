@@ -25,6 +25,9 @@
 #include "Format.h"
 #include "SendKey.h"
 #include "dpi.h"
+#if (defined(_MSC_VER) && _MSC_VER >=  1930)
+#include <versionhelpers.h>
+#endif
 
 #include "resource.h"
 
@@ -40,6 +43,7 @@ extern TCHAR work_path[];
 static FORMAT_NAME *ini_get_format_name(TCHAR *format_name, int *cnt);
 static BOOL ini_get_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt, TCHAR *err_str);
 static BOOL ini_put_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt);
+void ini_set_language(const TCHAR* locale_name);
 
 /*
  * ini_get_format_name - 形式名の取得
@@ -176,6 +180,10 @@ BOOL ini_get_option(TCHAR *err_str)
 	option.main_clipboard_rechain_minute = profile_get_int(TEXT("main"), TEXT("clipboard_rechain_minute"), 1, ini_path);
 	option.main_show_trayicon = profile_get_int(TEXT("main"), TEXT("show_trayicon"), 1, ini_path);
 	option.main_show_viewer = profile_get_int(TEXT("main"), TEXT("show_viewer"), 0, ini_path);
+	int cnt = profile_get_string(TEXT("main"), TEXT("language"), TEXT(""), option.main_language, LOCALE_NAME_MAX_LENGTH, ini_path);
+	if (cnt > 0) {
+		ini_set_language(option.main_language);
+	}
 
 	// data
 	option.data_date_format = profile_alloc_string(TEXT("data"), TEXT("date_format"), TEXT(""), ini_path);
@@ -796,6 +804,7 @@ BOOL ini_put_option(void)
 	profile_write_int(TEXT("main"), TEXT("clipboard_rechain_minute"), option.main_clipboard_rechain_minute, ini_path);
 	profile_write_int(TEXT("main"), TEXT("show_trayicon"), option.main_show_trayicon, ini_path);
 	profile_write_int(TEXT("main"), TEXT("show_viewer"), option.main_show_viewer, ini_path);
+	profile_write_string(TEXT("main"), TEXT("language"), option.main_language, ini_path);
 
 	// data
 	profile_write_string(TEXT("data"), TEXT("date_format"), option.data_date_format, ini_path);
@@ -1235,4 +1244,38 @@ BOOL ini_free(void)
 	mem_free(&option.fmt_file_font_name);
 	return TRUE;
 }
+
+/*
+ * ini_set_language - set the ui language (if resource available)
+ */
+void ini_set_language(const TCHAR* locale_name)
+{
+	// According to Microsoft documentation 
+	// Ver 5.0 refers to Windows 2000, Ver 5.1 refers to Windows XP
+	// Ver 6.0 refers to Windows Vista
+	// OS version >= Vista?
+	if (IsWindowsVersionOrGreater(6, 0, 0) && IsValidLocaleName(locale_name)) {
+		TCHAR language_name[3];
+		lstrcpyn(language_name, locale_name, 3);
+		LCID lcid = LocaleNameToLCID(language_name, 0);
+		LANGID langid = 0;
+		if (lcid > 0 && (langid = LANGIDFROMLCID(lcid)) > 0) {
+			switch (langid)
+			{
+			case 1031: // German (Germany)
+			case 1033: // English (United States)
+			case 1041: // Japanese
+			case 1058: // Ukrainian
+			case 0x0804: // Chinese (Simplified)
+				langid = SetThreadUILanguage(langid);
+				// TODO: error handling
+				break;
+			default:
+				// language specific resources not yet available
+				break;
+			}
+		}
+	}
+}
+
 /* End of source */
