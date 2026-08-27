@@ -1,0 +1,78 @@
+tool_text Ver 0.0.3
+--
+
+■ Introduction
+This is a plug-in tool that extends the text processing of CLCL.
+
+■ Installation
+This tool works with CLCL Ver 2.0.0 and later.
+
+Put tool_text.dll in a suitable directory, open the CLCL options screen and display the "Tools" tab. Press the Add button and specify tool_text.dll to select the tool to add.
+Open the "Tools" tab in the options and drag and drop tool_text.dll there to register multiple tools at once.
+
+If you are upgrading, close CLCL and overwrite tool_text.dll.
+If you are uninstalling, delete the tool from CLCL and then delete tool_text.dll.
+
+If you cannot find tool_text.dll when installing, it may be set not to display DLLs. Set the Explorer folder options to "Show all files and folders".
+
+■ Functions
+
+・ Date and time conversion
+	Converts any string to the current date or time.
+	When "When sending data to clipboard" is enabled in the CLCL tool settings, any string will be automatically converted to date and time when text data in a registered item is sent to the clipboard.
+	The converted string will be:
+		%d - date
+		%t - time
+	You can set the date and time format by pressing the properties button in the CLCL tool settings.
+
+・ Convert to lowercase
+
+・ Convert to uppercase
+	Converts English characters to uppercase or lowercase.
+
+・ Quote
+・ Unquote
+
+	Adds the specified string to the beginning of the line.
+	Quotation marks can be set in the settings screen each time the tool is executed, but if a command line is specified for the quote tool, the character specified on the command line will be used as the quote mark. You can register multiple quote tools and use them separately by specifying quote marks on the command line.
+
+・ Text formatting
+	Wraps text at the specified number of bytes.
+	The number of bytes to wrap can be set in the settings screen each time the tool is run, but if you specify a command line for the text formatting tool, it will wrap at the number specified on the command line.
+
+・ Text sandwiching
+	Sandwiches text with a specified string.
+	The characters to sandwich can be set in the settings screen each time the tool is run, but if you specify a command line for the text sandwiching tool, it will sandwich with the string specified on the command line.
+	The way to specify is as follows:
+		<TAG>,</TAG>
+	separate the beginning and end with ",". If you want to use "," in the string, escape it with \, like this:
+		"\,".
+	You can register multiple text sandwiching tools and specify the string to sandwich on the command line to use different ones.
+
+・ Remove newline
+	Remove newline characters (CR,LF) from text.
+	You can set the tool to remove spaces at the beginning of lines by pressing the Properties button on the CLCL tool settings screen.
+	The default setting is to remove spaces at the beginning of lines.
+
+・ Text concatenation
+	Concatenates multiple text data and sends it to the clipboard.
+	Concatenation displays history and registered items in a list (right pane) in the CLCL viewer, and when you select multiple items and call the tool, it concatenates the selected items and sends them to the clipboard.
+	You can set the tool to insert a line break between the concatenated text by pressing the Properties button in the CLCL tool settings.
+
+・ Text editing
+	You can edit text on the simple editing screen.
+	Set the tool to call from the action menu, right-click the history menu in CLCL,display the list of tools, and select the text editing tool to display the editing screen.
+	After editing, press the [OK] button to reflect the changes.
+
+--
+
+The author is not responsible for any damage caused by this program.
+
+We strongly recommend that you back up important files.
+
+Please report any bugs, requests or questions to nakka@nakka.com.
+
+Copyright (C) 1996-2015 by Ohno Tomoaki. All rights reserved.
+	http://www.nakka.com/
+
+2015/09/05

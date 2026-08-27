@@ -1,0 +1,32 @@
+EXETYPE WINDOWS
+
+EXPORTS
+	get_tool_info_w
+
+	convert_date
+	convert_date_property
+
+	to_lower
+	to_lower_property
+	to_upper
+	to_upper_property
+
+	quote
+	quote_property
+	unquote
+	unquote_property
+
+	word_break
+	word_break_property
+
+	put_text
+	put_text_property
+
+	delete_crlf
+	delete_crlf_property
+
+	join_text
+	join_text_property
+
+	text_edit
+	text_edit_property
