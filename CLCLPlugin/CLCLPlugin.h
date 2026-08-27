@@ -88,6 +88,9 @@
 // execute only
 #define CALLTYPE_HISTORY				512				// 履歴からの呼び出し
 #define CALLTYPE_REGIST					1024			// 登録アイテムからの呼び出し
+// run the tool on session change
+#define CALLTYPE_ENTER_SESSION			2048			// enter windows session
+#define CALLTYPE_LEAVE_SESSION			4096			// leave windows session
 
 // ツール戻り値
 #define TOOL_ERROR						0				// ツールのエラー

@@ -20,6 +20,7 @@
 #include <tchar.h>
 #include <shlobj.h>
 #include <shlwapi.h>
+#include <wtsapi32.h>
 
 #pragma comment(lib, "shlwapi.lib")
 
@@ -1430,6 +1431,8 @@ static BOOL winodw_initialize(const HWND hWnd)
 	// 起動時に実行するツール
 	tool_execute_all(hWnd, CALLTYPE_START, NULL);
 
+	BOOL b = WTSRegisterSessionNotification(hWnd, NOTIFY_FOR_THIS_SESSION);
+
 	// ビューア表示
 	if (option.main_show_viewer == 1) {
 		SendMessage(hWnd, WM_COMMAND, ID_MENUITEM_VIEWER, 0);
@@ -1536,6 +1539,8 @@ static BOOL winodw_end(const HWND hWnd)
 		tooltip_close(hToolTip);
 		hToolTip = NULL;
 	}
+
+	BOOL b = WTSUnRegisterSessionNotification(hWnd);
 
 	// クリップボード監視解除
 	KillTimer(hWnd, ID_RECHAIN_TIMER);
@@ -2361,6 +2366,29 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			return SendMessage(hViewerWnd, msg, wParam, lParam);
 		}
 		return FALSE;
+
+	case WM_WTSSESSION_CHANGE:
+		// セッションの変更
+		// Session changes
+		switch (wParam) {
+		case WTS_SESSION_LOGON:
+			// tools to be executed when user re_enters session
+			tool_execute_all(hWnd, CALLTYPE_ENTER_SESSION, NULL);
+			break;
+		case WTS_SESSION_LOGOFF:
+			// tools to be executed when user leaves session
+			tool_execute_all(hWnd, CALLTYPE_LEAVE_SESSION, NULL);
+			break;
+		case WTS_SESSION_LOCK:
+			// tools to be executed when user leaves session
+			tool_execute_all(hWnd, CALLTYPE_LEAVE_SESSION, NULL);
+			break;
+		case WTS_SESSION_UNLOCK:
+			// tools to be executed when user re_enters session
+			tool_execute_all(hWnd, CALLTYPE_ENTER_SESSION, NULL);
+			break;
+		}
+		break;
 
 	default:
 		if (msg == WM_TASKBARCREATED) {
