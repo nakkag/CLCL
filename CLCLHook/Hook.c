@@ -29,7 +29,7 @@ HINSTANCE hInstDLL;
 /* Local Function Prototypes **/
 
 /*
- * DllMain - ƒƒCƒ“
+ * DllMain - ï¿½ï¿½ï¿½Cï¿½ï¿½
  */
 int WINAPI DllMain(HINSTANCE hInstance, DWORD dwNotification, LPVOID lpReserved)
 {
@@ -41,26 +41,41 @@ int WINAPI DllMain(HINSTANCE hInstance, DWORD dwNotification, LPVOID lpReserved)
 }
 
 /*
- * key_hook_proc - ƒtƒbƒNƒvƒƒV[ƒWƒƒ
+ * key_hook_proc - low-level keyboard hook procedure
+ *
+ * WH_KEYBOARD_LL receives:
+ *   wParam = WM_KEYDOWN / WM_KEYUP / WM_SYSKEYDOWN / WM_SYSKEYUP
+ *   lParam = pointer to KBDLLHOOKSTRUCT
+ *
+ * We translate to the format the main window expects (same as old WH_KEYBOARD):
+ *   msg wParam = virtual key code
+ *   msg lParam = bit 31 set on key-up, clear on key-down
  */
 LRESULT CALLBACK key_hook_proc(INT nCode, WPARAM wParam, LPARAM lParam)
 {
 	if (nCode >= 0) {
-		SendMessage(call_wnd, msg_id, wParam, lParam);
+		KBDLLHOOKSTRUCT *kb = (KBDLLHOOKSTRUCT *)lParam;
+		LPARAM flags = 0;
+		if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP) {
+			flags = 0x80000000;
+		}
+		PostMessage(call_wnd, msg_id, (WPARAM)kb->vkCode, flags);
 	}
 	return CallNextHookEx(next_hook, nCode, wParam, lParam);
 }
 
 /*
- * set_hook - ƒtƒbƒN‚ÌŠJn
+ * set_hook - ï¿½tï¿½bï¿½Nï¿½ÌŠJï¿½n
  */
 __declspec(dllexport) BOOL CALLBACK SetHook(const HWND hWnd, const int msg)
 {
 	call_wnd = hWnd;
 	msg_id = msg;
 
-	//ƒtƒbƒN‚ğŠJn‚·‚é
-	next_hook = SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)key_hook_proc, hInstDLL, 0);
+	//ï¿½tï¿½bï¿½Nï¿½ï¿½ï¿½Jï¿½nï¿½ï¿½ï¿½ï¿½
+	// Use WH_KEYBOARD_LL (low-level) so the hook works across all processes
+	// regardless of 32/64-bit. No DLL injection required.
+	next_hook = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC)key_hook_proc, hInstDLL, 0);
 	if (next_hook == NULL) {
 		return FALSE;
 	}
@@ -68,12 +83,12 @@ __declspec(dllexport) BOOL CALLBACK SetHook(const HWND hWnd, const int msg)
 }
 
 /*
- * UnHook - ƒtƒbƒN‚Ì‰ğœ
+ * UnHook - ï¿½tï¿½bï¿½Nï¿½Ì‰ï¿½ï¿½ï¿½
  */
 __declspec(dllexport) void CALLBACK UnHook(void)
 {
 	if (next_hook != NULL) {
-		//ƒtƒbƒN‚ğ‰ğœ‚·‚é
+		//ï¿½tï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		UnhookWindowsHookEx(next_hook);
 	}
 }
