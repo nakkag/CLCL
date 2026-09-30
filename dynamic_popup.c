@@ -22,46 +22,46 @@
 #define IDC_TOOLTIP_WINDOW 51004
 #endif
 
-// data after select or losing focus
+// Data after select or losing focus
 typedef struct {
     UINT_PTR selectedItemData;
     BOOL selectionMade;
 } ModalPopupState;
 
-// Zustandskontrolle für das dynamische Popup
+// State control for the dynamic popup
 typedef struct {
-    HWND hwndFrame;           // Das neue unsichtbare Container-Fenster (hat den Schatten!)
-    HWND hwndEdit;            // Das eigentliche Edit Control (als Child)
-    HWND hwndList;            // Das Listbox Control (als Child)
-    HWND hwndTooltip;         // Tooltip-Fenster
+    HWND hwndFrame;           // The new invisible container window (has the shadow!)
+    HWND hwndEdit;            // The actual edit control (as child)
+    HWND hwndList;            // The listbox control (as child)
+    HWND hwndTooltip;         // Tooltip window
     HWND hwndOwner;
     HFONT hFont;
     OnPopupPopulateCallback populateCallback;
     OnPopupSelectCallback selectCallback;
-    OnPopupTooltipCallback tooltipCallback;  // Neuer Callback für Multiline-Tooltips
+    OnPopupTooltipCallback tooltipCallback;  // New callback for multiline tooltips
     unsigned int max_visible_items;
 	ModalPopupState* pModalState;
     void* pUserData;
     BOOL isClosing;
     BOOL listAboveEdit;
     RECT monitorRect;
-    HIMAGELIST hImageList;    // Gespeicherte ImageList für das Zeichnen der Icons
+    HIMAGELIST hImageList;    // Stored ImageList for drawing icons
     int icon_size;
     int icon_margin;
     int text_margin;
     int item_height;
-    int lastHoveredItem;      // Verfolgung des zuletzt angezeigten Tooltip-Elements
-    UINT_PTR uiTooltipTimer;  // Timer-ID für Tooltip-Verzögerung
-    TCHAR* currentTooltipText; // Aktueller Tooltip-Text für WM_PAINT
+    int lastHoveredItem;      // Tracking of last displayed tooltip element
+    UINT_PTR uiTooltipTimer;  // Timer ID for tooltip delay
+    TCHAR* currentTooltipText; // Current tooltip text for WM_PAINT
 } DynamicPopupData;
 
-// Vorwärtsdeklarationen
+// Forward declarations
 LRESULT CALLBACK PopupFrameWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK DynamicEditSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 LRESULT CALLBACK DynamicListSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 LRESULT CALLBACK TooltipWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-// Hilfsfunktion: Versteckt das Tooltip-Fenster
+// Helper function: Hides the tooltip window
 static void HideTooltip(DynamicPopupData* pData)
 {
     if (pData && pData->hwndTooltip) {
@@ -74,7 +74,7 @@ static void HideTooltip(DynamicPopupData* pData)
     }
 }
 
-// Hilfsfunktion: Zeigt ein Multiline-Tooltip an
+// Helper function: Displays a multiline tooltip
 static void ShowTooltipForItem(DynamicPopupData* pData, int itemIndex, POINT ptMouse)
 {
     if (!pData || !pData->hwndList || !pData->tooltipCallback) {
@@ -87,13 +87,13 @@ static void ShowTooltipForItem(DynamicPopupData* pData, int itemIndex, POINT ptM
         return;
     }
 
-    // Beende bestehenden Timer
+    // End existing timer
     if (pData->uiTooltipTimer) {
         KillTimer(pData->hwndList, pData->uiTooltipTimer);
         pData->uiTooltipTimer = 0;
     }
 
-    // Nicht erneut anzeigen, wenn über demselben Element
+    // Don't show again if over the same element
     if (pData->lastHoveredItem == itemIndex) {
         return;
     }
@@ -119,7 +119,7 @@ static void ShowTooltipForItem(DynamicPopupData* pData, int itemIndex, POINT ptM
     // or it returned us a tooltip text, 
     // then we have to do the tooltip handling right here.
 
-    // Tooltip-Fenster erstellen, falls nicht vorhanden
+    // Create tooltip window if not present
     if (!pData->hwndTooltip) {
         const TCHAR* szTooltipClass = TEXT("HCP_TooltipClass");
         static BOOL tooltipClassRegistered = FALSE;
@@ -149,14 +149,14 @@ static void ShowTooltipForItem(DynamicPopupData* pData, int itemIndex, POINT ptM
             return;
         }
 
-        // Speichere Pointer zu pData im Fenster
+        // Store pointer to pData in the window
         SetWindowLongPtr(pData->hwndTooltip, GWLP_USERDATA, (LONG_PTR)pData);
 
         HFONT hFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
         SendMessage(pData->hwndTooltip, WM_SETFONT, (WPARAM)hFont, FALSE);
     }
 
-    // Speichere den Tooltip-Text in pData
+    // Store tooltip text in pData
     if (pData->currentTooltipText) {
         HeapFree(GetProcessHeap(), 0, pData->currentTooltipText);
     }
@@ -166,7 +166,7 @@ static void ShowTooltipForItem(DynamicPopupData* pData, int itemIndex, POINT ptM
         _tcscpy_s(pData->currentTooltipText, len, tooltipText);
     }
 
-    // Tooltip-Größe berechnen
+    // Calculate tooltip size
     HDC hdc = GetDC(pData->hwndTooltip);
     HFONT hFont = (HFONT)SendMessage(pData->hwndTooltip, WM_GETFONT, 0, 0);
     HFONT oldFont = hFont ? (HFONT)SelectObject(hdc, hFont) : NULL;
@@ -184,7 +184,7 @@ static void ShowTooltipForItem(DynamicPopupData* pData, int itemIndex, POINT ptM
     int tooltipWidth = rcText.right - rcText.left + 10;
     int tooltipHeight = rcText.bottom - rcText.top + 10;
 
-    // Tooltip positionieren und anzeigen
+    // Position and show tooltip
     SetWindowPos(pData->hwndTooltip, HWND_TOPMOST,
         ptMouse.x + 15, ptMouse.y + 15,
         tooltipWidth, tooltipHeight,
@@ -195,7 +195,7 @@ static void ShowTooltipForItem(DynamicPopupData* pData, int itemIndex, POINT ptM
     UpdateWindow(pData->hwndTooltip);
 }
 
-// Custom Window Procedure für Tooltip
+// Custom window procedure for tooltip
 LRESULT CALLBACK TooltipWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     DynamicPopupData* pData = (DynamicPopupData*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
@@ -209,11 +209,11 @@ LRESULT CALLBACK TooltipWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             RECT rcClient;
             GetClientRect(hWnd, &rcClient);
 
-            // Hintergrund füllen
+            // Fill background
             HBRUSH hBg = GetSysColorBrush(COLOR_INFOBK);
             FillRect(hdc, &rcClient, hBg);
 
-            // Text zeichnen
+            // Draw text
             HFONT hFont = (HFONT)SendMessage(hWnd, WM_GETFONT, 0, 0);
             HFONT oldFont = hFont ? (HFONT)SelectObject(hdc, hFont) : NULL;
 
@@ -248,7 +248,7 @@ LRESULT CALLBACK TooltipWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-// Hilfsfunktion: Gibt den Speicher aller Listbox-Einträge frei
+// Helper function: Frees memory of all listbox entries
 static void ClearListBoxItems(HWND hwndList) 
 {
     int count = (int)SendMessage(hwndList, LB_GETCOUNT, 0, 0);
@@ -279,8 +279,8 @@ void PopupAddString(HWND hwndListBox, const TCHAR* pszText, int iIconIndex, UINT
     pItem->iIconIndex = iIconIndex;
     pItem->itemData = itemData;
 
-    // Da LBS_OWNERDRAWFIXED aktiv ist, übergeben wir den Pointer als String-Parameter.
-    // Windows speichert diesen automatisch als ItemData, da LBS_HASSTRINGS NICHT gesetzt ist.
+    // Since LBS_OWNERDRAWFIXED is active, we pass the pointer as string parameter.
+    // Windows automatically stores this as ItemData since LBS_HASSTRINGS is NOT set.
     SendMessage(hwndListBox, LB_ADDSTRING, 0, (LPARAM)pItem);
 }
 
@@ -294,7 +294,13 @@ static void DestroyPopupLayout(DynamicPopupData* pData)
     HWND hList = pData->hwndList;
     HWND hTooltip = pData->hwndTooltip;
 
+    // Hide internal tooltip if active.
     HideTooltip(pData);
+    if (hTooltip == NULL && pData->tooltipCallback) {
+        POINT pt = { 0, 0 };
+        // If host application handles tooltip, this call will hide it.
+        pData->tooltipCallback(pt, NULL, pData->pUserData);
+    }
 
     RemoveWindowSubclass(hEdit, DynamicEditSubclass, SUBCLASS_ID_POPUP);
     RemoveWindowSubclass(hList, DynamicListSubclass, SUBCLASS_ID_POPUP);
@@ -342,20 +348,20 @@ static void RepositionListbox(DynamicPopupData* pData, int editHeight)
     int monitorBottom = pData->monitorRect.bottom;
 
     if (frameRect.left < pData->monitorRect.left) {
-        // move the frame window to the right to fit within the monitor
+        // Move the frame window to the right to fit within the monitor
 		frameRect.left = pData->monitorRect.left;
 		frameRect.right = pData->monitorRect.left + width + 1;
     } 
     else if (frameRect.right > pData->monitorRect.right) {
-		// move the frame window to the left to fit within the monitor
+		// Move the frame window to the left to fit within the monitor
         frameRect.left = pData->monitorRect.right - width  - 1;
 		frameRect.right = pData->monitorRect.right;
 	}
     if (editRect.top < pData->monitorRect.top) {
-        // move the frame window down to fit within the monitor
+        // Move the frame window down to fit within the monitor
         frameRect.top = pData->monitorRect.top;
     } else if (editRect.bottom > pData->monitorRect.bottom) {
-        // move the frame window up to fit within the monitor
+        // Move the frame window up to fit within the monitor
         frameRect.bottom = pData->monitorRect.bottom;
 	}  
     
@@ -389,7 +395,7 @@ static void UpdateListContent(DynamicPopupData* pData)
     if (text) {
         GetWindowText(pData->hwndEdit, text, len + 1);
 
-        // Vor dem Befüllen alten Inhalt und dessen Heap-Objekte löschen
+        // Delete old content and its heap objects before populating
         ClearListBoxItems(pData->hwndList);
         HideTooltip(pData);
 
@@ -412,13 +418,13 @@ HWND CreateDynamicPopupMenu(HWND hwndOwner, int x, int y, int width)
     HINSTANCE hInstance = (HINSTANCE)GetWindowLongPtr(hwndOwner, GWLP_HINSTANCE);
     const TCHAR* szClassName = TEXT("HCP_PopupMenuFrameClass");
 
-    // Eigene, saubere Fensterklasse registrieren (NUR EINMAL)
+    // Register own, clean window class (ONLY ONCE)
     static BOOL classRegistered = FALSE;
     if (!classRegistered) {
         WNDCLASS wc = { 0 };
         wc.lpfnWndProc = PopupFrameWndProc;
         wc.hInstance = hInstance;
-        wc.hbrBackground = (HBRUSH)(COLOR_MENU + 1); // Menü-Hintergrundfarbe
+        wc.hbrBackground = (HBRUSH)(COLOR_MENU + 1); // Menu background color
         wc.lpszClassName = szClassName;
         wc.style = CS_DROPSHADOW;
 
@@ -438,7 +444,7 @@ HWND CreateDynamicPopupMenu(HWND hwndOwner, int x, int y, int width)
     int initialListHeight = 0; //ITEM_HEIGHT * 3;
     int totalHeight = editHeight + initialListHeight;
 
-    // 1. Das übergeordnete POPUP-Fenster erstellen
+    // 1. Create the parent POPUP window
     HWND hwndFrame = CreateWindowEx(
         WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
         szClassName, NULL,
@@ -449,14 +455,14 @@ HWND CreateDynamicPopupMenu(HWND hwndOwner, int x, int y, int width)
 
     if (!hwndFrame) return NULL;
 
-    // Speicher für Daten reservieren
+    // Allocate memory for data
     DynamicPopupData* pData = (DynamicPopupData*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(DynamicPopupData));
     if (!pData) {
         DestroyWindow(hwndFrame);
         return NULL;
     }
 
-    // 2. Das Edit-Control als CHILD im Frame erstellen
+    // 2. Create the edit control as CHILD in the frame
     HWND hwndEdit = CreateWindowEx(
         0, TEXT("EDIT"), TEXT(""),
         WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL,
@@ -464,7 +470,7 @@ HWND CreateDynamicPopupMenu(HWND hwndOwner, int x, int y, int width)
         hwndFrame, (HMENU)IDC_DYNAMIC_EDIT, hInstance, NULL
     );
 
-    // WICHTIG: LBS_OWNERDRAWFIXED ohne LBS_HASSTRINGS. Dadurch ist der "String" die Pointer-Adresse.
+    // IMPORTANT: LBS_OWNERDRAWFIXED without LBS_HASSTRINGS. This makes the "string" the pointer address.
     HWND hwndList = CreateWindowEx(
         0, TEXT("LISTBOX"), NULL,
         WS_CHILD | WS_VISIBLE | WS_VSCROLL | LBS_NOTIFY | LBS_OWNERDRAWFIXED,
@@ -478,7 +484,7 @@ HWND CreateDynamicPopupMenu(HWND hwndOwner, int x, int y, int width)
         return NULL;
     }
 
-    // Zeiger auf Datenstruktur im Frame-Fenster hinterlegen
+    // Store pointer to data structure in frame window
     SetWindowLongPtr(hwndFrame, GWLP_USERDATA, (LONG_PTR)pData);
 
     pData->hwndFrame = hwndFrame;
@@ -504,7 +510,7 @@ HWND CreateDynamicPopupMenu(HWND hwndOwner, int x, int y, int width)
     pData->uiTooltipTimer = 0;
     pData->currentTooltipText = NULL;
 
-    // Subclassing für Controls aktivieren
+    // Activate subclassing for controls
     SetWindowSubclass(pData->hwndEdit, DynamicEditSubclass, SUBCLASS_ID_POPUP, (DWORD_PTR)pData);
     SetWindowSubclass(pData->hwndList, DynamicListSubclass, SUBCLASS_ID_POPUP, (DWORD_PTR)pData);
 
@@ -611,18 +617,18 @@ void ActivateDynamicPopup(HWND hwndFrame)
 	if (pData == NULL)
         return;
 
-    // Modernere System-Schriftart zuweisen
+    // Assign modern system font
     HFONT hFont = pData->hFont ? pData->hFont : (HFONT)GetStockObject(DEFAULT_GUI_FONT);
     SendMessage(pData->hwndEdit, WM_SETFONT, (WPARAM)hFont, TRUE);
     SendMessage(pData->hwndList, WM_SETFONT, (WPARAM)hFont, TRUE);
 
     if (pData->item_height < pData->icon_margin + pData->icon_size + pData->icon_margin) {
-        // Höhe des Listbox-Items basierend auf Icon-Größe
+        // Height of listbox item based on icon size
         pData->item_height = pData->icon_margin + pData->icon_size + pData->icon_margin;
         }
     SendMessage(pData->hwndList, LB_SETITEMHEIGHT, 0, (LPARAM)pData->item_height);
 
-    // Initial befüllen
+    // Populate initially
     UpdateListContent(pData);
 
     ShowWindow(pData->hwndFrame, SW_SHOW);
@@ -656,7 +662,7 @@ static void SetModalState(DynamicPopupData* pData, const PopupItemData* pSelecte
     }
 }
 
-// Fensterprozedur für das äußere Frame-Fenster
+// Window procedure for the outer frame window
 LRESULT CALLBACK PopupFrameWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     DynamicPopupData* pData = (DynamicPopupData*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
@@ -680,19 +686,19 @@ LRESULT CALLBACK PopupFrameWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                 RECT rc = pdis->rcItem;
                 BOOL isSelected = (pdis->itemState & ODS_SELECTED);
 
-                // 1. Hintergrund zeichnen (Selektiert vs. Standard)
+                // 1. Draw background (selected vs. standard)
                 HBRUSH hBg = GetSysColorBrush(isSelected ? COLOR_HIGHLIGHT : COLOR_MENU);
                 FillRect(hdc, &rc, hBg);
 
-                // 2. Icon zeichnen (falls ImageList und gültiger Index vorhanden)
+                // 2. Draw icon (if ImageList and valid index present)
                 if (pData && pData->hImageList && pItem->iIconIndex >= 0 && pData->icon_size > 0) {
-                    // Vertikal zentrieren
+                    // Center vertically
                     int cy = rc.top + (rc.bottom - rc.top - pData->icon_size) / 2;
                     ImageList_Draw(pData->hImageList, pItem->iIconIndex, hdc, rc.left + pData->icon_margin, cy, ILD_TRANSPARENT);
                 }
                 int iconOffset = (pData && pData->icon_size > 0) ? pData->icon_margin + pData->icon_size + pData->icon_margin : 0;
 
-                // 3. Text zeichnen
+                // 3. Draw text
                 COLORREF oldTextCol = SetTextColor(hdc, GetSysColor(isSelected ? COLOR_HIGHLIGHTTEXT : COLOR_MENUTEXT));
                 int oldBkMode = SetBkMode(hdc, TRANSPARENT);
 
@@ -708,7 +714,7 @@ LRESULT CALLBACK PopupFrameWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                 SetBkMode(hdc, oldBkMode);
                 SetTextColor(hdc, oldTextCol);
 
-                // 4. Fokus-Rechteck unterdrücken (Menüs haben keinen gestrichelten Rahmen)
+                // 4. Suppress focus rectangle (menus don't have dashed borders)
                 return TRUE;
             }
             break;
@@ -732,7 +738,7 @@ LRESULT CALLBACK PopupFrameWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-// Subclass für das Edit-Control
+// Subclass the edit control
 LRESULT CALLBACK DynamicEditSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData) {
     DynamicPopupData* pData = (DynamicPopupData*)dwRefData;
 
@@ -782,7 +788,7 @@ LRESULT CALLBACK DynamicEditSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
                 if (index != LB_ERR) {
                     pItem = (PopupItemData*)SendMessage(pData->hwndList, LB_GETITEMDATA, index, 0);
                 }
-				SetModalState(pData, pItem);
+                SetModalState(pData, pItem);
                 if (pItem && pData->selectCallback) {
                     pData->selectCallback(pItem, pData->pUserData);
                 }
@@ -794,14 +800,14 @@ LRESULT CALLBACK DynamicEditSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
     return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 }
 
-// Subclass für die Listbox
+// Subclass the listbox
 LRESULT CALLBACK DynamicListSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData) {
     DynamicPopupData* pData = (DynamicPopupData*)dwRefData;
 
     switch (uMsg) {
     case WM_MOUSEMOVE: {
-        // Apparently tis message comes in even when mouse has not been moved.
-        // Therefore we comapare with the previous position, to avoid false alarms. 
+        // Apparently this message comes in even when mouse has not been moved.
+        // Therefore we compare with the previous position, to avoid false alarms. 
         static POINT oldpos = { 0, 0 };
         POINT pt;
         pt.x = GET_X_LPARAM(lParam);
@@ -809,7 +815,7 @@ LRESULT CALLBACK DynamicListSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
         ClientToScreen(hWnd, &pt);
         if (pt.x == oldpos.x && pt.y == oldpos.y)
             break;
-        // memorize the position
+        // Memorize the position
         oldpos = pt;
         int sel = (int)SendMessage(hWnd, LB_GETCURSEL, 0, 0);
         int index = (int)SendMessage(hWnd, LB_ITEMFROMPOINT, 0, lParam);
@@ -859,12 +865,12 @@ UINT_PTR TrackDynamicPopup(HWND hwndFrame)
         return 0;
     }
 
-    // local variable stays alive in this scope, even after pUserData is destroyed
+    // Local variable stays alive in this scope, even after pUserData is destroyed
     ModalPopupState modalState = { 0, FALSE };
     modalState.selectedItemData = 0;
     modalState.selectionMade = FALSE;
 
-    // pointer to local variable modalState
+    // Pointer to local variable modalState
 	pData->pModalState = &modalState;
 
     ActivateDynamicPopup(hwndFrame);
@@ -874,7 +880,7 @@ UINT_PTR TrackDynamicPopup(HWND hwndFrame)
 
     while (bContinue && GetMessage(&msg, NULL, 0, 0)) {
         if (!IsWindow(hwndFrame)) {
-			// The popup window has been destroyed, exit the loop
+            // The popup window has been destroyed, exit the loop
             bContinue = FALSE;
             break;
         }

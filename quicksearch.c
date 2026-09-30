@@ -15,6 +15,7 @@
 #include <commctrl.h>
 #include <tchar.h>
 #include <strsafe.h>
+#include <shlwapi.h>
 
 #include "quicksearch.h"
 #include "Data.h"
@@ -52,7 +53,8 @@ typedef struct {
 
 /* Local Function Prototypes */
 static int get_icon_index_for_data(DATA_INFO* di);
-static int listbox_add_matches(HWND hListBox, DATA_INFO* item, const TCHAR* srch, int max_cnt);
+static int listbox_add_matches(HWND hListBox, DATA_INFO* start, const TCHAR* srch, int max_cnt);
+
 static int listbox_add_matches(HWND hListBox, DATA_INFO* start, const TCHAR* srch, int max_cnt)
 {
 	int cnt = 0;
@@ -63,14 +65,16 @@ static int listbox_add_matches(HWND hListBox, DATA_INFO* start, const TCHAR* src
 		case TYPE_ROOT:
 		case TYPE_FOLDER:
 			if (item->child != NULL) {
+				// recursive call
 				cnt = listbox_add_matches(hListBox, item->child, srch, max_cnt);
 				if (cnt >= max_cnt)
 					return cnt;
 			}
 			break;
 		case TYPE_ITEM:
+			// Look for case-insensitive matches in title
 			if (item->title && item->title[0] != TEXT('\0') 
-				&& _tcsstr(item->title, srch) != NULL)
+				&& (srch[0] == 0 || StrStrI(item->title, srch) != NULL))
 			{
 				//listbox_add_item_with_icon(hListBox, item->title, item);
 				int icon_index = get_icon_index_for_data(item);
@@ -79,7 +83,7 @@ static int listbox_add_matches(HWND hListBox, DATA_INFO* start, const TCHAR* src
 					return cnt;
 			}
 			else if (item->menu_title && item->menu_title[0] != TEXT('\0')
-				&& _tcsstr(item->menu_title, srch) != NULL) 
+				&& (srch[0] == 0 || StrStrI(item->menu_title, srch) != NULL))
 			{
 				//listbox_add_item_with_icon(hListBox, item->menu_title, item);
 				int icon_index = get_icon_index_for_data(item);
@@ -88,6 +92,7 @@ static int listbox_add_matches(HWND hListBox, DATA_INFO* start, const TCHAR* src
 					return cnt;
 			}
 			else {
+				// Look for case-insensitive matches in textual content
 				BOOL bMatches = FALSE;
 				DATA_INFO* di = NULL;
 				TCHAR* mem;
@@ -122,12 +127,21 @@ static int listbox_add_matches(HWND hListBox, DATA_INFO* start, const TCHAR* src
 					continue;
 				}
 
-				bMatches = (_tcsstr((TCHAR*)mem, srch) != NULL);
+				TCHAR* s = (TCHAR*)mem;
+				// Check case-insensititive whether srch is substring of s
+				// (empty srch is always to be considered as match).
+				bMatches = srch[0] == 0 || (StrStrI(s, srch) != NULL);
 				if (bMatches) {
 					TCHAR buf[BUF_SIZE];
-					StringCchCopy(buf, BUF_SIZE, (TCHAR*)mem);
+					// ltrim whitespace etc.
+					int i = 0;
+					for (i = 0; i < _tcslen(s); i++) {
+						if (s[i] != TEXT(' ') && s[i] != TEXT('\t') 
+								&& s[i] != TEXT('\r') && s[i] != TEXT('\n') || s[i] == 0)
+							break;
+					}
+					StringCchCopy(buf, BUF_SIZE, s + i);
 					buf[BUF_SIZE-1] = TEXT('\0');
-					//listbox_add_item_with_icon(hListBox, buf, item);
 					int icon_index = get_icon_index_for_data(item);
 					PopupAddString(hListBox, buf, icon_index, (UINT_PTR)item);
 				}
@@ -239,7 +253,7 @@ TCHAR* MyPopupTooltipHandler(POINT pt, const PopupItemData* pSelectedItem, void*
 			pt.x = pt.y = 0;
 	}
 
-	// Wenn es ein TYPE_ITEM ist, können wir zusätzliche Infos abrufen
+	// If it's of  TYPE_ITEM we can get additional information.
 	DATA_INFO* highest_di = NULL;
 	if (di->type == TYPE_ITEM && (highest_di = format_get_priority_highest(di)) != NULL) {
 		TCHAR* buf = format_get_tooltip_text(highest_di);
@@ -259,7 +273,7 @@ TCHAR* MyPopupTooltipHandler(POINT pt, const PopupItemData* pSelectedItem, void*
 		}
 	}
 
-	// Falls kein spezieller Tooltip-Text verfügbar
+	// If no special tooltip text is available, use the title.
 	if (hWndTooltip) {
 		tooltip_show(hWndTooltip, pSelectedItem->pszText, pt.x, pt.y, 0);
 		return NULL;
@@ -323,7 +337,7 @@ UINT_PTR quicksearch(HWND hWnd, POINT pt, HWND hToolTip)
 	return itemData; // Return the selected item's data or 0 if no selection is made
 }
 
-// 1. DIESER CALLBACK BEFÜLLT DIE LISTBOX DYNAMISCH
+// 1. THIS CALLBACK POPULATES THE LISTBOX CONTROL DYNAMICALLY ACCORDING TO editText.
 void MyPopupPopulateHandler(const TCHAR* editText, HWND hwndListBox, void* pUserData) 
 {
 	// Add matching items to the listbox
@@ -331,13 +345,15 @@ void MyPopupPopulateHandler(const TCHAR* editText, HWND hwndListBox, void* pUser
 	if (max_cnt == 0)
 		max_cnt = profile_get_int(TEXT("quicksearch"), TEXT("max_item_count"), 30, ini_path);
 
+	// Add from history
 	int item_count = listbox_add_matches(hwndListBox, &history_data, editText, max_cnt);
 	if (item_count < max_cnt) {
+		// Add from templates
 		item_count = listbox_add_matches(hwndListBox, &regist_data, editText, max_cnt);
 	}
 }
 
-// 2. DIESER CALLBACK REAGIERT AUF DIE ENDGÜLTIGE AUSWAHL
+// 2. THIS CALLBACK PROCESSES THE FINAL SELECTION
 void MyPopupSelectionHandler(const PopupItemData* pSelectedItem, void* pUserData) 
 {
 	if (pSelectedItem) {
