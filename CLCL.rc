@@ -463,6 +463,8 @@ BEGIN
     IDS_MENU_VIEWER         "ビューア(&V)..."
     IDS_MENU_OPTION         "オプション(&O)..."
     IDS_MENU_CLIPBOARD_WATCH "クリップボード監視(&W)"
+    IDS_MENU_HELP           "ヘルプ(&H)"
+    IDS_MENU_QUICKSEARCH    "Quick Search"
     IDS_TREEITEM_CLIPBOARD  "クリップボード"
     IDS_TREEITEM_HISTORY    "履歴"
     IDS_TREEITEM_REGIST     "登録アイテム"
@@ -874,6 +876,8 @@ BEGIN
     IDS_MENU_VIEWER         "主窗口(&V)..."
     IDS_MENU_OPTION         "选项(&O)..."
     IDS_MENU_CLIPBOARD_WATCH "监视剪贴板(&W)"
+    IDS_MENU_HELP           "帮助(&H)"
+    IDS_MENU_QUICKSEARCH    "Quick Search"
     IDS_TREEITEM_CLIPBOARD  "剪贴板"
     IDS_TREEITEM_HISTORY    "历史"
     IDS_TREEITEM_REGIST     "模板"
@@ -1280,6 +1284,8 @@ BEGIN
     IDS_MENU_VIEWER         "Переглядач..."
     IDS_MENU_OPTION         "Параметри..."
     IDS_MENU_CLIPBOARD_WATCH "Спостереження за буфером"
+    IDS_MENU_HELP           "Довідка"
+    IDS_MENU_QUICKSEARCH    "Quick Search"
     IDS_TREEITEM_CLIPBOARD  "Буфер обміну"
     IDS_TREEITEM_HISTORY    "Історія"
     IDS_TREEITEM_REGIST     "Шаблон"
@@ -1395,6 +1401,7 @@ BEGIN
 END
 
 #endif    // Ukrainian (Ukraine) resources
+/////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1664,6 +1671,8 @@ BEGIN
     IDS_MENU_VIEWER         "&Viewer..."
     IDS_MENU_OPTION         "&Options..."
     IDS_MENU_CLIPBOARD_WATCH "Clipboard &Watch"
+    IDS_MENU_HELP           "&Help"
+    IDS_MENU_QUICKSEARCH    "&Quick Search"
     IDS_TREEITEM_CLIPBOARD  "Clipboard"
     IDS_TREEITEM_HISTORY    "History"
     IDS_TREEITEM_REGIST     "Template"
@@ -1780,6 +1789,7 @@ END
 
 #endif    // 英語 (米国) resources
 /////////////////////////////////////////////////////////////////////////////
+
 
 /////////////////////////////////////////////////////////////////////////////
 // German (Germany) resources
@@ -2048,6 +2058,8 @@ BEGIN
     IDS_MENU_VIEWER         "An&zeige..."
     IDS_MENU_OPTION         "&Einstellungen..."
     IDS_MENU_CLIPBOARD_WATCH "Zwischenablage-&Überwachung"
+    IDS_MENU_HELP           "&Hilfe"
+    IDS_MENU_QUICKSEARCH    "Schnellsuche"
     IDS_TREEITEM_CLIPBOARD  "Zwischenablage"
     IDS_TREEITEM_HISTORY    "Verlauf"
     IDS_TREEITEM_REGIST     "Vorlagen"
