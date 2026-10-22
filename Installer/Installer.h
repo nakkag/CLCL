@@ -32,6 +32,8 @@
 #define UNINSTALL_LOG					TEXT("uninstall.dat")
 // 以前のインストーラがインストール先に残すファイルの一覧
 #define OLD_INSTALL_LOG					TEXT("install.DAT")
+// 使用中で上書きできないファイルを退避するときの拡張子
+#define OLD_FILE_EXT					TEXT(".old")
 
 // アプリの一覧への登録先
 #define UNINSTALL_KEY					TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")

@@ -136,6 +136,9 @@ BEGIN
     IDS_ERR_RUN             "CLCL を起動できませんでした。"
     IDS_RUNNING             "CLCL が起動中です。\nCLCL を終了してから [再試行] をクリックしてください。"
     IDS_FILE_LOCKED         "ファイルを更新できませんでした。\n%s\n\nCLCL が起動中の場合は、CLCL を終了してから [再試行] をクリックしてください。"
+    IDS_ERR_PATH_INVALID    "インストール先のフォルダは、ドライブ名 (C:\\...) または \\\\サーバ名\\共有名 から始まる絶対パスで指定してください。\n「..」を含むパスは使用できません。"
+    IDS_ERR_PATH_ROOT       "ドライブや共有の直下にはインストールできません。\nサブフォルダを指定してください。"
+    IDS_ERR_PATH_LONG       "インストール先のフォルダのパスが長すぎます。"
 END
 
 /////////////////////////////////////////////////////////////////////////////
@@ -178,6 +181,9 @@ BEGIN
     IDS_ERR_RUN             "Failed to start CLCL."
     IDS_RUNNING             "CLCL is running.\nExit CLCL, and then click [Retry]."
     IDS_FILE_LOCKED         "Failed to update the file.\n%s\n\nIf CLCL is running, exit CLCL and then click [Retry]."
+    IDS_ERR_PATH_INVALID    "Enter the destination folder as an absolute path starting with a drive letter (C:\\...) or \\\\server\\share.\nThe path cannot contain .. elements."
+    IDS_ERR_PATH_ROOT       "CLCL cannot be installed directly in the root of a drive or share.\nSpecify a subfolder."
+    IDS_ERR_PATH_LONG       "The path of the destination folder is too long."
 END
 
 /////////////////////////////////////////////////////////////////////////////
@@ -220,6 +226,9 @@ BEGIN
     IDS_ERR_RUN             "CLCL konnte nicht gestartet werden."
     IDS_RUNNING             "CLCL wird ausgeführt.\nBeenden Sie CLCL, und klicken Sie dann auf [Wiederholen]."
     IDS_FILE_LOCKED         "Die Datei konnte nicht aktualisiert werden.\n%s\n\nFalls CLCL ausgeführt wird, beenden Sie CLCL und klicken Sie dann auf [Wiederholen]."
+    IDS_ERR_PATH_INVALID    "Geben Sie den Zielordner als absoluten Pfad an, der mit einem Laufwerksbuchstaben (C:\\...) oder \\\\Server\\Freigabe beginnt.\nDer Pfad darf keine ..-Elemente enthalten."
+    IDS_ERR_PATH_ROOT       "CLCL kann nicht direkt im Stammverzeichnis eines Laufwerks oder einer Freigabe installiert werden.\nGeben Sie einen Unterordner an."
+    IDS_ERR_PATH_LONG       "Der Pfad des Zielordners ist zu lang."
 END
 
 /////////////////////////////////////////////////////////////////////////////
@@ -262,6 +271,9 @@ BEGIN
     IDS_ERR_RUN             "无法启动 CLCL。"
     IDS_RUNNING             "CLCL 正在运行。\n请退出 CLCL 后单击[重试]。"
     IDS_FILE_LOCKED         "无法更新文件。\n%s\n\n如果 CLCL 正在运行，请退出 CLCL 后单击[重试]。"
+    IDS_ERR_PATH_INVALID    "安装文件夹必须是以盘符 (C:\\...) 或 \\\\服务器\\共享名 开头的绝对路径。\n路径中不能包含 .. 。"
+    IDS_ERR_PATH_ROOT       "不能直接安装到驱动器或共享的根目录。\n请指定子文件夹。"
+    IDS_ERR_PATH_LONG       "安装文件夹的路径过长。"
 END
 
 /////////////////////////////////////////////////////////////////////////////
@@ -304,4 +316,7 @@ BEGIN
     IDS_ERR_RUN             "Не вдалося запустити CLCL."
     IDS_RUNNING             "CLCL запущено.\nЗавершіть роботу CLCL, потім натисніть [Повторити]."
     IDS_FILE_LOCKED         "Не вдалося оновити файл.\n%s\n\nЯкщо CLCL запущено, завершіть роботу CLCL та натисніть [Повторити]."
+    IDS_ERR_PATH_INVALID    "Вкажіть папку призначення як абсолютний шлях, що починається з літери диска (C:\\...) або \\\\сервер\\ресурс.\nШлях не може містити елементи .."
+    IDS_ERR_PATH_ROOT       "CLCL не можна встановити безпосередньо в корінь диска або спільного ресурсу.\nВкажіть підпапку."
+    IDS_ERR_PATH_LONG       "Шлях до папки призначення задовгий."
 END
