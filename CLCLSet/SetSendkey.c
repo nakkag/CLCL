@@ -37,7 +37,7 @@ extern int prop_ret;
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
-static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+static INT_PTR CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 static void listview_set_text(const HWND hListView, const int i);
 static void listview_set_sendkey(const HWND hListView, SENDKEY_INFO *si, const BOOL copy);
 static SENDKEY_INFO *listview_get_sendkey(const HWND hListView, int *cnt);
@@ -46,7 +46,7 @@ static void listview_free_sendkey(const HWND hListView);
 /*
  * set_sendkey_item_proc - キー設定の項目を設定
  */
-static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LV_COLUMN lvc;
 	SENDKEY_INFO *si;
@@ -54,7 +54,7 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 	TCHAR tmp[BUF_SIZE];
 	int i;
 #ifdef OP_XP_STYLE
-	static long hTheme;
+	static HTHEME hTheme;
 #endif	// OP_XP_STYLE
 
 	switch (uMsg) {
@@ -97,7 +97,7 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 			// 新規追加
 			SetDlgItemInt(hDlg, IDC_EDIT_COPY_WAIT, DEFAULT_COPY_WAIT, FALSE);
 			SetDlgItemInt(hDlg, IDC_EDIT_PASTE_WAIT, DEFAULT_PASTE_WAIT, FALSE);
-			SetWindowLong(hDlg, GWL_USERDATA, 0);
+			SetWindowLongPtr(hDlg, GWLP_USERDATA, 0);
 			break;
 		}
 		si = (SENDKEY_INFO *)lParam;
@@ -144,8 +144,8 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 				(WPARAM)MAKEWORD(si->paste_virtkey, i), 0);
 		}
 		SetDlgItemInt(hDlg, IDC_EDIT_PASTE_WAIT, si->paste_wait, FALSE);
-		
-		SetWindowLong(hDlg, GWL_USERDATA, lParam);
+
+		SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
 		break;
 
 	case WM_CLOSE:
@@ -176,7 +176,7 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 		if (hTheme != 0) {
 			close_theme(hTheme);
 		}
-		hTheme = open_theme(GetDlgItem(hDlg, IDC_BUTTON_FORMAT), L"SCROLLBAR");
+		hTheme = open_theme(GetDlgItem(hDlg, IDC_BUTTON_SELECT), L"SCROLLBAR");
 		break;
 #endif	// OP_XP_STYLE
 
@@ -216,7 +216,7 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 				break;
 			}
 
-			if ((si = (SENDKEY_INFO *)GetWindowLong(hDlg, GWL_USERDATA)) == NULL) {
+			if ((si = (SENDKEY_INFO *)GetWindowLongPtr(hDlg, GWLP_USERDATA)) == NULL) {
 				si = mem_calloc(sizeof(SENDKEY_INFO));
 			}
 			if (si != NULL) {
@@ -245,7 +245,7 @@ static BOOL CALLBACK set_sendkey_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 				si->paste_wait = GetDlgItemInt(hDlg, IDC_EDIT_PASTE_WAIT, NULL, FALSE);
 			}
 
-			if (GetWindowLong(hDlg, GWL_USERDATA) == 0) {
+			if (si != NULL && GetWindowLongPtr(hDlg, GWLP_USERDATA) == 0) {
 				// 新規
 				HWND pWnd = PropSheet_GetCurrentPageHwnd(GetParent(hDlg));
 				listview_set_sendkey(GetDlgItem(pWnd, IDC_LIST_SENDKEY), si, FALSE);
@@ -383,14 +383,14 @@ static void listview_free_sendkey(const HWND hListView)
 /*
  * set_sendkey_proc - キー設定のプロシージャ
  */
-BOOL CALLBACK set_sendkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK set_sendkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LV_COLUMN lvc;
 	SENDKEY_INFO *si;
 	int i;
 	BOOL enable;
 #ifdef OP_XP_STYLE
-	static long hThemeUp, hThemeDown;
+	static HTHEME hThemeUp, hThemeDown;
 #endif	// OP_XP_STYLE
 
 	switch (uMsg) {

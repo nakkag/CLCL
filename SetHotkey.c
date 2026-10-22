@@ -25,12 +25,12 @@
 /* Global Variables */
 
 /* Local Function Prototypes */
-static BOOL CALLBACK set_hotkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+static INT_PTR CALLBACK set_hotkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 /*
  * set_hotkey_proc - ホットキー設定ウィンドウプロシージャ
  */
-static BOOL CALLBACK set_hotkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK set_hotkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	DATA_INFO *di;
 	int i;
@@ -66,7 +66,7 @@ static BOOL CALLBACK set_hotkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 			CheckDlgButton(hDlg, IDC_CHECK_PASTE, 1);
 		}
 
-		SetWindowLong(hDlg, GWL_USERDATA, lParam);
+		SetWindowLongPtr(hDlg, GWLP_USERDATA, (LONG_PTR)lParam);
 		break;
 
 	case WM_CLOSE:
@@ -80,13 +80,13 @@ static BOOL CALLBACK set_hotkey_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 			break;
 
 		case IDOK:
-			di = (DATA_INFO *)GetWindowLong(hDlg, GWL_USERDATA);
+			di = (DATA_INFO *)GetWindowLongPtr(hDlg, GWLP_USERDATA);
 			if (di == NULL) {
 				EndDialog(hDlg, FALSE);
 				break;
 			}
 			// ホットキー
-			i = SendDlgItemMessage(hDlg, IDC_HOTKEY_ITEM, HKM_GETHOTKEY, 0, 0);
+			i = (int)SendDlgItemMessage(hDlg, IDC_HOTKEY_ITEM, HKM_GETHOTKEY, 0, 0);
 			di->op_virtkey = LOBYTE(i);
 			i = HIBYTE(i);
 			di->op_modifiers = ((i & HOTKEYF_SHIFT) ? MOD_SHIFT : 0) |

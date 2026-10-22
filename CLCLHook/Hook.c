@@ -51,8 +51,9 @@ int WINAPI DllMain(HINSTANCE hInstance, DWORD dwNotification, LPVOID lpReserved)
  */
 LRESULT CALLBACK key_hook_proc(INT nCode, WPARAM wParam, LPARAM lParam)
 {
-	if (nCode >= 0) {
-		SendMessage(call_wnd, msg_id, wParam, lParam);
+	if (nCode >= 0 && call_wnd != NULL) {
+		// 本体側は wParam/lParam の値のみ使用するため非同期で通知する
+		PostMessage(call_wnd, msg_id, wParam, lParam);
 	}
 	return CallNextHookEx(next_hook, nCode, wParam, lParam);
 }

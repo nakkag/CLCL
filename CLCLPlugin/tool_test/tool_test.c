@@ -150,6 +150,11 @@ __declspec(dllexport) int CALLBACK test2(const HWND hWnd, TOOL_EXEC_INFO *tei, T
 {
 	DATA_INFO *di;
 
+	// アイテムが無い呼び出し (起動時や終了時など) は何もしない
+	// Nothing to do when called without an item (at startup, at exit, etc.)
+	if (tdi == NULL || tdi->di == NULL) {
+		return TOOL_SUCCEED;
+	}
 	if ((di = (DATA_INFO *)SendMessage(hWnd, WM_ITEM_GET_PARENT, 0, (LPARAM)tdi->di)) == NULL) {
 		return TOOL_SUCCEED;
 	}
@@ -191,6 +196,11 @@ __declspec(dllexport) int CALLBACK test3(const HWND hWnd, TOOL_EXEC_INFO *tei, T
 	TCHAR file_name[MAX_PATH];
 	DATA_INFO *di;
 
+	// アイテムが無い呼び出し (起動時や終了時など) は何もしない
+	// Nothing to do when called without an item (at startup, at exit, etc.)
+	if (tdi == NULL || tdi->di == NULL) {
+		return TOOL_SUCCEED;
+	}
 	if ((di = (DATA_INFO *)SendMessage(hWnd, WM_ITEM_GET_PRIORITY_HIGHEST, 0, (LPARAM)tdi->di)) == NULL) {
 		return TOOL_SUCCEED;
 	}
@@ -203,11 +213,16 @@ __declspec(dllexport) int CALLBACK test3(const HWND hWnd, TOOL_EXEC_INFO *tei, T
 	*file_name = TEXT('\0');
 	of.lpstrFile = file_name;
 	of.nMaxFile = MAX_PATH - 1;
-	of.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
+	of.Flags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
 	// 保存情報取得とファイル名選択
 	// Get saved information and select file name
 	if (SendMessage(hWnd, WM_ITEM_GET_SAVE_INFO, (WPARAM)&of, (LPARAM)di) >= 0 && GetSaveFileName(&of) == FALSE) {
 		return TOOL_CANCEL;
+	}
+	// ダイアログを表示しない形式でファイル名が設定されていない場合は保存しない
+	// Do not save if the format shows no dialog and sets no file name
+	if (*file_name == TEXT('\0')) {
+		return TOOL_SUCCEED;
 	}
 	// アイテムをファイルに保存
 	// Save item to file
@@ -241,11 +256,16 @@ __declspec(dllexport) int CALLBACK test4(const HWND hWnd, TOOL_EXEC_INFO *tei, T
 	*file_name = TEXT('\0');
 	of.lpstrFile = file_name;
 	of.nMaxFile = MAX_PATH - 1;
-	of.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
-	// 保存情報取得とファイル名選択
-	// Get saved information and select file name
+	of.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	// 開く情報取得とファイル名選択
+	// Get open information and select file name
 	if (SendMessage(hWnd, WM_ITEM_GET_OPEN_INFO, (WPARAM)&of, (LPARAM)TEXT("TEXT")) >= 0 && GetOpenFileName(&of) == FALSE) {
 		return TOOL_CANCEL;
+	}
+	// ダイアログを表示しない形式でファイル名が設定されていない場合は読み込まない
+	// Do not load if the format shows no dialog and sets no file name
+	if (*file_name == TEXT('\0')) {
+		return TOOL_SUCCEED;
 	}
 	// アイテムの作成
 	// Creating an item
@@ -277,7 +297,9 @@ __declspec(dllexport) int CALLBACK test4(const HWND hWnd, TOOL_EXEC_INFO *tei, T
 __declspec(dllexport) int CALLBACK test5(const HWND hWnd, TOOL_EXEC_INFO *tei, TOOL_DATA_INFO *tdi)
 {
 	DATA_INFO *di;
-	TCHAR buf[BUF_SIZE];
+	// タイトルの長さに上限は無いため十分な大きさで受け取る
+	// Titles have no length limit, so receive them in a large enough buffer
+	TCHAR buf[BUF_SIZE * 2];
 
 	// ビューアの選択アイテム取得
 	// Get selected items in the viewer
@@ -314,11 +336,16 @@ __declspec(dllexport) int CALLBACK test5(const HWND hWnd, TOOL_EXEC_INFO *tei, T
 __declspec(dllexport) int CALLBACK test6(const HWND hWnd, TOOL_EXEC_INFO *tei, TOOL_DATA_INFO *tdi)
 {
 	DATA_INFO *di;
-	TCHAR buf[BUF_SIZE];
-	TCHAR test_filename[BUF_SIZE];
-	TCHAR history_filename[BUF_SIZE];
+	TCHAR buf[MAX_PATH];
+	TCHAR test_filename[MAX_PATH];
+	TCHAR history_filename[MAX_PATH];
 
+	// 作業ディレクトリは MAX_PATH 文字以上のバッファで受け取る
+	// The work directory needs a buffer of at least MAX_PATH characters
 	SendMessage(hWnd, WM_GET_WORKPATH, 0, (LPARAM)buf);
+	if (lstrlen(buf) + lstrlen(TEXT("\\history.dat")) >= MAX_PATH) {
+		return TOOL_SUCCEED;
+	}
 	wsprintf(test_filename, TEXT("%s\\test.dat"), buf);
 	wsprintf(history_filename, TEXT("%s\\history.dat"), buf);
 

@@ -1,4 +1,50 @@
 
+----[Plugin DLL]----------------------------
+
+ツールプラグインがエクスポートする関数 (tool_template.c を参照)
+  get_tool_info_w(hWnd, index, TOOL_GET_INFO *tgi)
+    ツールの一覧を返します。index を 0 から順に呼び出し、FALSE を返すまで続けます。
+  <func_name>(hWnd, TOOL_EXEC_INFO *tei, TOOL_DATA_INFO *tdi)
+    tgi->func_name に設定した名前の関数で、ツールの処理を行います。
+    対象のアイテムが無い呼び出し (CALLTYPE_START / CALLTYPE_END /
+    CALLTYPE_VIEWER_OPEN / CALLTYPE_VIEWER_CLOSE やクリップボードの選択時など) では
+    tdi が NULL になります。
+  <func_name>_property(hWnd, TOOL_EXEC_INFO *tei)
+    ツールの設定画面を表示します (任意)。
+
+形式プラグインがエクスポートする関数 (format_template.c を参照)
+  get_format_header(hWnd, index, FORMAT_GET_INFO *fgi)
+    形式の一覧を返します。index を 0 から順に呼び出し、FALSE を返すまで続けます。
+  <func_header>initialize, <func_header>get_icon, <func_header>free,
+  <func_header>initialize_item, <func_header>copy_data, <func_header>data_to_bytes,
+  <func_header>bytes_to_data, <func_header>get_file_info, <func_header>data_to_file,
+  <func_header>file_to_data, <func_header>free_data, <func_header>free_item,
+  <func_header>get_menu_title, <func_header>get_menu_icon, <func_header>get_menu_bitmap,
+  <func_header>get_tooltip_text, <func_header>window_create, <func_header>window_destroy,
+  <func_header>window_show_data, <func_header>window_save_data,
+  <func_header>window_hide_data, <func_header>show_property
+    fgi->func_header に設定した文字列を先頭に付けた名前の関数を GetProcAddress で
+    取得します。必要なものだけエクスポートしてください (無い関数は呼ばれません)。
+
+struct_size
+  各構造体の先頭にある struct_size には、本体が sizeof(構造体) を設定して渡します。
+  本体の構造体がプラグイン側のヘッダより小さい (古い) 場合に備えて、struct_size より
+  後ろのメンバにはアクセスしないでください。
+
+メモリの確保と解放
+  本体とプラグインの間で受け渡すメモリは LocalAlloc(LMEM_FIXED) で確保し、受け取った
+  側が LocalFree で解放します。
+  ・<func_header>data_to_bytes と <func_header>get_tooltip_text が返すメモリは本体が
+    LocalFree します。
+  ・<func_header>get_menu_title で free_title を TRUE にした menu_title は本体が
+    LocalFree します。
+  ・TOOL_EXEC_INFO の cmd_line は本体が LocalAlloc で確保して渡し、呼び出し後に
+    LocalFree します。差し替える場合は元の文字列を LocalFree してから
+    LocalAlloc(LMEM_FIXED) で確保した文字列を設定し、元のポインタは保持しないで
+    ください。
+  ・WM_ITEM_TO_BYTES が返すバイト列はプラグインが LocalFree します。
+
+
 ----[General]----------------------------
 
 WM_GET_VERSION
@@ -14,7 +60,9 @@ WM_GET_WORKPATH
   戻り値 - 0
   機能:
     作業ディレクトリのパスを取得します。
-    初期設定では "CLCL.exeがあるディレクトリ\ユーザ名" になります。
+    通常は "%LOCALAPPDATA%\CLCL"、ポータブル設定 (clcl_app.ini の portable=1) の
+    場合は CLCL.exe があるディレクトリになります。
+    lParam には MAX_PATH 文字以上のバッファを指定してください。
 
 WM_GET_CLIPBOARD_WATCH
   wParam - 0
@@ -75,6 +123,8 @@ WM_OPTION_GET
   戻り値 - (OPTION_INFO *)オプション情報
   機能:
     オプションを取得します。
+    OPTION_INFO は SDK (CLCLPlugin.h) では定義していないため、プラグインからは
+    利用できません。
 
 WM_OPTION_LOAD
   wParam - 0
@@ -207,7 +257,9 @@ WM_ITEM_TO_BYTES
   lParam - (DATA_INFO *)変換するアイテム
   戻り値 - (BYTE *)変換後のバイト列
   機能:
-    アイテムをバイト列を変換します。
+    アイテムをバイト列に変換します。
+    戻り値のバイト列は LocalAlloc で確保されているため、利用し終わったら
+    LocalFree で解放してください。
 
 WM_ITEM_FROM_BYTES
   wParam - (BYTE *)変換するバイト列
@@ -257,6 +309,8 @@ WM_ITEM_GET_TITLE
   戻り値 - 0
   機能:
     アイテムのタイトルを取得します。
+    タイトルの長さに上限は無いため、wParam には十分な長さ (BUF_SIZE * 2 文字以上を
+    推奨) のバッファを指定してください。
 
 WM_ITEM_GET_OPEN_INFO
   wParam - (OPENFILENAME *)ファイル情報 (OUT)
@@ -267,7 +321,7 @@ WM_ITEM_GET_OPEN_INFO
 
 WM_ITEM_GET_SAVE_INFO
   wParam - (OPENFILENAME *)ファイル情報 (OUT)
-  lParam - (DATA_INFO )保存情報を取得するアイテム
+  lParam - (DATA_INFO *)保存情報を取得するアイテム
   戻り値 - (int)-1 - コモンダイアログを表示しない、0 - 未設定、1 - 設定済み
   機能:
     アイテムのファイル保存情報を取得します。

@@ -155,6 +155,7 @@ __declspec(dllexport) HANDLE CALLBACK func_copy_data(const TCHAR *format_name, c
  *	戻り値:
  *		変換したバイト列
  *		NULL の場合は変換処理なし
+ *		バイト列は LocalAlloc(LMEM_FIXED) で確保する (本体が LocalFree で解放する)
  */
 __declspec(dllexport) BYTE* CALLBACK func_data_to_bytes(const DATA_INFO *di, DWORD *ret_size)
 {
@@ -275,6 +276,8 @@ __declspec(dllexport) BOOL CALLBACK func_free_item(DATA_INFO *di)
  *
  *	引数:
  *		di - アイテム情報 (menu_title と free_title を編集)
+ *		     free_title を TRUE にした menu_title は本体が LocalFree で解放するため、
+ *		     LocalAlloc(LMEM_FIXED) で確保した文字列を設定する
  *
  *	戻り値:
  *		TRUE - タイトルあり
@@ -330,6 +333,7 @@ __declspec(dllexport) BOOL CALLBACK func_get_menu_bitmap(DATA_INFO *di, const in
  *	戻り値:
  *		ツールチップに表示するテキスト
  *		NULL の場合はツールチップを表示しない
+ *		テキストは LocalAlloc(LMEM_FIXED) で確保する (本体が LocalFree で解放する)
  */
 __declspec(dllexport) TCHAR* CALLBACK func_get_tooltip_text(DATA_INFO *di)
 {

@@ -13,6 +13,9 @@
 #include <windows.h>
 #undef  _INC_OLE
 #include <commctrl.h>
+#include <shlwapi.h>
+
+#pragma comment(lib, "shlwapi.lib")
 
 #include "..\General.h"
 #include "..\Memory.h"
@@ -62,7 +65,7 @@ static void free_menu_item(const HWND hTreeView, const HTREEITEM pItem);
 static void set_menu_control(const HWND hDlg, const HTREEITEM se_item);
 static void get_menu_control(const HWND hDlg, const HTREEITEM hItem);
 static void set_app_title(const HWND hDlg, TCHAR *buf);
-static BOOL CALLBACK set_action_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+static INT_PTR CALLBACK set_action_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 static MENU_INFO *copy_menu_info(const MENU_INFO *menu_info, const int menu_cnt);
 static ACTION_INFO *copy_action_info(const ACTION_INFO *ai);
 static void listview_set_text(const HWND hListView, const int i);
@@ -73,13 +76,12 @@ static void listview_free_action(const HWND hListView);
 /*
  * select_tool_proc - ツール選択ウィンドウプロシージャ
  */
-static BOOL CALLBACK select_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK select_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LV_COLUMN lvc;
 	LV_ITEM lvi;
 	TCHAR buf[BUF_SIZE];
 	int i, j;
-	static int old;
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
@@ -763,15 +765,15 @@ static void set_app_title(const HWND hDlg, TCHAR *buf)
 /*
  * set_action_item_proc - Actionの項目を設定
  */
-static BOOL CALLBACK set_action_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK set_action_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	HTREEITEM cItem;
 	ACTION_INFO *ai;
-	TCHAR buf[BUF_SIZE];
+	TCHAR buf[MAX_PATH];
 	int cnt;
 	int i;
 #ifdef OP_XP_STYLE
-	static long hThemeUp, hThemeDown;
+	static HTHEME hThemeUp, hThemeDown;
 #endif	// OP_XP_STYLE
 
 	switch (uMsg) {
@@ -833,7 +835,7 @@ static BOOL CALLBACK set_action_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 			TreeView_Expand(GetDlgItem(hDlg, IDC_TREE_MENU), root_item, TVE_EXPAND);
 			TreeView_SelectItem(GetDlgItem(hDlg, IDC_TREE_MENU), root_item);
 
-			SetWindowLong(hDlg, GWL_USERDATA, 0);
+			SetWindowLongPtr(hDlg, GWLP_USERDATA, 0);
 			set_enable_control(hDlg);
 			break;
 		}
@@ -874,7 +876,7 @@ static BOOL CALLBACK set_action_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 		TreeView_SelectItem(GetDlgItem(hDlg, IDC_TREE_MENU), root_item);
 
 		set_enable_control(hDlg);
-		SetWindowLong(hDlg, GWL_USERDATA, lParam);
+		SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
 		break;
 
 	case WM_CLOSE:
@@ -909,7 +911,7 @@ static BOOL CALLBACK set_action_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 			SendDlgItemMessage(hDlg, IDC_COMBO_CONTENT, CB_SETCURSEL, MENU_CONTENT_APP, 0);
 			get_menu_control(hDlg, cItem);
 			set_enable_control(hDlg);
-			DragQueryFile((HANDLE)wParam, i, buf, BUF_SIZE - 1);
+			DragQueryFile((HANDLE)wParam, i, buf, MAX_PATH);
 
 			SendDlgItemMessage(hDlg, IDC_EDIT_PATH, WM_SETTEXT, 0, (LPARAM)buf);
 			set_app_title(hDlg, buf);
@@ -970,10 +972,12 @@ static BOOL CALLBACK set_action_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 					// 登録アイテム保存要求
 					SendMessage(CLCLWnd, WM_REGIST_SAVE, 0, 0);
 				}
-				wsprintf(buf, TEXT("%s\\%s"), work_path, REGIST_FILENAME);
+				wnsprintf(buf, MAX_PATH, TEXT("%s\\%s"), work_path, REGIST_FILENAME);
 				*err_str = TEXT('\0');
 				if (file_read_data(buf, &regist_data.child, err_str) == FALSE && *err_str != TEXT('\0')) {
 					MessageBox(hDlg, err_str, REGIST_FILENAME, MB_ICONERROR);
+					data_free(regist_data.child);
+					regist_data.child = NULL;
 					break;
 				}
 				// フォルダの選択
@@ -1003,7 +1007,7 @@ static BOOL CALLBACK set_action_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 
 		case IDC_BUTTON_ICON_FILE_SELECT:
 			*buf = TEXT('\0');
-			SendDlgItemMessage(hDlg, IDC_EDIT_ICON_FILE, WM_GETTEXT, BUF_SIZE - 1, (LPARAM)buf);
+			SendDlgItemMessage(hDlg, IDC_EDIT_ICON_FILE, WM_GETTEXT, MAX_PATH - 1, (LPARAM)buf);
 			i = GetDlgItemInt(hDlg, IDC_EDIT_ICON_INDEX, NULL, FALSE);
 			SetFocus(GetDlgItem(hDlg, IDC_EDIT_ICON_FILE));
 			// アイコン選択
@@ -1028,7 +1032,7 @@ static BOOL CALLBACK set_action_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 
 			TreeView_SelectItem(GetDlgItem(hDlg, IDC_TREE_MENU), NULL);
 
-			if ((ai = (ACTION_INFO *)GetWindowLong(hDlg, GWL_USERDATA)) == NULL) {
+			if ((ai = (ACTION_INFO *)GetWindowLongPtr(hDlg, GWLP_USERDATA)) == NULL) {
 				ai = mem_calloc(sizeof(ACTION_INFO));
 			}
 			if (ai != NULL) {
@@ -1051,7 +1055,7 @@ static BOOL CALLBACK set_action_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 				ai->menu_info = get_menu_item(GetDlgItem(hDlg, IDC_TREE_MENU), root_item, &ai->menu_cnt);
 			}
 
-			if (GetWindowLong(hDlg, GWL_USERDATA) == 0) {
+			if (ai != NULL && GetWindowLongPtr(hDlg, GWLP_USERDATA) == 0) {
 				// 新規
 				HWND pWnd = PropSheet_GetCurrentPageHwnd(GetParent(hDlg));
 				listview_set_action(GetDlgItem(pWnd, IDC_LIST_ACTION), ai, FALSE);
@@ -1135,18 +1139,18 @@ static BOOL CALLBACK set_action_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 			// カスタムドロー
 			switch (((LPNMTVCUSTOMDRAW)lParam)->nmcd.dwDrawStage) {
 			case CDDS_PREPAINT:
-				SetWindowLong(hDlg, DWL_MSGRESULT, CDRF_NOTIFYITEMDRAW);
+				SetWindowLongPtr(hDlg, DWLP_MSGRESULT, CDRF_NOTIFYITEMDRAW);
 				return TRUE;
 
 			case CDDS_ITEMPREPAINT:
 				if (((LPNMTVCUSTOMDRAW)lParam)->nmcd.lItemlParam == 0) {
 					if (((LPNMTVCUSTOMDRAW)lParam)->nmcd.uItemState == (CDIS_FOCUS | CDIS_SELECTED)) {
 						((LPNMTVCUSTOMDRAW)lParam)->clrText = dark_mode_get_color(COLOR_HIGHLIGHTTEXT);
-					} else {   
+					} else {
 						((LPNMTVCUSTOMDRAW)lParam)->clrText = dark_mode_get_color(COLOR_GRAYTEXT);
 					}
 				}
-				SetWindowLong(hDlg, DWL_MSGRESULT, CDRF_DODEFAULT);
+				SetWindowLongPtr(hDlg, DWLP_MSGRESULT, CDRF_DODEFAULT);
 				return TRUE;
 			}
 			break;
@@ -1238,6 +1242,10 @@ static void listview_set_text(const HWND hListView, const int i)
 	case ACTION_EXIT:
 		p = message_get_res(IDS_ACTION_EXIT);
 		break;
+
+	default:
+		p = TEXT("");
+		break;
 	}
 	ListView_SetItemText(hListView, i, 0, p);
 
@@ -1274,6 +1282,10 @@ static void listview_set_text(const HWND hListView, const int i)
 
 	case ACTION_TYPE_TRAY_RIGHT_DBLCLK:
 		p = message_get_res(IDS_ACTION_TYPE_TRAY_RIGHT_DBLCLK);
+		break;
+
+	default:
+		p = TEXT("");
 		break;
 	}
 	ListView_SetItemText(hListView, i, 1, p);
@@ -1358,14 +1370,14 @@ static void listview_free_action(const HWND hListView)
 /*
  * set_action_proc - Action設定のプロシージャ
  */
-BOOL CALLBACK set_action_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK set_action_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LV_COLUMN lvc;
 	ACTION_INFO *ai, *new_ai;
 	int i;
 	BOOL enable;
 #ifdef OP_XP_STYLE
-	static long hThemeUp, hThemeDown;
+	static HTHEME hThemeUp, hThemeDown;
 #endif	// OP_XP_STYLE
 
 	switch (uMsg) {
@@ -1475,7 +1487,7 @@ BOOL CALLBACK set_action_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 			// カスタムドロー
 			switch (((LPNMLVCUSTOMDRAW)lParam)->nmcd.dwDrawStage) {
 			case CDDS_PREPAINT:
-				SetWindowLong(hDlg, DWL_MSGRESULT, CDRF_NOTIFYITEMDRAW);
+				SetWindowLongPtr(hDlg, DWLP_MSGRESULT, CDRF_NOTIFYITEMDRAW);
 				return TRUE;
 
 			case CDDS_ITEMPREPAINT:
@@ -1483,7 +1495,7 @@ BOOL CALLBACK set_action_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 				if (ai != NULL && ai->enable == 0) {
 					((LPNMLVCUSTOMDRAW)lParam)->clrText = dark_mode_get_color(COLOR_GRAYTEXT);
 				}
-				SetWindowLong(hDlg, DWL_MSGRESULT, CDRF_DODEFAULT);
+				SetWindowLongPtr(hDlg, DWLP_MSGRESULT, CDRF_DODEFAULT);
 				return TRUE;
 			}
 			break;

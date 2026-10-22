@@ -101,7 +101,7 @@ void InitDpi()
 	GetAwareness();
 
 	// プライマリモニタのDPIを取得
-	dpi = get_monitor_dpi(MonitorFromWindow(NULL, MONITOR_DEFAULTTOPRIMARY));
+	dpi = get_monitor_dpi(MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTOPRIMARY));
 	if (dpi == 0 && _GetDpiForSystem != NULL) {
 		dpi = _GetDpiForSystem();
 	}

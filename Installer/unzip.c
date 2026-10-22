@@ -501,27 +501,32 @@ BOOL zip_open(const BYTE *data, const DWORD size, ZIP_ARCHIVE *za)
  */
 BOOL zip_get_entry(const ZIP_ARCHIVE *za, const DWORD index, ZIP_ENTRY *ze)
 {
-	const BYTE *p = za->central;
+	const BYTE *p;
+	DWORD off = (DWORD)(za->central - za->data);
 	DWORD name_len, extra_len, comment_len;
 	DWORD i;
+	UINT cp;
+	int len;
 	TCHAR *tp;
 
 	if (index >= za->count) {
 		return FALSE;
 	}
 	for (i = 0; i < index; i++) {
-		if ((DWORD)(p - za->data) + 46 > za->size || get_dword(p) != SIG_CENTRAL) {
+		if (off > za->size || za->size - off < 46 || get_dword(za->data + off) != SIG_CENTRAL) {
 			return FALSE;
 		}
-		p += 46 + get_word(p + 28) + get_word(p + 30) + get_word(p + 32);
+		p = za->data + off;
+		off += 46 + get_word(p + 28) + get_word(p + 30) + get_word(p + 32);
 	}
-	if ((DWORD)(p - za->data) + 46 > za->size || get_dword(p) != SIG_CENTRAL) {
+	if (off > za->size || za->size - off < 46 || get_dword(za->data + off) != SIG_CENTRAL) {
 		return FALSE;
 	}
+	p = za->data + off;
 	name_len = get_word(p + 28);
 	extra_len = get_word(p + 30);
 	comment_len = get_word(p + 32);
-	if ((DWORD)(p - za->data) + 46 + name_len + extra_len + comment_len > za->size) {
+	if (name_len + extra_len + comment_len > za->size - off - 46) {
 		return FALSE;
 	}
 
@@ -531,12 +536,17 @@ BOOL zip_get_entry(const ZIP_ARCHIVE *za, const DWORD index, ZIP_ENTRY *ze)
 	ze->orig_size = get_dword(p + 24);
 	ze->local_offset = get_dword(p + 42);
 
-	// 格納パスの取得
+	// 格納パスの取得 (MAX_PATH に収まらない名前は不正とする)
 	ZeroMemory(ze->name, sizeof(ze->name));
-	if (name_len > 0) {
-		MultiByteToWideChar((get_word(p + 8) & 0x0800) ? CP_UTF8 : CP_OEMCP, 0,
-			(const char *)(p + 46), name_len, ze->name, MAX_PATH - 1);
+	if (name_len == 0) {
+		return FALSE;
 	}
+	cp = (get_word(p + 8) & 0x0800) ? CP_UTF8 : CP_OEMCP;
+	len = MultiByteToWideChar(cp, 0, (const char *)(p + 46), name_len, NULL, 0);
+	if (len <= 0 || len >= MAX_PATH) {
+		return FALSE;
+	}
+	MultiByteToWideChar(cp, 0, (const char *)(p + 46), name_len, ze->name, MAX_PATH - 1);
 	if (ze->name[0] == TEXT('\0')) {
 		return FALSE;
 	}
@@ -560,6 +570,7 @@ int zip_extract(const ZIP_ARCHIVE *za, const ZIP_ENTRY *ze, BYTE **buf, DWORD *b
 	const BYTE *p;
 	const BYTE *data;
 	BYTE *out;
+	DWORD off;
 
 	*buf = NULL;
 	*buf_size = 0;
@@ -569,18 +580,23 @@ int zip_extract(const ZIP_ARCHIVE *za, const ZIP_ENTRY *ze, BYTE **buf, DWORD *b
 	if (ze->method != 0 && ze->method != 8) {
 		return UNZIP_ERR_METHOD;
 	}
-	// ローカルヘッダから実データの位置を取得
-	if (ze->local_offset + 30 > za->size) {
+	// ローカルヘッダから実データの位置を取得 (加算で桁あふれしないように比較する)
+	if (za->size < 30 || ze->local_offset > za->size - 30) {
 		return UNZIP_ERR_FORMAT;
 	}
 	p = za->data + ze->local_offset;
 	if (get_dword(p) != SIG_LOCAL) {
 		return UNZIP_ERR_FORMAT;
 	}
-	data = p + 30 + get_word(p + 26) + get_word(p + 28);
-	if ((DWORD)(data - za->data) + ze->comp_size > za->size) {
+	off = (DWORD)get_word(p + 26) + get_word(p + 28);
+	if (off > za->size - 30 - ze->local_offset) {
 		return UNZIP_ERR_FORMAT;
 	}
+	off += ze->local_offset + 30;
+	if (ze->comp_size > za->size - off) {
+		return UNZIP_ERR_FORMAT;
+	}
+	data = za->data + off;
 
 	if ((out = (BYTE *)HeapAlloc(GetProcessHeap(), 0, (ze->orig_size == 0) ? 1 : ze->orig_size)) == NULL) {
 		return UNZIP_ERR_MEMORY;

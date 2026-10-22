@@ -57,5 +57,8 @@
 #define IDS_ERR_RUN						2032
 #define IDS_RUNNING						2033
 #define IDS_FILE_LOCKED					2034
+#define IDS_ERR_PATH_INVALID			2035
+#define IDS_ERR_PATH_ROOT				2036
+#define IDS_ERR_PATH_LONG				2037
 
 /* End of source */

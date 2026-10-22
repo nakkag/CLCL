@@ -44,7 +44,7 @@ const TCHAR chs_locale[] = TEXT("zh-Hans");
 /*
  * set_viewer_proc - ビューア設定のプロシージャ
  */
-BOOL CALLBACK set_viewer_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK set_viewer_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	TCHAR buf[BUF_SIZE];
 	TCHAR tmp[BUF_SIZE];
@@ -82,6 +82,8 @@ BOOL CALLBACK set_viewer_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 			case TEXT('2'):
 				r = message_get_res(IDS_VIEWER_REGIST);
 				break;
+			default:
+				continue;
 			}
 			if (SendMessage(GetDlgItem(hDlg, IDC_LIST_TO), LB_FINDSTRING, -1, (LPARAM)r) == -1) {
 				SendMessage(GetDlgItem(hDlg, IDC_LIST_TO), LB_ADDSTRING, 0, (LPARAM)r);

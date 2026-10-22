@@ -15,6 +15,7 @@
 #include <commctrl.h>
 
 #include "General.h"
+#include "Memory.h"
 #include "Ini.h"
 #include "Message.h"
 #include "Font.h"
@@ -169,9 +170,9 @@ static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 {
 	DATA_INFO *d1, *d2;
 	DATA_INFO *cdi;
-	TCHAR buf1[BUF_SIZE];
-	TCHAR buf2[BUF_SIZE];
-	int len1 = 0, len2 = 0;
+	TCHAR *title1;
+	TCHAR *title2;
+	ULONGLONG len1 = 0, len2 = 0;
 	int order;
 	int header;
 	int ret;
@@ -187,28 +188,25 @@ static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 		return 0;
 	}
 
-	*buf1 = TEXT('\0');
-	*buf2 = TEXT('\0');
-
 	switch (header) {
 	case 0:
-		// データ
-		lstrcpy(buf1, data_get_title(d1));
-		lstrcpy(buf2, data_get_title(d2));
-		ret = lstrcmpi(buf1, buf2);
+		// データ (data_get_title は静的バッファを返すことがあるため片方を複製する)
+		title1 = data_get_title(d1);
+		title1 = alloc_copy((title1 != NULL) ? title1 : TEXT(""));
+		title2 = data_get_title(d2);
+		ret = lstrcmpi((title1 != NULL) ? title1 : TEXT(""), (title2 != NULL) ? title2 : TEXT(""));
+		mem_free(&title1);
 		break;
 
 	case 1:
 		// サイズ
-		len1 = 0;
 		for (cdi = d1->child; cdi != NULL; cdi = cdi->next) {
 			len1 += cdi->size;
 		}
-		len2 = 0;
 		for (cdi = d2->child; cdi != NULL; cdi = cdi->next) {
 			len2 += cdi->size;
 		}
-		ret = len1 - len2;
+		ret = (len1 < len2) ? -1 : ((len1 > len2) ? 1 : 0);
 		break;
 
 	case 2:
@@ -218,13 +216,12 @@ static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 
 	case 3:
 		// ウィンドウ名
-		if (d1->window_name != NULL) {
-			lstrcpy(buf1, d1->window_name);
-		}
-		if (d2->window_name != NULL) {
-			lstrcpy(buf2, d2->window_name);
-		}
-		ret = lstrcmpi(buf1, buf2);
+		ret = lstrcmpi((d1->window_name != NULL) ? d1->window_name : TEXT(""),
+			(d2->window_name != NULL) ? d2->window_name : TEXT(""));
+		break;
+
+	default:
+		ret = 0;
 		break;
 	}
 	return (((ret < 0 && order == 1) || (ret > 0 && order == 0)) ? 1 : -1);

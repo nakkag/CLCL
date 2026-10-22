@@ -42,7 +42,7 @@ static LPARAM listView_get_lparam(const HWND hListView, const int i);
 static LRESULT listview_notify_proc(const HWND hWnd, const LPARAM lParam, const HWND hListView);
 static int file_select(const HWND hDlg, const TCHAR *oFilter, const int Index, TCHAR *ret);
 static int set_list_icon(const HWND hListView, const TCHAR *path, const int index);
-static BOOL CALLBACK select_icon_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+static INT_PTR CALLBACK select_icon_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 /*
  * listView_get_lparam - アイテムのLPARAMを取得
@@ -109,11 +109,11 @@ static int file_select(const HWND hDlg, const TCHAR *oFilter, const int Index, T
 	of.nMaxCustFilter = 40;
 	of.nFilterIndex = Index;
 	of.lpstrFile = filename;
-	of.nMaxFile = BUF_SIZE - 1;
+	of.nMaxFile = MAX_PATH;
 	of.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 
 	if (GetOpenFileName((LPOPENFILENAME)&of) == TRUE) {
-		lstrcpy(ret, of.lpstrFile);
+		lstrcpyn(ret, of.lpstrFile, MAX_PATH);
 		return of.nFilterIndex;
 	}
 	return -1;
@@ -160,25 +160,28 @@ static int set_list_icon(const HWND hListView, const TCHAR *path, const int inde
 
 	for (i = 0; i < icon_cnt; i++) {
 		// アイコンの抽出
+		hIcon = hsIcon = NULL;
 		ExtractIconEx(path, i, &hIcon, &hsIcon, 1);
 		if (hIcon != NULL) {
 			// イメージリストに追加
 			ret = ImageList_AddIcon(icon_list, hIcon);
 			DestroyIcon(hIcon);
 
-			// リストビューにアイテムを追加
-			wsprintf(buf, TEXT("%d"), i);
-			lvi.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM;
-			lvi.iItem = ListView_GetItemCount(hListView);
-			lvi.iSubItem = 0;
-			lvi.pszText = buf;
-			lvi.cchTextMax = BUF_SIZE;
-			lvi.iImage = ret;
-			lvi.lParam = ret;
-			j = ListView_InsertItem(hListView, &lvi);
-			if (index == ret) {
-				ListView_SetItemState(hListView, j, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
-				ListView_EnsureVisible(hListView, j, TRUE);
+			if (ret != -1) {
+				// リストビューにアイテムを追加
+				wsprintf(buf, TEXT("%d"), i);
+				lvi.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM;
+				lvi.iItem = ListView_GetItemCount(hListView);
+				lvi.iSubItem = 0;
+				lvi.pszText = buf;
+				lvi.cchTextMax = BUF_SIZE;
+				lvi.iImage = ret;
+				lvi.lParam = ret;
+				j = ListView_InsertItem(hListView, &lvi);
+				if (index == ret) {
+					ListView_SetItemState(hListView, j, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
+					ListView_EnsureVisible(hListView, j, TRUE);
+				}
 			}
 		}
 		if (hsIcon != NULL) {
@@ -193,10 +196,10 @@ static int set_list_icon(const HWND hListView, const TCHAR *path, const int inde
 /*
  * select_icon_proc - アイコン選択ウィンドウプロシージャ
  */
-static BOOL CALLBACK select_icon_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK select_icon_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	static ICON_INFO *icon_info;
-	TCHAR buf[BUF_SIZE];
+	TCHAR buf[MAX_PATH];
 	int i;
 
 	switch (uMsg) {
@@ -211,7 +214,6 @@ static BOOL CALLBACK select_icon_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 		break;
 
 	case WM_CLOSE:
-		ImageList_Destroy((void *)ListView_GetImageList(GetDlgItem(hDlg, IDC_LIST_ICON), LVSIL_NORMAL));
 		EndDialog(hDlg, FALSE);
 		break;
 
@@ -231,7 +233,7 @@ static BOOL CALLBACK select_icon_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 		case IDC_EDIT_FILE:
 			if (HIWORD(wParam) == EN_KILLFOCUS && SendDlgItemMessage(hDlg, IDC_EDIT_FILE, EM_GETMODIFY, 0, 0) == TRUE) {
 				// 変更時アイコン一覧を取得しなおす
-				SendDlgItemMessage(hDlg, IDC_EDIT_FILE, WM_GETTEXT, BUF_SIZE - 1, (LPARAM)buf);
+				SendDlgItemMessage(hDlg, IDC_EDIT_FILE, WM_GETTEXT, MAX_PATH - 1, (LPARAM)buf);
 				set_list_icon(GetDlgItem(hDlg, IDC_LIST_ICON), buf, -1);
 				SendMessage(hDlg, WM_LV_EVENT, LVN_ITEMCHANGED, 0);
 				SendDlgItemMessage(hDlg, IDC_EDIT_FILE, EM_SETMODIFY, FALSE, 0);
@@ -258,9 +260,8 @@ static BOOL CALLBACK select_icon_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 				break;
 			}
 			SendDlgItemMessage(hDlg, IDC_EDIT_FILE, WM_GETTEXT, BUF_SIZE - 1, (LPARAM)icon_info->path);
-			icon_info->index = listView_get_lparam(GetDlgItem(hDlg, IDC_LIST_ICON), i);
+			icon_info->index = (int)listView_get_lparam(GetDlgItem(hDlg, IDC_LIST_ICON), i);
 
-			ImageList_Destroy((void *)ListView_GetImageList(GetDlgItem(hDlg, IDC_LIST_ICON), LVSIL_NORMAL));
 			EndDialog(hDlg, TRUE);
 			break;
 		}

@@ -63,7 +63,7 @@ static BOOL should_ignore()
 
 			PVOID m = GlobalLock(h);
 			DWORD val = 0;
-			if (m != 0)
+			if (m != 0 && GlobalSize(h) >= sizeof(DWORD))
 				val = *(DWORD*)m;
 			GlobalUnlock(h);
 			
@@ -164,6 +164,7 @@ DATA_INFO *clipboard_get_datainfo(const BOOL use_filter, const BOOL get_data, TC
 
 		// アイテムの作成
 		if ((new_item = data_create_data(format, buf, NULL, 0, FALSE, err_str)) == NULL) {
+			data_free(ret_di);
 			return NULL;
 		}
 		if (get_data == TRUE) {
@@ -222,8 +223,12 @@ static BOOL clipboard_set_data(const UINT format, const TCHAR *name, const HANDL
 		message_get_error(GetLastError(), err_str);
 		return FALSE;
 	}
+	// データが無い形式は遅延レンダリングに対応していないため登録しない
+	if (data == NULL) {
+		return TRUE;
+	}
 	// クリップボードにデータを設定
-	if (SetClipboardData(fmt, data) == NULL && data != NULL) {
+	if (SetClipboardData(fmt, data) == NULL) {
 		message_get_error(GetLastError(), err_str);
 		return FALSE;
 	}
@@ -318,7 +323,7 @@ HANDLE clipboard_copy_data(const UINT format, const HANDLE data, DWORD *ret_size
 		if ((to_mem = bitmap_to_dib(data, ret_size)) == NULL) {
 			return NULL;
 		}
-		ret = dib_to_bitmap(to_mem);
+		ret = dib_to_bitmap(to_mem, *ret_size);
 		mem_free(&to_mem);
 		break;
 
@@ -344,9 +349,13 @@ HANDLE clipboard_copy_data(const UINT format, const HANDLE data, DWORD *ret_size
 			return NULL;
 		}
 		CopyMemory(to_mem, from_mem, sizeof(METAFILEPICT));
-		if ((((METAFILEPICT *)to_mem)->hMF = CopyMetaFile(((METAFILEPICT *)from_mem)->hMF, NULL)) != NULL) {
-			*ret_size = sizeof(METAFILEPICT) + GetMetaFileBitsEx(((METAFILEPICT *)to_mem)->hMF, 0, NULL);
+		if ((((METAFILEPICT *)to_mem)->hMF = CopyMetaFile(((METAFILEPICT *)from_mem)->hMF, NULL)) == NULL) {
+			GlobalUnlock(ret);
+			GlobalFree(ret);
+			GlobalUnlock(data);
+			return NULL;
 		}
+		*ret_size = sizeof(METAFILEPICT) + GetMetaFileBitsEx(((METAFILEPICT *)to_mem)->hMF, 0, NULL);
 		// ロック解除
 		GlobalUnlock(ret);
 		GlobalUnlock(data);
@@ -362,11 +371,7 @@ HANDLE clipboard_copy_data(const UINT format, const HANDLE data, DWORD *ret_size
 
 	default:
 		// その他
-		// メモリチェック
-		if (IsBadReadPtr(data, 1) == TRUE) {
-			return NULL;
-		}
-		// サイズ取得
+		// サイズ取得 (無効なハンドルは 0 が返る)
 		if ((*ret_size = GlobalSize(data)) == 0) {
 			return NULL;
 		}
@@ -476,7 +481,11 @@ BYTE *clipboard_data_to_bytes(const DATA_INFO *di, DWORD *ret_size)
 		if ((tmp = GlobalLock(di->data)) == NULL) {
 			break;
 		}
+		// 実際に確保されているサイズを超えてコピーしない
 		size = di->size;
+		if (size > GlobalSize(di->data)) {
+			size = GlobalSize(di->data);
+		}
 		if ((ret = mem_alloc(size)) == NULL) {
 			GlobalUnlock(di->data);
 			break;
@@ -504,14 +513,18 @@ HANDLE clipboard_bytes_to_data(TCHAR *format_name, const BYTE *data, DWORD *size
 	}
 	switch (clipboard_get_format(0, format_name)) {
 	case CF_PALETTE:
-		// パレット
-		ret = CreatePalette((LOGPALETTE *)data);
+		// パレット (エントリ数分のサイズがあるか確認)
+		if (*size < sizeof(LOGPALETTE) ||
+			*size < sizeof(WORD) * 2 + sizeof(PALETTEENTRY) * ((const LOGPALETTE *)data)->palNumEntries) {
+			break;
+		}
+		ret = CreatePalette((const LOGPALETTE *)data);
 		break;
 
 	case CF_DSPBITMAP:
 	case CF_BITMAP:
 		// ビットマップ
-		ret = dib_to_bitmap(data);
+		ret = dib_to_bitmap(data, *size);
 		break;
 
 	case CF_OWNERDISPLAY:
@@ -520,6 +533,9 @@ HANDLE clipboard_bytes_to_data(TCHAR *format_name, const BYTE *data, DWORD *size
 	case CF_DSPMETAFILEPICT:
 	case CF_METAFILEPICT:
 		// メタファイル
+		if (*size < sizeof(METAFILEPICT)) {
+			break;
+		}
 		if ((ret = GlobalAlloc(GHND, sizeof(METAFILEPICT))) == NULL) {
 			break;
 		}
@@ -620,7 +636,7 @@ BOOL clipboard_data_to_file(DATA_INFO *di, const TCHAR *file_name, const int fil
 			return FALSE;
 		}
 		// ファイルに書き込む
-		if (file_write_buf(file_name, tmp, di->size, err_str) == FALSE) {
+		if (file_write_buf(file_name, tmp, size, err_str) == FALSE) {
 			mem_free(&tmp);
 			return FALSE;
 		}
@@ -670,6 +686,7 @@ HANDLE clipboard_file_to_data(const TCHAR *file_name, TCHAR *format_name, DWORD 
 	case CF_ENHMETAFILE:
 		if ((ret = GetEnhMetaFile(file_name)) == NULL) {
 			message_get_error(GetLastError(), err_str);
+			return NULL;
 		}
 		size = GetEnhMetaFileBits(ret, 0, NULL);
 		break;

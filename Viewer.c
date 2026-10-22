@@ -15,8 +15,10 @@
 #include <commctrl.h>
 #include <commdlg.h>
 #include <tchar.h>
+#include <shlwapi.h>
 
 #pragma comment(lib, "Version.lib")
+#pragma comment(lib, "shlwapi.lib")
 
 #include "General.h"
 #include "Memory.h"
@@ -127,9 +129,11 @@ static DATA_INFO *clipboard_to_datainfo(const HWND hWnd);
 static void viewer_save_data(const HWND hWnd, const HTREEITEM hItem);
 static void viewer_set_list_column(const HWND hTreeView, const HWND hListView, const HTREEITEM hItem);
 static BOOL viewer_sel_cheange(const HWND hWnd, const HTREEITEM old_item, const HTREEITEM new_item);
+static void viewer_detach_deleted_selection(const HWND hWnd, const HTREEITEM root_item, DATA_INFO *root_di);
 static BOOL viewer_initialize(const HWND hWnd);
 static void viewer_set_controls(const HWND hWnd);
 static void viewer_reset_dpi(const HWND hWnd);
+static void menu_detach_submenu(const HMENU hMenu, const HMENU hSubMenu);
 static BOOL viewer_close(const HWND hWnd);
 static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -286,8 +290,8 @@ static void set_enadle_popup_menu(const HWND hWnd, const HMENU hMenu, const int 
 	HTREEITEM wk_item;
 	DATA_INFO *di;
 	UINT enable;
-	BOOL sel_flag;
-	BOOL folder_flag;
+	BOOL sel_flag = FALSE;
+	BOOL folder_flag = FALSE;
 	int i;
 	int def_menu = -1;
 
@@ -389,7 +393,7 @@ static void viewer_show_menu(const HWND hWnd)
 	HTREEITEM hItem;
 	HTREEITEM sel_item;
 	int offset = 0;
-	int ret;
+	int ret = 0;
 
 	if (GetFocus() == hTreeView) {
 		// TreeView
@@ -401,6 +405,9 @@ static void viewer_show_menu(const HWND hWnd)
 		sel_item = TreeView_GetSelection(hTreeView);
 		offset = 1;
 	} else {
+		return;
+	}
+	if (sel_item == NULL) {
 		return;
 	}
 
@@ -419,6 +426,8 @@ static void viewer_show_menu(const HWND hWnd)
 		set_enadle_popup_menu(hWnd, h_popup_menu, POPUPMENU_REGIST + offset, sel_item);
 		_SetForegroundWindow(hWnd);
 		ret = menu_show(hWnd, GetSubMenu(h_popup_menu, POPUPMENU_REGIST + offset), NULL);
+	} else {
+		return;
 	}
 	if (ret <= 0 || ret == IDCANCEL) {
 		return;
@@ -639,6 +648,17 @@ HTREEITEM viewer_item_copy(const HWND hWnd, HTREEITEM from_item, HTREEITEM to_it
 		}
 		// タイトルの除去
 		mem_free(&wk_di->title);
+		if (to_item != history_treeitem) {
+			// 履歴内のフォルダへは末尾に追加 (履歴の上限による切り詰めは行わない)
+			if (*pdi == NULL) {
+				*pdi = wk_di;
+			} else {
+				for (di = *pdi; di->next != NULL; di = di->next)
+					;
+				di->next = wk_di;
+			}
+			return treeview_datainfo_to_treeitem(hTreeView, to_item, wk_di);
+		}
 		// 履歴に追加
 		if (history_add(pdi, wk_di, TRUE) == FALSE) {
 			data_free(wk_di);
@@ -653,7 +673,7 @@ HTREEITEM viewer_item_copy(const HWND hWnd, HTREEITEM from_item, HTREEITEM to_it
 		if (wk_di->type == TYPE_FOLDER) {
 			if (TreeView_GetParent(hTreeView, from_item) == to_item) {
 				// フォルダ名の作成
-				wsprintf(buf, message_get_res(IDS_VIEWER_COPYNAME), wk_di->title);
+				wnsprintf(buf, BUF_SIZE, message_get_res(IDS_VIEWER_COPYNAME), wk_di->title);
 				i = 2;
 				while (i < 100) {
 					for (di = *pdi; di != NULL; di = di->next) {
@@ -664,7 +684,7 @@ HTREEITEM viewer_item_copy(const HWND hWnd, HTREEITEM from_item, HTREEITEM to_it
 					if (di == NULL) {
 						break;
 					}
-					wsprintf(buf, message_get_res(IDS_VIEWER_COPYNAME_NUM), i++, wk_di->title);
+					wnsprintf(buf, BUF_SIZE, message_get_res(IDS_VIEWER_COPYNAME_NUM), i++, wk_di->title);
 				}
 				mem_free(&wk_di->title);
 				wk_di->title = alloc_copy(buf);
@@ -1080,9 +1100,8 @@ static void viewer_create_item(const HWND hWnd, const HTREEITEM sel_item)
 		return;
 	}
 
-	if (hItem == history_treeitem ||
-		(di->type == TYPE_FOLDER && treeview_get_rootitem(hTreeView, hItem) == history_treeitem)) {
-		// 履歴にアイテムを追加
+	if (hItem == history_treeitem) {
+		// 履歴にアイテムを追加 (履歴内のフォルダへの追加は上限による切り詰めを行わないため通常の追加で処理)
 		if ((new_di = data_create_item(NULL, TRUE, err_str)) == NULL) {
 			if (*err_str != TEXT('\0')) {
 				MessageBox(hWnd, err_str, ERROR_TITLE, MB_ICONERROR);
@@ -1213,11 +1232,11 @@ static void viewer_create_item(const HWND hWnd, const HTREEITEM sel_item)
 	}
 
 	set_cursor(TRUE);
-	if (treeview_get_rootitem(hTreeView, cItem) == regist_treeitem) {
+	if (treeview_get_rootitem(hTreeView, hItem) == regist_treeitem) {
 		// 登録アイテムの保存
 		SendMessage(hWnd, WM_REGIST_SAVE, 0, 0);
 	} else if (option.history_save == 1 && option.history_always_save == 1 &&
-		treeview_get_rootitem(hTreeView, cItem) == history_treeitem) {
+		treeview_get_rootitem(hTreeView, hItem) == history_treeitem) {
 		// 履歴の保存
 		SendMessage(hWnd, WM_HISTORY_SAVE, 0, 0);
 	}
@@ -1274,7 +1293,7 @@ static void viewer_create_folder(const HWND hWnd, const HTREEITEM sel_item)
 			MessageBox(hWnd, err_str, ERROR_TITLE, MB_ICONERROR);
 			return;
 		}
-		wsprintf(title, TEXT("%s (%d)"), message_get_res(IDS_TREEITEM_NEWFOLDER), ++i);
+		wnsprintf(title, BUF_SIZE, TEXT("%s (%d)"), message_get_res(IDS_TREEITEM_NEWFOLDER), ++i);
 	}
 
 	// ツリービューにアイテムを追加
@@ -1787,7 +1806,7 @@ static BOOL viewer_format_to_option(const HWND hWnd, const HTREEITEM sel_item, c
 	if ((di = (DATA_INFO *)treeview_get_lparam(hTreeView, hItem)) == NULL || di->type != TYPE_DATA) {
 		return FALSE;
 	}
-	wsprintf(buf, TEXT("%s%s"), mode, di->format_name);
+	wnsprintf(buf, BUF_SIZE, TEXT("%s%s"), mode, di->format_name);
 
 	SendMessage(hWnd, WM_OPTION_SHOW, 0, (LPARAM)buf);
 	return TRUE;
@@ -1819,7 +1838,9 @@ static void viewer_tool_execute(const HWND hWnd, const HTREEITEM sel_item, const
 			if ((di = (DATA_INFO *)treeview_get_lparam(hTreeView, hItem)) == NULL) {
 				continue;
 			}
-			new_tdi = tool_data_copy(di, FALSE);
+			if ((new_tdi = tool_data_copy(di, FALSE)) == NULL) {
+				continue;
+			}
 			if (root_tdi == NULL) {
 				root_tdi = new_tdi;
 			} else {
@@ -2110,7 +2131,15 @@ static void listview_get_disp_item(const HWND hTreeView, LV_ITEM *lvi)
 	if (lvi->mask & LVIF_TEXT) {
 		switch (lvi->iSubItem) {
 		case 0:
-			treeview_get_text(hTreeView, hItem, lvi->pszText);
+			{
+				TV_ITEM tvit;
+
+				tvit.mask = TVIF_TEXT;
+				tvit.hItem = hItem;
+				tvit.pszText = lvi->pszText;
+				tvit.cchTextMax = lvi->cchTextMax;
+				TreeView_GetItem(hTreeView, &tvit);
+			}
 			break;
 
 		case 1:
@@ -2133,12 +2162,12 @@ static void listview_get_disp_item(const HWND hTreeView, LV_ITEM *lvi)
 			if (treeview_get_rootitem(hTreeView, hItem) == history_treeitem) {
 				// ウィンドウタイトル
 				if (di->window_name != NULL) {
-					lstrcpy(lvi->pszText, di->window_name);
+					lstrcpyn(lvi->pszText, di->window_name, lvi->cchTextMax);
 				}
 			} else {
 				// ホットキー
 				if ((str_hkey = menu_get_keyname(di->op_modifiers, di->op_virtkey)) != NULL) {
-					lstrcpy(lvi->pszText, str_hkey);
+					lstrcpyn(lvi->pszText, str_hkey, lvi->cchTextMax);
 					mem_free(&str_hkey);
 				}
 			}
@@ -2334,6 +2363,27 @@ static BOOL viewer_sel_cheange(const HWND hWnd, const HTREEITEM old_item, const 
 }
 
 /*
+ * viewer_detach_deleted_selection - データが削除された選択中アイテムの表示とデータの関連付けを解除
+ */
+static void viewer_detach_deleted_selection(const HWND hWnd, const HTREEITEM root_item, DATA_INFO *root_di)
+{
+	HWND hTreeView = GetDlgItem(hWnd, ID_TREE);
+	HTREEITEM sel_item;
+	DATA_INFO *di;
+
+	if ((sel_item = TreeView_GetSelection(hTreeView)) == NULL ||
+		sel_item == root_item || treeview_get_rootitem(hTreeView, sel_item) != root_item) {
+		return;
+	}
+	if ((di = (DATA_INFO *)treeview_get_lparam(hTreeView, sel_item)) != NULL && data_check(root_di, di) != NULL) {
+		return;
+	}
+	// 解放済みのデータに触れないように表示を切り離してから関連付けを解除
+	viewer_sel_cheange(hWnd, NULL, NULL);
+	treeview_set_lparam(hTreeView, sel_item, 0);
+}
+
+/*
  * viewer_initialize - ウィンドウの初期化
  */
 static BOOL viewer_initialize(const HWND hWnd)
@@ -2389,13 +2439,13 @@ static BOOL viewer_initialize(const HWND hWnd)
 	// ポップアップメニューにツールメニューを関連付ける
 	GetMenuString(GetMenu(hWnd), WINDOW_MENU_TOOL, buf, BUF_SIZE - 1, MF_BYPOSITION);
 	ModifyMenu(GetSubMenu(h_popup_menu, POPUPMENU_HISTORY), ID_MENUITEM_TOOL_MENU, MF_POPUP,
-		(UINT)GetSubMenu(GetMenu(hWnd), WINDOW_MENU_TOOL), buf);
+		(UINT_PTR)GetSubMenu(GetMenu(hWnd), WINDOW_MENU_TOOL), buf);
 	ModifyMenu(GetSubMenu(h_popup_menu, POPUPMENU_HISTORY_LV), ID_MENUITEM_TOOL_MENU, MF_POPUP,
-		(UINT)GetSubMenu(GetMenu(hWnd), WINDOW_MENU_TOOL), buf);
+		(UINT_PTR)GetSubMenu(GetMenu(hWnd), WINDOW_MENU_TOOL), buf);
 	ModifyMenu(GetSubMenu(h_popup_menu, POPUPMENU_REGIST), ID_MENUITEM_TOOL_MENU, MF_POPUP,
-		(UINT)GetSubMenu(GetMenu(hWnd), WINDOW_MENU_TOOL), buf);
+		(UINT_PTR)GetSubMenu(GetMenu(hWnd), WINDOW_MENU_TOOL), buf);
 	ModifyMenu(GetSubMenu(h_popup_menu, POPUPMENU_REGIST_LV), ID_MENUITEM_TOOL_MENU, MF_POPUP,
-		(UINT)GetSubMenu(GetMenu(hWnd), WINDOW_MENU_TOOL), buf);
+		(UINT_PTR)GetSubMenu(GetMenu(hWnd), WINDOW_MENU_TOOL), buf);
 	// ツールメニューにツールを設定
 	for (i = 0; i < option.tool_cnt; i++) {
 		if (!((option.tool_info + i)->call_type & CALLTYPE_VIEWER)) {
@@ -2527,6 +2577,23 @@ static void viewer_reset_dpi(const HWND hWnd)
 }
 
 /*
+ * menu_detach_submenu - メニューからサブメニュー項目を取り除く (サブメニュー自体は破棄しない)
+ */
+static void menu_detach_submenu(const HMENU hMenu, const HMENU hSubMenu)
+{
+	int i;
+
+	if (hMenu == NULL || hSubMenu == NULL) {
+		return;
+	}
+	for (i = GetMenuItemCount(hMenu) - 1; i >= 0; i--) {
+		if (GetSubMenu(hMenu, i) == hSubMenu) {
+			RemoveMenu(hMenu, i, MF_BYPOSITION);
+		}
+	}
+}
+
+/*
  * viewer_close - ウィンドウを閉じる
  */
 static BOOL viewer_close(const HWND hWnd)
@@ -2571,7 +2638,13 @@ static BOOL viewer_close(const HWND hWnd)
 	// イメージリストの解放
 	ImageList_Destroy((void *)TreeView_SetImageList(GetDlgItem(hWnd, ID_TREE), NULL, TVSIL_NORMAL));
 
+	// ウィンドウメニューのツールメニューをポップアップメニューから切り離してから破棄する
+	menu_detach_submenu(GetSubMenu(h_popup_menu, POPUPMENU_HISTORY), GetSubMenu(GetMenu(hWnd), WINDOW_MENU_TOOL));
+	menu_detach_submenu(GetSubMenu(h_popup_menu, POPUPMENU_HISTORY_LV), GetSubMenu(GetMenu(hWnd), WINDOW_MENU_TOOL));
+	menu_detach_submenu(GetSubMenu(h_popup_menu, POPUPMENU_REGIST), GetSubMenu(GetMenu(hWnd), WINDOW_MENU_TOOL));
+	menu_detach_submenu(GetSubMenu(h_popup_menu, POPUPMENU_REGIST_LV), GetSubMenu(GetMenu(hWnd), WINDOW_MENU_TOOL));
 	DestroyMenu(h_popup_menu);
+	h_popup_menu = NULL;
 
 	OLE_IDropTarget_RevokeDragDrop(hWnd);
 	set_cursor(FALSE);
@@ -2960,20 +3033,24 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 			TCHAR var_msg[BUF_SIZE];
 			TCHAR path[MAX_PATH];
 			DWORD size;
-			lstrcpy(var_msg, APP_NAME);
-			GetModuleFileName(NULL, path, sizeof(path));
-			size = GetFileVersionInfoSize(path, NULL);
+			lstrcpyn(var_msg, APP_NAME, BUF_SIZE);
+			if (GetModuleFileName(NULL, path, MAX_PATH) == 0) {
+				*path = TEXT('\0');
+			}
+			size = (*path != TEXT('\0')) ? GetFileVersionInfoSize(path, NULL) : 0;
 			if (size) {
-				VS_FIXEDFILEINFO* FileInfo;
-				UINT len;
+				VS_FIXEDFILEINFO* FileInfo = NULL;
+				UINT len = 0;
 				BYTE* buf = mem_alloc(size);
 				if (buf != NULL) {
-					GetFileVersionInfo(path, 0, size, buf);
-					VerQueryValue(buf, TEXT("\\"), &FileInfo, &len);
-					wsprintf(var_msg + lstrlen(var_msg), TEXT(" Ver %d.%d.%d"),
-						HIWORD(FileInfo->dwFileVersionMS),
-						LOWORD(FileInfo->dwFileVersionMS),
-						HIWORD(FileInfo->dwFileVersionLS));
+					if (GetFileVersionInfo(path, 0, size, buf) != 0 &&
+						VerQueryValue(buf, TEXT("\\"), (LPVOID *)&FileInfo, &len) != 0 &&
+						FileInfo != NULL && len >= sizeof(VS_FIXEDFILEINFO)) {
+						wnsprintf(var_msg + lstrlen(var_msg), BUF_SIZE - lstrlen(var_msg), TEXT(" Ver %d.%d.%d"),
+							HIWORD(FileInfo->dwFileVersionMS),
+							LOWORD(FileInfo->dwFileVersionMS),
+							HIWORD(FileInfo->dwFileVersionLS));
+					}
 					mem_free(&buf);
 				}
 			}
@@ -3097,7 +3174,8 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 			break;
 
 		default:
-			if (LOWORD(wParam) >= ID_MENUITEM_TOOL && LOWORD(wParam) < ID_MENUITEM_TOOL + 1000) {
+			if (LOWORD(wParam) >= ID_MENUITEM_TOOL && LOWORD(wParam) < ID_MENUITEM_TOOL + 1000 &&
+				(int)(LOWORD(wParam) - ID_MENUITEM_TOOL) < option.tool_cnt) {
 				viewer_tool_execute(hWnd, (HTREEITEM)lParam, LOWORD(wParam) - ID_MENUITEM_TOOL);
 			}
 			break;
@@ -3471,6 +3549,11 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 		break;
 
 	case WM_GETDATA:
+		if (lParam == 0) {
+			// ドラッグ＆ドロップの IDataObject が解放された
+			viewer_ole_drag_end();
+			break;
+		}
 		// ドラッグ＆ドロップしているデータを取得
 		*((HGLOBAL *)lParam) = viewer_ole_get_drag_data(hWnd, wParam);
 		break;
@@ -3520,6 +3603,8 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 			break;
 		}
 		set_cursor(TRUE);
+		// 選択中のアイテムが既に削除されている場合は表示を切り離す
+		viewer_detach_deleted_selection(hWnd, history_treeitem, &history_data);
 		SendMessage(GetDlgItem(hWnd, ID_TREE), WM_SETREDRAW, (WPARAM)FALSE, 0);
 
 		// 履歴の同期
@@ -3547,6 +3632,8 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 			break;
 		}
 		set_cursor(TRUE);
+		// 選択中のアイテムが既に削除されている場合は表示を切り離す
+		viewer_detach_deleted_selection(hWnd, regist_treeitem, &regist_data);
 		SendMessage(GetDlgItem(hWnd, ID_TREE), WM_SETREDRAW, (WPARAM)FALSE, 0);
 
 		// 登録アイテムの同期

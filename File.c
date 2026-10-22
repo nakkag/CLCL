@@ -24,11 +24,12 @@
 #include "ClipBoard.h"
 
 /* Define */
+#define FILE_FOLDER_LEVEL_MAX			64
 
 /* Global Variables */
 extern HINSTANCE hInst;
 
-/* ocal Function Prototypes */
+/* Local Function Prototypes */
 static void file_expand_option(DATA_INFO *di, char *option);
 static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_INFO **root, const int level, TCHAR *err_str);
 static BOOL file_item_to_file(const HANDLE hFile, DATA_INFO *di, TCHAR *err_str);
@@ -150,7 +151,7 @@ BYTE *file_read_buf(const TCHAR *path, DWORD *ret_size, TCHAR *err_str)
 	BYTE *buf;
 
 	// ファイルを開く
-	hFile = CreateFile(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	hFile = CreateFile(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == NULL || hFile == (HANDLE)-1) {
 		message_get_error(GetLastError(), err_str);
 		return NULL;
@@ -161,11 +162,13 @@ BYTE *file_read_buf(const TCHAR *path, DWORD *ret_size, TCHAR *err_str)
 		return NULL;
 	}
 
+	// 末尾に終端文字を置くため 1 バイト多く確保
 	if ((buf = (BYTE *)mem_alloc(size + 1)) == NULL) {
 		message_get_error(GetLastError(), err_str);
 		CloseHandle(hFile);
 		return NULL;
 	}
+	*(buf + size) = '\0';
 	// ファイルを読みこむ
 	if (ReadFile(hFile, buf, size, &ret, NULL) == FALSE) {
 		message_get_error(GetLastError(), err_str);
@@ -272,6 +275,13 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 	int i;
 #endif	// OPTION_SET
 	DWORD data_size;
+	int n;
+
+	// フォルダの入れ子の上限
+	if (level >= FILE_FOLDER_LEVEL_MAX) {
+		message_get_error(ERROR_FILE_CORRUPT, err_str);
+		return NULL;
+	}
 
 	while (size > (DWORD)(p - buf)) {
 		switch (*p) {
@@ -293,7 +303,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 				if (*p != '\0') {
 					new_item->title = alloc_char_to_tchar(p);
 				}
-				for (; *p != '\0'; p++)
+				for (; size > (DWORD)(p - buf) && *p != '\0'; p++)
 					;
 				p++;
 			}
@@ -346,7 +356,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 					new_item->modified.dwLowDateTime = x2i(p);
 				}
 #endif	// OPTION_SET
-				for (; *p != '\0'; p++)
+				for (; size > (DWORD)(p - buf) && *p != '\0'; p++)
 					;
 				p++;
 			}
@@ -396,6 +406,9 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 			for (; size > (DWORD)(p - buf) && *p != '\x2'; p++)
 				;
 			if (size <= (DWORD)(p - buf)) {
+#ifndef OPTION_SET
+				data_free(new_item);
+#endif	// OPTION_SET
 				break;
 			}
 			p++;
@@ -427,7 +440,14 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 
 			// ヘッダの読み込み
 			// サイズ
-			data_size = a2i(p);
+			if ((n = a2i(p)) < 0) {
+				message_get_error(ERROR_FILE_CORRUPT, err_str);
+#ifndef OPTION_SET
+				data_free(child_item);
+#endif	// OPTION_SET
+				return NULL;
+			}
+			data_size = (DWORD)n;
 #ifndef OPTION_SET
 			child_item->size = data_size;
 #endif	// OPTION_SET
@@ -478,9 +498,21 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 			for (; size > (DWORD)(p - buf) && *p != '\x3'; p++)
 				;
 			if (size <= (DWORD)(p - buf)) {
+#ifndef OPTION_SET
+				data_free(child_item);
+#endif	// OPTION_SET
 				break;
 			}
 			p++;
+
+			// データサイズが残りバイト数を超えている場合はエラー
+			if (data_size > size - (DWORD)(p - buf)) {
+				message_get_error(ERROR_FILE_CORRUPT, err_str);
+#ifndef OPTION_SET
+				data_free(child_item);
+#endif	// OPTION_SET
+				return NULL;
+			}
 
 			if (data_size > 0) {
 #ifndef OPTION_SET
@@ -524,13 +556,25 @@ BOOL file_read_data(const TCHAR *path, DATA_INFO **root, TCHAR *err_str)
 {
 	BYTE *buf;
 	DWORD size;
+	DWORD err;
 
+	// ファイルが存在しない場合は読み込むものがないので正常終了
+	if (GetFileAttributes(path) == INVALID_FILE_ATTRIBUTES) {
+		err = GetLastError();
+		if (err == ERROR_FILE_NOT_FOUND || err == ERROR_PATH_NOT_FOUND) {
+			return TRUE;
+		}
+	}
 	// ファイルの読み込み
 	if ((buf = file_read_buf(path, &size, err_str)) == NULL) {
 		return FALSE;
 	}
 	if (file_file_to_item(buf, buf, size, root, 0, err_str) == NULL) {
 		mem_free(&buf);
+		if (err_str != NULL && *err_str == TEXT('\0')) {
+			// 構造が壊れている
+			message_get_error(ERROR_FILE_CORRUPT, err_str);
+		}
 		return FALSE;
 	}
 	mem_free(&buf);

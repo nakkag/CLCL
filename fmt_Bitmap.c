@@ -44,6 +44,7 @@ extern OPTION_INFO option;
 
 /* Local Function Prototypes */
 static HICON bitmap_load_icon(const int icon_size);
+static BYTE *bmp_file_to_dib(const BYTE *data, const DWORD size, DWORD *ret_size);
 
 /*
  * bitmap_initialize - 初期化
@@ -147,12 +148,11 @@ __declspec(dllexport) int CALLBACK bitmap_get_file_info(const TCHAR *format_name
 __declspec(dllexport) BOOL CALLBACK bitmap_data_to_file(DATA_INFO *di, const TCHAR *file_name, const int filter_index, TCHAR *err_str)
 {
 	BITMAPFILEHEADER hdr;
-	PBITMAPINFOHEADER pbih;
 	BYTE *mem;
 	BYTE *save_mem;
 	TCHAR* ext;
 	DWORD size;
-	int plt = 0;
+	DWORD offset;
 
 	if (di->data == NULL) {
 		return FALSE;
@@ -161,33 +161,34 @@ __declspec(dllexport) BOOL CALLBACK bitmap_data_to_file(DATA_INFO *di, const TCH
 	ext = PathFindExtension(file_name);
 	if (lstrcmpi(ext, TEXT(".png")) == 0 || lstrcmpi(ext, TEXT(".jpg")) == 0 || lstrcmpi(ext, TEXT(".jpeg")) == 0) {
 		HBITMAP hbmp = NULL;
+		BOOL result;
 		if (lstrcmpi(di->format_name, TEXT("BITMAP")) != 0) {
 			if ((mem = GlobalLock(di->data)) == NULL) {
 				message_get_error(GetLastError(), err_str);
 				return FALSE;
 			}
-			size = di->size;
-			if ((mem = GlobalLock(di->data)) == NULL) {
+			hbmp = dib_to_bitmap(mem, (DWORD)GlobalSize(di->data));
+			GlobalUnlock(di->data);
+			if (hbmp == NULL) {
+				message_get_error(GetLastError(), err_str);
 				return FALSE;
 			}
-			hbmp = dib_to_bitmap(mem);
-			GlobalUnlock(di->data);
 		}
 		else {
 			hbmp = (HBITMAP)di->data;
 		}
 		if (lstrcmpi(ext, TEXT(".png")) == 0) {
 			// PNGで保存
-			if (save_png(hbmp, file_name) == 0) {
-				return FALSE;
-			}
+			result = (save_png(hbmp, file_name) != 0);
 		}
 		else {
 			// JPEGで保存
-			if (save_jpeg(hbmp, file_name, 90) == 0) {
-				return FALSE;
-			}
+			result = (save_jpeg(hbmp, file_name, 90) != 0);
 		}
+		if (hbmp != (HBITMAP)di->data) {
+			DeleteObject(hbmp);
+		}
+		return result;
 	} else {
 		// BMPで保存
 		if (lstrcmpi(di->format_name, TEXT("BITMAP")) != 0) {
@@ -196,6 +197,9 @@ __declspec(dllexport) BOOL CALLBACK bitmap_data_to_file(DATA_INFO *di, const TCH
 				return FALSE;
 			}
 			size = di->size;
+			if (size > (DWORD)GlobalSize(di->data)) {
+				size = (DWORD)GlobalSize(di->data);
+			}
 		}
 		else {
 			if ((mem = bitmap_to_dib(di->data, &size)) == NULL) {
@@ -203,30 +207,23 @@ __declspec(dllexport) BOOL CALLBACK bitmap_data_to_file(DATA_INFO *di, const TCH
 				return FALSE;
 			}
 		}
-		// BITMAPファイルの作成
-		pbih = (PBITMAPINFOHEADER)mem;
-		if ((plt = pbih->biClrUsed) == 0) {
-			switch (pbih->biPlanes * pbih->biBitCount) {
-			case 1:
-				plt = 2;
-				break;
-			case 4:
-				plt = 16;
-				break;
-			case 8:
-				plt = 256;
-				break;
-			case 16:
-			case 32:
-				plt = 3;
-				break;
+		// DIBヘッダの検証と画素データまでのオフセット
+		if (size < sizeof(BITMAPINFOHEADER) || (offset = dib_get_bits_offset(mem, size)) == 0) {
+			message_get_error(ERROR_INVALID_DATA, err_str);
+			if (lstrcmpi(di->format_name, TEXT("BITMAP")) != 0) {
+				GlobalUnlock(di->data);
 			}
+			else {
+				mem_free(&mem);
+			}
+			return FALSE;
 		}
+		// BITMAPファイルの作成
 		hdr.bfType = 0x4d42;
 		hdr.bfSize = sizeof(BITMAPFILEHEADER) + size;
 		hdr.bfReserved1 = 0;
 		hdr.bfReserved2 = 0;
-		hdr.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + plt * sizeof(RGBQUAD);
+		hdr.bfOffBits = sizeof(BITMAPFILEHEADER) + offset;
 
 		if ((save_mem = mem_alloc(sizeof(BITMAPFILEHEADER) + size)) == NULL) {
 			message_get_error(GetLastError(), err_str);
@@ -264,6 +261,53 @@ __declspec(dllexport) BOOL CALLBACK bitmap_data_to_file(DATA_INFO *di, const TCH
 }
 
 /*
+ * bmp_file_to_dib - BMPファイルの内容からDIB(ヘッダ + カラーテーブル + 画素データ)を作成
+ */
+static BYTE *bmp_file_to_dib(const BYTE *data, const DWORD size, DWORD *ret_size)
+{
+	const BITMAPFILEHEADER *bfh = (const BITMAPFILEHEADER *)data;
+	const BYTE *dib;
+	DWORD dib_size;
+	DWORD hdr_size;
+	DWORD bits_size;
+	BYTE *ret;
+
+	if (data == NULL || size < sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER)) {
+		return NULL;
+	}
+	if (bfh->bfType != 0x4d42 || bfh->bfOffBits < sizeof(BITMAPFILEHEADER) || bfh->bfOffBits > size) {
+		return NULL;
+	}
+	dib = data + sizeof(BITMAPFILEHEADER);
+	dib_size = size - sizeof(BITMAPFILEHEADER);
+	if ((hdr_size = dib_get_bits_offset(dib, dib_size)) == 0) {
+		return NULL;
+	}
+	if (bfh->bfOffBits == sizeof(BITMAPFILEHEADER) + hdr_size) {
+		// ヘッダの直後に画素データがある
+		if ((ret = mem_alloc(dib_size)) == NULL) {
+			return NULL;
+		}
+		CopyMemory(ret, dib, dib_size);
+		*ret_size = dib_size;
+		return ret;
+	}
+	// ヘッダ部と bfOffBits 以降の画素部を連結する
+	bits_size = size - bfh->bfOffBits;
+	if ((ret = mem_alloc(hdr_size + bits_size)) == NULL) {
+		return NULL;
+	}
+	CopyMemory(ret, dib, hdr_size);
+	CopyMemory(ret + hdr_size, data + bfh->bfOffBits, bits_size);
+	if (dib_get_bits_offset(ret, hdr_size + bits_size) == 0) {
+		mem_free(&ret);
+		return NULL;
+	}
+	*ret_size = hdr_size + bits_size;
+	return ret;
+}
+
+/*
  * bitmap_file_to_data - ファイルからデータを作成
  */
 __declspec(dllexport) HANDLE CALLBACK bitmap_file_to_data(const TCHAR *file_name, const TCHAR *format_name, DWORD *ret_size, TCHAR *err_str)
@@ -276,7 +320,11 @@ __declspec(dllexport) HANDLE CALLBACK bitmap_file_to_data(const TCHAR *file_name
 
 	ext = PathFindExtension(file_name);
 	if (lstrcmpi(ext, TEXT(".png")) == 0 || lstrcmpi(ext, TEXT(".jpg")) == 0 || lstrcmpi(ext, TEXT(".jpeg")) == 0) {
-		HBITMAP hbmp = image_to_bitmap(GetDC(NULL), file_name);
+		HBITMAP hbmp = image_to_bitmap(NULL, file_name);
+		if (hbmp == NULL) {
+			message_get_error(ERROR_INVALID_DATA, err_str);
+			return NULL;
+		}
 		if (lstrcmpi(format_name, TEXT("BITMAP")) != 0) {
 			if ((data = bitmap_to_dib(hbmp, &size)) == NULL) {
 				message_get_error(GetLastError(), err_str);
@@ -320,39 +368,50 @@ __declspec(dllexport) HANDLE CALLBACK bitmap_file_to_data(const TCHAR *file_name
 		}
 	}
 	else {
+		BYTE *dib;
+		DWORD dib_size;
+
 		// ファイルの読み込み
 		if ((data = file_read_buf(file_name, &size, err_str)) == NULL) {
 			return NULL;
 		}
+		// BMPファイルヘッダの検証とDIBの取り出し
+		if ((dib = bmp_file_to_dib(data, size, &dib_size)) == NULL) {
+			message_get_error(ERROR_INVALID_DATA, err_str);
+			mem_free(&data);
+			return NULL;
+		}
+		mem_free(&data);
 		if (lstrcmpi(format_name, TEXT("BITMAP")) != 0) {
 			// コピー先確保
-			if ((ret = GlobalAlloc(GHND, size - sizeof(BITMAPFILEHEADER))) == NULL) {
+			if ((ret = GlobalAlloc(GHND, dib_size)) == NULL) {
 				message_get_error(GetLastError(), err_str);
-				mem_free(&data);
+				mem_free(&dib);
 				return NULL;
 			}
 			// コピー先ロック
 			if ((mem = GlobalLock(ret)) == NULL) {
 				message_get_error(GetLastError(), err_str);
 				GlobalFree(ret);
-				mem_free(&data);
+				mem_free(&dib);
 				return NULL;
 			}
 			// コピー
-			CopyMemory(mem, data + sizeof(BITMAPFILEHEADER), size - sizeof(BITMAPFILEHEADER));
+			CopyMemory(mem, dib, dib_size);
 			// ロック解除
 			GlobalUnlock(ret);
-
 		}
 		else {
-			if ((ret = dib_to_bitmap(data + sizeof(BITMAPFILEHEADER))) == NULL) {
+			if ((ret = dib_to_bitmap(dib, dib_size)) == NULL) {
 				message_get_error(GetLastError(), err_str);
+				mem_free(&dib);
+				return NULL;
 			}
 		}
 		if (ret_size != NULL) {
-			*ret_size = size - sizeof(BITMAPFILEHEADER);
+			*ret_size = dib_size;
 		}
-		mem_free(&data);
+		mem_free(&dib);
 	}
 	return ret;
 }
@@ -413,14 +472,22 @@ __declspec(dllexport) BOOL CALLBACK bitmap_get_menu_bitmap(DATA_INFO *di, const 
 		if ((mem = GlobalLock(di->data)) == NULL) {
 			return FALSE;
 		}
-		hbmp = dib_to_bitmap(mem);
+		hbmp = dib_to_bitmap(mem, (DWORD)GlobalSize(di->data));
 		GlobalUnlock(di->data);
+		if (hbmp == NULL) {
+			return FALSE;
+		}
 	} else {
 		hbmp = di->data;
 	}
 
 	// メニューに表示するビットマップの作成
-	GetObject(hbmp, sizeof(BITMAP), &bmp);
+	if (GetObject(hbmp, sizeof(BITMAP), &bmp) == 0) {
+		if (lstrcmpi(di->format_name, TEXT("BITMAP")) != 0) {
+			DeleteObject((HGDIOBJ)hbmp);
+		}
+		return FALSE;
+	}
 
 	hdc = GetDC(NULL);
 
@@ -473,18 +540,26 @@ __declspec(dllexport) TCHAR* CALLBACK bitmap_get_tooltip_text(DATA_INFO *di)
 		if ((mem = GlobalLock(di->data)) == NULL) {
 			return NULL;
 		}
-		hbmp = dib_to_bitmap(mem);
+		hbmp = dib_to_bitmap(mem, (DWORD)GlobalSize(di->data));
 		GlobalUnlock(di->data);
+		if (hbmp == NULL) {
+			return NULL;
+		}
 	} else {
 		hbmp = di->data;
 	}
 
 	// 画像情報取得
-	GetObject(hbmp, sizeof(BITMAP), &bmp);
+	if (GetObject(hbmp, sizeof(BITMAP), &bmp) == 0) {
+		if (lstrcmpi(di->format_name, TEXT("BITMAP")) != 0) {
+			DeleteObject((HGDIOBJ)hbmp);
+		}
+		return NULL;
+	}
 	if (di->size < 1024) {
-		wsprintf(buf, TEXT("%u x %u (%d bytes)"), bmp.bmWidth, bmp.bmHeight, di->size);
+		wnsprintf(buf, _countof(buf), TEXT("%u x %u (%d bytes)"), bmp.bmWidth, bmp.bmHeight, di->size);
 	} else {
-		wsprintf(buf, TEXT("%u x %u (%d KB)"), bmp.bmWidth, bmp.bmHeight, di->size / 1024);
+		wnsprintf(buf, _countof(buf), TEXT("%u x %u (%d KB)"), bmp.bmWidth, bmp.bmHeight, di->size / 1024);
 	}
 	ret = alloc_copy(buf);
 
