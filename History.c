@@ -41,7 +41,7 @@ static BOOL history_overlap_check(DATA_INFO **root, DATA_INFO *new_item);
 static BOOL history_compare(DATA_INFO *d1, DATA_INFO *d2)
 {
 	BYTE *mem1, *mem2;
-	UINT size1, size2;
+	DWORD size1, size2;
 	int ret;
 
 	if ((d1 = d1->child) == NULL || (d2 = d2->child) == NULL) {

@@ -12,6 +12,7 @@
 #define _INC_OLE
 #include <windows.h>
 #undef  _INC_OLE
+#include <shlwapi.h>
 
 #include "General.h"
 #include "Memory.h"
@@ -21,6 +22,8 @@
 #include "Message.h"
 #include "ClipBoard.h"
 #include "Format.h"
+
+#pragma comment(lib, "shlwapi.lib")
 
 /* Define */
 
@@ -328,15 +331,17 @@ BOOL data_get_modified_string(const DATA_INFO *di, TCHAR *ret)
 	if (p == NULL || *p == TEXT('\0')) {
 		p = NULL;
 	}
-	GetDateFormat(0, 0, &sys_time, p, str_day, BUF_SIZE - 1);
+	*str_day = TEXT('\0');
+	GetDateFormat(0, 0, &sys_time, p, str_day, BUF_SIZE / 2 - 1);
 	// 時間文字列の取得
 	p = option.data_time_format;
 	if (p == NULL || *p == TEXT('\0')) {
 		p = NULL;
 	}
-	GetTimeFormat(0, 0, &sys_time, p, str_time, BUF_SIZE - 1);
+	*str_time = TEXT('\0');
+	GetTimeFormat(0, 0, &sys_time, p, str_time, BUF_SIZE / 2 - 1);
 
-	wsprintf(ret, TEXT("%s %s"), str_day, str_time);
+	wnsprintf(ret, BUF_SIZE, TEXT("%s %s"), str_day, str_time);
 	return TRUE;
 }
 
