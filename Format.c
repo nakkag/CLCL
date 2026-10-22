@@ -12,6 +12,7 @@
 #define _INC_OLE
 #include <windows.h>
 #undef  _INC_OLE
+#include <shlwapi.h>
 
 #include "General.h"
 #include "Memory.h"
@@ -21,6 +22,8 @@
 #include "Message.h"
 #include "Format.h"
 #include "dpi.h"
+
+#pragma comment(lib, "shlwapi.lib")
 
 /* Define */
 
@@ -72,13 +75,14 @@ int format_get_index(const TCHAR *format_name, const int name_hash)
 DATA_INFO *format_get_priority_highest(DATA_INFO *di)
 {
 	DATA_INFO *pdi;
-	DATA_INFO *ret = di->child;
+	DATA_INFO *ret;
 	int priority = -1;
 	int i;
 
 	if (di == NULL || di->type == TYPE_FOLDER || di->child == NULL) {
 		return di;
 	}
+	ret = di->child;
 	for (pdi = di->child; pdi != NULL; pdi = pdi->next) {
 		i = format_get_index(pdi->format_name, pdi->format_name_hash);
 		if (i != -1 && (i < priority || priority == -1)) {
@@ -106,7 +110,7 @@ BOOL format_initialize(TCHAR *err_str)
 			lib = (option.format_info + i)->lib = LoadLibrary((option.format_info + i)->lib_file_path);
 			if (lib == NULL) {
 				message_get_error(GetLastError(), buf);
-				wsprintf(err_str, TEXT("%s\r\n%s"), buf, (option.format_info + i)->lib_file_path);
+				wnsprintf(err_str, BUF_SIZE, TEXT("%s\r\n%s"), buf, (option.format_info + i)->lib_file_path);
 				return FALSE;
 			}
 		} else {
@@ -115,90 +119,90 @@ BOOL format_initialize(TCHAR *err_str)
 		}
 		// 形式毎の関数アドレス取得
 		// general
-		wsprintf(buf, TEXT("%sinitialize"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sinitialize"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_initialize = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%sget_icon"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sget_icon"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_get_icon = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%sfree"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sfree"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_free = GetProcAddress(lib, cbuf);
 
 		// item
-		wsprintf(buf, TEXT("%sinitialize_item"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sinitialize_item"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_initialize_item = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%scopy_data"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%scopy_data"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_copy_data = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%sdata_to_bytes"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sdata_to_bytes"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_data_to_bytes = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%sbytes_to_data"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sbytes_to_data"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_bytes_to_data = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%sget_file_info"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sget_file_info"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_get_file_info = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%sdata_to_file"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sdata_to_file"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_data_to_file = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%sfile_to_data"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sfile_to_data"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_file_to_data = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%sfree_data"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sfree_data"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_free_data = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%sfree_item"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sfree_item"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_free_item = GetProcAddress(lib, cbuf);
 
 		// menu
-		wsprintf(buf, TEXT("%sget_menu_title"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sget_menu_title"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_get_menu_title = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%sget_menu_icon"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sget_menu_icon"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_get_menu_icon = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%sget_menu_bitmap"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sget_menu_bitmap"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_get_menu_bitmap = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%sget_tooltip_text"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sget_tooltip_text"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_get_tooltip_text = GetProcAddress(lib, cbuf);
 
 		// window
-		wsprintf(buf, TEXT("%swindow_create"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%swindow_create"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_window_create = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%swindow_destroy"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%swindow_destroy"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_window_destroy = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%swindow_show_data"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%swindow_show_data"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_window_show_data = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%swindow_save_data"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%swindow_save_data"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_window_save_data = GetProcAddress(lib, cbuf);
 
-		wsprintf(buf, TEXT("%swindow_hide_data"), (option.format_info + i)->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%swindow_hide_data"), (option.format_info + i)->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		(option.format_info + i)->func_window_hide_data = GetProcAddress(lib, cbuf);
 
@@ -215,7 +219,7 @@ BOOL format_initialize(TCHAR *err_str)
  */
 HICON format_get_icon(const int index, const int icon_size, BOOL *free_icon)
 {
-	if (index < 0 || (option.format_info + index)->func_get_icon == NULL) {
+	if (index < 0 || index >= option.format_cnt || (option.format_info + index)->func_get_icon == NULL) {
 		return NULL;
 	}
 	return (HICON)((option.format_info + index)->func_get_icon)(icon_size, free_icon);

@@ -34,8 +34,9 @@
 #define ERROR_TITLE						TEXT("CLCL - Error")
 
 /* Global Variables */
-static HTREEITEM drag_item;
-static DATA_INFO *drag_di;
+static HTREEITEM drag_item;					// 自ウィンドウ内D&Dのドラッグ元 (通知毎に drag_di から取得)
+static DATA_INFO *drag_di;					// ドラッグ元のデータ (IDataObject が解放されるまで保持)
+static int drag_obj_cnt;					// 生存している IDataObject の数
 static int g_mode;
 
 // extern
@@ -51,6 +52,30 @@ extern DATA_INFO regist_data;
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
+static HTREEITEM viewer_ole_find_drag_item(const HWND hTreeView, const DATA_INFO *di);
+
+/*
+ * viewer_ole_find_drag_item - データがツリーに存在するか確認してツリーアイテムを取得
+ */
+static HTREEITEM viewer_ole_find_drag_item(const HWND hTreeView, const DATA_INFO *di)
+{
+	if (di == NULL) {
+		return NULL;
+	}
+	if (di == &clip_di) {
+		return clip_treeitem;
+	}
+	if (clip_treeitem != NULL && data_check(&clip_di, di) != NULL) {
+		return treeview_lparam_to_item(hTreeView, clip_treeitem, (LPARAM)di);
+	}
+	if (history_treeitem != NULL && data_check(&history_data, di) != NULL) {
+		return treeview_lparam_to_item(hTreeView, history_treeitem, (LPARAM)di);
+	}
+	if (regist_treeitem != NULL && data_check(&regist_data, di) != NULL) {
+		return treeview_lparam_to_item(hTreeView, regist_treeitem, (LPARAM)di);
+	}
+	return NULL;
+}
 
 /*
  * viewer_ole_get_drag_effect - ドラッグ中のマウス効果を取得
@@ -64,6 +89,9 @@ BOOL viewer_ole_get_drag_effect(const HWND hWnd, const LPIDROPTARGET_NOTIFY pdtn
 	HTREEITEM hItem;
 	DATA_INFO *di;
 	int iItem;
+
+	// 自ウィンドウ内のD&Dの場合はドラッグ元のアイテムを取得
+	drag_item = (pdtn->own_source == TRUE) ? viewer_ole_find_drag_item(hTreeView, drag_di) : NULL;
 
 	// マウスの下のウィンドウ取得
 	pt.x = pdtn->ppt->x; pt.y = pdtn->ppt->y;
@@ -205,7 +233,7 @@ BOOL viewer_ole_create_drop_item(const HWND hWnd, const LPIDROPTARGET_NOTIFY pdt
 	HTREEITEM hItem;
 	HTREEITEM ret_item;
 	DATA_INFO *di;
-	DATA_INFO *cdi;
+	DATA_INFO *cdi = NULL;
 	DATA_INFO *new_item;
 	DATA_INFO **pdi;
 	TCHAR buf[BUF_SIZE];
@@ -214,6 +242,13 @@ BOOL viewer_ole_create_drop_item(const HWND hWnd, const LPIDROPTARGET_NOTIFY pdt
 	int cnt;
 	int i;
 	BOOL def_move;
+
+	// 自ウィンドウ内のD&Dの場合はドラッグ元のアイテムを取得
+	drag_item = (pdtn->own_source == TRUE) ? viewer_ole_find_drag_item(hTreeView, drag_di) : NULL;
+	if (pdtn->own_source == TRUE && drag_item == NULL) {
+		// D&D中にドラッグ元が削除された
+		return FALSE;
+	}
 
 	// ドロップ先のアイテム取得
 	if ((hItem = dragdrop_get_drop_folder(hWnd, pdtn->ppt->x, pdtn->ppt->y)) == NULL) {
@@ -273,7 +308,7 @@ BOOL viewer_ole_create_drop_item(const HWND hWnd, const LPIDROPTARGET_NOTIFY pdt
 	}
 
 	// フォーマットを取得
-	if ((cnt = DropTarget_EnumFormatEtc(pdtn->pdo, NULL)) == 0) {
+	if (pdtn->pdo == NULL || (cnt = DropTarget_EnumFormatEtc(pdtn->pdo, NULL, 0)) == 0) {
 		mem_free(&di);
 		return FALSE;
 	}
@@ -281,7 +316,8 @@ BOOL viewer_ole_create_drop_item(const HWND hWnd, const LPIDROPTARGET_NOTIFY pdt
 		mem_free(&di);
 		return FALSE;
 	}
-	if ((cnt = DropTarget_EnumFormatEtc(pdtn->pdo, format)) == 0) {
+	if ((cnt = DropTarget_EnumFormatEtc(pdtn->pdo, format, cnt)) == 0) {
+		mem_free(&format);
 		mem_free(&di);
 		return FALSE;
 	}
@@ -474,25 +510,44 @@ BOOL viewer_ole_start_drag(const HWND hWnd, const HTREEITEM sel_item)
 		}
 		break;
 
-	case TYPE_FOLDER:
+	default:
 		return FALSE;
 	}
-	// D&D開始
+	// D&D開始 (外部へは COPY のみ、自ウィンドウ内の MOVE は IDropTarget 側で扱う)
 	drag_di = di; drag_item = hItem;
-	ret = OLE_IDropSource_Start(hWnd, WM_GETDATA, cf, cfcnt, DROPEFFECT_COPY | DROPEFFECT_MOVE);
+	drag_obj_cnt++;
+	ret = OLE_IDropSource_Start(hWnd, WM_GETDATA, cf, cfcnt, DROPEFFECT_COPY);
 	mem_free(&cf);
-	if (ret != -1 && ret & DROPEFFECT_MOVE && drag_item != NULL) {
-		// ホットキーの解除
-		SendMessage(hWnd, WM_UNREGIST_HOTKEY, 0, 0);
-		// アイテムの削除
-		treeview_delete_item(hTreeView, drag_item);
-		treeview_to_listview(hTreeView, TreeView_GetSelection(hTreeView), hListView);
-		SendMessage(hWnd, WM_VIEWER_REFRESH_STATUS, 0, 0);
-		// ホットキーの設定
-		SendMessage(hWnd, WM_REGIST_HOTKEY, 0, 0);
+	drag_item = NULL;
+	if (ret != -1 && ret & DROPEFFECT_MOVE) {
+		// D&D中に履歴等が変化している可能性があるためドラッグ元のアイテムを取得し直す
+		if ((hItem = viewer_ole_find_drag_item(hTreeView, di)) != NULL) {
+			// ホットキーの解除
+			SendMessage(hWnd, WM_UNREGIST_HOTKEY, 0, 0);
+			// アイテムの削除
+			treeview_delete_item(hTreeView, hItem);
+			treeview_to_listview(hTreeView, TreeView_GetSelection(hTreeView), hListView);
+			SendMessage(hWnd, WM_VIEWER_REFRESH_STATUS, 0, 0);
+			// ホットキーの設定
+			SendMessage(hWnd, WM_REGIST_HOTKEY, 0, 0);
+		}
 	}
-	drag_di = NULL; drag_item = NULL;
 	return TRUE;
+}
+
+/*
+ * viewer_ole_drag_end - IDataObject の解放通知
+ */
+void viewer_ole_drag_end(void)
+{
+	if (drag_obj_cnt > 0) {
+		drag_obj_cnt--;
+	}
+	// 全ての IDataObject が解放されたらドラッグ元の参照を解除
+	if (drag_obj_cnt == 0) {
+		drag_di = NULL;
+		drag_item = NULL;
+	}
 }
 
 /*
@@ -501,15 +556,17 @@ BOOL viewer_ole_start_drag(const HWND hWnd, const HTREEITEM sel_item)
 HANDLE viewer_ole_get_drag_data(const HWND hWnd, const UINT format)
 {
 	HWND hTreeView = GetDlgItem(hWnd, ID_TREE);
+	HTREEITEM hItem;
 	HANDLE ret = NULL;
 	DATA_INFO *di;
 	DWORD size;
 
-	if (drag_di == NULL) {
+	// ドラッグ元のデータがまだ存在するか確認
+	if ((hItem = viewer_ole_find_drag_item(hTreeView, drag_di)) == NULL) {
 		return NULL;
 	}
 	// クリップボードの内容取得
-	viewer_get_clipboard_data(hWnd, drag_item);
+	viewer_get_clipboard_data(hWnd, hItem);
 
 	// データ取得
 	switch (drag_di->type) {

@@ -32,16 +32,16 @@ static TCHAR str_file[MAX_PATH];
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
-static BOOL CALLBACK select_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+static INT_PTR CALLBACK select_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 /*
  * select_format_proc - フォーマット選択ウィンドウプロシージャ
  */
-static BOOL CALLBACK select_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK select_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	OPENFILENAME of;
 	TCHAR buf[BUF_SIZE];
-	TCHAR tmp[BUF_SIZE];
+	TCHAR tmp[MAX_PATH];
 	int i, j;
 
 	switch (uMsg) {
@@ -101,7 +101,7 @@ static BOOL CALLBACK select_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 			of.nFilterIndex = 1;
 			*tmp = TEXT('\0');
 			of.lpstrFile = tmp;
-			of.nMaxFile = MAX_PATH - 1;
+			of.nMaxFile = MAX_PATH;
 			of.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 			if (format_get_file_info(buf, NULL, &of, TRUE) >= 0 && GetOpenFileName(&of) == FALSE) {
 				break;

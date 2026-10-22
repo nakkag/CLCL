@@ -11,6 +11,7 @@
 /* Include Files */
 #include <windows.h>
 #include <tchar.h>
+#include <limits.h>
 
 #include "Memory.h"
 
@@ -28,7 +29,12 @@ int a2i(const char *str)
 {
 	int num = 0;
 	int m = 1;
+	int digit;
+	int i;
 
+	if (str == NULL) {
+		return 0;
+	}
 	if (*str == '-') {
 		m = -1;
 		str++;
@@ -36,8 +42,14 @@ int a2i(const char *str)
 		str++;
 	}
 
-	for (; *str >= '0' && *str <= '9'; str++) {
-		num = 10 * num + (*str - '0');
+	// 10桁までを変換し、int の範囲を超える値は上限で打ち切る
+	for (i = 0; i < 10 && *str >= '0' && *str <= '9'; i++, str++) {
+		digit = *str - '0';
+		if (num > (INT_MAX - digit) / 10) {
+			num = INT_MAX;
+			break;
+		}
+		num = 10 * num + digit;
 	}
 	return (num * m);
 }
@@ -113,16 +125,29 @@ int str2hash(const TCHAR *str)
  */
 BOOL str_match(const TCHAR *Ptn, const TCHAR *Str)
 {
-	switch (*Ptn) {
-	case TEXT('\0'):
-		return (*Str == TEXT('\0'));
-	case TEXT('*'):
-		return (str_match(Ptn + 1, Str) || (*Str != TEXT('\0')) && str_match(Ptn, Str + 1));
-	case TEXT('?'):
-		return (*Str != TEXT('\0')) && str_match(Ptn + 1, Str + 1);
-	default:
-		return (to_lower(*Ptn) == to_lower(*Str)) && str_match(Ptn + 1, Str + 1);
+	const TCHAR *star_ptn = NULL;
+	const TCHAR *star_str = NULL;
+
+	while (*Str != TEXT('\0')) {
+		if (*Ptn == TEXT('*')) {
+			// '*' の位置を記憶して、まずは空文字列に一致させる
+			star_ptn = Ptn++;
+			star_str = Str;
+		} else if (*Ptn == TEXT('?') || to_lower(*Ptn) == to_lower(*Str)) {
+			Ptn++;
+			Str++;
+		} else if (star_ptn != NULL) {
+			// 直前の '*' に1文字多く一致させて再試行
+			Ptn = star_ptn + 1;
+			Str = ++star_str;
+		} else {
+			return FALSE;
+		}
 	}
+	// 残りのパターンが '*' のみなら一致
+	for (; *Ptn == TEXT('*'); Ptn++)
+		;
+	return (*Ptn == TEXT('\0'));
 }
 
 /*

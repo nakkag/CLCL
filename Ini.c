@@ -12,6 +12,7 @@
 #define _INC_OLE
 #include <windows.h>
 #undef  _INC_OLE
+#include <shlwapi.h>
 
 #include "General.h"
 #include "Memory.h"
@@ -31,8 +32,14 @@
 
 #include "resource.h"
 
+#pragma comment(lib, "shlwapi.lib")
+
 /* Define */
 #define USER_INI_OLD					TEXT("user.ini")
+// INI から読み込む件数の上限
+#define INI_CNT_MAX						10000
+// メニューの入れ子の上限
+#define INI_MENU_LEVEL_MAX				16
 
 /* Global Variables */
 OPTION_INFO option;
@@ -40,10 +47,20 @@ OPTION_INFO option;
 extern TCHAR work_path[];
 
 /* Local Function Prototypes */
+static int ini_limit_cnt(const int cnt);
 static FORMAT_NAME *ini_get_format_name(TCHAR *format_name, int *cnt);
-static BOOL ini_get_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt, TCHAR *err_str);
-static BOOL ini_put_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt);
+static BOOL ini_get_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt, const int level, TCHAR *err_str);
+static BOOL ini_read_option(TCHAR *err_str);
+static BOOL ini_put_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt, const int level);
 void ini_set_language(const TCHAR* locale_name);
+
+/*
+ * ini_limit_cnt - 件数が上限を超える場合は 0 として扱う
+ */
+static int ini_limit_cnt(const int cnt)
+{
+	return (cnt > INI_CNT_MAX) ? 0 : cnt;
+}
 
 /*
  * ini_get_format_name - 形式名の取得
@@ -54,6 +71,11 @@ static FORMAT_NAME *ini_get_format_name(TCHAR *format_name, int *cnt)
 	TCHAR buf[BUF_SIZE];
 	TCHAR *p, *r;
 	int i;
+
+	if (format_name == NULL) {
+		*cnt = 0;
+		return NULL;
+	}
 
 	// 項目数の取得
 	p = format_name;
@@ -79,28 +101,35 @@ static FORMAT_NAME *ini_get_format_name(TCHAR *format_name, int *cnt)
 		return NULL;
 	}
 
-	// 項目を切り出す
+	// 項目を切り出す (BUF_SIZE を超える分は読み飛ばす)
 	p = format_name;
 	r = buf;
 	i = 0;
 	while (1) {
 		if (*p == TEXT('\0') || *p == TEXT(',')) {
 			if (*p == TEXT(',') && *(p + 1) == TEXT(',')) {
-				*(r++) = *(p++);
-				p++;
+				if (r - buf < BUF_SIZE - 1) {
+					*(r++) = *p;
+				}
+				p += 2;
 				continue;
 			}
 			*r = TEXT('\0');
 			(ret + i)->format_name = alloc_copy(buf);
-			Trim((ret + i)->format_name);
-			(ret + i)->format_name_hash = str2hash((ret + i)->format_name);
+			if ((ret + i)->format_name != NULL) {
+				Trim((ret + i)->format_name);
+				(ret + i)->format_name_hash = str2hash((ret + i)->format_name);
+			}
 			if (*p == TEXT('\0') || *(p++) == TEXT('\0')) {
 				break;
 			}
 			r = buf;
 			i++;
 		} else {
-			*(r++) = *(p++);
+			if (r - buf < BUF_SIZE - 1) {
+				*(r++) = *p;
+			}
+			p++;
 		}
 	}
 	return ret;
@@ -109,38 +138,46 @@ static FORMAT_NAME *ini_get_format_name(TCHAR *format_name, int *cnt)
 /*
  * ini_get_option - メニューオプションを取得
  */
-static BOOL ini_get_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt, TCHAR *err_str)
+static BOOL ini_get_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt, const int level, TCHAR *err_str)
 {
 	TCHAR buf[BUF_SIZE];
 	int i;
 
+	if (level >= INI_MENU_LEVEL_MAX) {
+		return TRUE;
+	}
+
 	for (i = 0; i < mcnt; i++) {
-		wsprintf(buf, TEXT("%s-content-%d"), menu_path, i);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-content-%d"), menu_path, i);
 		(mi + i)->content = profile_get_int(TEXT("action"), buf, 0, ini_path);
-		wsprintf(buf, TEXT("%s-title-%d"), menu_path, i);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-title-%d"), menu_path, i);
 		(mi + i)->title = profile_alloc_string(TEXT("action"), buf, TEXT(""), ini_path);
-		wsprintf(buf, TEXT("%s-icon_path-%d"), menu_path, i);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-icon_path-%d"), menu_path, i);
 		(mi + i)->icon_path = profile_alloc_string(TEXT("action"), buf, TEXT(""), ini_path);
-		wsprintf(buf, TEXT("%s-icon_index-%d"), menu_path, i);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-icon_index-%d"), menu_path, i);
 		(mi + i)->icon_index = profile_get_int(TEXT("action"), buf, 0, ini_path);
-		wsprintf(buf, TEXT("%s-path-%d"), menu_path, i);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-path-%d"), menu_path, i);
 		(mi + i)->path = profile_alloc_string(TEXT("action"), buf, TEXT(""), ini_path);
-		wsprintf(buf, TEXT("%s-cmd-%d"), menu_path, i);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-cmd-%d"), menu_path, i);
 		(mi + i)->cmd = profile_alloc_string(TEXT("action"), buf, TEXT(""), ini_path);
-		wsprintf(buf, TEXT("%s-min-%d"), menu_path, i);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-min-%d"), menu_path, i);
 		(mi + i)->min = profile_get_int(TEXT("action"), buf, 0, ini_path);
-		wsprintf(buf, TEXT("%s-max-%d"), menu_path, i);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-max-%d"), menu_path, i);
 		(mi + i)->max = profile_get_int(TEXT("action"), buf, 0, ini_path);
-		wsprintf(buf, TEXT("%s-mi_cnt-%d"), menu_path, i);
-		(mi + i)->mi_cnt = profile_get_int(TEXT("action"), buf, 0, ini_path);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-mi_cnt-%d"), menu_path, i);
+		(mi + i)->mi_cnt = ini_limit_cnt(profile_get_int(TEXT("action"), buf, 0, ini_path));
+		if (level + 1 >= INI_MENU_LEVEL_MAX) {
+			// 入れ子の上限を超えるサブメニューは読み込まない
+			(mi + i)->mi_cnt = 0;
+		}
 
 		if ((mi + i)->mi_cnt > 0) {
 			if (((mi + i)->mi = mem_calloc(sizeof(MENU_INFO) * (mi + i)->mi_cnt)) == NULL) {
 				message_get_error(GetLastError(), err_str);
 				return FALSE;
 			}
-			wsprintf(buf, TEXT("%s-menu_info-%d"), menu_path, i);
-			if (ini_get_menu(ini_path, buf, (mi + i)->mi, (mi + i)->mi_cnt, err_str) == FALSE) {
+			wnsprintf(buf, BUF_SIZE, TEXT("%s-menu_info-%d"), menu_path, i);
+			if (ini_get_menu(ini_path, buf, (mi + i)->mi, (mi + i)->mi_cnt, level + 1, err_str) == FALSE) {
 				return FALSE;
 			}
 		}
@@ -152,6 +189,18 @@ static BOOL ini_get_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INF
  * ini_get_option - オプションを取得
  */
 BOOL ini_get_option(TCHAR *err_str)
+{
+	BOOL ret;
+
+	ret = ini_read_option(err_str);
+	profile_free();
+	return ret;
+}
+
+/*
+ * ini_read_option - INI ファイルからオプションを読み込む
+ */
+static BOOL ini_read_option(TCHAR *err_str)
 {
 	HDC hdc;
 	RECT desktop_rect;
@@ -277,7 +326,7 @@ BOOL ini_get_option(TCHAR *err_str)
 	// action
 	option.action_double_press_time = profile_get_int(TEXT("action"), TEXT("double_press_time"), GetDoubleClickTime(), ini_path);
 	option.action_show_hotkey_error = profile_get_int(TEXT("action"), TEXT("show_hotkey_error"), 1, ini_path);
-	option.action_cnt = profile_get_int(TEXT("action"), TEXT("cnt"), -1, ini_path);
+	option.action_cnt = ini_limit_cnt(profile_get_int(TEXT("action"), TEXT("cnt"), -1, ini_path));
 	if (option.action_cnt < 0) {
 		// Default
 		option.action_cnt = 4;
@@ -407,15 +456,16 @@ BOOL ini_get_option(TCHAR *err_str)
 			wsprintf(buf, TEXT("paste-%d"), i);
 			(option.action_info + i)->paste = profile_get_int(TEXT("action"), buf, 0, ini_path);
 			wsprintf(buf, TEXT("menu_cnt-%d"), i);
-			(option.action_info + i)->menu_cnt = profile_get_int(TEXT("action"), buf, 0, ini_path);
+			(option.action_info + i)->menu_cnt = ini_limit_cnt(profile_get_int(TEXT("action"), buf, 0, ini_path));
 
 			if ((option.action_info + i)->menu_cnt > 0) {
 				(option.action_info + i)->menu_info = mem_calloc(sizeof(MENU_INFO) * (option.action_info + i)->menu_cnt);
 				if ((option.action_info + i)->menu_info == NULL) {
+					message_get_error(GetLastError(), err_str);
 					return FALSE;
 				}
 				wsprintf(buf, TEXT("menu_info-%d"), i);
-				if (ini_get_menu(ini_path, buf, (option.action_info + i)->menu_info, (option.action_info + i)->menu_cnt, err_str) == FALSE) {
+				if (ini_get_menu(ini_path, buf, (option.action_info + i)->menu_info, (option.action_info + i)->menu_cnt, 0, err_str) == FALSE) {
 					return FALSE;
 				}
 			}
@@ -423,7 +473,7 @@ BOOL ini_get_option(TCHAR *err_str)
 	}
 
 	// format
-	option.format_cnt = profile_get_int(TEXT("format"), TEXT("cnt"), -1, ini_path);
+	option.format_cnt = ini_limit_cnt(profile_get_int(TEXT("format"), TEXT("cnt"), -1, ini_path));
 	if (option.format_cnt < 0) {
 		// Default
 		option.format_cnt = 4;
@@ -492,7 +542,7 @@ BOOL ini_get_option(TCHAR *err_str)
 
 	// filter
 	option.filter_all_action = profile_get_int(TEXT("filter"), TEXT("all_action"), FILTER_ACTION_IGNORE, ini_path);
-	option.filter_cnt = profile_get_int(TEXT("filter"), TEXT("cnt"), -1, ini_path);
+	option.filter_cnt = ini_limit_cnt(profile_get_int(TEXT("filter"), TEXT("cnt"), -1, ini_path));
 	if (option.filter_cnt < 0) {
 		// Default
 		option.filter_cnt = 3;
@@ -568,7 +618,7 @@ BOOL ini_get_option(TCHAR *err_str)
 	}
 
 	// window filter
-	option.window_filter_cnt = profile_get_int(TEXT("window_filter"), TEXT("cnt"), -1, ini_path);
+	option.window_filter_cnt = ini_limit_cnt(profile_get_int(TEXT("window_filter"), TEXT("cnt"), -1, ini_path));
 	if (option.window_filter_cnt < 0) {
 		option.window_filter_cnt = 0;
 	} else {
@@ -600,7 +650,7 @@ BOOL ini_get_option(TCHAR *err_str)
 	option.def_paste_virtkey = profile_get_int(TEXT("sendkey"), TEXT("def_paste_virtkey"), 'V', ini_path);
 	option.def_paste_wait = profile_get_int(TEXT("sendkey"), TEXT("def_paste_wait"), DEFAULT_PASTE_WAIT, ini_path);
 
-	option.sendkey_cnt = profile_get_int(TEXT("sendkey"), TEXT("cnt"), -1, ini_path);
+	option.sendkey_cnt = ini_limit_cnt(profile_get_int(TEXT("sendkey"), TEXT("cnt"), -1, ini_path));
 	if (option.sendkey_cnt < 0) {
 		option.sendkey_cnt = 0;
 	} else {
@@ -632,7 +682,7 @@ BOOL ini_get_option(TCHAR *err_str)
 
 	// tool
 	option.tool_valid_interval = profile_get_int(TEXT("tool"), TEXT("valid_interval"), 1000 * 5, ini_path);
-	option.tool_cnt = profile_get_int(TEXT("tool"), TEXT("cnt"), -1, ini_path);
+	option.tool_cnt = ini_limit_cnt(profile_get_int(TEXT("tool"), TEXT("cnt"), -1, ini_path));
 	if (option.tool_cnt < 0) {
 		option.tool_cnt = 0;
 	} else {
@@ -729,54 +779,59 @@ BOOL ini_get_option(TCHAR *err_str)
 	option.fmt_bmp_stretch_mode = profile_get_int(TEXT("fmt_bitmap"), TEXT("stretch_mode"), 0, ini_path);
 
 	// file format
-	option.fmt_file_column_name = profile_get_int(TEXT("fmt_file"), TEXT("column_name"), 200, ini_path);
-	option.fmt_file_column_folder = profile_get_int(TEXT("fmt_file"), TEXT("column_folder"), 200, ini_path);
+	// 旧バージョンは column_data / column_size のキー名で保存していたため、無ければそちらを読む
+	option.fmt_file_column_name = profile_get_int(TEXT("fmt_file"), TEXT("column_name"),
+		profile_get_int(TEXT("fmt_file"), TEXT("column_data"), 200, ini_path), ini_path);
+	option.fmt_file_column_folder = profile_get_int(TEXT("fmt_file"), TEXT("column_folder"),
+		profile_get_int(TEXT("fmt_file"), TEXT("column_size"), 200, ini_path), ini_path);
 	option.fmt_file_column_type = profile_get_int(TEXT("fmt_file"), TEXT("column_type"), 100, ini_path);
 	option.fmt_file_font_name = profile_alloc_string(TEXT("fmt_file"), TEXT("font_name"), TEXT(""), ini_path);
 	option.fmt_file_font_size = profile_get_int(TEXT("fmt_file"), TEXT("font_size"), 9, ini_path);
 	option.fmt_file_font_weight = profile_get_int(TEXT("fmt_file"), TEXT("font_weight"), 0, ini_path);
 	option.fmt_file_font_italic = profile_get_int(TEXT("fmt_file"), TEXT("font_italic"), 0, ini_path);
 	option.fmt_file_font_charset = profile_get_int(TEXT("fmt_file"), TEXT("font_charset"), char_set, ini_path);
-
-	profile_free();
 	return TRUE;
 }
 
 /*
  * ini_put_menu - メニューオプションを書きこむ
  */
-static BOOL ini_put_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt)
+static BOOL ini_put_menu(const TCHAR *ini_path, const TCHAR *menu_path, MENU_INFO *mi, const int mcnt, const int level)
 {
 	TCHAR buf[BUF_SIZE];
+	int mi_cnt;
 	int i;
 
-	if (mi == NULL) {
+	if (mi == NULL || level >= INI_MENU_LEVEL_MAX) {
 		return TRUE;
 	}
 
 	for (i = 0; i < mcnt; i++) {
-		wsprintf(buf, TEXT("%s-content-%d"), menu_path, i);
-		profile_write_int(TEXT("action"), buf, (mi + i)->content, ini_path);
-		wsprintf(buf, TEXT("%s-title-%d"), menu_path, i);
-		profile_write_string(TEXT("action"), buf, (mi + i)->title, ini_path);
-		wsprintf(buf, TEXT("%s-icon_path-%d"), menu_path, i);
-		profile_write_string(TEXT("action"), buf, (mi + i)->icon_path, ini_path);
-		wsprintf(buf, TEXT("%s-icon_index-%d"), menu_path, i);
-		profile_write_int(TEXT("action"), buf, (mi + i)->icon_index, ini_path);
-		wsprintf(buf, TEXT("%s-path-%d"), menu_path, i);
-		profile_write_string(TEXT("action"), buf, (mi + i)->path, ini_path);
-		wsprintf(buf, TEXT("%s-cmd-%d"), menu_path, i);
-		profile_write_string(TEXT("action"), buf, (mi + i)->cmd, ini_path);
-		wsprintf(buf, TEXT("%s-min-%d"), menu_path, i);
-		profile_write_int(TEXT("action"), buf, (mi + i)->min, ini_path);
-		wsprintf(buf, TEXT("%s-max-%d"), menu_path, i);
-		profile_write_int(TEXT("action"), buf, (mi + i)->max, ini_path);
-		wsprintf(buf, TEXT("%s-mi_cnt-%d"), menu_path, i);
-		profile_write_int(TEXT("action"), buf, (mi + i)->mi_cnt, ini_path);
+		// 入れ子の上限を超えるサブメニューは書き込まない
+		mi_cnt = ((mi + i)->mi != NULL && level + 1 < INI_MENU_LEVEL_MAX) ? (mi + i)->mi_cnt : 0;
 
-		if ((mi + i)->mi != NULL) {
-			wsprintf(buf, TEXT("%s-menu_info-%d"), menu_path, i);
-			if (ini_put_menu(ini_path, buf, (mi + i)->mi, (mi + i)->mi_cnt) == FALSE) {
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-content-%d"), menu_path, i);
+		profile_write_int(TEXT("action"), buf, (mi + i)->content, ini_path);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-title-%d"), menu_path, i);
+		profile_write_string(TEXT("action"), buf, (mi + i)->title, ini_path);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-icon_path-%d"), menu_path, i);
+		profile_write_string(TEXT("action"), buf, (mi + i)->icon_path, ini_path);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-icon_index-%d"), menu_path, i);
+		profile_write_int(TEXT("action"), buf, (mi + i)->icon_index, ini_path);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-path-%d"), menu_path, i);
+		profile_write_string(TEXT("action"), buf, (mi + i)->path, ini_path);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-cmd-%d"), menu_path, i);
+		profile_write_string(TEXT("action"), buf, (mi + i)->cmd, ini_path);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-min-%d"), menu_path, i);
+		profile_write_int(TEXT("action"), buf, (mi + i)->min, ini_path);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-max-%d"), menu_path, i);
+		profile_write_int(TEXT("action"), buf, (mi + i)->max, ini_path);
+		wnsprintf(buf, BUF_SIZE, TEXT("%s-mi_cnt-%d"), menu_path, i);
+		profile_write_int(TEXT("action"), buf, mi_cnt, ini_path);
+
+		if (mi_cnt > 0) {
+			wnsprintf(buf, BUF_SIZE, TEXT("%s-menu_info-%d"), menu_path, i);
+			if (ini_put_menu(ini_path, buf, (mi + i)->mi, mi_cnt, level + 1) == FALSE) {
 				return FALSE;
 			}
 		}
@@ -898,7 +953,7 @@ BOOL ini_put_option(void)
 		profile_write_int(TEXT("action"), buf, (option.action_info + i)->menu_cnt, ini_path);
 
 		wsprintf(buf, TEXT("menu_info-%d"), i);
-		ini_put_menu(ini_path, buf, (option.action_info + i)->menu_info, (option.action_info + i)->menu_cnt);
+		ini_put_menu(ini_path, buf, (option.action_info + i)->menu_info, (option.action_info + i)->menu_cnt, 0);
 	}
 
 	// format
@@ -1086,8 +1141,8 @@ BOOL ini_put_option(void)
 
 	// file format
 #ifndef OPTION_SET
-	profile_write_int(TEXT("fmt_file"), TEXT("column_data"), option.fmt_file_column_name, ini_path);
-	profile_write_int(TEXT("fmt_file"), TEXT("column_size"), option.fmt_file_column_folder, ini_path);
+	profile_write_int(TEXT("fmt_file"), TEXT("column_name"), option.fmt_file_column_name, ini_path);
+	profile_write_int(TEXT("fmt_file"), TEXT("column_folder"), option.fmt_file_column_folder, ini_path);
 	profile_write_int(TEXT("fmt_file"), TEXT("column_type"), option.fmt_file_column_type, ini_path);
 #endif	// OPTION_SET
 	profile_write_string(TEXT("fmt_file"), TEXT("font_name"), option.fmt_file_font_name, ini_path);

@@ -13,6 +13,9 @@
 #include <windows.h>
 #undef  _INC_OLE
 #include <commctrl.h>
+#include <shlwapi.h>
+
+#pragma comment(lib, "shlwapi.lib")
 
 #include "..\General.h"
 #include "..\Memory.h"
@@ -38,12 +41,15 @@ extern TCHAR work_path[];
 // オプション
 extern OPTION_INFO option;
 
+// 編集中ツールの関数形式 (0: get_tool_info_w, 1: GetToolInfo, 2: get_tool_info)
+static int item_old;
+
 /* Local Function Prototypes */
 static BOOL dll_to_list(const HWND hDlg, const TCHAR *lib_path, int *old);
-static BOOL CALLBACK select_tools_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-static BOOL CALLBACK select_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+static INT_PTR CALLBACK select_tools_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+static INT_PTR CALLBACK select_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 static void set_call_type(const HWND hDlg, const int call_type);
-static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+static INT_PTR CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 static BOOL show_property(const HWND hDlg, TOOL_INFO *ti);
 static void listview_set_text(const HWND hListView, const int i);
 static void listview_set_tool(const HWND hListView, TOOL_INFO *ti, const BOOL copy);
@@ -137,9 +143,9 @@ static BOOL dll_to_list(const HWND hDlg, const TCHAR *lib_path, int *old)
 			if (func_get_tool_info(hDlg, i++, &tgia) == FALSE) {
 				break;
 			}
-			char_to_tchar(tgia.title, tgi.title, BUF_SIZE);
-			char_to_tchar(tgia.func_name, tgi.func_name, BUF_SIZE);
-			char_to_tchar(tgia.cmd_line, tgi.cmd_line, BUF_SIZE);
+			char_to_tchar(tgia.title, tgi.title, BUF_SIZE - 1);
+			char_to_tchar(tgia.func_name, tgi.func_name, BUF_SIZE - 1);
+			char_to_tchar(tgia.cmd_line, tgi.cmd_line, BUF_SIZE - 1);
 			call_type = tgia.call_type;
 		} else {
 			if ((call_type = old_func_get_tool_info(i++, tgi.title, tgi.func_name, &param)) <= -1) {
@@ -164,12 +170,12 @@ static BOOL dll_to_list(const HWND hDlg, const TCHAR *lib_path, int *old)
 /*
  * select_tools_proc - ツール選択ウィンドウプロシージャ
  */
-static BOOL CALLBACK select_tools_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK select_tools_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	HWND pWnd;
 	TOOL_INFO *ti;
 	TCHAR buf[BUF_SIZE];
-	static TCHAR lib_path[BUF_SIZE];
+	static TCHAR lib_path[MAX_PATH];
 	int call_type;
 	int i, j;
 	static int old;
@@ -190,7 +196,7 @@ static BOOL CALLBACK select_tools_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 			GetWindowLong(GetDlgItem(hDlg, IDC_LIST_HEADER), GWL_STYLE) & ~LVS_SINGLESEL);
 		ListView_SetItemState(GetDlgItem(hDlg, IDC_LIST_HEADER), -1, LVIS_SELECTED, LVIS_SELECTED);
 
-		lstrcpy(lib_path, (TCHAR *)lParam);
+		lstrcpyn(lib_path, (TCHAR *)lParam, MAX_PATH);
 
 		if (ListView_GetSelectedCount(GetDlgItem(hDlg, IDC_LIST_HEADER)) <= 0) {
 			EnableWindow(GetDlgItem(hDlg, IDOK), FALSE);
@@ -279,7 +285,8 @@ static BOOL CALLBACK select_tools_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 
 	case WM_GET_VERSION:
 		// バージョン取得
-		return APP_VAR;
+		SetWindowLongPtr(hDlg, DWLP_MSGRESULT, APP_VAR);
+		return TRUE;
 
 	case WM_GET_WORKPATH:
 		// 作業ディレクトリ取得
@@ -298,7 +305,7 @@ static BOOL CALLBACK select_tools_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 /*
  * select_tool_proc - ツール選択ウィンドウプロシージャ
  */
-static BOOL CALLBACK select_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK select_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	TCHAR buf[BUF_SIZE];
 	int call_type;
@@ -382,7 +389,7 @@ static BOOL CALLBACK select_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 			}
 			set_call_type(GetParent(hDlg), call_type);
 
-			CheckDlgButton(GetParent(hDlg), IDC_CHECK_OLD, old);
+			item_old = old;
 			EndDialog(hDlg, TRUE);
 			break;
 		}
@@ -390,7 +397,8 @@ static BOOL CALLBACK select_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 
 	case WM_GET_VERSION:
 		// バージョン取得
-		return APP_VAR;
+		SetWindowLongPtr(hDlg, DWLP_MSGRESULT, APP_VAR);
+		return TRUE;
 
 	case WM_GET_WORKPATH:
 		// 作業ディレクトリ取得
@@ -427,23 +435,25 @@ static void set_call_type(const HWND hDlg, const int call_type)
 /*
  * set_tool_item_proc - ツールの項目を設定
  */
-static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	TOOL_INFO *ti;
-	TCHAR buf[BUF_SIZE];
+	TCHAR buf[MAX_PATH];
 	int i;
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
 		// ダークモードの設定
 		dark_mode_set_dialog(hDlg);
+		item_old = 0;
 		if (lParam == 0) {
 			// 新規追加
 			SendMessage(hDlg, WM_COMMAND, IDC_CHECK_MENU, 0);
-			SetWindowLong(hDlg, GWL_USERDATA, 0);
+			SetWindowLongPtr(hDlg, GWLP_USERDATA, 0);
 			break;
 		}
 		ti = (TOOL_INFO *)lParam;
+		item_old = ti->old;
 
 		SendDlgItemMessage(hDlg, IDC_EDIT_TITLE, WM_SETTEXT, 0, (LPARAM)ti->title);
 		SendDlgItemMessage(hDlg, IDC_EDIT_LIB_PATH, WM_SETTEXT, 0, (LPARAM)ti->lib_file_path);
@@ -452,7 +462,6 @@ static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 
 		set_call_type(hDlg, ti->call_type);
 		CheckDlgButton(hDlg, IDC_CHECK_COPY_PATE, ti->copy_paste);
-		CheckDlgButton(hDlg, IDC_CHECK_OLD, ti->old);
 
 		i = 0;
 		if (ti->modifiers & MOD_SHIFT) {
@@ -473,7 +482,7 @@ static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 		}
 		SendMessage(hDlg, WM_COMMAND, IDC_CHECK_MENU, 0);
 
-		SetWindowLong(hDlg, GWL_USERDATA, lParam);
+		SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
 		break;
 
 	case WM_CLOSE:
@@ -495,11 +504,12 @@ static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 			}
 			SendDlgItemMessage(hDlg, IDC_EDIT_LIB_PATH, WM_SETTEXT, 0, (LPARAM)buf);
 			SendDlgItemMessage(hDlg, IDC_EDIT_HEADER, WM_SETTEXT, 0, (LPARAM)TEXT(""));
+			/* FALLTHROUGH */
 
 		case IDC_BUTTON_FUNC_SELECT:
 			// ツール選択
 			*buf = TEXT('\0');
-			SendDlgItemMessage(hDlg, IDC_EDIT_LIB_PATH, WM_GETTEXT, BUF_SIZE - 1, (LPARAM)buf);
+			SendDlgItemMessage(hDlg, IDC_EDIT_LIB_PATH, WM_GETTEXT, MAX_PATH - 1, (LPARAM)buf);
 			if (DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_DIALOG_SELECT_FUNC), hDlg, select_tool_proc, (LPARAM)buf) == TRUE) {
 				SendMessage(hDlg, WM_COMMAND, IDC_CHECK_MENU, 0);
 			}
@@ -514,7 +524,7 @@ static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 				break;
 			}
 
-			if ((ti = (TOOL_INFO *)GetWindowLong(hDlg, GWL_USERDATA)) == NULL) {
+			if ((ti = (TOOL_INFO *)GetWindowLongPtr(hDlg, GWLP_USERDATA)) == NULL) {
 				ti = mem_calloc(sizeof(TOOL_INFO));
 			}
 			if (ti != NULL) {
@@ -537,7 +547,7 @@ static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 				ti->call_type |= (IsDlgButtonChecked(hDlg, IDC_CHECK_LEAVE_SESSION) * CALLTYPE_LEAVE_SESSION);
 
 				ti->copy_paste = IsDlgButtonChecked(hDlg, IDC_CHECK_COPY_PATE);
-				ti->old = IsDlgButtonChecked(hDlg, IDC_CHECK_OLD);
+				ti->old = item_old;
 
 				i = SendDlgItemMessage(hDlg, IDC_HOTKEY_TOOL, HKM_GETHOTKEY, 0, 0);
 				ti->virtkey = LOBYTE(i);
@@ -548,7 +558,7 @@ static BOOL CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 					((i & HOTKEYF_WIN) ? MOD_WIN : 0);
 			}
 
-			if (GetWindowLong(hDlg, GWL_USERDATA) == 0) {
+			if (ti != NULL && GetWindowLongPtr(hDlg, GWLP_USERDATA) == 0) {
 				// 新規
 				HWND pWnd = PropSheet_GetCurrentPageHwnd(GetParent(hDlg));
 				listview_set_tool(GetDlgItem(pWnd, IDC_LIST_TOOL), ti, FALSE);
@@ -590,7 +600,7 @@ static BOOL show_property(const HWND hDlg, TOOL_INFO *ti)
 		return FALSE;
 	}
 	// 関数アドレス取得
-	wsprintf(buf, TEXT("%s_property"), ti->func_name);
+	wnsprintf(buf, BUF_SIZE, TEXT("%s_property"), ti->func_name);
 	tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 	func_property = GetProcAddress(lib, cbuf);
 	if (func_property != NULL) {
@@ -599,7 +609,7 @@ static BOOL show_property(const HWND hDlg, TOOL_INFO *ti)
 			tei->struct_size = sizeof(TOOL_EXEC_INFO);
 			tei->call_type = 0;
 			if (ti->old == 2) {
-				tei->cmd_line = (TCHAR *)alloc_tchar_to_char(tei->cmd_line);
+				tei->cmd_line = (TCHAR *)alloc_tchar_to_char((ti->cmd_line != NULL) ? ti->cmd_line : TEXT(""));
 			} else {
 				tei->cmd_line = alloc_copy(ti->cmd_line);
 			}
@@ -745,16 +755,16 @@ static void listview_free_tool(const HWND hListView)
 /*
  * set_tool_proc - ツール設定のプロシージャ
  */
-BOOL CALLBACK set_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK set_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LV_COLUMN lvc;
 	TOOL_INFO *ti;
-	TCHAR buf[BUF_SIZE];
+	TCHAR buf[MAX_PATH];
 	int cnt;
 	int i;
 	BOOL enable;
 #ifdef OP_XP_STYLE
-	static long hThemeUp, hThemeDown;
+	static HTHEME hThemeUp, hThemeDown;
 #endif	// OP_XP_STYLE
 
 	switch (uMsg) {
@@ -860,7 +870,7 @@ BOOL CALLBACK set_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_DROPFILES:
 		cnt = DragQueryFile((HANDLE)wParam, 0xFFFFFFFF, NULL, 0);
 		for (i = 0; i < cnt; i++) {
-			DragQueryFile((HANDLE)wParam, i, buf, BUF_SIZE - 1);
+			DragQueryFile((HANDLE)wParam, i, buf, MAX_PATH);
 			if (DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_DIALOG_SELECT_FUNC), hDlg, select_tools_proc, (LPARAM)buf) == FALSE) {
 				break;
 			}
@@ -985,7 +995,8 @@ BOOL CALLBACK set_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_GET_VERSION:
 		// バージョン取得
-		return APP_VAR;
+		SetWindowLongPtr(hDlg, DWLP_MSGRESULT, APP_VAR);
+		return TRUE;
 
 	case WM_GET_WORKPATH:
 		// 作業ディレクトリ取得

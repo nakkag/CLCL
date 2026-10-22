@@ -137,6 +137,7 @@ __declspec(dllexport) int CALLBACK text_get_file_info(const TCHAR *format_name, 
 		for (p = of->lpstrFile + lstrlen(of->lpstrFile) - 1; p > of->lpstrFile; p--) {
 			if (*p == TEXT('.')) {
 				*p = TEXT('\0');
+				break;
 			}
 		}
 		lstrcat(of->lpstrFile, TEXT(".txt"));
@@ -151,6 +152,7 @@ __declspec(dllexport) int CALLBACK text_get_file_info(const TCHAR *format_name, 
 __declspec(dllexport) BOOL CALLBACK text_data_to_file(DATA_INFO *di, const TCHAR *file_name, const int filter_index, TCHAR *err_str)
 {
 	BYTE *tmp;
+	DWORD size;
 
 	if (di->data == NULL) {
 		return FALSE;
@@ -159,17 +161,16 @@ __declspec(dllexport) BOOL CALLBACK text_data_to_file(DATA_INFO *di, const TCHAR
 		message_get_error(GetLastError(), err_str);
 		return FALSE;
 	}
-	// ファイルに書き込む
+	// 終端文字を除いたサイズ
 	if (di->format == CF_UNICODETEXT) {
-		if (file_write_buf(file_name, tmp, di->size - sizeof(WCHAR), err_str) == FALSE) {
-			GlobalUnlock(di->data);
-			return FALSE;
-		}
+		size = (di->size >= sizeof(WCHAR)) ? di->size - sizeof(WCHAR) : 0;
 	} else {
-		if (file_write_buf(file_name, tmp, di->size - 1, err_str) == FALSE) {
-			GlobalUnlock(di->data);
-			return FALSE;
-		}
+		size = (di->size >= 1) ? di->size - 1 : 0;
+	}
+	// ファイルに書き込む
+	if (file_write_buf(file_name, tmp, size, err_str) == FALSE) {
+		GlobalUnlock(di->data);
+		return FALSE;
 	}
 	GlobalUnlock(di->data);
 	return TRUE;
@@ -286,12 +287,17 @@ __declspec(dllexport) BOOL CALLBACK text_get_menu_title(DATA_INFO *di)
 		size = di->size / sizeof(WCHAR);
 	} else {
 #ifdef UNICODE
-		MultiByteToWideChar(CP_ACP, 0, mem, di->size, tmp, BUF_SIZE - 1);
+		size = MultiByteToWideChar(CP_ACP, 0, mem,
+			(di->size < BUF_SIZE - 1) ? (int)di->size : BUF_SIZE - 1, tmp, BUF_SIZE - 1);
+		if (size <= 0) {
+			GlobalUnlock(di->data);
+			return FALSE;
+		}
 		p = tmp;
 #else
 		p = mem;
-#endif
 		size = di->size;
+#endif
 	}
 
 	for (r = buf; size > 0 && (*p == TEXT(' ') || *p == TEXT('\t') || *p == TEXT('\r') || *p == TEXT('\n')); p++, size--)
@@ -390,7 +396,7 @@ __declspec(dllexport) TCHAR* CALLBACK text_get_tooltip_text(DATA_INFO *di)
 #ifdef UNICODE
 		len = (di->size < (DWORD)option.fmt_txt_menu_tooltip_size) ?
 			di->size : option.fmt_txt_menu_tooltip_size;
-		MultiByteToWideChar(CP_ACP, 0, mem, di->size, ret, option.fmt_txt_menu_tooltip_size);
+		len = MultiByteToWideChar(CP_ACP, 0, mem, len, ret, option.fmt_txt_menu_tooltip_size);
 		*(ret + len) = L'\0';
 #else
 		len = (di->size + 1 < (DWORD)option.fmt_txt_menu_tooltip_size + 1) ?
@@ -460,13 +466,18 @@ __declspec(dllexport) BOOL CALLBACK text_window_show_data(const HWND hWnd, DATA_
 		} else {
 #ifdef UNICODE
 			size = MultiByteToWideChar(CP_ACP, 0, mem, di->size, NULL, 0);
-			if ((buf = mem_alloc(sizeof(WCHAR) * (size + 1))) == NULL) {
-				GlobalUnlock(di->data);
-				return FALSE;
+			if (size <= 0) {
+				SendMessage(hWnd, WM_SETTEXT, 0, (LPARAM)TEXT(""));
+			} else {
+				if ((buf = mem_alloc(sizeof(WCHAR) * (size + 1))) == NULL) {
+					GlobalUnlock(di->data);
+					return FALSE;
+				}
+				size = MultiByteToWideChar(CP_ACP, 0, mem, di->size, buf, size);
+				*(buf + size) = L'\0';
+				SendMessage(hWnd, WM_SETTEXT, size, (LPARAM)buf);
+				mem_free(&buf);
 			}
-			MultiByteToWideChar(CP_ACP, 0, mem, di->size, buf, size);
-			SendMessage(hWnd, WM_SETTEXT, size, (LPARAM)buf);
-			mem_free(&buf);
 #else
 			SendMessage(hWnd, WM_SETTEXT, di->size, (LPARAM)mem);
 #endif
@@ -488,7 +499,7 @@ __declspec(dllexport) BOOL CALLBACK text_window_save_data(const HWND hWnd, DATA_
 	TCHAR *buf;
 
 	if (hWnd == NULL ||
-		(SendMessage(hWnd, EM_GETREADONLY, 0, 0) == TRUE) ||
+		SendMessage(hWnd, EM_GETREADONLY, 0, 0) != 0 ||
 		SendMessage(hWnd, EM_GETMODIFY, 0, 0) == FALSE) {
 		return FALSE;
 	}

@@ -14,6 +14,9 @@
 #undef  _INC_OLE
 #include <shlobj.h>
 #include <commctrl.h>
+#include <shlwapi.h>
+
+#pragma comment(lib, "shlwapi.lib")
 
 #include "General.h"
 #include "Memory.h"
@@ -59,6 +62,9 @@ static HINSTANCE hInst;
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
+static void file_item_get_fullpath(const FILE_ITEM *fi, TCHAR *buf, const int len);
+static BOOL file_item_get_info(const FILE_ITEM *fi, const UINT flags, SHFILEINFO *shfi);
+static void file_item_set_type(FILE_ITEM *fi, const TCHAR *type_name);
 static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum);
 static LRESULT lv_header_notify_proc(const HWND hListView, const LPARAM lParam);
 static BOOL lv_check_file(const HWND hListView, const TCHAR *check_file);
@@ -149,7 +155,10 @@ HDROP create_dropfile(const TCHAR **FileName, const int cnt, DWORD *ret_size)
 	if (ret_size != NULL) {
 		*ret_size = sizeof(DROPFILES) + flen;
 	}
-	lpDropFile = (LPDROPFILES)GlobalLock(hDrop);
+	if ((lpDropFile = (LPDROPFILES)GlobalLock(hDrop)) == NULL) {
+		GlobalFree(hDrop);
+		return NULL;
+	}
 	lpDropFile->pFiles = sizeof(DROPFILES);		// ファイル名のリストまでのオフセット
 	lpDropFile->pt.x = 0;
 	lpDropFile->pt.y = 0;
@@ -188,6 +197,46 @@ HDROP create_dropfile(const TCHAR **FileName, const int cnt, DWORD *ret_size)
 }
 
 /*
+ * file_item_get_fullpath - パスとファイル名を連結したフルパスを取得
+ */
+static void file_item_get_fullpath(const FILE_ITEM *fi, TCHAR *buf, const int len)
+{
+	if (*fi->path == TEXT('\0')) {
+		lstrcpyn(buf, fi->name, len);
+	} else {
+		wnsprintf(buf, len, TEXT("%s\\%s"), fi->path, fi->name);
+	}
+}
+
+/*
+ * file_item_get_info - シェルからファイル情報を取得
+ */
+static BOOL file_item_get_info(const FILE_ITEM *fi, const UINT flags, SHFILEINFO *shfi)
+{
+	TCHAR buf[MAX_PATH * 2];
+
+	file_item_get_fullpath(fi, buf, _countof(buf));
+	ZeroMemory(shfi, sizeof(SHFILEINFO));
+	if (SHGetFileInfo(buf, 0, shfi, sizeof(SHFILEINFO), flags) != 0) {
+		return TRUE;
+	}
+	// ファイルが存在しない場合は属性から取得
+	ZeroMemory(shfi, sizeof(SHFILEINFO));
+	return (SHGetFileInfo(buf, FILE_ATTRIBUTE_NORMAL, shfi, sizeof(SHFILEINFO), flags | SHGFI_USEFILEATTRIBUTES) != 0);
+}
+
+/*
+ * file_item_set_type - ファイルの種類を設定
+ */
+static void file_item_set_type(FILE_ITEM *fi, const TCHAR *type_name)
+{
+	lstrcpyn(fi->type, type_name, BUF_SIZE);
+	if (*fi->type == TEXT('\0')) {
+		lstrcpyn(fi->type, message_get_res(IDS_FILE_LIST_TYPE_DEF), BUF_SIZE);
+	}
+}
+
+/*
  * compare_func - ソート用文字列比較
  */
 static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
@@ -195,11 +244,13 @@ static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 	SHFILEINFO shfi;
 	FILE_ITEM *fi1 = (FILE_ITEM *)lParam1;
 	FILE_ITEM *fi2 = (FILE_ITEM *)lParam2;
-	TCHAR buf[MAX_PATH];
-	TCHAR *p;
 	int order;
 	int header;
 	int ret = 0;
+
+	if (fi1 == NULL || fi2 == NULL) {
+		return 0;
+	}
 
 	// ソート情報
 	order = (colum < 0) ? 1 : 0;
@@ -216,24 +267,12 @@ static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum)
 
 	case 2:
 		if (*fi1->type == TEXT('\0')) {
-			p = lstrcpy(buf, fi1->path) + lstrlen(fi1->path);
-			*(p++) = TEXT('\\');
-			lstrcpy(p, fi1->name);
-			SHGetFileInfo(buf, 0, &shfi, sizeof(SHFILEINFO), SHGFI_TYPENAME);
-			lstrcpy(fi1->type, shfi.szTypeName);
-			if (*fi1->type == TEXT('\0')) {
-				lstrcpy(fi1->type, message_get_res(IDS_FILE_LIST_TYPE_DEF));
-			}
+			file_item_get_info(fi1, SHGFI_TYPENAME, &shfi);
+			file_item_set_type(fi1, shfi.szTypeName);
 		}
 		if (*fi2->type == TEXT('\0')) {
-			p = lstrcpy(buf, fi2->path) + lstrlen(fi2->path);
-			*(p++) = TEXT('\\');
-			lstrcpy(p, fi2->name);
-			SHGetFileInfo(buf, 0, &shfi, sizeof(SHFILEINFO), SHGFI_TYPENAME);
-			lstrcpy(fi2->type, shfi.szTypeName);
-			if (*fi2->type == TEXT('\0')) {
-				lstrcpy(fi2->type, message_get_res(IDS_FILE_LIST_TYPE_DEF));
-			}
+			file_item_get_info(fi2, SHGFI_TYPENAME, &shfi);
+			file_item_set_type(fi2, shfi.szTypeName);
 		}
 		ret = lstrcmpi(fi1->type, fi2->type);
 		break;
@@ -266,8 +305,7 @@ static LRESULT lv_header_notify_proc(const HWND hListView, const LPARAM lParam)
 static BOOL lv_check_file(const HWND hListView, const TCHAR *check_file)
 {
 	FILE_ITEM *fi;
-	TCHAR buf[MAX_PATH];
-	TCHAR *p;
+	TCHAR buf[MAX_PATH * 2];
 	int cnt;
 	int i;
 
@@ -276,9 +314,7 @@ static BOOL lv_check_file(const HWND hListView, const TCHAR *check_file)
 		if ((fi = (FILE_ITEM *)listview_get_lparam(hListView, i)) == NULL) {
 			continue;
 		}
-		p = lstrcpy(buf, fi->path) + lstrlen(fi->path);
-		*(p++) = TEXT('\\');
-		lstrcpy(p, fi->name);
+		file_item_get_fullpath(fi, buf, _countof(buf));
 
 		if (lstrcmpi(buf, check_file) == 0) {
 			return TRUE;
@@ -296,10 +332,10 @@ static int lv_add_file(const HWND hListView, TCHAR *buf)
 	FILE_ITEM *fi;
 	TCHAR *p, *r;
 
-	// パスとタイトルの取得
-	for (r = p = buf; *p != TEXT('\0'); p++) {
+	// 最後の区切り文字の位置
+	for (r = NULL, p = buf; *p != TEXT('\0'); p++) {
 #ifndef UNICODE
-		if (IsDBCSLeadByte((BYTE)*p) == TRUE) {
+		if (IsDBCSLeadByte((BYTE)*p) == TRUE && *(p + 1) != TEXT('\0')) {
 			p++;
 			continue;
 		}
@@ -308,18 +344,20 @@ static int lv_add_file(const HWND hListView, TCHAR *buf)
 			r = p;
 		}
 	}
-	if (r != buf) {
-		*r = TEXT('\0');
-		r++;
-	}
 
 	// ファイル情報設定
 	if ((fi = mem_calloc(sizeof(FILE_ITEM))) == NULL) {
 		return -1;
 	}
 	fi->icon = -1;
-	lstrcpy(fi->name, r);
-	lstrcpy(fi->path, buf);
+	if (r == NULL || r == buf) {
+		// 区切りが無いか先頭が区切りの場合はファイル名のみ
+		lstrcpyn(fi->name, buf, MAX_PATH);
+	} else {
+		*r = TEXT('\0');
+		lstrcpyn(fi->name, r + 1, MAX_PATH);
+		lstrcpyn(fi->path, buf, MAX_PATH);
+	}
 
 	// アイテムの追加
 	lvi.mask = LVIF_TEXT | TVIF_IMAGE | LVIF_PARAM;
@@ -357,14 +395,13 @@ static void lv_get_disp_item(LV_ITEM *lvi)
 {
 	FILE_ITEM *fi = (FILE_ITEM *)lvi->lParam;
 	SHFILEINFO shfi;
-	TCHAR buf[MAX_PATH];
-	TCHAR *p;
 	int f = 0;
 
 	if (fi == NULL) {
 		return;
 	}
 
+	ZeroMemory(&shfi, sizeof(SHFILEINFO));
 	if (lvi->mask & LVIF_IMAGE && fi->icon == -1) {
 		f |= SHGFI_SYSICONINDEX;
 	}
@@ -372,13 +409,10 @@ static void lv_get_disp_item(LV_ITEM *lvi)
 		f |= SHGFI_TYPENAME;
 	}
 	if (f != 0) {
-		p = lstrcpy(buf, fi->path) + lstrlen(fi->path);
-		*(p++) = TEXT('\\');
-		lstrcpy(p, fi->name);
-		SHGetFileInfo(buf, 0, &shfi, sizeof(SHFILEINFO), f);
+		file_item_get_info(fi, f, &shfi);
 	}
 
-	// アイコン
+	// アイコン (取得できない場合は 0 = 既定のファイルアイコン)
 	if (lvi->mask & LVIF_IMAGE) {
 		if (fi->icon == -1) {
 			fi->icon = shfi.iIcon;
@@ -387,24 +421,21 @@ static void lv_get_disp_item(LV_ITEM *lvi)
 	}
 
 	// テキスト
-	if (lvi->mask & LVIF_TEXT) {
+	if (lvi->mask & LVIF_TEXT && lvi->pszText != NULL && lvi->cchTextMax > 0) {
 		switch (lvi->iSubItem) {
 		case 0:
-			lstrcpy(lvi->pszText, fi->name);
+			lstrcpyn(lvi->pszText, fi->name, lvi->cchTextMax);
 			break;
 
 		case 1:
-			lstrcpy(lvi->pszText, fi->path);
+			lstrcpyn(lvi->pszText, fi->path, lvi->cchTextMax);
 			break;
 
 		case 2:
 			if (*fi->type == TEXT('\0')) {
-				lstrcpy(fi->type, shfi.szTypeName);
-				if (*fi->type == TEXT('\0')) {
-					lstrcpy(fi->type, message_get_res(IDS_FILE_LIST_TYPE_DEF));
-				}
+				file_item_set_type(fi, shfi.szTypeName);
 			}
-			lstrcpy(lvi->pszText, fi->type);
+			lstrcpyn(lvi->pszText, fi->type, lvi->cchTextMax);
 			break;
 		}
 	}
@@ -418,26 +449,29 @@ static HDROP lv_item_to_hdrop(const HWND hListView)
 	FILE_ITEM *fi;
 	HDROP ret;
 	TCHAR **buf;
-	TCHAR *p;
 	int cnt;
-	int i;
+	int i, j;
 
 	cnt = ListView_GetItemCount(hListView);
+	if (cnt <= 0) {
+		return create_dropfile(NULL, 0, NULL);
+	}
 	if ((buf = (TCHAR **)mem_calloc(sizeof(TCHAR *) * cnt)) == NULL) {
 		return NULL;
 	}
-	for (i = 0; i < cnt; i++) {
+	// 情報の無いアイテムは除いて詰める
+	for (i = 0, j = 0; i < cnt; i++) {
 		if ((fi = (FILE_ITEM *)listview_get_lparam(hListView, i)) == NULL) {
 			continue;
 		}
-		if ((buf[i] = (TCHAR *)mem_alloc(sizeof(TCHAR) * MAX_PATH)) != NULL) {
-			p = lstrcpy(buf[i], fi->path) + lstrlen(fi->path);
-			*(p++) = TEXT('\\');
-			lstrcpy(p, fi->name);
+		if ((buf[j] = (TCHAR *)mem_alloc(sizeof(TCHAR) * MAX_PATH * 2)) == NULL) {
+			continue;
 		}
+		file_item_get_fullpath(fi, buf[j], MAX_PATH * 2);
+		j++;
 	}
-	ret = create_dropfile(buf, cnt, NULL);
-	for (i = 0; i < cnt; i++) {
+	ret = create_dropfile(buf, j, NULL);
+	for (i = 0; i < j; i++) {
 		mem_free((void **)&(buf[i]));
 	}
 	mem_free((void **)&buf);
@@ -450,8 +484,7 @@ static HDROP lv_item_to_hdrop(const HWND hListView)
 static BOOL lv_shell_open(const HWND hListView)
 {
 	FILE_ITEM *fi;
-	TCHAR buf[MAX_PATH];
-	TCHAR *p;
+	TCHAR buf[MAX_PATH * 2];
 	int i;
 
 	if ((i = ListView_GetNextItem(hListView, -1, LVNI_SELECTED | LVIS_FOCUSED)) == -1) {
@@ -460,9 +493,7 @@ static BOOL lv_shell_open(const HWND hListView)
 	if ((fi = (FILE_ITEM *)listview_get_lparam(hListView, i)) == NULL) {
 		return FALSE;
 	}
-	p = lstrcpy(buf, fi->path) + lstrlen(fi->path);
-	*(p++) = TEXT('\\');
-	lstrcpy(p, fi->name);
+	file_item_get_fullpath(fi, buf, _countof(buf));
 	return shell_open(buf, NULL);
 }
 
@@ -479,14 +510,14 @@ static BOOL lv_show_menu(const HWND hWnd, const HWND hListView, const BOOL lock)
 	hMenu = CreatePopupMenu();
 
 	i = ListView_GetNextItem(hListView, -1, LVNI_SELECTED | LVIS_FOCUSED);
-	AppendMenu(hMenu, MF_STRING | (i == -1) ? MF_GRAYED : 0, WM_LIST_OPEN, message_get_res(IDS_FILE_MENU_OPEN));
+	AppendMenu(hMenu, MF_STRING | ((i == -1) ? MF_GRAYED : 0), WM_LIST_OPEN, message_get_res(IDS_FILE_MENU_OPEN));
 	AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
-	AppendMenu(hMenu, MF_STRING | (lock == FALSE) ? 0 : MF_GRAYED, WM_LIST_ADD, message_get_res(IDS_FILE_MENU_ADD));
+	AppendMenu(hMenu, MF_STRING | ((lock == FALSE) ? 0 : MF_GRAYED), WM_LIST_ADD, message_get_res(IDS_FILE_MENU_ADD));
 	i = ListView_GetSelectedCount(hListView);
-	AppendMenu(hMenu, MF_STRING | (i > 0 && lock == FALSE) ? 0 : MF_GRAYED, WM_LIST_DELETE, message_get_res(IDS_FILE_MENU_DELETE));
+	AppendMenu(hMenu, MF_STRING | ((i > 0 && lock == FALSE) ? 0 : MF_GRAYED), WM_LIST_DELETE, message_get_res(IDS_FILE_MENU_DELETE));
 	AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
-	AppendMenu(hMenu, MF_STRING | (i > 0) ? 0 : MF_GRAYED, WM_LIST_COPY_FILENAME, message_get_res(IDS_FILE_MENU_COPY_FILE));
-	AppendMenu(hMenu, MF_STRING | (i > 0) ? 0 : MF_GRAYED, WM_LIST_COPY_PATH, message_get_res(IDS_FILE_MENU_COPY_PATH));
+	AppendMenu(hMenu, MF_STRING | ((i > 0) ? 0 : MF_GRAYED), WM_LIST_COPY_FILENAME, message_get_res(IDS_FILE_MENU_COPY_FILE));
+	AppendMenu(hMenu, MF_STRING | ((i > 0) ? 0 : MF_GRAYED), WM_LIST_COPY_PATH, message_get_res(IDS_FILE_MENU_COPY_PATH));
 
 	SetMenuDefaultItem(hMenu, WM_LIST_OPEN, 0);
 
@@ -560,6 +591,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 		lv_font_dpi = GetDpi();
 
 		// ImageListの取得
+		ZeroMemory(&shfi, sizeof(SHFILEINFO));
 		icon_list = (HIMAGELIST)SHGetFileInfo(TEXT(""), 0,
 			&shfi, sizeof(SHFILEINFO), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_SYSICONINDEX);
 		ListView_SetImageList(GetDlgItem(hWnd, IDC_LIST_FILE), icon_list, LVSIL_SMALL);
@@ -624,6 +656,7 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 		}
 		// リストビューの破棄
 		if (GetDlgItem(hWnd, IDC_LIST_FILE) != NULL) {
+			lv_free_file(GetDlgItem(hWnd, IDC_LIST_FILE));
 			DestroyWindow(GetDlgItem(hWnd, IDC_LIST_FILE));
 		}
 		// ウィンドウの破棄
@@ -766,43 +799,33 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 		break;
 
 	case WM_LIST_COPY_FILENAME:
-		cnt = ListView_GetSelectedCount(GetDlgItem(hWnd, IDC_LIST_FILE));
-		if (cnt == 0) {
+	case WM_LIST_COPY_PATH:
+		if (ListView_GetSelectedCount(GetDlgItem(hWnd, IDC_LIST_FILE)) == 0) {
 			break;
 		}
-		fbuf = p = mem_calloc((sizeof(TCHAR) * MAX_PATH) * cnt);
-		if (fbuf == NULL) {
-			break;
-		}
+		// 必要な文字数の計算 (path + '\\' + name + "\r\n" の合計 + 終端)
+		cnt = 1;
 		i = -1;
 		while ((i = ListView_GetNextItem(GetDlgItem(hWnd, IDC_LIST_FILE), i, LVNI_SELECTED)) != -1) {
 			if ((fi = (FILE_ITEM*)listview_get_lparam(GetDlgItem(hWnd, IDC_LIST_FILE), i)) != NULL) {
-				lstrcpy(p, fi->name);
-				p += lstrlen(p);
-				lstrcpy(p, TEXT("\r\n"));
-				p += 2;
+				cnt += lstrlen(fi->path) + 1 + lstrlen(fi->name) + 2;
 			}
 		}
-		string_to_clipboard(hWnd, fbuf);
-		mem_free(&fbuf);
-		break;
-
-	case WM_LIST_COPY_PATH:
-		cnt = ListView_GetSelectedCount(GetDlgItem(hWnd, IDC_LIST_FILE));
-		if (cnt == 0) {
-			break;
-		}
-		fbuf = p = mem_calloc((sizeof(TCHAR) * MAX_PATH) * cnt);
+		fbuf = p = mem_calloc(sizeof(TCHAR) * cnt);
 		if (fbuf == NULL) {
 			break;
 		}
 		i = -1;
 		while ((i = ListView_GetNextItem(GetDlgItem(hWnd, IDC_LIST_FILE), i, LVNI_SELECTED)) != -1) {
 			if ((fi = (FILE_ITEM*)listview_get_lparam(GetDlgItem(hWnd, IDC_LIST_FILE), i)) != NULL) {
-				wsprintf(p, TEXT("%s\\%s"), fi->path, fi->name);
+				if (msg == WM_LIST_COPY_PATH) {
+					file_item_get_fullpath(fi, p, cnt - (int)(p - fbuf));
+				} else {
+					lstrcpyn(p, fi->name, cnt - (int)(p - fbuf));
+				}
 				p += lstrlen(p);
-				lstrcpy(p, TEXT("\r\n"));
-				p += 2;
+				lstrcpyn(p, TEXT("\r\n"), cnt - (int)(p - fbuf));
+				p += lstrlen(p);
 			}
 		}
 		string_to_clipboard(hWnd, fbuf);

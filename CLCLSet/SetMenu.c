@@ -38,14 +38,14 @@ extern OPTION_INFO option;
 /*
  * set_menu_proc - メニュー設定のプロシージャ
  */
-BOOL CALLBACK set_menu_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK set_menu_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	HMENU hMenu;
 	RECT button_rect;
 	TCHAR buf[BUF_SIZE];
 	DWORD ret;
 #ifdef OP_XP_STYLE
-	static long hTheme;
+	static HTHEME hTheme;
 #endif	// OP_XP_STYLE
 
 	switch (uMsg) {

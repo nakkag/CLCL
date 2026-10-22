@@ -19,7 +19,8 @@
 
 /* Function Prototypes */
 BYTE *bitmap_to_dib(const HBITMAP hbmp, DWORD *size);
-HBITMAP dib_to_bitmap(const BYTE *dib);
+HBITMAP dib_to_bitmap(const BYTE *dib, const DWORD size);
+DWORD dib_get_bits_offset(const BYTE *dib, const DWORD size);
 
 #endif
 /* End of source */

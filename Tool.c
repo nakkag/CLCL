@@ -12,6 +12,9 @@
 #define _INC_OLE
 #include <windows.h>
 #undef  _INC_OLE
+#include <shlwapi.h>
+
+#pragma comment(lib, "shlwapi.lib")
 
 #include "General.h"
 #include "Memory.h"
@@ -87,7 +90,7 @@ BOOL tool_initialize(TCHAR *err_str)
 		lib = (option.tool_info + i)->lib = LoadLibrary((option.tool_info + i)->lib_file_path);
 		if (lib == NULL) {
 			message_get_error(GetLastError(), buf);
-			wsprintf(err_str, TEXT("%s\r\n%s"), buf, (option.tool_info + i)->lib_file_path);
+			wnsprintf(err_str, BUF_SIZE, TEXT("%s\r\n%s"), buf, (option.tool_info + i)->lib_file_path);
 			return FALSE;
 		}
 		// 形式毎の関数アドレス取得
@@ -100,7 +103,7 @@ BOOL tool_initialize(TCHAR *err_str)
 		}
 		if ((option.tool_info + i)->func == NULL && (option.tool_info + i)->old_func == NULL) {
 			message_get_error(GetLastError(), buf);
-			wsprintf(err_str, TEXT("%s\r\n%s\r\n%s"), buf,
+			wnsprintf(err_str, BUF_SIZE, TEXT("%s\r\n%s\r\n%s"), buf,
 				(option.tool_info + i)->lib_file_path, (option.tool_info + i)->func_name);
 			return FALSE;
 		}
@@ -228,7 +231,7 @@ static int tool_call_func_old(const HWND hWnd, const TOOL_INFO *ti, const int ca
 	}
 
 	if (tdi == NULL) {
-		ti->func(hWnd, NULL, old_call_type, 0);
+		ti->old_func(hWnd, NULL, old_call_type, 0);
 	} else {
 		i = 0;
 		for (; tdi != NULL; tdi = tdi->next) {
@@ -247,7 +250,7 @@ static int tool_call_func_old(const HWND hWnd, const TOOL_INFO *ti, const int ca
 
 			ZeroMemory(&ci, sizeof(CLIPINFO));
 			ci.Type = wk_tdi->di->format;
-			lstrcpy(ci.name, wk_tdi->di->format_name);
+			lstrcpyn(ci.name, wk_tdi->di->format_name, BUF_SIZE);
 			ci.Mem = wk_tdi->di->data;
 			ci.Size = wk_tdi->di->size;
 			ci.Flag = wk_tdi->di->plugin_param;

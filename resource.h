@@ -42,10 +42,8 @@
 #define IDR_TOOLBAR                     126
 #define IDD_DIALOG_SELECT_FORMAT        128
 #define IDD_DIALOG_SET_HOTKEY           133
-#define IDI_ICON1                       135
 #define IDI_ICON_FOLDER                 135
 #define IDR_TOOLBAR32                   136
-#define IDR_TOOLBAR2                    138
 #define IDR_TOOLBAR48                   138
 #define IDS_QUESTION_DELETE             200
 #define IDS_QUESTION_REPLACE            201

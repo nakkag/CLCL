@@ -16,7 +16,7 @@
 #include "Tool.h"
 
 /* Define */
-#define ID_MENUITEM_DATA				50000
+#define ID_MENUITEM_DATA				60000
 
 #define MENU_CONTENT_SEPARATOR			0
 #define MENU_CONTENT_HISTORY			1

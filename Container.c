@@ -54,7 +54,7 @@ static LRESULT CALLBACK container_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		}
 		cWnd = GetWindow(hWnd, GW_CHILD);
 		while (cWnd != NULL) {
-			if (IsWindowVisible(cWnd) == TRUE) {
+			if (IsWindowVisible(cWnd) != 0) {
 				SetFocus(cWnd);
 				break;
 			}
@@ -81,7 +81,7 @@ static LRESULT CALLBACK container_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		// 子ウィンドウを検索してサイズを設定
 		cWnd = GetWindow(hWnd, GW_CHILD);
 		while (cWnd != NULL) {
-			if (IsWindowVisible(cWnd) == TRUE) {
+			if (IsWindowVisible(cWnd) != 0) {
 				MoveWindow(cWnd, 0, 0,
 					window_rect.right, window_rect.bottom, TRUE);
 				UpdateWindow(cWnd);

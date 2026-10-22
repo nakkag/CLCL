@@ -36,7 +36,7 @@ extern OPTION_INFO option;
 /*
  * set_histroy_proc - 履歴設定のプロシージャ
  */
-BOOL CALLBACK set_histroy_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK set_histroy_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg) {
 	case WM_INITDIALOG:

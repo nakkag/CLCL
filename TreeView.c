@@ -244,6 +244,7 @@ void treeview_scroll(const HWND hTreeView)
 {
 	RECT rect, item_rect;
 	POINT pt;
+	int item_height;
 
 	// ツリービューのサイズ取得
 	GetClientRect(hTreeView, &rect);
@@ -251,12 +252,16 @@ void treeview_scroll(const HWND hTreeView)
 	GetCursorPos(&pt);
 	ScreenToClient(hTreeView, &pt);
 	//アイテムの高さ取得
-	TreeView_GetItemRect(hTreeView, treeview_get_hitest(hTreeView), &item_rect, FALSE);
+	if (TreeView_GetItemRect(hTreeView, treeview_get_hitest(hTreeView), &item_rect, FALSE) == FALSE) {
+		item_height = TreeView_GetItemHeight(hTreeView);
+	} else {
+		item_height = item_rect.bottom - item_rect.top;
+	}
 
 	// スクロール
-	if (pt.y < rect.top + (item_rect.bottom - item_rect.top)) {
+	if (pt.y < rect.top + item_height) {
 		SendMessage(hTreeView, WM_VSCROLL, SB_LINEUP, 0);
-	} else if (pt.y > rect.bottom - (item_rect.bottom - item_rect.top)) {
+	} else if (pt.y > rect.bottom - item_height) {
 		SendMessage(hTreeView, WM_VSCROLL, SB_LINEDOWN, 0);
 	}
 }
@@ -747,9 +752,12 @@ BOOL treeview_delete_item(const HWND hTreeView, const HTREEITEM hItem)
 		pdi = &regist_data.child;
 	} else {
 		wk_di = (DATA_INFO *)treeview_get_lparam(hTreeView, pItem);
+		if (wk_di == NULL) {
+			return FALSE;
+		}
 		pdi = &wk_di->child;
 	}
-	if (pdi == NULL || *pdi == NULL) {
+	if (*pdi == NULL) {
 		return FALSE;
 	}
 
@@ -765,10 +773,10 @@ BOOL treeview_delete_item(const HWND hTreeView, const HTREEITEM hItem)
 		// データの削除
 		data_delete(pdi, di, TRUE);
 		if (*pdi == NULL) {
-			treeview_delete_item(hTreeView, pItem);
-		} else {
-			treeview_title_refresh(hTreeView, pItem);
+			// 親アイテムごと削除 (子のツリーアイテムも親と共に削除される)
+			return treeview_delete_item(hTreeView, pItem);
 		}
+		treeview_title_refresh(hTreeView, pItem);
 		break;
 
 	case TYPE_ITEM:

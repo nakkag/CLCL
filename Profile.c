@@ -13,9 +13,12 @@
 #include <windows.h>
 #undef  _INC_OLE
 #include <tchar.h>
+#include <shlwapi.h>
 
 #include "Profile.h"
 #include "memory.h"
+
+#pragma comment(lib, "shlwapi.lib")
 
 /* Define */
 #define BUF_SIZE						256
@@ -220,6 +223,7 @@ BOOL profile_initialize(const TCHAR *path, const BOOL ReadFlag)
 	DWORD size_low, size_high;
 	DWORD ret;
 	long len;
+	int cur_section = 0;
 
 	if (ReadFlag == FALSE) {
 		section_info = NULL;
@@ -243,7 +247,7 @@ BOOL profile_initialize(const TCHAR *path, const BOOL ReadFlag)
 		return FALSE;
 	}
 	// ファイルを読み込む
-	if (ReadFile(hFile, cbuf, size_low, &ret, NULL) == FALSE) {
+	if (ReadFile(hFile, cbuf, size_low, &ret, NULL) == FALSE || ret != size_low) {
 		mem_free(&cbuf);
 		CloseHandle(hFile);
 		return FALSE;
@@ -259,7 +263,7 @@ BOOL profile_initialize(const TCHAR *path, const BOOL ReadFlag)
 	} else {
 		// 元ファイルをバックアップ
 		TCHAR backup_path[MAX_PATH];
-		wsprintf(backup_path, TEXT("%s.back"), path);
+		wnsprintf(backup_path, MAX_PATH, TEXT("%s.back"), path);
 		CopyFile(path, backup_path, FALSE);
 		// Unicodeに変換
 		*(cbuf + size_low) = '\0';
@@ -296,12 +300,20 @@ BOOL profile_initialize(const TCHAR *path, const BOOL ReadFlag)
 
 		switch (*p) {
 		case TEXT('['):
-			// セクションの追加
-			if (p == r || *(r - 1) != TEXT(']')) {
+			// 行末の空白, Tabを除いてセクションの追加
+			for (s = r; s > p && (*(s - 1) == TEXT(' ') || *(s - 1) == TEXT('\t')); s--)
+				;
+			if (p == s || *(s - 1) != TEXT(']')) {
 				break;
 			}
-			*(r - 1) = TEXT('\0');
-			section_add(p + 1);
+			*(s - 1) = TEXT('\0');
+			lstrcpyn(tmp, p + 1, BUF_SIZE);
+			trim(tmp);
+			// 同名のセクションがあればそこに追記する
+			if ((cur_section = section_find(tmp)) == -1) {
+				section_add(tmp);
+				cur_section = section_count - 1;
+			}
 			break;
 
 		case TEXT('\r'):
@@ -313,26 +325,30 @@ BOOL profile_initialize(const TCHAR *path, const BOOL ReadFlag)
 				break;
 			}
 			if (*p == TEXT('#')) {
-				// コメント
-				for (s = tmp; p < r; p++, s++) {
-					*s = *p;
+				// コメント (BUF_SIZE を超える分は読み飛ばす)
+				for (s = tmp; p < r; p++) {
+					if (s - tmp < BUF_SIZE - 1) {
+						*(s++) = *p;
+					}
 				}
 				*s = TEXT('\0');
-				key_add((section_info + section_count - 1), tmp, TEXT(""), TRUE);
+				key_add((section_info + cur_section), tmp, TEXT(""), TRUE);
 			} else {
-				// キーの追加
-				for (s = tmp; p < r; p++, s++) {
+				// キーの追加 (BUF_SIZE を超える分は読み飛ばす)
+				for (s = tmp; p < r; p++) {
 					if (*p == TEXT('=')) {
 						break;
 					}
-					*s = *p;
+					if (s - tmp < BUF_SIZE - 1) {
+						*(s++) = *p;
+					}
 				}
 				*s = TEXT('\0');
 				if (*p == TEXT('=')) {
 					p++;
 				}
 				*r = TEXT('\0');
-				key_add((section_info + section_count - 1), tmp, p, FALSE);
+				key_add((section_info + cur_section), tmp, p, FALSE);
 			}
 			if (len > (r - buf)) {
 				r++;
@@ -353,8 +369,11 @@ BOOL profile_flush(const TCHAR *path)
 {
 	HANDLE hFile;
 	TCHAR *buf, *p;
+	TCHAR tmp_path[MAX_PATH];
+	const TCHAR *write_path;
 	int len;
 	int i, j;
+	DWORD size;
 	DWORD ret;
 
 	if (section_info == NULL) {
@@ -439,21 +458,31 @@ BOOL profile_flush(const TCHAR *path)
 		*(p++) = TEXT('\n');
 	}
 	*p = TEXT('\0');
+#ifdef UNICODE
+	size = 2 + sizeof(TCHAR) * len;
+#else
+	size = sizeof(TCHAR) * len;
+#endif
 
-	// ファイルを開く
-	hFile = CreateFile(path, GENERIC_READ | GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	// 一時ファイルに書き込んでから置き換える
+	if (lstrlen(path) + 4 < MAX_PATH) {
+		wnsprintf(tmp_path, MAX_PATH, TEXT("%s.tmp"), path);
+		write_path = tmp_path;
+	} else {
+		write_path = path;
+	}
+	hFile = CreateFile(write_path, GENERIC_READ | GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == NULL || hFile == (HANDLE)-1) {
 		mem_free(&buf);
 		return FALSE;
 	}
 	// ファイルに書き込む
-#ifdef UNICODE
-	if (WriteFile(hFile, buf, 2 + sizeof(TCHAR) * len, &ret, NULL) == FALSE) {
-#else
-	if (WriteFile(hFile, buf, sizeof(TCHAR) * len, &ret, NULL) == FALSE) {
-#endif
+	if (WriteFile(hFile, buf, size, &ret, NULL) == FALSE || ret != size) {
 		mem_free(&buf);
 		CloseHandle(hFile);
+		if (write_path != path) {
+			DeleteFile(write_path);
+		}
 		return FALSE;
 	}
 	// メモリの解放
@@ -461,6 +490,11 @@ BOOL profile_flush(const TCHAR *path)
 	// ファイルを閉じる
 	FlushFileBuffers(hFile);
 	CloseHandle(hFile);
+	if (write_path != path &&
+		MoveFileEx(write_path, path, MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) == FALSE) {
+		DeleteFile(write_path);
+		return FALSE;
+	}
 	return TRUE;
 }
 

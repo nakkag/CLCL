@@ -57,7 +57,17 @@ __declspec(dllexport) BOOL CALLBACK get_tool_info_w(const HWND hWnd, const int i
  *	引数 / argument:
  *		hWnd - 呼び出し元ウィンドウ / the calling window
  *		tei - ツール実行情報 / tool execution information
+ *		      tei->cmd_line は本体が LocalAlloc で確保した文字列で、呼び出し後に本体が LocalFree する。
+ *		      差し替える場合は元の文字列を LocalFree し、LocalAlloc(LMEM_FIXED) で確保した文字列を
+ *		      設定する。元のポインタを保持し続けないこと。
+ *		      tei->cmd_line is allocated by CLCL with LocalAlloc and freed with LocalFree after the call.
+ *		      To replace it, LocalFree the old string and set one allocated with LocalAlloc(LMEM_FIXED).
+ *		      Do not keep the original pointer.
  *		tdi - ツール用アイテム情報 / item information for tools
+ *		      CALLTYPE_START / CALLTYPE_END / CALLTYPE_VIEWER_OPEN / CALLTYPE_VIEWER_CLOSE や
+ *		      クリップボードが選択されている時など、対象のアイテムが無い呼び出しでは NULL になる。
+ *		      tdi is NULL when there is no target item, e.g. CALLTYPE_START / CALLTYPE_END /
+ *		      CALLTYPE_VIEWER_OPEN / CALLTYPE_VIEWER_CLOSE or when the clipboard is selected.
  *
  *	戻り値 / Return value:
  *		TOOL_
