@@ -107,20 +107,20 @@ static void themes_free(void)
  * open_theme - XP用スタイルを開く
  */
 #ifdef OP_XP_STYLE
-long open_theme(const HWND hWnd, const WCHAR *class_name)
+HTHEME open_theme(const HWND hWnd, const WCHAR *class_name)
 {
 	static FARPROC _OpenThemeData;
 
 	if (hModThemes == NULL) {
-		return 0;
+		return NULL;
 	}
 	if (_OpenThemeData == NULL) {
 		_OpenThemeData = GetProcAddress(hModThemes, "OpenThemeData");
 	}
 	if (_OpenThemeData == NULL) {
-		return 0;
+		return NULL;
 	}
-	return (long)_OpenThemeData(hWnd, class_name);
+	return (HTHEME)_OpenThemeData(hWnd, class_name);
 }
 #endif	// OP_XP_STYLE
 
@@ -128,7 +128,7 @@ long open_theme(const HWND hWnd, const WCHAR *class_name)
  * close_theme - XP用スタイルを閉じる
  */
 #ifdef OP_XP_STYLE
-void close_theme(long hTheme)
+void close_theme(HTHEME hTheme)
 {
 	static FARPROC _CloseThemeData;
 
@@ -141,7 +141,7 @@ void close_theme(long hTheme)
 	if (_CloseThemeData == NULL) {
 		return;
 	}
-	_CloseThemeData((HTHEME)hTheme);
+	_CloseThemeData(hTheme);
 }
 #endif	// OP_XP_STYLE
 
@@ -149,7 +149,7 @@ void close_theme(long hTheme)
  * close_theme - XP用スタイルでスクロールバーのボタンの描画
  */
 #ifdef OP_XP_STYLE
-BOOL draw_theme_scroll(LPDRAWITEMSTRUCT lpDrawItem, UINT i, long hTheme)
+BOOL draw_theme_scroll(LPDRAWITEMSTRUCT lpDrawItem, UINT i, HTHEME hTheme)
 {
 	static FARPROC _DrawThemeBackground;
 	DWORD state = 0;
@@ -204,7 +204,7 @@ BOOL draw_theme_scroll(LPDRAWITEMSTRUCT lpDrawItem, UINT i, long hTheme)
 		}
 		break;
 	}
-	_DrawThemeBackground((HTHEME)hTheme, lpDrawItem->hDC, SBP_ARROWBTN, state, &(lpDrawItem->rcItem), NULL);
+	_DrawThemeBackground(hTheme, lpDrawItem->hDC, SBP_ARROWBTN, state, &(lpDrawItem->rcItem), NULL);
 	return TRUE;
 }
 #endif	// OP_XP_STYLE
@@ -243,11 +243,11 @@ int file_select(const HWND hDlg, const TCHAR *oFilter, const int Index, TCHAR *r
 	of.nMaxCustFilter = 40;
 	of.nFilterIndex = Index;
 	of.lpstrFile = filename;
-	of.nMaxFile = BUF_SIZE - 1;
+	of.nMaxFile = MAX_PATH;
 	of.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 
 	if (GetOpenFileName((LPOPENFILENAME)&of) == TRUE) {
-		lstrcpy(ret, of.lpstrFile);
+		lstrcpyn(ret, of.lpstrFile, MAX_PATH);
 		return of.nFilterIndex;
 	}
 	return -1;
@@ -374,7 +374,11 @@ void listview_move_item(const HWND hListView, int index, const int Move)
 		header_wnd = GetWindow(hListView, GW_CHILD);
 	}
 	// テキストの取得
+	**buf = TEXT('\0');
 	column_cnt = Header_GetItemCount(header_wnd);
+	if (column_cnt > 100) {
+		column_cnt = 100;
+	}
 	for (i = 0; i < column_cnt; i++) {
 		*(*(buf + i)) = TEXT('\0');
 		ListView_GetItemText(hListView, index, i, *(buf + i), BUF_SIZE - 1);
@@ -564,11 +568,11 @@ static int CALLBACK prop_sheet_proc(const HWND hDlg, const UINT msg, const LPARA
  */
 static int show_option(const HWND hWnd, const TCHAR *cmd_line)
 {
-#define sizeof_PROPSHEETHEADER		40	// 古いコモンコントロール対策
 #define PROP_CNT_OPTION				9
 	PROPSHEETPAGE psp;
 	PROPSHEETHEADER psh;
 	HPROPSHEETPAGE hpsp[PROP_CNT_OPTION];
+	TCHAR caption[BUF_SIZE];
 
 	psp.dwSize = sizeof(PROPSHEETPAGE);
 	psp.dwFlags = PSP_DEFAULT;
@@ -619,13 +623,16 @@ static int show_option(const HWND hWnd, const TCHAR *cmd_line)
 	psp.pfnDlgProc = set_tool_proc;
 	hpsp[8] = CreatePropertySheetPage(&psp);
 
+	lstrcpyn(caption, message_get_res(IDS_OPTION_TITLE), BUF_SIZE);
+
 	ZeroMemory(&psh, sizeof(PROPSHEETHEADER));
-	psh.dwSize = sizeof_PROPSHEETHEADER;
+	// 古いコモンコントロール対策
+	psh.dwSize = PROPSHEETHEADER_V1_SIZE;
 	psh.dwFlags = PSH_NOAPPLYNOW | PSH_USECALLBACK;
 	psh.pfnCallback = prop_sheet_proc;
 	psh.hInstance = hInst;
 	psh.hwndParent = hWnd;
-	psh.pszCaption = message_get_res(IDS_OPTION_TITLE);
+	psh.pszCaption = caption;
 	psh.nPages = sizeof(hpsp) / sizeof(HPROPSHEETPAGE);
 	psh.phpage = hpsp;
 
@@ -673,18 +680,19 @@ static void get_work_path(const HINSTANCE hInstance)
 
 	int portable = 0;
 	TCHAR app_ini_path[MAX_PATH];
-	wsprintf(app_ini_path, TEXT("%s\\%s"), app_path, APP_INI);
+	TCHAR app_data_path[MAX_PATH];
+	wnsprintf(app_ini_path, MAX_PATH, TEXT("%s\\%s"), app_path, APP_INI);
 	if (PathFileExists(app_ini_path) == TRUE) {
 		profile_initialize(app_ini_path, TRUE);
 		portable = profile_get_int(TEXT("GENERAL"), TEXT("portable"), 0, app_ini_path);
 		profile_free();
 	}
 	if (portable == 1) {
-		lstrcpy(work_path, app_path);
+		lstrcpyn(work_path, app_path, MAX_PATH);
 	}
 	else {
-		if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0, work_path))) {
-			lstrcat(work_path, TEXT("\\CLCL"));
+		if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0, app_data_path))) {
+			wnsprintf(work_path, MAX_PATH, TEXT("%s\\CLCL"), app_data_path);
 			CreateDirectory(work_path, NULL);
 		}
 	}
@@ -697,14 +705,15 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 {
 	HANDLE hMutex = NULL;
 	HWND CLCLWnd;
-	TCHAR *p;
 	TCHAR err_str[BUF_SIZE];
 	SECURITY_DESCRIPTOR sd;
 	SECURITY_ATTRIBUTES sa;
+	int ret = 0;
 
 	hInst = hInstance;
 
 	// 2重起動チェック
+	// 本体(main.c)と同じく NULL DACL で全ユーザーからアクセス可能にする
 	InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
 	SetSecurityDescriptorDacl(&sd, TRUE, 0, FALSE);	    
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -744,24 +753,27 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 	get_work_path(hInstance);
 	if (ini_get_option(err_str) == FALSE) {
 		MessageBox(NULL, err_str, ERROR_TITLE, MB_ICONERROR);
-		if (hMutex != NULL) {
-			CloseHandle(hMutex);
+		ret = -1;
+	} else if (init_selectkey(hInstance) == FALSE) {
+		// キー選択の初期化
+		message_get_error(GetLastError(), err_str);
+		if (*err_str == TEXT('\0')) {
+			lstrcpyn(err_str, TEXT("RegisterClass"), BUF_SIZE);
 		}
-		return 0;
+		MessageBox(NULL, err_str, ERROR_TITLE, MB_ICONERROR);
+		ret = -1;
+	} else {
+		// CommonControlの初期化
+		InitCommonControls();
+#ifdef OP_XP_STYLE
+		// XPスタイルの初期化
+		init_themes();
+#endif	// OP_XP_STYLE
+		// オプション画面を表示
+		ret = show_option(NULL, lpCmdLine);
 	}
 
-	// CommonControlの初期化
-	InitCommonControls();
-	// キー選択の初期化
-	init_selectkey(hInstance);
-#ifdef OP_XP_STYLE
-	// XPスタイルの初期化
-	init_themes();
-#endif	// OP_XP_STYLE
-
-	p = lpCmdLine;
-	// オプション画面を表示
-	if (show_option(NULL, p) == 1) {
+	if (ret == 1) {
 		if ((CLCLWnd = FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE)) != NULL) {
 			// 設定保存要求
 			SendMessage(CLCLWnd, WM_OPTION_SAVE, 0, 0);

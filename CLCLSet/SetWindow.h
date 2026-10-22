@@ -18,7 +18,7 @@
 /* Struct */
 
 /* Function Prototypes */
-BOOL CALLBACK set_window_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK set_window_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 #endif
 /* End of source */

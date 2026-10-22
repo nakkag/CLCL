@@ -12,6 +12,9 @@
 #define _INC_CLCLSET_H
 
 /* Include Files */
+#ifdef OP_XP_STYLE
+#include <uxtheme.h>
+#endif	// OP_XP_STYLE
 
 /* Define */
 #define WINDOW_TITLE					TEXT("CLCLSet")
@@ -27,9 +30,9 @@
 
 /* Function Prototypes */
 #ifdef OP_XP_STYLE
-long open_theme(const HWND hWnd, const WCHAR *class_name);
-void close_theme(long hTheme);
-BOOL draw_theme_scroll(LPDRAWITEMSTRUCT lpDrawItem, UINT i, long hTheme);
+HTHEME open_theme(const HWND hWnd, const WCHAR *class_name);
+void close_theme(HTHEME hTheme);
+BOOL draw_theme_scroll(LPDRAWITEMSTRUCT lpDrawItem, UINT i, HTHEME hTheme);
 #endif	// OP_XP_STYLE
 void alloc_get_text(const HWND hEdit, TCHAR **buf);
 int file_select(const HWND hDlg, const TCHAR *oFilter, const int Index, TCHAR *ret);

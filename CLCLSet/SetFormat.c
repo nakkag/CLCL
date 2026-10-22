@@ -13,6 +13,9 @@
 #include <windows.h>
 #undef  _INC_OLE
 #include <commctrl.h>
+#include <shlwapi.h>
+
+#pragma comment(lib, "shlwapi.lib")
 
 #include "..\General.h"
 #include "..\Memory.h"
@@ -44,9 +47,9 @@ extern OPTION_INFO option;
 /* Local Function Prototypes */
 static BOOL CALLBACK get_format_header(const HWND hWnd, const int index, FORMAT_GET_INFO *fgi);
 static BOOL dll_to_list(const HWND hDlg, const FARPROC func_get_format_header);
-static BOOL CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-static BOOL CALLBACK select_header_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+static INT_PTR CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+static INT_PTR CALLBACK select_header_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+static INT_PTR CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 static BOOL show_property(const HWND hDlg, const FORMAT_INFO *fi);
 static void listview_set_text(const HWND hListView, const int i);
 static void listview_set_format(const HWND hListView, FORMAT_INFO *fi, const BOOL copy);
@@ -143,7 +146,7 @@ static BOOL dll_to_list(const HWND hDlg, const FARPROC func_get_format_header)
 /*
  * select_headers_proc - ヘッダ選択ウィンドウプロシージャ
  */
-static BOOL CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	HWND pWnd;
 	HANDLE lib;
@@ -151,7 +154,7 @@ static BOOL CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
 	FORMAT_INFO *fi;
 	TCHAR buf[BUF_SIZE];
 	TCHAR err_str[BUF_SIZE];
-	static TCHAR lib_path[BUF_SIZE];
+	static TCHAR lib_path[MAX_PATH];
 	int i;
 
 	switch (uMsg) {
@@ -192,7 +195,7 @@ static BOOL CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
 			GetWindowLong(GetDlgItem(hDlg, IDC_LIST_HEADER), GWL_STYLE) & ~LVS_SINGLESEL);
 		ListView_SetItemState(GetDlgItem(hDlg, IDC_LIST_HEADER), -1, LVIS_SELECTED, LVIS_SELECTED);
 
-		lstrcpy(lib_path, (TCHAR *)lParam);
+		lstrcpyn(lib_path, (TCHAR *)lParam, MAX_PATH);
 		FreeLibrary(lib);
 
 		if (ListView_GetSelectedCount(GetDlgItem(hDlg, IDC_LIST_HEADER)) <= 0) {
@@ -253,7 +256,8 @@ static BOOL CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
 
 	case WM_GET_VERSION:
 		// バージョン取得
-		return APP_VAR;
+		SetWindowLongPtr(hDlg, DWLP_MSGRESULT, APP_VAR);
+		return TRUE;
 
 	case WM_GET_WORKPATH:
 		// 作業ディレクトリ取得
@@ -272,7 +276,7 @@ static BOOL CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
 /*
  * select_header_proc - ヘッダ選択ウィンドウプロシージャ
  */
-static BOOL CALLBACK select_header_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK select_header_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	HANDLE lib;
 	FARPROC func_get_format_header;
@@ -372,7 +376,8 @@ static BOOL CALLBACK select_header_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 
 	case WM_GET_VERSION:
 		// バージョン取得
-		return APP_VAR;
+		SetWindowLongPtr(hDlg, DWLP_MSGRESULT, APP_VAR);
+		return TRUE;
 
 	case WM_GET_WORKPATH:
 		// 作業ディレクトリ取得
@@ -391,16 +396,16 @@ static BOOL CALLBACK select_header_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 /*
  * set_format_item_proc - 形式の項目を設定
  */
-static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	HMENU hMenu;
 	RECT button_rect;
 	FORMAT_INFO *fi;
-	TCHAR buf[BUF_SIZE];
+	TCHAR buf[MAX_PATH];
 	DWORD ret;
 	UINT format;
 #ifdef OP_XP_STYLE
-	static long hTheme;
+	static HTHEME hTheme;
 #endif	// OP_XP_STYLE
 
 	switch (uMsg) {
@@ -417,7 +422,7 @@ static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 				SendDlgItemMessage(hDlg, IDC_EDIT_FORMAT_NAME, WM_SETTEXT, 0, (LPARAM)cmd_format);
 				*cmd_format = TEXT('\0');
 			}
-			SetWindowLong(hDlg, GWL_USERDATA, 0);
+			SetWindowLongPtr(hDlg, GWLP_USERDATA, 0);
 			break;
 		}
 		fi = (FORMAT_INFO *)lParam;
@@ -426,7 +431,7 @@ static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 		SendDlgItemMessage(hDlg, IDC_EDIT_LIB_PATH, WM_SETTEXT, 0, (LPARAM)fi->lib_file_path);
 		SendDlgItemMessage(hDlg, IDC_EDIT_HEADER, WM_SETTEXT, 0, (LPARAM)fi->func_header);
 
-		SetWindowLong(hDlg, GWL_USERDATA, lParam);
+		SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
 		break;
 
 	case WM_CLOSE:
@@ -500,11 +505,12 @@ static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 			}
 			SendDlgItemMessage(hDlg, IDC_EDIT_LIB_PATH, WM_SETTEXT, 0, (LPARAM)buf);
 			SendDlgItemMessage(hDlg, IDC_EDIT_HEADER, WM_SETTEXT, 0, (LPARAM)TEXT(""));
+			/* FALLTHROUGH */
 
 		case IDC_BUTTON_FUNC_SELECT:
 			// ヘッダ選択
 			*buf = TEXT('\0');
-			SendDlgItemMessage(hDlg, IDC_EDIT_LIB_PATH, WM_GETTEXT, BUF_SIZE - 1, (LPARAM)buf);
+			SendDlgItemMessage(hDlg, IDC_EDIT_LIB_PATH, WM_GETTEXT, MAX_PATH - 1, (LPARAM)buf);
 			if (DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_DIALOG_SELECT_FUNC), hDlg, select_header_proc, (LPARAM)buf) == TRUE) {
 				break;
 			}
@@ -519,7 +525,7 @@ static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 				break;
 			}
 
-			if ((fi = (FORMAT_INFO *)GetWindowLong(hDlg, GWL_USERDATA)) == NULL) {
+			if ((fi = (FORMAT_INFO *)GetWindowLongPtr(hDlg, GWLP_USERDATA)) == NULL) {
 				fi = mem_calloc(sizeof(FORMAT_INFO));
 			}
 			if (fi != NULL) {
@@ -529,7 +535,7 @@ static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 				alloc_get_text(GetDlgItem(hDlg, IDC_EDIT_HEADER), &fi->func_header);
 			}
 
-			if (GetWindowLong(hDlg, GWL_USERDATA) == 0) {
+			if (fi != NULL && GetWindowLongPtr(hDlg, GWLP_USERDATA) == 0) {
 				// 新規
 				HWND pWnd = PropSheet_GetCurrentPageHwnd(GetParent(hDlg));
 				listview_set_format(GetDlgItem(pWnd, IDC_LIST_FORMAT), fi, FALSE);
@@ -562,7 +568,7 @@ static BOOL CALLBACK set_format_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 /*
  * set_format_property_proc - 内部形式のプロパティを設定
  */
-static BOOL CALLBACK set_format_property_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK set_format_property_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg) {
 	case WM_INITDIALOG:
@@ -626,7 +632,7 @@ static BOOL show_property(const HWND hDlg, const FORMAT_INFO *fi)
 			return FALSE;
 		}
 		// 関数アドレス取得
-		wsprintf(buf, TEXT("%sshow_property"), fi->func_header);
+		wnsprintf(buf, BUF_SIZE, TEXT("%sshow_property"), fi->func_header);
 		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
 		if ((func_show_property = GetProcAddress(lib, cbuf)) != NULL) {
 			// プロパティ表示
@@ -742,16 +748,16 @@ static void listview_free_format(const HWND hListView)
 /*
  * set_format_proc - 形式設定のプロシージャ
  */
-BOOL CALLBACK set_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK set_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LV_COLUMN lvc;
 	FORMAT_INFO *fi;
-	TCHAR buf[BUF_SIZE];
+	TCHAR buf[MAX_PATH];
 	int cnt;
 	int i;
 	BOOL enable;
 #ifdef OP_XP_STYLE
-	static long hThemeUp, hThemeDown;
+	static HTHEME hThemeUp, hThemeDown;
 #endif	// OP_XP_STYLE
 
 	switch (uMsg) {
@@ -855,7 +861,7 @@ BOOL CALLBACK set_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 	case WM_DROPFILES:
 		cnt = DragQueryFile((HANDLE)wParam, 0xFFFFFFFF, NULL, 0);
 		for (i = 0; i < cnt; i++) {
-			DragQueryFile((HANDLE)wParam, i, buf, BUF_SIZE - 1);
+			DragQueryFile((HANDLE)wParam, i, buf, MAX_PATH);
 			if (DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_DIALOG_SELECT_FUNC), hDlg, select_headers_proc, (LPARAM)buf) == FALSE) {
 				break;
 			}
@@ -983,7 +989,8 @@ BOOL CALLBACK set_format_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 	case WM_GET_VERSION:
 		// バージョン取得
-		return APP_VAR;
+		SetWindowLongPtr(hDlg, DWLP_MSGRESULT, APP_VAR);
+		return TRUE;
 
 	case WM_GET_WORKPATH:
 		// 作業ディレクトリ取得

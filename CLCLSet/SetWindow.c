@@ -36,7 +36,7 @@ extern int prop_ret;
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
-static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+static INT_PTR CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 static void listview_set_text(const HWND hListView, const int i);
 static void listview_set_window(const HWND hListView, WINDOW_FILTER_INFO *wfi, const BOOL copy);
 static WINDOW_FILTER_INFO *listview_get_window(const HWND hListView, int *cnt);
@@ -45,7 +45,7 @@ static void listview_free_window(const HWND hListView);
 /*
  * set_window_item_proc - ウィンドウフィルタの項目を設定
  */
-static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LV_COLUMN lvc;
 	WINDOW_FILTER_INFO *wfi;
@@ -53,7 +53,7 @@ static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 	TCHAR tmp[BUF_SIZE];
 	int i;
 #ifdef OP_XP_STYLE
-	static long hTheme;
+	static HTHEME hTheme;
 #endif	// OP_XP_STYLE
 
 	switch (uMsg) {
@@ -90,7 +90,7 @@ static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 
 		if (lParam == 0) {
 			// 新規追加
-			SetWindowLong(hDlg, GWL_USERDATA, 0);
+			SetWindowLongPtr(hDlg, GWLP_USERDATA, 0);
 			break;
 		}
 		wfi = (WINDOW_FILTER_INFO *)lParam;
@@ -102,7 +102,7 @@ static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 		CheckDlgButton(hDlg, IDC_CHECK_FOCUS, !wfi->focus);
 		CheckDlgButton(hDlg, IDC_CHECK_PASTE, wfi->paste);
 
-		SetWindowLong(hDlg, GWL_USERDATA, lParam);
+		SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
 		break;
 
 	case WM_CLOSE:
@@ -133,7 +133,7 @@ static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 		if (hTheme != 0) {
 			close_theme(hTheme);
 		}
-		hTheme = open_theme(GetDlgItem(hDlg, IDC_BUTTON_FORMAT), L"SCROLLBAR");
+		hTheme = open_theme(GetDlgItem(hDlg, IDC_BUTTON_SELECT), L"SCROLLBAR");
 		break;
 #endif	// OP_XP_STYLE
 
@@ -173,7 +173,7 @@ static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 				break;
 			}
 
-			if ((wfi = (WINDOW_FILTER_INFO *)GetWindowLong(hDlg, GWL_USERDATA)) == NULL) {
+			if ((wfi = (WINDOW_FILTER_INFO *)GetWindowLongPtr(hDlg, GWLP_USERDATA)) == NULL) {
 				wfi = mem_calloc(sizeof(WINDOW_FILTER_INFO));
 			}
 			if (wfi != NULL) {
@@ -186,7 +186,7 @@ static BOOL CALLBACK set_window_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 				wfi->paste = IsDlgButtonChecked(hDlg, IDC_CHECK_PASTE);
 			}
 
-			if (GetWindowLong(hDlg, GWL_USERDATA) == 0) {
+			if (wfi != NULL && GetWindowLongPtr(hDlg, GWLP_USERDATA) == 0) {
 				// 新規
 				HWND pWnd = PropSheet_GetCurrentPageHwnd(GetParent(hDlg));
 				listview_set_window(GetDlgItem(pWnd, IDC_LIST_WINDOW), wfi, FALSE);
@@ -322,14 +322,14 @@ static void listview_free_window(const HWND hListView)
 /*
  * set_window_proc - ウィンドウフィルタ設定のプロシージャ
  */
-BOOL CALLBACK set_window_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK set_window_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LV_COLUMN lvc;
 	WINDOW_FILTER_INFO *wfi;
 	int i;
 	BOOL enable;
 #ifdef OP_XP_STYLE
-	static long hThemeUp, hThemeDown;
+	static HTHEME hThemeUp, hThemeDown;
 #endif	// OP_XP_STYLE
 
 	switch (uMsg) {

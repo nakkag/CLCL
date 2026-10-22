@@ -13,6 +13,9 @@
 #include <windows.h>
 #undef  _INC_OLE
 #include <commctrl.h>
+#include <shlwapi.h>
+
+#pragma comment(lib, "shlwapi.lib")
 
 #include "..\General.h"
 #include "..\Message.h"
@@ -47,7 +50,7 @@ static void treeview_datainfo_to_treeitem(const HWND hTreeView, const HTREEITEM 
 static BOOL treeview_get_text(const HWND hTreeView, const HTREEITEM hItem, TCHAR *text);
 static void treeview_get_path(const HWND hTreeView, const HTREEITEM root, const HTREEITEM hItem, TCHAR *ret);
 static HTREEITEM treeview_path_to_item(const HWND hTreeView, const HTREEITEM hItem, TCHAR *path);
-static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+static INT_PTR CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 /*
  * imagelist_icon_add - イメージリストにアイコンを追加
@@ -61,6 +64,9 @@ static int imagelist_icon_add(const HINSTANCE hInstance, const HIMAGELIST icon_l
 
 	hIcon = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(index), IMAGE_ICON,
 		SICONSIZE, SICONSIZE, 0);
+	if (hIcon == NULL) {
+		return -1;
+	}
 	// イメージリストにアイコンを追加
 	ret = ImageList_AddIcon(icon_list, hIcon);
 	DestroyIcon(hIcon);
@@ -76,8 +82,11 @@ static int imagelist_fileicon_add(const HIMAGELIST icon_list, const TCHAR *path,
 	HICON hIcon;
 	int ret;
 
-	SHGetFileInfo(path, SHGFI_USEFILEATTRIBUTES, &shfi, sizeof(SHFILEINFO),
-		SHGFI_ICON | SHGFI_SMALLICON | flag);
+	ZeroMemory(&shfi, sizeof(SHFILEINFO));
+	if (SHGetFileInfo(path, SHGFI_USEFILEATTRIBUTES, &shfi, sizeof(SHFILEINFO),
+		SHGFI_ICON | SHGFI_SMALLICON | flag) == 0 || shfi.hIcon == NULL) {
+		return -1;
+	}
 	hIcon = shfi.hIcon;
 	// イメージリストにアイコンを追加
 	ret = ImageList_AddIcon(icon_list, hIcon);
@@ -188,20 +197,24 @@ static void treeview_get_path(const HWND hTreeView, const HTREEITEM root, const 
 		return;
 	}
 
-	if (treeview_get_text(hTreeView, hItem, buf) == -1) {
+	if (treeview_get_text(hTreeView, hItem, buf) == FALSE) {
 		*ret = TEXT('\0');
 		return;
 	}
 	pItem = TreeView_GetParent(hTreeView, hItem);
 	while (pItem != root) {
-		treeview_get_text(hTreeView, pItem, name);
-		wsprintf(work, TEXT("%s\\%s"), name, buf);
-		lstrcpy(buf, work);
+		if (treeview_get_text(hTreeView, pItem, name) == FALSE ||
+			lstrlen(name) + lstrlen(buf) + 2 >= BUF_SIZE) {
+			// BUF_SIZE に収まらないパスは打ち切る
+			break;
+		}
+		wnsprintf(work, BUF_SIZE, TEXT("%s\\%s"), name, buf);
+		lstrcpyn(buf, work, BUF_SIZE);
 
 		pItem = TreeView_GetParent(hTreeView, pItem);
 	}
 	// 指定の文字列と結合
-	wsprintf(ret, TEXT("\\%s"), buf);
+	wnsprintf(ret, BUF_SIZE, TEXT("\\%s"), buf);
 }
 
 /*
@@ -264,9 +277,10 @@ static HTREEITEM treeview_path_to_item(const HWND hTreeView, const HTREEITEM hIt
 /*
  * select_folder_proc - フォルダ選択ウィンドウプロシージャ
  */
-static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	HTREEITEM hItem;
+	HIMAGELIST icon_list;
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
@@ -289,6 +303,14 @@ static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 
 	case WM_CLOSE:
 		EndDialog(hDlg, FALSE);
+		break;
+
+	case WM_DESTROY:
+		// イメージリストの解放
+		if ((icon_list = TreeView_GetImageList(GetDlgItem(hDlg, IDC_TREE), TVSIL_NORMAL)) != NULL) {
+			TreeView_SetImageList(GetDlgItem(hDlg, IDC_TREE), NULL, TVSIL_NORMAL);
+			ImageList_Destroy(icon_list);
+		}
 		break;
 
 	case WM_COMMAND:
