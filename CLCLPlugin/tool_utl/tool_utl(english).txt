@@ -1,0 +1,66 @@
+tool_utl Ver 0.0.3
+--
+
+■ Introduction
+This is a plug-in tool that extends the functionality of CLCL.
+
+■ Install
+This tool works with CLCL Ver 2.0.0 or later.
+
+Place tool_utl.dll in an appropriate directory, open the CLCL options screen, and select "Tools".
+tab. So, press the add button and specify tool_utl.dll to add it.
+You can choose which tools to use.
+Open the "Tools" tab in the options and drag and drop tool_utl.dll there.
+You can register multiple tools at once.
+
+If you want to upgrade, please close CLCL and overwrite tool_utl.dll.
+If you want to uninstall, remove the tool from CLCL and then remove tool_utl.dll.
+
+If tool_utl.dll is not found when installing, it may be DLLs is set to not be displayed.
+In Explorer's folder options, select "All
+Set it to "Show files and folders."
+
+■ Functions
+・Clear history
+	Delete all history items.
+
+・Clear clipboard
+	Clears the contents of the clipboard.
+
+・Make a sound
+	Play a sound when an item is added to the history.
+
+	If the "When data is added to history" option is enabled in the CLCL tool settings,
+	a sound will be played when data is added to the history.
+	You can select the sound to play by pressing the property button in CLCL's tool settings.
+
+・Display on top
+・Cancel display on top
+	Sets or removes the viewer from the front.
+
+	When "Viewer menu" is enabled in CLCL's tool settings, the CLCL viewer menu
+	Set or cancel the viewer on top from the Tools menu.
+	When the "When viewer opens" option is enabled in CLCL's tool settings, CLCL
+	Sets the viewer to the front when you open it.
+
+・Save multiple items
+	Save multiple items to a file with a name.
+
+	Use the CLCL viewer to display history and registered items in a list (right pane), and view multiple accounts.
+	Select the item to select this tool.
+	When you run the tool, select the output destination and set the save information.
+	In the save information, set the format and file name. The format combo box does not contain
+	It contains all formats of items to be saved, so select the format to save from among them.
+	Select.
+	File names can be numbered by specifying %d.
+
+--
+The author is not responsible for any problems caused by this program.
+We strongly recommend that you back up important files.
+
+Please send any bugs, requests, or questions to nakka@nakka.com.
+
+Copyright (C) 1996-2015 by Ohno Tomoaki. All rights reserved.
+	http://www.nakka.com/
+
+2015/09/05
