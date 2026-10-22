@@ -92,9 +92,18 @@ static int tooltip_get_cursor_height(const HCURSOR hcursor)
 	height = GetSystemMetrics(SM_CYCURSOR);
 
 	// カーソル(マスク)の描画
-	hdc = GetDC(NULL);
-	mdc = CreateCompatibleDC(hdc);
-	hbmp = CreateCompatibleBitmap(hdc, width, height);
+	if ((hdc = GetDC(NULL)) == NULL) {
+		return height;
+	}
+	if ((mdc = CreateCompatibleDC(hdc)) == NULL) {
+		ReleaseDC(NULL, hdc);
+		return height;
+	}
+	if ((hbmp = CreateCompatibleBitmap(hdc, width, height)) == NULL) {
+		DeleteDC(mdc);
+		ReleaseDC(NULL, hdc);
+		return height;
+	}
 	ret_hbmp = SelectObject(mdc, hbmp);
 	DrawIconEx(mdc, 0, 0, hcursor, width, height, 0, NULL, DI_MASK);
 
@@ -220,7 +229,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		}
 		tooltip_create_font(ti);
 		// tooltip info to window long
-		SetWindowLong(hWnd, GWL_USERDATA, (LPARAM)ti);
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)ti);
 		break;
 
 	case WM_CLOSE:
@@ -228,7 +237,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		break;
 
 	case WM_DESTROY:
-		if ((ti = (TOOLTIP_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) != NULL) {
+		if ((ti = (TOOLTIP_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) != NULL) {
 			if (ti->hfont != NULL) {
 				DeleteObject(ti->hfont);
 				ti->hfont = NULL;
@@ -241,7 +250,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 
 	case WM_SETTINGCHANGE:
-		if ((ti = (TOOLTIP_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
+		if ((ti = (TOOLTIP_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL ||
 			*option.tooltip_font_name != TEXT('\0') ||
 			wParam != SPI_SETNONCLIENTMETRICS) {
 			break;
@@ -252,7 +261,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 #ifdef TOOLTIP_ANIMATE
 	case WM_PRINT:
 		// テキスト描画
-		if ((ti = (TOOLTIP_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((ti = (TOOLTIP_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		// 非クライアントエリアの描画
@@ -267,7 +276,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 	case WM_PAINT:
 		// テキスト描画
-		if ((ti = (TOOLTIP_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((ti = (TOOLTIP_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		hdc = BeginPaint(hWnd, &ps);
@@ -290,7 +299,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		KillTimer(hWnd, ID_MOUSE_TIMER);
 		ShowWindow(hWnd, SW_HIDE);
 
-		if ((ti = (TOOLTIP_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) != NULL && ti->buf != NULL) {
+		if ((ti = (TOOLTIP_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) != NULL && ti->buf != NULL) {
 			mem_free(&ti->buf);
 		}
 		break;
@@ -304,7 +313,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			((TOOLTIP_INFO *)lParam)->buf == NULL || *((TOOLTIP_INFO *)lParam)->buf == TEXT('\0')) {
 			break;
 		}
-		if ((ti = (TOOLTIP_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((ti = (TOOLTIP_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 
@@ -335,7 +344,7 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		switch (wParam) {
 		case ID_SHOW_TIMER:
 			KillTimer(hWnd, wParam);
-			if ((ti = (TOOLTIP_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || ti->buf == NULL) {
+			if ((ti = (TOOLTIP_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL || ti->buf == NULL) {
 				SendMessage(hWnd, WM_TOOLTIP_HIDE, 0, 0);
 				break;
 			}
@@ -430,14 +439,14 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			break;
 
 		case ID_MOUSE_TIMER:
-			if ((ti = (TOOLTIP_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
+			if ((ti = (TOOLTIP_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL ||
 				ti->hWnd == NULL || IsWindowVisible(hWnd) == FALSE) {
 				KillTimer(hWnd, wParam);
 				break;
 			}
 			// マウスの下のウィンドウをチェック
 			GetCursorPos(&pt);
-			if (ti->pt.x != pt.x && ti->pt.y != pt.y && ti->hWnd != WindowFromPoint(pt)) {
+			if ((ti->pt.x != pt.x || ti->pt.y != pt.y) && ti->hWnd != WindowFromPoint(pt)) {
 				SendMessage(hWnd, WM_TOOLTIP_HIDE, 0, 0);
 				break;
 			}

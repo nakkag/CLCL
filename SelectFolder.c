@@ -31,7 +31,7 @@ static TCHAR *message;
 
 /* Local Function Prototypes */
 static BOOL treeview_copy_tree(const HWND from_tv, const HTREEITEM from_item, const HWND to_tv, const HTREEITEM parent_item);
-static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+static INT_PTR CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 /*
  * treeview_copy_tree - ツリビューアイテムのコピーを作成
@@ -62,6 +62,7 @@ static BOOL treeview_copy_tree(const HWND from_tv, const HTREEITEM from_item, co
 	tvit.cChildren = 0;
 
 	tvitn.hParent = (HTREEITEM)parent_item;
+	tvitn.hInsertAfter = (HTREEITEM)TVI_LAST;
 	tvitn.item = tvit;
 	if ((new_item = TreeView_InsertItem(to_tv, &tvitn)) == NULL) {
 		return FALSE;
@@ -81,7 +82,7 @@ static BOOL treeview_copy_tree(const HWND from_tv, const HTREEITEM from_item, co
 /*
  * select_folder_proc - フォルダ選択ウィンドウプロシージャ
  */
-static BOOL CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK select_folder_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg) {
 	case WM_INITDIALOG:

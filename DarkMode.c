@@ -305,6 +305,11 @@ void dark_mode_init(void)
 	if (_AllowDarkModeForWindow == NULL || _SetPreferredAppMode == NULL) {
 		FreeLibrary(dark_mode_uxtheme_lib);
 		dark_mode_uxtheme_lib = NULL;
+		_RefreshImmersiveColorPolicyState = NULL;
+		_AllowDarkModeForWindow = NULL;
+		_SetPreferredAppMode = NULL;
+		_FlushMenuThemes = NULL;
+		_SetWindowTheme = NULL;
 		return;
 	}
 	if ((dark_mode_dwmapi_lib = LoadLibrary(TEXT("dwmapi.dll"))) != NULL) {

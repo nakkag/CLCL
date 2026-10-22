@@ -26,7 +26,7 @@ static long all_alloc_size = 0;
 #ifdef MEM_CHECK
 #define ADDRESS_CNT		100000
 #define DEBUG_ADDRESS	0
-static long address[ADDRESS_CNT];
+static LONG_PTR address[ADDRESS_CNT];
 static int address_index;
 #endif	// MEM_CHECK
 
@@ -45,9 +45,9 @@ void *mem_alloc(const DWORD size)
 #ifdef MEM_CHECK
 	if (address_index < ADDRESS_CNT) {
 		if (address_index == DEBUG_ADDRESS) {
-			address[address_index] = (long)mem;
+			address[address_index] = (LONG_PTR)mem;
 		} else {
-			address[address_index] = (long)mem;
+			address[address_index] = (LONG_PTR)mem;
 		}
 		address_index++;
 	}
@@ -71,9 +71,9 @@ void *mem_calloc(const DWORD size)
 #ifdef MEM_CHECK
 	if (address_index < ADDRESS_CNT) {
 		if (address_index == DEBUG_ADDRESS) {
-			address[address_index] = (long)mem;
+			address[address_index] = (LONG_PTR)mem;
 		} else {
-			address[address_index] = (long)mem;
+			address[address_index] = (LONG_PTR)mem;
 		}
 		address_index++;
 	}
@@ -97,7 +97,7 @@ void mem_free(void **mem)
 			int i;
 
 			for (i = 0; i < ADDRESS_CNT; i++) {
-				if (address[i] == (long)*mem) {
+				if (address[i] == (LONG_PTR)*mem) {
 					address[i] = 0;
 					break;
 				}
@@ -175,13 +175,13 @@ TCHAR *alloc_copy_n(const TCHAR *buf, const int size)
 {
 	TCHAR *ret;
 
-	if (buf == NULL) {
+	if (buf == NULL || size < 0) {
 		return NULL;
 	}
 	if ((ret = (TCHAR *)mem_alloc(sizeof(TCHAR) * (size + 1))) == NULL) {
 		return NULL;
 	}
-	lstrcpyn(ret, buf, size);
+	lstrcpyn(ret, buf, size + 1);
 	return ret;
 }
 
@@ -194,7 +194,12 @@ char *alloc_tchar_to_char(const TCHAR *str)
 	char *cchar;
 	int len;
 
-	len = tchar_to_char_size(str);
+	if (str == NULL) {
+		return NULL;
+	}
+	if ((len = tchar_to_char_size(str)) < 0) {
+		return NULL;
+	}
 	if ((cchar = (char *)mem_alloc(len + 1)) == NULL) {
 		return NULL;
 	}
@@ -212,7 +217,12 @@ TCHAR *alloc_char_to_tchar(const char *str)
 	TCHAR *tchar;
 	int len;
 
-	len = char_to_tchar_size(str);
+	if (str == NULL) {
+		return NULL;
+	}
+	if ((len = char_to_tchar_size(str)) < 0) {
+		return NULL;
+	}
 	tchar = (TCHAR *)mem_alloc(sizeof(TCHAR) * (len + 1));
 	if (tchar == NULL) {
 		return NULL;

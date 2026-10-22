@@ -66,9 +66,13 @@
 #define ID_KEY_TIMER					5
 #define ID_LCLICK_TIMER					6
 #define ID_RCLICK_TIMER					7
+#define ID_TRAY_TIMER					8
 
 #define RECLIP_INTERVAL					1000
 #define RECHAIN_INTERVAL				60000
+// タスクトレイのアイコン追加のリトライ間隔(ミリ秒)と回数
+#define TRAY_RETRY_INTERVAL				5000
+#define TRAY_RETRY_MAX					5
 
 #define TOOLFLAG_CALL					1
 #define TOOLFLAG_PASTE					2
@@ -102,6 +106,8 @@ static HICON icon_clip;
 static HICON icon_clip_ban;
 // 読み込み済みのタスクトレイのアイコンのサイズ
 static int tray_icon_size;
+// タスクトレイのアイコン追加のリトライ回数
+static int tray_retry_cnt;
 
 static POINT menu_sel_pt;
 static int menu_sel_top;
@@ -109,6 +115,8 @@ static int menu_sel_top;
 static BOOL accel_flag = TRUE;
 static BOOL clip_flag;
 static BOOL session_ending = FALSE;
+// ウィンドウの初期化が完了しているか
+static BOOL init_done = FALSE;
 static int rechain_cnt;
 
 DATA_INFO history_data;
@@ -156,6 +164,7 @@ static BOOL menu_attach_begin(const HWND hWnd, const HWND active_wnd, const BOOL
 static void menu_attach_end(void);
 static BOOL show_tool_menu(const HWND hWnd, DATA_INFO *di, const int paste, const HWND attach_wnd);
 static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL caret, const BOOL attach);
+static DATA_INFO *item_check(DATA_INFO *di);
 static BOOL action_execute(const HWND hWnd, const int type, const int id, const BOOL caret);
 static BOOL action_check(const int type);
 static BOOL clipboard_to_history(const HWND hWnd);
@@ -166,6 +175,7 @@ static BOOL save_history(const HWND hWnd, const int save_flag);
 static BOOL save_regist(const HWND hWnd);
 static void regist_hotkey(const HWND hWnd, const BOOL show_err);
 static void unregist_hotkey(const HWND hWnd);
+static void hook_error(const HWND hWnd, const DWORD err_code);
 static void regist_hook(const HWND hWnd);
 static void unregist_hook(void);
 static BOOL winodw_initialize(const HWND hWnd);
@@ -173,6 +183,8 @@ static BOOL winodw_reset(const HWND hWnd);
 static BOOL winodw_save(const HWND hWnd);
 static BOOL winodw_end(const HWND hWnd);
 static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+static BOOL path_combine(TCHAR *buf, const TCHAR *dir, const TCHAR *name);
+static void copy_old_file(void);
 static void get_work_path(const HINSTANCE hInstance);
 static void commnad_line_func(const HWND hWnd);
 static BOOL init_application(const HINSTANCE hInstance);
@@ -536,13 +548,14 @@ static BOOL tray_message(const HWND hWnd, const DWORD dwMessage, const UINT uID,
 {
 	NOTIFYICONDATA tnd;
 
+	ZeroMemory(&tnd, sizeof(NOTIFYICONDATA));
 	tnd.cbSize = sizeof(NOTIFYICONDATA);
 	tnd.hWnd = hWnd;
 	tnd.uID	= uID;
 	tnd.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
 	tnd.uCallbackMessage = WM_TRAY_NOTIFY;
 	tnd.hIcon = hIcon;
-	lstrcpyn(tnd.szTip, (pszTip == NULL) ? TEXT("") : pszTip, 64 - 1);
+	lstrcpyn(tnd.szTip, (pszTip == NULL) ? TEXT("") : pszTip, _countof(tnd.szTip));
 	return Shell_NotifyIcon(dwMessage, &tnd);
 }
 
@@ -554,19 +567,16 @@ static void set_tray_icon(const HWND hWnd, const HICON hIcon, const TCHAR *buf)
 	if (hIcon == NULL || option.main_show_trayicon == 0) {
 		return;
 	}
-	if (tray_message(hWnd, NIM_MODIFY, TRAY_ID, hIcon, buf) == FALSE) {
-		// 変更できなかった場合は追加を行う
-		// if modification failed, add it
-		int i;
-		for (i = 0; i < 5; i++) {
-			// 追加できなかった場合はリトライする
-			// if add failed, retry
-			if (tray_message(hWnd, NIM_ADD, TRAY_ID, hIcon, buf)) {
-				break;
-			}
-			Sleep(5000);
-		}
+	if (tray_message(hWnd, NIM_MODIFY, TRAY_ID, hIcon, buf) != FALSE) {
+		return;
 	}
+	// 変更できなかった場合は追加を行う
+	if (tray_message(hWnd, NIM_ADD, TRAY_ID, hIcon, buf) != FALSE) {
+		return;
+	}
+	// 追加できなかった場合はタイマーでリトライする(タスクバー再作成直後など)
+	tray_retry_cnt = 0;
+	SetTimer(hWnd, ID_TRAY_TIMER, TRAY_RETRY_INTERVAL, NULL);
 }
 
 /*
@@ -688,6 +698,11 @@ static BOOL show_tool_menu(const HWND hWnd, DATA_INFO *di, const int paste, cons
 		menu_free();
 		return TRUE;
 	}
+	// メニュー表示中にアイテムが解放されていないか確認
+	if (item_check(di) == NULL) {
+		menu_free();
+		return FALSE;
+	}
 	// ツールの実行
 	// execute tool
 	if (tool_execute(hWnd, mii->ti, CALLTYPE_MENU, di, NULL) & TOOL_DATA_MODIFIED) {
@@ -787,11 +802,11 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 		}
 
 	} else if (mii->set_di != NULL) {
-		// アイテム
-		// item
-		if ((GetAsyncKeyState(VK_RBUTTON) == 1 || ctrl_key == TRUE) &&
+		// アイテム (メニュー表示中に解放されていないか確認してから使う)
+		DATA_INFO *di = item_check(mii->set_di);
+
+		if (di != NULL && (GetAsyncKeyState(VK_RBUTTON) == 1 || ctrl_key == TRUE) &&
 			option.menu_show_tool_menu == 1) {
-			DATA_INFO *di = mii->set_di;
 			BOOL tool_ret;
 			menu_free();
 			// ツールメニュー表示
@@ -800,7 +815,7 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 			if (attached == FALSE) {
 				set_focus_info(&fi);
 			}
-			if (tool_ret == TRUE) {
+			if (tool_ret == TRUE && item_check(di) != NULL) {
 				SendMessage(hWnd, WM_ITEM_TO_CLIPBOARD, 0, (LPARAM)di);
 			}
 			return TRUE;
@@ -810,7 +825,11 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 		if (attached == FALSE) {
 			set_focus_info(&fi);
 		}
-		SendMessage(hWnd, WM_ITEM_TO_CLIPBOARD, 0, (LPARAM)mii->set_di);
+		if (di == NULL) {
+			menu_free();
+			return TRUE;
+		}
+		SendMessage(hWnd, WM_ITEM_TO_CLIPBOARD, 0, (LPARAM)di);
 		if (ai->paste == 1 && shift_key == FALSE) {
 			// キーを離すまで待機
 			// Wait until key is released
@@ -887,6 +906,20 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 	// Release menu information
 	menu_free();
 	return TRUE;
+}
+
+/*
+ * item_check - アイテムが履歴または登録アイテムに存在するか確認
+ */
+static DATA_INFO *item_check(DATA_INFO *di)
+{
+	if (di == NULL) {
+		return NULL;
+	}
+	if (data_check(&history_data, di) == NULL && data_check(&regist_data, di) == NULL) {
+		return NULL;
+	}
+	return di;
 }
 
 /*
@@ -1407,12 +1440,27 @@ static void unregist_hotkey(const HWND hWnd)
 }
 
 /*
+ * hook_error - フック登録エラーの表示
+ */
+static void hook_error(const HWND hWnd, const DWORD err_code)
+{
+	TCHAR buf[BUF_SIZE];
+	TCHAR err_str[BUF_SIZE + MAX_PATH];
+
+	message_get_error(err_code, buf);
+	if (*buf == TEXT('\0')) {
+		return;
+	}
+	wnsprintf(err_str, BUF_SIZE + MAX_PATH, TEXT("%s\r\n%s"), buf, HOOK_LIB);
+	MessageBox(hWnd, err_str, ERROR_TITLE, MB_ICONERROR);
+}
+
+/*
  * regist_hook - フックの登録
  */
 static void regist_hook(const HWND hWnd)
 {
 	FARPROC SetHook;
-	TCHAR err_str[BUF_SIZE];
 	int i;
 
 	// フックの登録
@@ -1423,25 +1471,20 @@ static void regist_hook(const HWND hWnd)
 			(option.action_info + i)->type == ACTION_TYPE_ALT_ALT)) {
 			hook_lib = LoadLibrary(HOOK_LIB);
 			if (hook_lib == NULL) {
-				message_get_error(GetLastError(), err_str);
-				if (*err_str != TEXT('\0')) {
-					lstrcat(err_str, TEXT("\r\n"));
-					lstrcat(err_str, HOOK_LIB);
-					MessageBox(hWnd, err_str, ERROR_TITLE, MB_ICONERROR);
-				}
+				hook_error(hWnd, GetLastError());
 				break;
 			}
 			SetHook = GetProcAddress(hook_lib, "SetHook");
 			if (SetHook == NULL) {
-				message_get_error(GetLastError(), err_str);
-				if (*err_str != TEXT('\0')) {
-					lstrcat(err_str, TEXT("\r\n"));
-					lstrcat(err_str, HOOK_LIB);
-					MessageBox(hWnd, err_str, ERROR_TITLE, MB_ICONERROR);
-				}
+				hook_error(hWnd, GetLastError());
+				unregist_hook();
 				break;
 			}
-			SetHook(hWnd, WM_KEY_HOOK);
+			if (SetHook(hWnd, WM_KEY_HOOK) == FALSE) {
+				// フックを開始できなかった
+				hook_error(hWnd, GetLastError());
+				unregist_hook();
+			}
 			break;
 		}
 	}
@@ -1542,6 +1585,7 @@ static BOOL winodw_initialize(const HWND hWnd)
 	if (option.main_show_viewer == 1) {
 		SendMessage(hWnd, WM_COMMAND, ID_MENUITEM_VIEWER, 0);
 	}
+	init_done = TRUE;
 	// コマンドライン処理
 	commnad_line_func(FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE));
 	return TRUE;
@@ -1552,9 +1596,15 @@ static BOOL winodw_initialize(const HWND hWnd)
  */
 static BOOL winodw_reset(const HWND hWnd)
 {
-	TCHAR err_str[BUF_SIZE];
+	TCHAR err_str[BUF_SIZE + MAX_PATH];
 	BOOL show_viewer = FALSE;
 	int show_flag = SW_SHOW;
+
+	// 解放されるツール情報・アイテムを参照する保留中の処理を取り消す
+	KillTimer(hWnd, ID_TOOL_TIMER);
+	KillTimer(hWnd, ID_PASTE_TIMER);
+	ZeroMemory(&tmi, sizeof(TOOL_MENU_INFO));
+	paste_di = NULL;
 
 	if (hViewerWnd != NULL) {
 		show_viewer = TRUE;
@@ -1617,6 +1667,10 @@ static BOOL winodw_reset(const HWND hWnd)
  */
 static BOOL winodw_save(const HWND hWnd)
 {
+	// 初期化が完了していない場合は読み込み前のデータで上書きしない
+	if (init_done == FALSE) {
+		return TRUE;
+	}
 	// 履歴の保存
 	if (save_history(hWnd, 0) == FALSE && session_ending == FALSE &&
 		MessageBox(hWnd, message_get_res(IDS_ERROR_END), ERROR_TITLE, MB_ICONQUESTION | MB_YESNO) == IDNO) {
@@ -1647,6 +1701,7 @@ static BOOL winodw_end(const HWND hWnd)
 
 	// クリップボード監視解除
 	KillTimer(hWnd, ID_RECHAIN_TIMER);
+	KillTimer(hWnd, ID_TRAY_TIMER);
 	if (option.main_clipboard_watch == 1) {
 		ChangeClipboardChain(hWnd, hClipNextWnd);
 		hClipNextWnd = NULL;
@@ -1788,9 +1843,11 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 				menu_sel_top = ((DRAWITEMSTRUCT *)lParam)->rcItem.bottom - ((DRAWITEMSTRUCT *)lParam)->rcItem.top + 1;
 
 				menu_wnd = WindowFromDC(((DRAWITEMSTRUCT *)lParam)->hDC);
-				ClientToScreen(menu_wnd, &menu_sel_pt);
-				GetMonitorRectFromPoint(menu_sel_pt, &monitor_rect);
-				if (menu_sel_pt.y > monitor_rect.bottom) {
+				if (menu_wnd != NULL) {
+					ClientToScreen(menu_wnd, &menu_sel_pt);
+					GetMonitorRectFromPoint(menu_sel_pt, &monitor_rect);
+				}
+				if (menu_wnd == NULL || menu_sel_pt.y > monitor_rect.bottom) {
 					menu_sel_pt.x = menu_sel_pt.y = 0;
 					menu_sel_top = 0;
 				}
@@ -1936,6 +1993,11 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		// タイマー
 		switch (wParam) {
 		case ID_HISTORY_TIMER:
+			// ポップアップメニュー表示中はメニューが参照するアイテムを保護するため延期する
+			if (popup_menu != NULL) {
+				SetTimer(hWnd, ID_HISTORY_TIMER, option.history_add_interval, NULL);
+				break;
+			}
 			// クリップボードのデータを履歴に追加
 			if (clipboard_to_history(hWnd) == TRUE && hViewerWnd != NULL) {
 				// クリップボードの変化を通知
@@ -2041,6 +2103,19 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			}
 			KillTimer(hWnd, wParam);
 			action_execute(hWnd, ACTION_TYPE_TRAY_RIGHT, 0, FALSE);
+			break;
+
+		case ID_TRAY_TIMER:
+			// タスクトレイのアイコン追加のリトライ
+			KillTimer(hWnd, wParam);
+			if (option.main_show_trayicon == 0 || icon_tray == NULL) {
+				break;
+			}
+			if (tray_message(hWnd, NIM_ADD, TRAY_ID, icon_tray, MAIN_WINDOW_TITLE) != FALSE) {
+				set_tray_tooltip(hWnd);
+			} else if (++tray_retry_cnt < TRAY_RETRY_MAX) {
+				SetTimer(hWnd, ID_TRAY_TIMER, TRAY_RETRY_INTERVAL, NULL);
+			}
 			break;
 		}
 		break;
@@ -2453,7 +2528,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 				return (LRESULT)di;
 
 			} else if (di->type == TYPE_DATA) {
-				if (lstrcmpi(di->format_name, (TCHAR *)wParam) != 0) {
+				if (lstrcmpi(di->format_name, (TCHAR *)wParam) == 0) {
 					return (LRESULT)di;
 				}
 			}
@@ -2530,12 +2605,34 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 }
 
 /*
+ * path_combine - ディレクトリとファイル名を MAX_PATH 以内で結合
+ */
+static BOOL path_combine(TCHAR *buf, const TCHAR *dir, const TCHAR *name)
+{
+	if (lstrlen(dir) + 1 + lstrlen(name) >= MAX_PATH) {
+		return FALSE;
+	}
+	if (buf == dir) {
+		// 同一バッファへの追記
+		lstrcat(buf, TEXT("\\"));
+		lstrcat(buf, name);
+		return TRUE;
+	}
+	wnsprintf(buf, MAX_PATH, TEXT("%s\\%s"), dir, name);
+	return TRUE;
+}
+
+/*
  * copy_old_file - 旧バージョンのファイルを移行
  */
-static void copy_old_file()
+static void copy_old_file(void)
 {
+	static const TCHAR *old_files[] = {USER_INI, HISTORY_FILENAME, REGIST_FILENAME};
 	TCHAR general_ini_path[MAX_PATH];
 	TCHAR tmp_path[MAX_PATH];
+	TCHAR old_path[MAX_PATH];
+	TCHAR old_file[MAX_PATH];
+	TCHAR new_file[MAX_PATH];
 	TCHAR user_name[BUF_SIZE];
 	TCHAR buf[BUF_SIZE];
 	DWORD i;
@@ -2549,13 +2646,17 @@ static void copy_old_file()
 	}
 
 	// 共通の設定を使用する場合のユーザ名の取得
-	wsprintf(general_ini_path, TEXT("%s\\%s"), app_path, GENERAL_INI);
+	if (path_combine(general_ini_path, app_path, GENERAL_INI) == FALSE) {
+		return;
+	}
 	if (PathFileExists(general_ini_path) == FALSE) {
 		if (!SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0, tmp_path))) {
 			return;
 		}
-		lstrcat(tmp_path, TEXT("\\VirtualStore\\Program Files (x86)\\CLCL"));
-		wsprintf(general_ini_path, TEXT("%s\\%s"), tmp_path, GENERAL_INI);
+		if (path_combine(tmp_path, tmp_path, TEXT("VirtualStore\\Program Files (x86)\\CLCL")) == FALSE ||
+			path_combine(general_ini_path, tmp_path, GENERAL_INI) == FALSE) {
+			return;
+		}
 		if (PathFileExists(general_ini_path) == FALSE) {
 			return;
 		}
@@ -2577,23 +2678,16 @@ static void copy_old_file()
 
 	file_name_conv(user_name, TEXT('_'));
 
-	TCHAR old_path[MAX_PATH];
-	wsprintf(old_path, TEXT("%s\\%s"), tmp_path, user_name);
-
-	TCHAR old_file[MAX_PATH];
-	TCHAR new_file[MAX_PATH];
-
-	wsprintf(old_file, TEXT("%s\\%s"), old_path, USER_INI);
-	wsprintf(new_file, TEXT("%s\\%s"), work_path, USER_INI);
-	CopyFile(old_file, new_file, TRUE);
-
-	wsprintf(old_file, TEXT("%s\\%s"), old_path, HISTORY_FILENAME);
-	wsprintf(new_file, TEXT("%s\\%s"), work_path, HISTORY_FILENAME);
-	CopyFile(old_file, new_file, TRUE);
-
-	wsprintf(old_file, TEXT("%s\\%s"), old_path, REGIST_FILENAME);
-	wsprintf(new_file, TEXT("%s\\%s"), work_path, REGIST_FILENAME);
-	CopyFile(old_file, new_file, TRUE);
+	// パスが長すぎる場合は移行しない
+	if (path_combine(old_path, tmp_path, user_name) == FALSE) {
+		return;
+	}
+	for (i = 0; i < sizeof(old_files) / sizeof(old_files[0]); i++) {
+		if (path_combine(old_file, old_path, old_files[i]) == TRUE &&
+			path_combine(new_file, work_path, old_files[i]) == TRUE) {
+			CopyFile(old_file, new_file, TRUE);
+		}
+	}
 }
 
 /*
@@ -2772,8 +2866,10 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
 #ifndef _DEBUG
 	// 2重起動チェック
+	// 管理者権限など別のトークンで起動したプロセスからもミューテックスを
+	// 開けるようにするため、DACL なし(全ユーザーにアクセス許可)で作成する
 	InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
-	SetSecurityDescriptorDacl(&sd, TRUE, 0, FALSE);	    
+	SetSecurityDescriptorDacl(&sd, TRUE, 0, FALSE);
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
 	sa.lpSecurityDescriptor = &sd;
 	sa.bInheritHandle = TRUE; 
@@ -2795,7 +2891,13 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 	// CommonControlの初期化
 	InitCommonControls();
 	// OLEの初期化
-	OleInitialize(NULL);
+	if (FAILED(OleInitialize(NULL))) {
+		MessageBox(NULL, message_get_res(IDS_ERROR_WINDOW_INIT), ERROR_TITLE, MB_ICONERROR);
+		if (hMutex != NULL) {
+			CloseHandle(hMutex);
+		}
+		return 0;
+	}
 	// 設定取得
 	get_work_path(hInstance);
 	if (ini_get_option(err_str) == FALSE) {

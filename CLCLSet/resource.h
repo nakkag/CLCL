@@ -125,7 +125,6 @@
 #define IDC_CHECK_CLIPBOARD             1083
 #define IDC_CHECK_START                 1084
 #define IDC_CHECK_END                   1085
-#define IDC_CHECK_OLD                   1086
 #define IDC_STATIC_MSG                  1087
 #define IDC_CHECK_VIEWER_OPEN           1087
 #define IDC_HOTKEY_TOOL                 1088

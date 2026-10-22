@@ -21,6 +21,7 @@
 BOOL viewer_ole_get_drag_effect(const HWND hWnd, const LPIDROPTARGET_NOTIFY pdtn);
 BOOL viewer_ole_create_drop_item(const HWND hWnd, const LPIDROPTARGET_NOTIFY pdtn, const BOOL keystate);
 BOOL viewer_ole_start_drag(const HWND hWnd, const HTREEITEM sel_item);
+void viewer_ole_drag_end(void);
 HANDLE viewer_ole_get_drag_data(const HWND hWnd, const UINT format);
 
 #endif

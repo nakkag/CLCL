@@ -143,7 +143,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		ReleaseDC(hWnd, hdc);
 
 		// select key info to window long
-		SetWindowLong(hWnd, GWL_USERDATA, (LPARAM)si);
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)si);
 		break;
 
 	case WM_CLOSE:
@@ -151,7 +151,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		break;
 
 	case WM_DESTROY:
-		if ((si = (SELECTKEY_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) != NULL) {
+		if ((si = (SELECTKEY_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) != NULL) {
 #ifdef OP_XP_STYLE
 			// XP
 			if (si->hTheme != NULL) {
@@ -171,7 +171,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 
 	case WM_SETFOCUS:
-		if ((si = (SELECTKEY_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((si = (SELECTKEY_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		// キャレットの表示
@@ -181,7 +181,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		break;
 
 	case WM_KILLFOCUS:
-		if ((si = (SELECTKEY_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((si = (SELECTKEY_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		if (si->modifiers != 0 && si->virtkey == 0) {
@@ -203,7 +203,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
 	case WM_PAINT:
 		// テキスト描画
-		if ((si = (SELECTKEY_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((si = (SELECTKEY_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		// キー名の取得
@@ -242,7 +242,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
 #ifdef OP_XP_STYLE
 	case WM_NCPAINT:
-		if ((si = (SELECTKEY_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || si->hTheme == NULL) {
+		if ((si = (SELECTKEY_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL || si->hTheme == NULL) {
 			return DefWindowProc(hWnd, msg, wParam, lParam);
 		}
 		// XP用の背景描画
@@ -274,7 +274,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		return 0;
 
 	case WM_THEMECHANGED:
-		if ((si = (SELECTKEY_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || si->hModThemes == NULL) {
+		if ((si = (SELECTKEY_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL || si->hModThemes == NULL) {
 			break;
 		}
 		// XPテーマの変更
@@ -298,12 +298,12 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN:
-		if ((si = (SELECTKEY_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((si = (SELECTKEY_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		if (wParam == VK_TAB) {
 			// フォーカスの移動
-			if (GetKeyState(VK_SHIFT) & 0x1000) {
+			if (GetKeyState(VK_SHIFT) < 0) {
 				if (si->modifiers != 0 && si->virtkey == 0) {
 					si->modifiers = 0;
 					InvalidateRect(hWnd, NULL, FALSE);
@@ -321,16 +321,16 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
 		// 制御キー
 		si->modifiers = 0;
-		if (GetKeyState(VK_CONTROL) & 0x1000) {
+		if (GetKeyState(VK_CONTROL) < 0) {
 			si->modifiers |= HOTKEYF_CONTROL;
 		}
-		if (GetKeyState(VK_SHIFT) & 0x1000) {
+		if (GetKeyState(VK_SHIFT) < 0) {
 			si->modifiers |= HOTKEYF_SHIFT;
 		}
 		if (lParam & 0x20000000) {
 			si->modifiers |= HOTKEYF_ALT;
 		}
-		if (GetKeyState(VK_LWIN) & 0x1000 || GetKeyState(VK_RWIN) & 0x1000) {
+		if (GetKeyState(VK_LWIN) < 0 || GetKeyState(VK_RWIN) < 0) {
 			si->modifiers |= HOTKEYF_WIN;
 		}
 
@@ -347,7 +347,7 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
 	case WM_KEYUP:
 	case WM_SYSKEYUP:
-		if ((si = (SELECTKEY_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((si = (SELECTKEY_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		if (si->virtkey == 0 &&
@@ -364,13 +364,13 @@ static LRESULT CALLBACK selectkey_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 		return DLGC_WANTARROWS | DLGC_WANTALLKEYS;
 
 	case HKM_GETHOTKEY:
-		if ((si = (SELECTKEY_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((si = (SELECTKEY_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		return MAKEWORD(si->virtkey, si->modifiers);
 
 	case HKM_SETHOTKEY:
-		if ((si = (SELECTKEY_INFO *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((si = (SELECTKEY_INFO *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		si->virtkey = LOBYTE(wParam);

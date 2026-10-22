@@ -60,7 +60,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_MBCS;UNICODE;OP_XP_STYLE;LC_JP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_MBCS;UNICODE;OP_XP_STYLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\Debug\CLCL.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>.\Debug\</ObjectFileName>
@@ -87,7 +87,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>.\Debug\CLCL.exe</OutputFile>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;Comctl32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Comctl32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>.\clcl.def</ModuleDefinitionFile>
     </Link>
     <Manifest>
@@ -101,7 +101,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <StringPooling>true</StringPooling>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_MBCS;OP_XP_STYLE;LC_JP;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_MBCS;OP_XP_STYLE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\Release\CLCL.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>.\Release\</ObjectFileName>
@@ -127,7 +127,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <SubSystem>Windows</SubSystem>
       <OutputFile>.\Release\CLCL.exe</OutputFile>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;Comctl32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Comctl32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>.\clcl.def</ModuleDefinitionFile>
     </Link>
     <Manifest>
