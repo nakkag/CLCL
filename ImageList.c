@@ -43,13 +43,25 @@ static int imagelist_fileicon_add(const HIMAGELIST icon_list, const TCHAR *path,
 static int imagelist_icon_add(const HINSTANCE hInstance, const HIMAGELIST icon_list, const int index)
 {
 	HICON hIcon = NULL;
+	BOOL shared_icon = FALSE;
 	int ret;
 
 	hIcon = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(index), IMAGE_ICON,
 		SICONSIZE, SICONSIZE, 0);
+	if (hIcon == NULL && index != IDI_ICON_DEFAULT) {
+		hIcon = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON_DEFAULT), IMAGE_ICON,
+			SICONSIZE, SICONSIZE, 0);
+	}
+	if (hIcon == NULL) {
+		// インデックスを維持するためシステムの既定アイコンを追加
+		hIcon = LoadIcon(NULL, IDI_APPLICATION);
+		shared_icon = TRUE;
+	}
 	// イメージリストにアイコンを追加
 	ret = ImageList_AddIcon(icon_list, hIcon);
-	DestroyIcon(hIcon);
+	if (shared_icon == FALSE) {
+		DestroyIcon(hIcon);
+	}
 	return ret;
 }
 
@@ -62,6 +74,7 @@ static int imagelist_fileicon_add(const HIMAGELIST icon_list, const TCHAR *path,
 	HICON hIcon;
 	int ret;
 
+	ZeroMemory(&shfi, sizeof(SHFILEINFO));
 	if (SHGetFileInfo(path, SHGFI_USEFILEATTRIBUTES, &shfi, sizeof(SHFILEINFO),
 		SHGFI_ICON | SHGFI_SMALLICON | flag) == 0) {
 		return -1;

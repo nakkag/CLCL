@@ -13,6 +13,7 @@
 #include <windows.h>
 #undef	_INC_OLE
 #include <commctrl.h>
+#include <limits.h>
 
 #include "General.h"
 #include "Memory.h"
@@ -44,8 +45,8 @@ extern DATA_INFO regist_data;
 extern OPTION_INFO option;
 
 /* Local Function Prototypes */
-static int statusbar_get_allsize(DATA_INFO *di);
-static void statusbar_get_size_text(const int size, TCHAR *ret);
+static ULONGLONG statusbar_get_allsize(DATA_INFO *di);
+static void statusbar_get_size_text(const ULONGLONG size, TCHAR *ret);
 
 /*
  * statusbar_create - StatusBarの作成
@@ -82,10 +83,10 @@ void statusbar_reset_parts(const HWND hStatusBar)
 /*
  * statusbar_get_allsize - データサイズの合計
  */
-static int statusbar_get_allsize(DATA_INFO *di)
+static ULONGLONG statusbar_get_allsize(DATA_INFO *di)
 {
 	DATA_INFO *cdi = di;
-	int cnt = 0;
+	ULONGLONG cnt = 0;
 
 	for (; cdi != NULL; cdi = cdi->next) {
 		switch (cdi->type) {
@@ -107,12 +108,16 @@ static int statusbar_get_allsize(DATA_INFO *di)
 /*
  * statusbar_set_text - サイズ文字列の取得
  */
-static void statusbar_get_size_text(const int size, TCHAR *ret)
+static void statusbar_get_size_text(const ULONGLONG size, TCHAR *ret)
 {
+	ULONGLONG kb;
+
 	if (size < 1024) {
-		wsprintf(ret, message_get_res(IDS_STATUSBAR_BYTES), size);
+		wsprintf(ret, message_get_res(IDS_STATUSBAR_BYTES), (int)size);
 	} else {
-		wsprintf(ret, message_get_res(IDS_STATUSBAR_KB), size / 1024);
+		// 書式は %d のため int の範囲に収める
+		kb = size / 1024;
+		wsprintf(ret, message_get_res(IDS_STATUSBAR_KB), (kb > INT_MAX) ? INT_MAX : (int)kb);
 	}
 }
 
@@ -128,6 +133,7 @@ BOOL statusbar_set_text(const HWND hWnd, const HWND hStatusBar)
 	DATA_INFO *cdi;
 	TCHAR buf[BUF_SIZE];
 	TCHAR *str_hkey;
+	ULONGLONG size;
 	int cnt;
 
 	// 初期化
@@ -145,11 +151,11 @@ BOOL statusbar_set_text(const HWND hWnd, const HWND hStatusBar)
 		SendMessage(hStatusBar, SB_SETTEXT, (WPARAM)0 | 0, (LPARAM)buf);
 
 		if (hItem == history_treeitem) {
-			cnt = statusbar_get_allsize(history_data.child);
+			size = statusbar_get_allsize(history_data.child);
 		} else {
-			cnt = statusbar_get_allsize(regist_data.child);
+			size = statusbar_get_allsize(regist_data.child);
 		}
-		statusbar_get_size_text(cnt, buf);
+		statusbar_get_size_text(size, buf);
 		SendMessage(hStatusBar, SB_SETTEXT, (WPARAM)1 | 0, (LPARAM)buf);
 		return TRUE;
 	}
@@ -165,8 +171,8 @@ BOOL statusbar_set_text(const HWND hWnd, const HWND hStatusBar)
 		wsprintf(buf, message_get_res(IDS_STATUSBAR_ITEM_CNT), cnt);
 		SendMessage(hStatusBar, SB_SETTEXT, (WPARAM)0 | 0, (LPARAM)buf);
 
-		cnt = statusbar_get_allsize(di->child);
-		statusbar_get_size_text(cnt, buf);
+		size = statusbar_get_allsize(di->child);
+		statusbar_get_size_text(size, buf);
 		SendMessage(hStatusBar, SB_SETTEXT, (WPARAM)1 | 0, (LPARAM)buf);
 		break;
 
@@ -177,11 +183,11 @@ BOOL statusbar_set_text(const HWND hWnd, const HWND hStatusBar)
 		SendMessage(hStatusBar, SB_SETTEXT, (WPARAM)0 | 0, (LPARAM)buf);
 
 		// 合計サイズ
-		cnt = 0;
+		size = 0;
 		for (cdi = di->child; cdi != NULL; cdi = cdi->next) {
-			cnt += cdi->size;
+			size += cdi->size;
 		}
-		statusbar_get_size_text(cnt, buf);
+		statusbar_get_size_text(size, buf);
 		SendMessage(hStatusBar, SB_SETTEXT, (WPARAM)1 | 0, (LPARAM)buf);
 
 		if (di->window_name != NULL) {
@@ -213,9 +219,19 @@ LRESULT statusbar_notify_proc(const HWND hStatusBar, LPARAM lParam)
 	NMHDR *nmhdr = (NMHDR *)lParam;
 	TOOLTIPTEXT *tt = (TOOLTIPTEXT *)lParam;
 	static TCHAR tooltip_string[BUF_SIZE];
+	TCHAR *tmp;
+	int len;
 
 	*tooltip_string = TEXT('\0');
-	SendMessage(hStatusBar, SB_GETTEXT, (WPARAM)nmhdr->idFrom, (LPARAM)tooltip_string);
+	len = LOWORD(SendMessage(hStatusBar, SB_GETTEXTLENGTH, (WPARAM)nmhdr->idFrom, 0));
+	if (len < BUF_SIZE) {
+		SendMessage(hStatusBar, SB_GETTEXT, (WPARAM)nmhdr->idFrom, (LPARAM)tooltip_string);
+	} else if ((tmp = mem_alloc(sizeof(TCHAR) * (len + 1))) != NULL) {
+		// 収まらない場合は先頭の BUF_SIZE - 1 文字だけ使う
+		SendMessage(hStatusBar, SB_GETTEXT, (WPARAM)nmhdr->idFrom, (LPARAM)tmp);
+		lstrcpyn(tooltip_string, tmp, BUF_SIZE);
+		mem_free(&tmp);
+	}
 
 	tt->hinst = NULL;
 	tt->lpszText = tooltip_string;
