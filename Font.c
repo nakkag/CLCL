@@ -48,10 +48,10 @@ HFONT font_create(const TCHAR *FontName, const int FontSize, const int Charset, 
 	if (*FontName == TEXT('\0')) {
 		NONCLIENTMETRICS ncm;
 		if (GetNonClientMetricsDpi(&ncm) != FALSE) {
-			lstrcpy(lf.lfFaceName, ncm.lfCaptionFont.lfFaceName);
+			lstrcpyn(lf.lfFaceName, ncm.lfCaptionFont.lfFaceName, LF_FACESIZE);
 		}
 	} else {
-		lstrcpy(lf.lfFaceName, FontName);
+		lstrcpyn(lf.lfFaceName, FontName, LF_FACESIZE);
 	}
 	return CreateFontIndirect((CONST LOGFONT *)&lf);
 }

@@ -40,7 +40,7 @@ DATA_INFO *regist_path_to_item(DATA_INFO *di, TCHAR *path)
 	TCHAR buf[BUF_SIZE];
 	TCHAR *p, *r;
 
-	if (path == NULL || path == TEXT('\0')) {
+	if (path == NULL || *path == TEXT('\0')) {
 		return di;
 	}
 	if (di == NULL) {
@@ -55,19 +55,27 @@ DATA_INFO *regist_path_to_item(DATA_INFO *di, TCHAR *path)
 		return di;
 	}
 
-	// パスを展開
-	for (r = buf; *p != TEXT('\0'); p++, r++) {
+	// パスを展開 (バッファに収まらない分は切り捨てる)
+	for (r = buf; *p != TEXT('\0'); p++) {
 #ifndef UNICODE
 		if (IsDBCSLeadByte((BYTE)*p) == TRUE) {
-			*(r++) = *(p++);
-			*r = *p;
+			if (*(p + 1) == TEXT('\0')) {
+				break;
+			}
+			if (r - buf < BUF_SIZE - 2) {
+				*(r++) = *p;
+				*(r++) = *(p + 1);
+			}
+			p++;
 			continue;
 		}
 #endif
 		if (*p == TEXT('\\') || *p == TEXT('/')) {
 			break;
 		}
-		*r = *p;
+		if (r - buf < BUF_SIZE - 1) {
+			*(r++) = *p;
+		}
 	}
 	*r = TEXT('\0');
 
@@ -167,6 +175,9 @@ DATA_INFO *regist_merge_item(DATA_INFO **root, const DATA_INFO *from_di, const B
 		}
 		di = wk_di;
 		break;
+
+	default:
+		return NULL;
 	}
 	return di;
 }
