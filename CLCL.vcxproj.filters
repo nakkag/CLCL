@@ -150,6 +150,12 @@
     <ClCompile Include="gdip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dynamic_popup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="quicksearch.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CLCL.rc">
@@ -284,6 +290,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gdip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dynamic_popup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="quicksearch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

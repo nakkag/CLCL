@@ -31,6 +31,7 @@
 #define MENU_CONTENT_APP				10
 #define MENU_CONTENT_CANCEL				11
 #define MENU_CONTENT_EXIT				12
+#define MENU_CONTENT_QUICKSEARCH		13
 
 /* Struct */
 // menu item
