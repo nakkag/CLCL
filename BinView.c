@@ -67,6 +67,7 @@
 
 #define UNDO_TYPE_INPUT					1
 #define UNDO_TYPE_DELETE				2
+#define UNDO_TYPE_OVERWRITE				3
 
 // サロゲート
 #ifndef IS_HIGH_SURROGATE
@@ -81,7 +82,10 @@ typedef struct _UNDO {
 	int type;
 
 	int st;
+	// 入力/削除した値 (上書きの場合は上書き前の値)
 	BYTE data;
+	// 上書き後の値
+	BYTE new_data;
 } UNDO;
 
 typedef struct _BUFFER {
@@ -480,6 +484,16 @@ static BOOL binview_undo_exec(const HWND hWnd, BUFFER *bf)
 		binview_refresh_line(hWnd, bf, bf->sp, bf->sp);
 		binview_ensure_visible(hWnd, bf);
 		break;
+
+	case UNDO_TYPE_OVERWRITE:
+		// 上書き前の値に戻す
+		if (bf->data != NULL && (DWORD)(bf->undo + i)->st < bf->data_len) {
+			*bf->sp = (bf->undo + i)->data;
+			bf->modified = TRUE;
+		}
+		binview_refresh_line(hWnd, bf, bf->sp, bf->sp);
+		binview_ensure_visible(hWnd, bf);
+		break;
 	}
 	bf->undo_len--;
 	return TRUE;
@@ -512,6 +526,16 @@ static BOOL binview_redo_exec(const HWND hWnd, BUFFER *bf)
 	case UNDO_TYPE_DELETE:
 		// 文字削除
 		binview_delete(hWnd, bf);
+		break;
+
+	case UNDO_TYPE_OVERWRITE:
+		// 上書き後の値に戻す
+		if (bf->data != NULL && (DWORD)(bf->undo + i)->st < bf->data_len) {
+			*bf->sp = (bf->undo + i)->new_data;
+			bf->modified = TRUE;
+		}
+		binview_refresh_line(hWnd, bf, bf->sp, bf->sp);
+		binview_ensure_visible(hWnd, bf);
 		break;
 	}
 	bf->undo_len++;
@@ -584,7 +608,10 @@ static BOOL binview_input(const HWND hWnd, BUFFER *bf, const TCHAR c)
 			return FALSE;
 		}
 	} else if (bf->input_cnt == 0) {
-		binview_set_undo(bf, UNDO_TYPE_DELETE);
+		// 上書き (上書き前の値を保持)
+		if (binview_set_undo(bf, UNDO_TYPE_OVERWRITE) == FALSE) {
+			return FALSE;
+		}
 	}
 
 	// 文字設定
@@ -636,8 +663,16 @@ static void binview_delete(const HWND hWnd, BUFFER *bf)
  */
 static void binview_flush(BUFFER *bf)
 {
+	UNDO *ud;
+
 	if (bf->input_cnt != 0) {
-		binview_set_undo(bf, UNDO_TYPE_INPUT);
+		ud = (bf->undo != NULL && bf->undo_len > 0) ? bf->undo + bf->undo_len - 1 : NULL;
+		if (ud != NULL && ud->type == UNDO_TYPE_OVERWRITE && ud->st == bf->sp - bf->data) {
+			// 上書きは入力開始時の UNDO に上書き後の値を設定
+			ud->new_data = *bf->sp;
+		} else {
+			binview_set_undo(bf, UNDO_TYPE_INPUT);
+		}
 	}
 	bf->input_cnt = 0;
 }
@@ -914,7 +949,8 @@ static void binview_draw_line(const HWND hWnd, const HDC mdc, BUFFER *bf, const 
 				if (j == 0) {
 					*(r++) = ' ';
 				}
-			} else if (IsDBCSLeadByte((BYTE)*p) == TRUE && *(p + 1) != TEXT('\0')) {
+			} else if (IsDBCSLeadByte((BYTE)*p) == TRUE &&
+				(DWORD)(p + 1 - (BYTE *)bf->data) < (DWORD)bf->data_len && *(p + 1) != TEXT('\0')) {
 				*(r++) = *p;
 				*(r++) = *(p + 1);
 				bf->dbcs = TRUE;
@@ -1075,13 +1111,13 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 //		SetBkMode(bf->mdc, TRANSPARENT);
 
 		// buffer info to window long
-		SetWindowLong(hWnd, GWL_USERDATA, (LPARAM)bf);
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)bf);
 		ImmAssociateContext(hWnd, (HIMC)NULL);
 		break;
 
 	case WM_DPICHANGED_AFTERPARENT:
 		// フォントと文字サイズの作り直し
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL ||
 			SetDpiFromWindow(hWnd) == bf->font_dpi) {
 			break;
 		}
@@ -1097,8 +1133,8 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 	case WM_DESTROY:
 		// ウィンドウの破棄
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) != NULL) {
-			SetWindowLong(hWnd, GWL_USERDATA, (LPARAM)0);
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) != NULL) {
+			SetWindowLongPtr(hWnd, GWLP_USERDATA, 0);
 #ifdef OP_XP_STYLE
 			// XP
 			theme_close(bf->hTheme);
@@ -1120,7 +1156,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 	case WM_SIZE:
 		// サイズ変更
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 
@@ -1138,7 +1174,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		break;
 
 	case WM_SETFOCUS:
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		// 選択文字のある行を再描画
@@ -1146,7 +1182,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		break;
 
 	case WM_KILLFOCUS:
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		// 選択文字のある行を再描画
@@ -1157,7 +1193,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		return DLGC_WANTALLKEYS;
 
 	case WM_HSCROLL:
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		GetClientRect(hWnd, &rect);
@@ -1207,7 +1243,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		break;
 
 	case WM_VSCROLL:
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		GetClientRect(hWnd, &rect);
@@ -1264,7 +1300,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 	case WM_LBUTTONDOWN:
 		SetFocus(hWnd);
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		binview_flush(bf);
@@ -1288,7 +1324,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		break;
 
 	case WM_KEYDOWN:
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		GetClientRect(hWnd, &rect);
@@ -1450,7 +1486,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 	case WM_CHAR:
 		// 入力
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL ||
 			bf->lock == TRUE || option.bin_lock != 0) {
 			break;
 		}
@@ -1458,7 +1494,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		break;
 
 	case WM_PAINT:
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) != NULL) {
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) != NULL) {
 			PAINTSTRUCT ps;
 
 			hdc = BeginPaint(hWnd, &ps);
@@ -1466,6 +1502,9 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			SetRect(&rect, ps.rcPaint.left, 0, ps.rcPaint.right, bf->font_height);
 
 			i = bf->pos_y + (ps.rcPaint.top / bf->font_height) - 1;
+			if (i < 0) {
+				i = 0;
+			}
 			bf->dbcs = FALSE;
 			for (; i < bf->pos_y + (ps.rcPaint.bottom / bf->font_height) + 1; i++) {
 				// 背景塗りつぶし
@@ -1487,14 +1526,14 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 #ifdef OP_XP_STYLE
 	case WM_NCPAINT:
 		// XP用の背景描画
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL ||
 			theme_draw(hWnd, (HRGN)wParam, bf->hTheme) == FALSE) {
 			return DefWindowProc(hWnd, msg, wParam, lParam);
 		}
 		break;
 
 	case WM_THEMECHANGED:
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		// XPテーマの変更
@@ -1506,7 +1545,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 	case WM_UNDO:
 	case EM_UNDO:
 		// 元に戻す
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL ||
 			bf->lock == TRUE || option.bin_lock != 0) {
 			break;
 		}
@@ -1515,7 +1554,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 	case EM_REDO:
 		// やり直し
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL ||
 			bf->lock == TRUE || option.bin_lock != 0) {
 			break;
 		}
@@ -1523,14 +1562,14 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		break;
 
 	case EM_CANUNDO:
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL ||
 			bf->lock == TRUE || option.bin_lock != 0) {
 			return FALSE;
 		}
 		return ((bf->undo_len > 0) ? TRUE : FALSE);
 
 	case EM_CANREDO:
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL ||
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL ||
 			bf->lock == TRUE || option.bin_lock != 0) {
 			return FALSE;
 		}
@@ -1538,7 +1577,7 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 	case WM_SET_BINDATA:
 		// データ設定
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		// 初期化
@@ -1580,27 +1619,35 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 	case WM_SAVE_BINDATA:
 		// データ保存
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL || bf->modified == FALSE) {
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL || bf->modified == FALSE) {
 			return FALSE;
 		}
 		if ((DATA_INFO *)lParam != NULL) {
-			// 解放
-			if (((DATA_INFO *)lParam)->data != NULL && format_free_data(((DATA_INFO *)lParam)->format_name, ((DATA_INFO *)lParam)->data) == FALSE) {
-				clipboard_free_data(((DATA_INFO *)lParam)->format_name, ((DATA_INFO *)lParam)->data);
-			}
+			DATA_INFO *di = (DATA_INFO *)lParam;
+			HANDLE new_data;
+			DWORD new_size = bf->data_len;
+
 			// バイト列をデータに変換
-			if ((((DATA_INFO *)lParam)->data = format_bytes_to_data(((DATA_INFO *)lParam)->format_name, bf->data, &bf->data_len)) == NULL) {
-				((DATA_INFO *)lParam)->data = clipboard_bytes_to_data(((DATA_INFO *)lParam)->format_name, bf->data, &bf->data_len);
+			if ((new_data = format_bytes_to_data(di->format_name, bf->data, &new_size)) == NULL) {
+				new_size = bf->data_len;
+				new_data = clipboard_bytes_to_data(di->format_name, bf->data, &new_size);
 			}
-			if (((DATA_INFO *)lParam)->data != NULL) {
-				((DATA_INFO *)lParam)->size = bf->data_len;
+			if (new_data == NULL) {
+				// 変換できない場合は元のデータを維持
+				return FALSE;
 			}
+			// 旧データの解放
+			if (di->data != NULL && format_free_data(di->format_name, di->data) == FALSE) {
+				clipboard_free_data(di->format_name, di->data);
+			}
+			di->data = new_data;
+			di->size = new_size;
 		}
 		return TRUE;
 
 	case WM_SET_SCROLLBAR:
 		// スクロールバー設定
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) == NULL) {
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) == NULL) {
 			break;
 		}
 		binview_set_scrollbar(hWnd, bf);
@@ -1608,15 +1655,15 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 	case WM_SHOW_MENU:
 		// メニュー表示
-		if ((bf = (BUFFER *)GetWindowLong(hWnd, GWL_USERDATA)) != NULL) {
+		if ((bf = (BUFFER *)GetWindowLongPtr(hWnd, GWLP_USERDATA)) != NULL) {
 			HMENU hMenu;
 			POINT apos;
 
 			// メニューの作成
 			hMenu = CreatePopupMenu();
-			AppendMenu(hMenu, MF_STRING | (SendMessage(hWnd, EM_CANUNDO, 0, 0) == TRUE) ? 0 : MF_GRAYED,
+			AppendMenu(hMenu, MF_STRING | ((SendMessage(hWnd, EM_CANUNDO, 0, 0) != 0) ? 0 : MF_GRAYED),
 				EM_UNDO, message_get_res(IDS_BIN_MENU_UNDO));
-			AppendMenu(hMenu, MF_STRING | (SendMessage(hWnd, EM_CANREDO, 0, 0) == TRUE) ? 0 : MF_GRAYED,
+			AppendMenu(hMenu, MF_STRING | ((SendMessage(hWnd, EM_CANREDO, 0, 0) != 0) ? 0 : MF_GRAYED),
 				EM_REDO, message_get_res(IDS_BIN_MENU_REDO));
 			AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
 			AppendMenu(hMenu, MF_STRING |
