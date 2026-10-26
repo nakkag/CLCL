@@ -62,5 +62,6 @@
 #define IDS_ERR_PATH_LONG				2037
 #define IDS_ERR_PATH_UNSAFE				2038
 #define IDS_CONFIRM_PATH_NETWORK		2039
+#define IDS_ERR_UNINSTALL_START			2040
 
 /* End of source */
