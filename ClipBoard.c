@@ -238,6 +238,8 @@ static BOOL clipboard_set_data(const UINT format, const TCHAR *name, const HANDL
 /*
  * clipboard_set_datainfo - クリップボードにデータを設定
  */
+static DWORD set_sequence;
+
 BOOL clipboard_set_datainfo(const HWND hWnd, DATA_INFO *set_di, TCHAR *err_str)
 {
 	DATA_INFO *di;
@@ -277,7 +279,17 @@ BOOL clipboard_set_datainfo(const HWND hWnd, DATA_INFO *set_di, TCHAR *err_str)
 		break;
 	}
 	CloseClipboard();
+	// 自分で設定した内容の更新通知を見分けるための番号
+	set_sequence = GetClipboardSequenceNumber();
 	return TRUE;
+}
+
+/*
+ * clipboard_get_set_sequence - 最後に設定した内容のシーケンス番号を取得
+ */
+DWORD clipboard_get_set_sequence(void)
+{
+	return set_sequence;
 }
 
 /*
@@ -333,6 +345,10 @@ HANDLE clipboard_copy_data(const UINT format, const HANDLE data, DWORD *ret_size
 
 	case CF_DSPMETAFILEPICT:
 	case CF_METAFILEPICT:
+		// 構造体に満たないデータは読まない
+		if (GlobalSize(data) < sizeof(METAFILEPICT)) {
+			return NULL;
+		}
 		// コピー元ロック
 		if ((from_mem = GlobalLock(data)) == NULL) {
 			return NULL;

@@ -34,6 +34,8 @@
 #define IDR_MENU_POPUP                  103
 #define IDS_ERROR_FILENAME              103
 #define IDS_ERROR_FOLDERNAME            104
+#define IDS_ERROR_PLUGIN_BLOCKED        190
+#define IDS_ERROR_RUN_AS_USER           191
 #define IDR_MENU_VIEWER                 107
 #define IDC_CURSOR_SEP                  113
 #define IDR_ACCELERATOR                 115

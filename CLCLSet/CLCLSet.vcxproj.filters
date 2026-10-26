@@ -99,6 +99,9 @@
     <ClCompile Include="..\Profile.c">
       <Filter>Source Files\CLCL Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Security.c">
+      <Filter>Source Files\CLCL Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\String.c">
       <Filter>Source Files\CLCL Source Files</Filter>
     </ClCompile>
@@ -188,6 +191,9 @@
       <Filter>Header Files\CLCL Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\SendKey.h">
+      <Filter>Header Files\CLCL Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Security.h">
       <Filter>Header Files\CLCL Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\String.h">

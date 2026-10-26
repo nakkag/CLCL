@@ -21,6 +21,7 @@
 UINT clipboard_get_format(const UINT format, TCHAR *type_name);
 DATA_INFO *clipboard_get_datainfo(const BOOL use_filter, const BOOL get_data, TCHAR *err_str);
 BOOL clipboard_set_datainfo(const HWND hWnd, DATA_INFO *set_di, TCHAR *err_str);
+DWORD clipboard_get_set_sequence(void);
 DATA_INFO *clipboard_to_item(TCHAR *err_str);
 HANDLE clipboard_copy_data(const UINT format, const HANDLE data, DWORD *ret_size);
 BYTE *clipboard_data_to_bytes(const DATA_INFO *di, DWORD *ret_size);

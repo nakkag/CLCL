@@ -16,6 +16,7 @@
 #include "Viewer.h"
 #include "Container.h"
 #include "dpi.h"
+#include "Security.h"
 #include "DarkMode.h"
 
 /* Define */
@@ -32,6 +33,11 @@ static LRESULT CALLBACK container_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 {
 	RECT window_rect;
 	HWND cWnd;
+
+	// ポインタを受け渡すメッセージは同じスレッドからのみ受け付ける
+	if (security_is_foreign_message(msg) == TRUE) {
+		return 0;
+	}
 
 	switch (msg) {
 	case WM_CREATE:

@@ -51,6 +51,7 @@
 #include "DarkMode.h"
 #include "ViewerOLEDnD.h"
 #include "ViewerDnD.h"
+#include "Security.h"
 
 #include "resource.h"
 
@@ -136,6 +137,9 @@ static void viewer_reset_dpi(const HWND hWnd);
 static void menu_detach_submenu(const HMENU hMenu, const HMENU hSubMenu);
 static BOOL viewer_close(const HWND hWnd);
 static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+// ポップアップメニューの操作対象のツリー項目
+static HTREEITEM menu_target_item;
 
 /*
  * set_cursor - カーソルを設定
@@ -432,7 +436,10 @@ static void viewer_show_menu(const HWND hWnd)
 	if (ret <= 0 || ret == IDCANCEL) {
 		return;
 	}
+	// WM_COMMAND の lParam で渡す項目はここで設定したものだけを受け付ける
+	menu_target_item = sel_item;
 	SendMessage(hWnd, WM_COMMAND, ret, (LPARAM)sel_item);
+	menu_target_item = NULL;
 }
 
 /*
@@ -2663,6 +2670,11 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 	static int DnD_keystate;
 	int ret;
 
+	// ポインタを受け渡すメッセージは同じスレッドからのみ受け付ける
+	if (security_is_foreign_message(msg) == TRUE) {
+		return 0;
+	}
+
 	switch (msg) {
 	case WM_CREATE:
 		// ウィンドウ作成
@@ -2895,6 +2907,10 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 		break;
 
 	case WM_COMMAND:
+		// lParam のツリー項目はメニュー表示から渡したものだけを使う
+		if (lParam != 0 && (HTREEITEM)lParam != menu_target_item) {
+			lParam = 0;
+		}
 		switch (LOWORD(wParam)) {
 		case ID_ACCEL_CTRL_TAB:
 			// フォーカスの移動

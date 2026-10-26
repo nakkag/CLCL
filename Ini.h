@@ -76,7 +76,6 @@ typedef struct _ACTION_INFO {
 typedef struct _OPTION_INFO {
 	// main
 	int main_clipboard_watch;			// クリップボード監視
-	int main_clipboard_rechain_minute;	// クリップボード再監視時間
 	int main_show_trayicon;				// タスクトレイにアイコンを表示
 	int main_show_viewer;				// 起動時にビューアを表示
 	TCHAR main_language[LOCALE_NAME_MAX_LENGTH+1];  // 言語設定 / Language settings

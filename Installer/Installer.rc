@@ -139,6 +139,9 @@ BEGIN
     IDS_ERR_PATH_INVALID    "インストール先のフォルダは、ドライブ名 (C:\\...) または \\\\サーバ名\\共有名 から始まる絶対パスで指定してください。\n「..」を含むパスは使用できません。"
     IDS_ERR_PATH_ROOT       "ドライブや共有の直下にはインストールできません。\nサブフォルダを指定してください。"
     IDS_ERR_PATH_LONG       "インストール先のフォルダのパスが長すぎます。"
+    IDS_ERR_PATH_UNSAFE     "インストール先のフォルダは一般ユーザーが変更できるため、インストールできません。\n%s\n別のフォルダを指定してください。"
+    IDS_CONFIRM_PATH_NETWORK "ネットワーク上のフォルダは、一般ユーザーが変更できないかを確認できません。\n変更できる場合、CLCL を差し替えられるおそれがあります。\nインストールを続けますか？"
+    IDS_ERR_UNINSTALL_START "アンインストーラの準備に失敗しました。\n一時フォルダにファイルを作成できないか、起動できません。"
 END
 
 /////////////////////////////////////////////////////////////////////////////
@@ -184,6 +187,9 @@ BEGIN
     IDS_ERR_PATH_INVALID    "Enter the destination folder as an absolute path starting with a drive letter (C:\\...) or \\\\server\\share.\nThe path cannot contain .. elements."
     IDS_ERR_PATH_ROOT       "CLCL cannot be installed directly in the root of a drive or share.\nSpecify a subfolder."
     IDS_ERR_PATH_LONG       "The path of the destination folder is too long."
+    IDS_ERR_PATH_UNSAFE     "The destination folder cannot be used because standard users can modify it.\n%s\nSpecify a different folder."
+    IDS_CONFIRM_PATH_NETWORK "For a folder on the network, it cannot be verified that standard users are unable to modify it.\nIf they can, CLCL could be replaced.\nDo you want to continue the installation?"
+    IDS_ERR_UNINSTALL_START "Failed to prepare the uninstaller.\nThe file could not be created in the temporary folder or could not be started."
 END
 
 /////////////////////////////////////////////////////////////////////////////
@@ -229,6 +235,9 @@ BEGIN
     IDS_ERR_PATH_INVALID    "Geben Sie den Zielordner als absoluten Pfad an, der mit einem Laufwerksbuchstaben (C:\\...) oder \\\\Server\\Freigabe beginnt.\nDer Pfad darf keine ..-Elemente enthalten."
     IDS_ERR_PATH_ROOT       "CLCL kann nicht direkt im Stammverzeichnis eines Laufwerks oder einer Freigabe installiert werden.\nGeben Sie einen Unterordner an."
     IDS_ERR_PATH_LONG       "Der Pfad des Zielordners ist zu lang."
+    IDS_ERR_PATH_UNSAFE     "Der Zielordner kann nicht verwendet werden, da Standardbenutzer ihn ändern können.\n%s\nGeben Sie einen anderen Ordner an."
+    IDS_CONFIRM_PATH_NETWORK "Bei einem Ordner im Netzwerk kann nicht überprüft werden, ob Standardbenutzer ihn nicht ändern können.\nFalls doch, könnte CLCL ersetzt werden.\nMöchten Sie die Installation fortsetzen?"
+    IDS_ERR_UNINSTALL_START "Der Deinstaller konnte nicht vorbereitet werden.\nDie Datei konnte im temporären Ordner nicht erstellt oder nicht gestartet werden."
 END
 
 /////////////////////////////////////////////////////////////////////////////
@@ -274,6 +283,9 @@ BEGIN
     IDS_ERR_PATH_INVALID    "安装文件夹必须是以盘符 (C:\\...) 或 \\\\服务器\\共享名 开头的绝对路径。\n路径中不能包含 .. 。"
     IDS_ERR_PATH_ROOT       "不能直接安装到驱动器或共享的根目录。\n请指定子文件夹。"
     IDS_ERR_PATH_LONG       "安装文件夹的路径过长。"
+    IDS_ERR_PATH_UNSAFE     "普通用户可以修改目标文件夹，因此无法安装到此处。\n%s\n请指定其他文件夹。"
+    IDS_CONFIRM_PATH_NETWORK "无法确认普通用户不能修改网络上的文件夹。\n如果可以修改，CLCL 可能会被替换。\n是否继续安装？"
+    IDS_ERR_UNINSTALL_START "无法准备卸载程序。\n无法在临时文件夹中创建文件，或无法启动。"
 END
 
 /////////////////////////////////////////////////////////////////////////////
@@ -319,4 +331,7 @@ BEGIN
     IDS_ERR_PATH_INVALID    "Вкажіть папку призначення як абсолютний шлях, що починається з літери диска (C:\\...) або \\\\сервер\\ресурс.\nШлях не може містити елементи .."
     IDS_ERR_PATH_ROOT       "CLCL не можна встановити безпосередньо в корінь диска або спільного ресурсу.\nВкажіть підпапку."
     IDS_ERR_PATH_LONG       "Шлях до папки призначення задовгий."
+    IDS_ERR_PATH_UNSAFE     "Неможливо використати папку призначення, оскільки звичайні користувачі можуть її змінювати.\n%s\nВкажіть іншу папку."
+    IDS_CONFIRM_PATH_NETWORK "Для папки в мережі неможливо перевірити, що звичайні користувачі не можуть її змінювати.\nЯкщо можуть, CLCL може бути підмінено.\nПродовжити встановлення?"
+    IDS_ERR_UNINSTALL_START "Не вдалося підготувати програму видалення.\nНе вдалося створити файл у тимчасовій папці або запустити його."
 END
