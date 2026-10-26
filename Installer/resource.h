@@ -60,5 +60,7 @@
 #define IDS_ERR_PATH_INVALID			2035
 #define IDS_ERR_PATH_ROOT				2036
 #define IDS_ERR_PATH_LONG				2037
+#define IDS_ERR_PATH_UNSAFE				2038
+#define IDS_CONFIRM_PATH_NETWORK		2039
 
 /* End of source */
