@@ -35,7 +35,6 @@
 
 #define MAIN_EXE						TEXT("CLCL.exe")
 #define OPTION_EXE						TEXT("CLCLSet.exe")
-#define HOOK_LIB						TEXT("CLCLHook.dll")
 
 #define HKEY_ID							0x0300			// ホットキーID
 

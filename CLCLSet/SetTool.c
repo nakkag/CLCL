@@ -25,6 +25,7 @@
 #include "..\Message.h"
 #include "..\dpi.h"
 #include "..\DarkMode.h"
+#include "..\Security.h"
 
 #include "CLCLSet.h"
 #include "SelectKey.h"
@@ -102,11 +103,7 @@ static BOOL dll_to_list(const HWND hDlg, const TCHAR *lib_path, int *old)
 		SendDlgItemMessage(hDlg, IDC_LIST_HEADER, LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0));
 
 	// DLLロード
-	if ((lib = LoadLibrary(lib_path)) == NULL) {
-		message_get_error(GetLastError(), err_str);
-		if (*err_str != TEXT('\0')) {
-			MessageBox(hDlg, err_str, lib_path, MB_ICONERROR);
-		}
+	if ((lib = security_load_plugin_ui(hDlg, lib_path)) == NULL) {
 		return FALSE;
 	}
 	// 関数アドレス取得
@@ -582,22 +579,19 @@ static BOOL show_property(const HWND hDlg, TOOL_INFO *ti)
 	HANDLE lib;
 	FARPROC func_property;
 	TOOL_EXEC_INFO *tei;
-	TCHAR err_str[BUF_SIZE];
 	TCHAR buf[BUF_SIZE];
 	char cbuf[BUF_SIZE];
 	BOOL ret = FALSE;
 
 	// DLLロード
-	if ((lib = LoadLibrary(ti->lib_file_path)) == NULL) {
-		message_get_error(GetLastError(), err_str);
-		if (*err_str != TEXT('\0')) {
-			MessageBox(hDlg, err_str, ti->lib_file_path, MB_ICONERROR);
-		}
+	if ((lib = security_load_plugin_ui(hDlg, ti->lib_file_path)) == NULL) {
 		return FALSE;
 	}
 	// 関数アドレス取得
 	wnsprintf(buf, BUF_SIZE, TEXT("%s_property"), ti->func_name);
-	tchar_to_char(buf, cbuf, BUF_SIZE - 1);
+	if (tchar_to_char(buf, cbuf, BUF_SIZE - 1) == 0) {
+		*cbuf = '\0';
+	}
 	func_property = GetProcAddress(lib, cbuf);
 	if (func_property != NULL) {
 		// 実行情報の設定

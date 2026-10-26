@@ -26,6 +26,7 @@
 #include "..\Message.h"
 #include "..\dpi.h"
 #include "..\DarkMode.h"
+#include "..\Security.h"
 
 #include "CLCLSet.h"
 
@@ -165,11 +166,7 @@ static INT_PTR CALLBACK select_headers_proc(HWND hDlg, UINT uMsg, WPARAM wParam,
 		SetWindowText(GetDlgItem(hDlg, IDC_STATIC_MSG), message_get_res(IDS_FORMAT_SELECT_MSG));
 
 		// DLLロード
-		if ((lib = LoadLibrary((TCHAR *)lParam)) == NULL) {
-			message_get_error(GetLastError(), err_str);
-			if (*err_str != TEXT('\0')) {
-				MessageBox(hDlg, err_str, (TCHAR *)lParam, MB_ICONERROR);
-			}
+		if ((lib = security_load_plugin_ui(hDlg, (TCHAR *)lParam)) == NULL) {
 			EndDialog(hDlg, FALSE);
 			break;
 		}
@@ -296,11 +293,7 @@ static INT_PTR CALLBACK select_header_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 			func_get_format_header = get_format_header;
 		} else {
 			// DLLロード
-			if ((lib = LoadLibrary((TCHAR *)lParam)) == NULL) {
-				message_get_error(GetLastError(), err_str);
-				if (*err_str != TEXT('\0')) {
-					MessageBox(hDlg, err_str, (TCHAR *)lParam, MB_ICONERROR);
-				}
+			if ((lib = security_load_plugin_ui(hDlg, (TCHAR *)lParam)) == NULL) {
 				EndDialog(hDlg, FALSE);
 				break;
 			}
@@ -610,7 +603,6 @@ static BOOL show_property(const HWND hDlg, const FORMAT_INFO *fi)
 {
 	HANDLE lib;
 	FARPROC func_show_property;
-	TCHAR err_str[BUF_SIZE];
 	TCHAR buf[BUF_SIZE];
 	char cbuf[BUF_SIZE];
 	BOOL ret = FALSE;
@@ -624,16 +616,14 @@ static BOOL show_property(const HWND hDlg, const FORMAT_INFO *fi)
 		}
 	} else {
 		// DLLロード
-		if ((lib = LoadLibrary(fi->lib_file_path)) == NULL) {
-			message_get_error(GetLastError(), err_str);
-			if (*err_str != TEXT('\0')) {
-				MessageBox(hDlg, err_str, fi->lib_file_path, MB_ICONERROR);
-			}
+		if ((lib = security_load_plugin_ui(hDlg, fi->lib_file_path)) == NULL) {
 			return FALSE;
 		}
 		// 関数アドレス取得
 		wnsprintf(buf, BUF_SIZE, TEXT("%sshow_property"), fi->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
+		if (tchar_to_char(buf, cbuf, BUF_SIZE - 1) == 0) {
+			*cbuf = '\0';
+		}
 		if ((func_show_property = GetProcAddress(lib, cbuf)) != NULL) {
 			// プロパティ表示
 			ret = func_show_property(hDlg);

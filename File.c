@@ -22,6 +22,11 @@
 #include "File.h"
 #include "Format.h"
 #include "ClipBoard.h"
+#include "Security.h"
+
+#ifndef OPTION_SET
+#include "resource.h"
+#endif	// OPTION_SET
 
 /* Define */
 #define FILE_FOLDER_LEVEL_MAX			64
@@ -912,4 +917,24 @@ BOOL shell_open(const TCHAR *file_name, const TCHAR *command_line)
 	sei.nShow = SW_SHOWNORMAL;
 	return ShellExecuteEx(&sei);
 }
+
+#ifndef OPTION_SET
+/*
+ * shell_open_user - ユーザーが指定したファイルを通常の権限で実行
+ *
+ *	管理者として実行中は、一般ユーザーが書き換えられる設定やデータから
+ *	管理者権限でプログラムが起動されないように昇格していない権限で起動する
+ */
+BOOL shell_open_user(const HWND hWnd, const TCHAR *file_name, const TCHAR *command_line)
+{
+	if (security_is_elevated() == FALSE) {
+		return shell_open(file_name, command_line);
+	}
+	if (security_shell_open_as_user(file_name, command_line) == TRUE) {
+		return TRUE;
+	}
+	MessageBox(hWnd, message_get_res(IDS_ERROR_RUN_AS_USER), APP_NAME, MB_ICONERROR);
+	return FALSE;
+}
+#endif	// OPTION_SET
 /* End of source */

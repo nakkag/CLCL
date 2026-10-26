@@ -51,6 +51,7 @@
 #include "DarkMode.h"
 #include "ViewerOLEDnD.h"
 #include "ViewerDnD.h"
+#include "Security.h"
 
 #include "resource.h"
 
@@ -2662,6 +2663,11 @@ static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 	static BOOL ctrl_flag;
 	static int DnD_keystate;
 	int ret;
+
+	// ポインタを受け渡すメッセージは同じスレッドからのみ受け付ける
+	if (security_is_foreign_message(msg) == TRUE) {
+		return 0;
+	}
 
 	switch (msg) {
 	case WM_CREATE:

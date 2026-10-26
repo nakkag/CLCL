@@ -94,6 +94,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <Optimization>MaxSpeed</Optimization>
@@ -123,6 +124,10 @@
       <OutputFile>.\Release\CLCLSet.bsc</OutputFile>
     </Bscmake>
     <Link>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
+      <AdditionalOptions>/guard:cf /DEPENDENTLOADFLAG:0x800 %(AdditionalOptions)</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <SubSystem>Windows</SubSystem>
       <OutputFile>..\Release\CLCLSet.exe</OutputFile>
@@ -145,6 +150,7 @@
     <ClCompile Include="..\Memory.c" />
     <ClCompile Include="..\Message.c" />
     <ClCompile Include="..\Profile.c" />
+    <ClCompile Include="..\Security.c" />
     <ClCompile Include="..\String.c" />
     <ClCompile Include="CLCLSet.c" />
     <ClCompile Include="SelectIcon.c" />
@@ -178,6 +184,7 @@
     <ClInclude Include="..\Message.h" />
     <ClInclude Include="..\Profile.h" />
     <ClInclude Include="..\SendKey.h" />
+    <ClInclude Include="..\Security.h" />
     <ClInclude Include="..\String.h" />
     <ClInclude Include="..\Tool.h" />
     <ClInclude Include="CLCLSet.h" />

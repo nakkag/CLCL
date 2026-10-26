@@ -31,6 +31,7 @@
 #include "..\File.h"
 #include "..\dpi.h"
 #include "..\DarkMode.h"
+#include "..\Security.h"
 
 #include "CLCLSet.h"
 #include "SetHistory.h"
@@ -711,6 +712,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 	int ret = 0;
 
 	hInst = hInstance;
+
+	// DLL の検索先を限定
+	security_initialize();
 
 	// 2重起動チェック
 	// 本体(main.c)と同じく NULL DACL で全ユーザーからアクセス可能にする

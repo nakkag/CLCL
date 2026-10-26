@@ -518,7 +518,7 @@ static BOOL lv_shell_open(const HWND hListView)
 		return FALSE;
 	}
 	file_item_get_fullpath(fi, buf, _countof(buf));
-	return shell_open(buf, NULL);
+	return shell_open_user(GetParent(hListView), buf, NULL);
 }
 
 /*
