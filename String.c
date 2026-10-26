@@ -112,6 +112,9 @@ int str2hash(const TCHAR *str)
 {
 	int hash = 0;
 
+	if (str == NULL) {
+		return 0;
+	}
 	for (; *str != TEXT('\0'); str++) {
 		if (*str != TEXT(' ')) {
 			hash = ((hash << 1) + to_lower(*str));

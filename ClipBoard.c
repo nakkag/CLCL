@@ -333,6 +333,10 @@ HANDLE clipboard_copy_data(const UINT format, const HANDLE data, DWORD *ret_size
 
 	case CF_DSPMETAFILEPICT:
 	case CF_METAFILEPICT:
+		// 構造体に満たないデータは読まない
+		if (GlobalSize(data) < sizeof(METAFILEPICT)) {
+			return NULL;
+		}
 		// コピー元ロック
 		if ((from_mem = GlobalLock(data)) == NULL) {
 			return NULL;

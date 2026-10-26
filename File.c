@@ -269,7 +269,7 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 	DATA_INFO *di = *root;
 	DATA_INFO *new_item;
 #ifndef OPTION_SET
-	DATA_INFO *cdi;
+	DATA_INFO *cdi = NULL;
 	DATA_INFO *child_item;
 	BYTE *mem;
 	int i;
@@ -317,7 +317,10 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 				di->next = new_item;
 			}
 			di = new_item;
-			
+#ifndef OPTION_SET
+			cdi = NULL;
+#endif	// OPTION_SET
+
 			if ((p = file_file_to_item(buf, p, size, &di->child, level + 1, err_str)) == NULL) {
 				return NULL;
 			}
@@ -425,7 +428,9 @@ static BYTE *file_file_to_item(const BYTE *buf, BYTE *p, const DWORD size, DATA_
 
 		default:
 #ifndef OPTION_SET
-			if (di == NULL) {
+			// データはアイテムの直後にのみ置かれる
+			if (di == NULL || di->type != TYPE_ITEM) {
+				message_get_error(ERROR_FILE_CORRUPT, err_str);
 				return NULL;
 			}
 
