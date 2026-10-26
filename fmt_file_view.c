@@ -28,6 +28,7 @@
 #include "fmt_file_view.h"
 #include "dpi.h"
 #include "DarkMode.h"
+#include "Security.h"
 
 #include "resource.h"
 
@@ -209,6 +210,50 @@ static void file_item_get_fullpath(const FILE_ITEM *fi, TCHAR *buf, const int le
 }
 
 /*
+ * file_path_is_local - ローカルドライブ上のパスか判定
+ *
+ *	UNC やネットワークドライブのパスで実ファイルに触れると接続先へ認証情報が送られるため、
+ *	表示のための問い合わせはローカルのパスに限る
+ */
+static BOOL file_path_is_local(const TCHAR *path)
+{
+	TCHAR root[4];
+	UINT type;
+
+	if (!((*path >= TEXT('A') && *path <= TEXT('Z')) || (*path >= TEXT('a') && *path <= TEXT('z'))) ||
+		*(path + 1) != TEXT(':') || *(path + 2) != TEXT('\\')) {
+		return FALSE;
+	}
+	root[0] = *path;
+	root[1] = TEXT(':');
+	root[2] = TEXT('\\');
+	root[3] = TEXT('\0');
+	type = GetDriveType(root);
+	return (type == DRIVE_FIXED || type == DRIVE_REMOVABLE || type == DRIVE_CDROM || type == DRIVE_RAMDISK) ? TRUE : FALSE;
+}
+
+/*
+ * file_path_is_plain - リンクやショートカットでない通常のファイルか
+ *
+ *	参照先がネットワーク上にあると実ファイルへの問い合わせで接続が発生するため、
+ *	リパースポイントと .lnk は属性だけで扱う
+ */
+static BOOL file_path_is_plain(const TCHAR *path)
+{
+	DWORD attr;
+	int len = lstrlen(path);
+
+	if (len >= 4 && lstrcmpi(path + len - 4, TEXT(".lnk")) == 0) {
+		return FALSE;
+	}
+	attr = GetFileAttributes(path);
+	if (attr == INVALID_FILE_ATTRIBUTES || (attr & FILE_ATTRIBUTE_REPARSE_POINT) != 0) {
+		return FALSE;
+	}
+	return TRUE;
+}
+
+/*
  * file_item_get_info - シェルからファイル情報を取得
  */
 static BOOL file_item_get_info(const FILE_ITEM *fi, const UINT flags, SHFILEINFO *shfi)
@@ -217,7 +262,8 @@ static BOOL file_item_get_info(const FILE_ITEM *fi, const UINT flags, SHFILEINFO
 
 	file_item_get_fullpath(fi, buf, _countof(buf));
 	ZeroMemory(shfi, sizeof(SHFILEINFO));
-	if (SHGetFileInfo(buf, 0, shfi, sizeof(SHFILEINFO), flags) != 0) {
+	if (file_path_is_local(buf) == TRUE && file_path_is_plain(buf) == TRUE &&
+		SHGetFileInfo(buf, 0, shfi, sizeof(SHFILEINFO), flags) != 0) {
 		return TRUE;
 	}
 	// ファイルが存在しない場合は属性から取得
@@ -494,7 +540,7 @@ static BOOL lv_shell_open(const HWND hListView)
 		return FALSE;
 	}
 	file_item_get_fullpath(fi, buf, _countof(buf));
-	return shell_open(buf, NULL);
+	return shell_open_user(GetParent(hListView), buf, NULL);
 }
 
 /*
@@ -553,6 +599,11 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 	int i;
 	static BOOL lock;
 	static BOOL modify;
+
+	// ポインタを受け渡すメッセージは同じスレッドからのみ受け付ける
+	if (security_is_foreign_message(msg) == TRUE) {
+		return 0;
+	}
 
 	switch (msg) {
 	case WM_ERASEBKGND:

@@ -24,6 +24,7 @@
 #include "Message.h"
 #include "Format.h"
 #include "Tool.h"
+#include "Security.h"
 
 /* Define */
 
@@ -77,9 +78,12 @@ BOOL tool_initialize(TCHAR *err_str)
 {
 	HANDLE lib;
 	TCHAR buf[BUF_SIZE];
+	TCHAR blocked_list[SECURITY_ERR_SIZE];
 	char cbuf[BUF_SIZE];
+	BOOL blocked;
 	int i;
 
+	*blocked_list = TEXT('\0');
 	for (i = 0; i < option.tool_cnt; i++) {
 		if ((option.tool_info + i)->lib_file_path == NULL ||
 			*(option.tool_info + i)->lib_file_path == TEXT('\0')) {
@@ -87,7 +91,13 @@ BOOL tool_initialize(TCHAR *err_str)
 		}
 		// モジュールハンドル取得
 		// Get module handle
-		lib = (option.tool_info + i)->lib = LoadLibrary((option.tool_info + i)->lib_file_path);
+		lib = (option.tool_info + i)->lib = security_load_plugin((option.tool_info + i)->lib_file_path, &blocked);
+		if (lib == NULL && blocked == TRUE) {
+			// 管理者として実行中は安全な場所にない DLL を読み込まない
+			// While elevated, DLLs outside safe locations are not loaded
+			security_add_blocked(blocked_list, SECURITY_ERR_SIZE, (option.tool_info + i)->lib_file_path);
+			continue;
+		}
 		if (lib == NULL) {
 			message_get_error(GetLastError(), buf);
 			wnsprintf(err_str, BUF_SIZE, TEXT("%s\r\n%s"), buf, (option.tool_info + i)->lib_file_path);
@@ -95,7 +105,11 @@ BOOL tool_initialize(TCHAR *err_str)
 		}
 		// 形式毎の関数アドレス取得
 		// Get function address for each format
-		tchar_to_char((option.tool_info + i)->func_name, cbuf, BUF_SIZE - 1);
+		*cbuf = '\0';
+		if ((option.tool_info + i)->func_name == NULL ||
+			tchar_to_char((option.tool_info + i)->func_name, cbuf, BUF_SIZE - 1) == 0) {
+			*cbuf = '\0';
+		}
 		if ((option.tool_info + i)->old == 0 || (option.tool_info + i)->old == 2) {
 			(option.tool_info + i)->func = GetProcAddress(lib, cbuf);
 		} else {
@@ -107,6 +121,10 @@ BOOL tool_initialize(TCHAR *err_str)
 				(option.tool_info + i)->lib_file_path, (option.tool_info + i)->func_name);
 			return FALSE;
 		}
+	}
+	if (*blocked_list != TEXT('\0')) {
+		security_get_blocked_message(err_str, SECURITY_ERR_SIZE, blocked_list);
+		return FALSE;
 	}
 	return TRUE;
 }

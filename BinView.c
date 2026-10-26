@@ -28,6 +28,7 @@
 #include "Font.h"
 #include "BinView.h"
 #include "dpi.h"
+#include "Security.h"
 #include "DarkMode.h"
 
 #include "resource.h"
@@ -1081,6 +1082,11 @@ static LRESULT CALLBACK binview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 	RECT rect;
 	BUFFER *bf;
 	int i;
+
+	// ポインタを受け渡すメッセージは同じスレッドからのみ受け付ける
+	if (security_is_foreign_message(msg) == TRUE) {
+		return 0;
+	}
 
 	switch (msg) {
 	case WM_CREATE:

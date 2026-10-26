@@ -107,12 +107,12 @@ if ($Configuration -ne "Release") {
 
 # msbuild が再ビルドを省略するとビルド後のイベントも実行されないため、
 # out フォルダへの出力はここで必ず行う
-$publishArgs = @("-Mode", "Publish", "-TargetPath", $targetPath)
+$publishArgs = @{ Mode = "Publish"; TargetPath = $targetPath }
 if (-not [string]::IsNullOrEmpty($OutDir)) {
-	$publishArgs += @("-OutDir", $OutDir.TrimEnd('\'))
+	$publishArgs.OutDir = $OutDir.TrimEnd('\')
 }
 if (-not [string]::IsNullOrEmpty($Version)) {
-	$publishArgs += @("-Version", $Version)
+	$publishArgs.Version = $Version
 }
 & (Join-Path $InstallerDir "prepare.ps1") @publishArgs
 

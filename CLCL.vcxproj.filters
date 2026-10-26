@@ -108,6 +108,9 @@
     <ClCompile Include="SelectFormat.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Security.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="SendKey.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -242,6 +245,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SelectFormat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Security.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SendKey.h">

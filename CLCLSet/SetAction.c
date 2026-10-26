@@ -970,7 +970,7 @@ static INT_PTR CALLBACK set_action_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam
 				// メインウィンドウ検索
 				if ((CLCLWnd = FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE)) != NULL) {
 					// 登録アイテム保存要求
-					SendMessage(CLCLWnd, WM_REGIST_SAVE, 0, 0);
+					send_main(CLCLWnd, WM_REGIST_SAVE);
 				}
 				wnsprintf(buf, MAX_PATH, TEXT("%s\\%s"), work_path, REGIST_FILENAME);
 				*err_str = TEXT('\0');

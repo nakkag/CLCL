@@ -71,7 +71,6 @@ function Get-TargetFiles([string]$binDir) {
 	return [ordered]@{
 		(Join-Path $binDir "CLCL.exe")        = "CLCL.exe"
 		(Join-Path $binDir "CLCLSet.exe")     = "CLCLSet.exe"
-		(Join-Path $binDir "CLCLHook.dll")    = "CLCLHook.dll"
 		(Join-Path $RootDir "readme_jp.txt")  = "readme_jp.txt"
 		(Join-Path $RootDir "readme_en.txt")  = "readme_en.txt"
 		(Join-Path $RootDir "readme_de.txt")  = "readme_de.txt"

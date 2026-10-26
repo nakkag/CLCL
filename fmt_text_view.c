@@ -26,6 +26,7 @@
 #include "Font.h"
 #include "fmt_text_view.h"
 #include "dpi.h"
+#include "Security.h"
 #include "DarkMode.h"
 
 #include "resource.h"
@@ -505,9 +506,10 @@ static int index_to_line(const BUFFER *bf, const DWORD index)
 static BOOL line_alloc(BUFFER *bf, const int i, const int size)
 {
 	int *ln;
+	int new_size = bf->line_size + size;
 
-	bf->line_size += size;
-	if ((ln = mem_alloc(sizeof(int) * bf->line_size)) == NULL) {
+	// 確保に失敗した場合はサイズを変えない
+	if ((ln = mem_alloc(sizeof(int) * new_size)) == NULL) {
 		return FALSE;
 	}
 	if (bf->line != NULL) {
@@ -515,6 +517,7 @@ static BOOL line_alloc(BUFFER *bf, const int i, const int size)
 		mem_free(&bf->line);
 	}
 	bf->line = ln;
+	bf->line_size = new_size;
 	return TRUE;
 }
 
@@ -524,31 +527,33 @@ static BOOL line_alloc(BUFFER *bf, const int i, const int size)
 static BOOL line_move(BUFFER *bf, const int i, const int len)
 {
 	int *ln;
+	int new_size;
 
 	if (bf->line_len + len + 1 > bf->line_size) {
-		// 追加
-		bf->line_size = bf->line_len + len + 1 + RESERVE_LINE;
-		if ((ln = mem_alloc(sizeof(int) * bf->line_size)) == NULL) {
+		// 追加 (確保に失敗した場合はサイズを変えない)
+		new_size = bf->line_len + len + 1 + RESERVE_LINE;
+		if ((ln = mem_alloc(sizeof(int) * new_size)) == NULL) {
 			return FALSE;
 		}
 		CopyMemory(ln, bf->line, sizeof(int) * i);
 		CopyMemory(ln + i + len, bf->line + i, sizeof(int) * (bf->line_len - i + 1));
 		mem_free(&bf->line);
 		bf->line = ln;
+		bf->line_size = new_size;
 	} else {
 		MoveMemory(bf->line + i + len, bf->line + i, sizeof(int) * (bf->line_len - i + 1));
 	}
 	bf->line_len += len;
 
 	if (bf->line_len + 1 < bf->line_size - RESERVE_LINE) {
-		// 解放
-		bf->line_size = bf->line_len + 1 + RESERVE_LINE;
-		if ((ln = mem_alloc(sizeof(int) * bf->line_size)) == NULL) {
-			return FALSE;
+		// 解放 (縮小に失敗しても元のバッファのまま続ける)
+		new_size = bf->line_len + 1 + RESERVE_LINE;
+		if ((ln = mem_alloc(sizeof(int) * new_size)) != NULL) {
+			CopyMemory(ln, bf->line, sizeof(int) * (bf->line_len + 1));
+			mem_free(&bf->line);
+			bf->line = ln;
+			bf->line_size = new_size;
 		}
-		CopyMemory(ln, bf->line, sizeof(int) * (bf->line_len + 1));
-		mem_free(&bf->line);
-		bf->line = ln;
 	}
 	return TRUE;
 }
@@ -786,8 +791,10 @@ static int line_set_count(BUFFER *bf, const int lindex, const int old_cnt, const
 	while (1) {
 		index = line_get_next_index(bf, index);
 		if ((i - lindex) >= old_cnt) {
-			// 挿入行を移動
-			line_move(bf, i, 1);
+			// 挿入行を移動 (確保できない場合は行情報を増やさない)
+			if (line_move(bf, i, 1) == FALSE) {
+				break;
+			}
 		}
 		p = index_to_char(bf, index);
 		if (*p == TEXT('\r') || *p == TEXT('\n')) {
@@ -1631,7 +1638,9 @@ static int caret_char_to_caret(const HDC mdc, BUFFER *bf, const int i, const DWO
 			r = bf->dp;
 		}
 		if (r != NULL) {
-			GetTextExtentPoint32(mdc, s, r - s, &sz);
+			if (GetTextExtentPoint32(mdc, s, r - s, &sz) == FALSE) {
+				sz.cx = 0;
+			}
 			offset += sz.cx;
 			s = p;
 		}
@@ -1665,7 +1674,9 @@ static int caret_char_to_caret(const HDC mdc, BUFFER *bf, const int i, const DWO
 	} else {
 		r = p;
 	}
-	GetTextExtentPoint32(mdc, s, r - s, &sz);
+	if (GetTextExtentPoint32(mdc, s, r - s, &sz) == FALSE) {
+		sz.cx = 0;
+	}
 	return (offset + sz.cx);
 }
 
@@ -1963,6 +1974,11 @@ static LRESULT CALLBACK nedit_proc(const HWND hWnd, const UINT msg, const WPARAM
 	HIMC hIMC;
 	COMPOSITIONFORM cf;
 	POINT pt;
+
+	// ポインタを受け渡すメッセージは同じスレッドからのみ受け付ける
+	if (security_is_foreign_message(msg) == TRUE) {
+		return 0;
+	}
 
 	switch (msg) {
 	case WM_CREATE:

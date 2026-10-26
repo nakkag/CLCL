@@ -47,6 +47,7 @@
 #include "Caret.h"
 #include "dpi.h"
 #include "DarkMode.h"
+#include "Security.h"
 
 #include "resource.h"
 
@@ -60,7 +61,6 @@
 #define TRAY_ID							1					// タスクトレイID
 
 #define ID_HISTORY_TIMER				1					// タイマーID
-#define ID_RECHAIN_TIMER				2
 #define ID_TOOL_TIMER					3
 #define ID_PASTE_TIMER					4
 #define ID_KEY_TIMER					5
@@ -69,7 +69,8 @@
 #define ID_TRAY_TIMER					8
 
 #define RECLIP_INTERVAL					1000
-#define RECHAIN_INTERVAL				60000
+// キーボードフックを登録し直す間隔(ミリ秒)
+#define KEY_HOOK_REFRESH_INTERVAL		60000
 // タスクトレイのアイコン追加のリトライ間隔(ミリ秒)と回数
 #define TRAY_RETRY_INTERVAL				5000
 #define TRAY_RETRY_MAX					5
@@ -97,10 +98,18 @@ TCHAR work_path[MAX_PATH];
 
 static HWND hViewerWnd;
 static HWND hToolTip;
-static HWND hClipNextWnd;
+// クリップボードの更新通知を受け取っているか
+static BOOL clip_listening;
+// 自分で設定したため履歴に入れないクリップボードのシーケンス番号
+static DWORD ignore_clip_seq;
 static HMENU popup_menu;
-static HMODULE hook_lib;
 static HMODULE themes_lib;
+// 修飾キーの二度押しを検出するキーボードフック
+static HANDLE key_hook_thread;
+static DWORD key_hook_thread_id;
+static HHOOK key_hook;
+static HWND key_hook_wnd;
+static DWORD key_hook_err;
 static HICON icon_tray;
 static HICON icon_clip;
 static HICON icon_clip_ban;
@@ -117,7 +126,6 @@ static BOOL clip_flag;
 static BOOL session_ending = FALSE;
 // ウィンドウの初期化が完了しているか
 static BOOL init_done = FALSE;
-static int rechain_cnt;
 
 DATA_INFO history_data;
 DATA_INFO regist_data;
@@ -860,15 +868,15 @@ static BOOL show_popup_menu(const HWND hWnd, const ACTION_INFO *ai, const BOOL c
 				&& ret <= MAX_PATH) 
 			{
 				// launch the application with expanded path and parameters
-				shell_open(expanded_name, expanded_cmd);
+				shell_open_user(hWnd, expanded_name, expanded_cmd);
 			} else {
 				// launch the application with expanded path and unexpanded parameters
-				shell_open(expanded_name, mii->mi->cmd);
+				shell_open_user(hWnd, expanded_name, mii->mi->cmd);
 			}
 		}
 		else {
 				// launch the application with unexpanded path and parameters
-			shell_open(mii->mi->path, mii->mi->cmd);
+			shell_open_user(hWnd, mii->mi->path, mii->mi->cmd);
 		}
 
 	} else {
@@ -1132,6 +1140,8 @@ static BOOL item_to_clipboard(const HWND hWnd, DATA_INFO *from_di, const BOOL de
 	data_free(di);
 
 	if (clip_flag == TRUE) {
+		// この内容の更新通知は履歴に入れない
+		ignore_clip_seq = clipboard_get_set_sequence();
 		clip_flag = FALSE;
 		if (hViewerWnd != NULL) {
 			// クリップボードの変化を通知
@@ -1162,8 +1172,13 @@ static BOOL load_history(const HWND hWnd, const int load_flag)
 
 	// 履歴の読み込み
 	if (load_flag != 0 || option.history_save == 1) {
-		wsprintf(path, TEXT("%s\\%s"), work_path, HISTORY_FILENAME);
 		*err_str = TEXT('\0');
+		if (path_combine(path, work_path, HISTORY_FILENAME) == FALSE) {
+			message_get_error(ERROR_FILENAME_EXCED_RANGE, err_str);
+			_SetForegroundWindow(hWnd);
+			MessageBox(hWnd, err_str, ERROR_TITLE, MB_ICONERROR);
+			return FALSE;
+		}
 		if (file_read_data(path, &history_data.child, err_str) == FALSE && *err_str != TEXT('\0')) {
 			_SetForegroundWindow(hWnd);
 			lstrcat(err_str, TEXT("\r\n"));
@@ -1186,8 +1201,13 @@ static BOOL load_regist(const HWND hWnd)
 	regist_data.type = TYPE_ROOT;
 
 	// 登録アイテムの読み込み
-	wsprintf(path, TEXT("%s\\%s"), work_path, REGIST_FILENAME);
 	*err_str = TEXT('\0');
+	if (path_combine(path, work_path, REGIST_FILENAME) == FALSE) {
+		message_get_error(ERROR_FILENAME_EXCED_RANGE, err_str);
+		_SetForegroundWindow(hWnd);
+		MessageBox(hWnd, err_str, ERROR_TITLE, MB_ICONERROR);
+		return FALSE;
+	}
 	if (file_read_data(path, &regist_data.child, err_str) == FALSE && *err_str != TEXT('\0')) {
 		_SetForegroundWindow(hWnd);
 		lstrcat(err_str, TEXT("\r\n"));
@@ -1209,8 +1229,9 @@ static BOOL save_history(const HWND hWnd, const int save_flag)
 
 	if (save_flag == 0 && option.history_save == 0) {
 		// 履歴を保存しない
-		wsprintf(path, TEXT("%s\\%s"), work_path, HISTORY_FILENAME);
-		DeleteFile(path);
+		if (path_combine(path, work_path, HISTORY_FILENAME) == TRUE) {
+			DeleteFile(path);
+		}
 		return TRUE;
 	}
 
@@ -1231,9 +1252,12 @@ static BOOL save_history(const HWND hWnd, const int save_flag)
 	}
 
 	// 履歴の保存
-	wsprintf(path, TEXT("%s\\%s"), work_path, HISTORY_FILENAME);
 	*err_str = TEXT('\0');
-	if (file_write_data(path, di, err_str) == FALSE) {
+	if (path_combine(path, work_path, HISTORY_FILENAME) == FALSE) {
+		message_get_error(ERROR_FILENAME_EXCED_RANGE, err_str);
+		*path = TEXT('\0');
+	}
+	if (*path == TEXT('\0') || file_write_data(path, di, err_str) == FALSE) {
 		if (*err_str != TEXT('\0') && session_ending == FALSE) {
 			_SetForegroundWindow(hWnd);
 			lstrcat(err_str, TEXT("\r\n"));
@@ -1260,9 +1284,12 @@ static BOOL save_regist(const HWND hWnd)
 	TCHAR err_str[BUF_SIZE + MAX_PATH];
 
 	// 登録アイテムの保存
-	wsprintf(path, TEXT("%s\\%s"), work_path, REGIST_FILENAME);
 	*err_str = TEXT('\0');
-	if (file_write_data(path, regist_data.child, err_str) == FALSE) {
+	if (path_combine(path, work_path, REGIST_FILENAME) == FALSE) {
+		message_get_error(ERROR_FILENAME_EXCED_RANGE, err_str);
+		*path = TEXT('\0');
+	}
+	if (*path == TEXT('\0') || file_write_data(path, regist_data.child, err_str) == FALSE) {
 		if (*err_str != TEXT('\0') && session_ending == FALSE) {
 			_SetForegroundWindow(hWnd);
 			lstrcat(err_str, TEXT("\r\n"));
@@ -1336,19 +1363,113 @@ static void unregist_hotkey(const HWND hWnd)
 }
 
 /*
+ * clipboard_watch_start - クリップボード監視開始
+ */
+static void clipboard_watch_start(const HWND hWnd)
+{
+	if (clip_listening == TRUE) {
+		return;
+	}
+	if (AddClipboardFormatListener(hWnd) == FALSE) {
+		return;
+	}
+	clip_listening = TRUE;
+	// 監視開始時のクリップボードの内容を履歴に追加
+	SetTimer(hWnd, ID_HISTORY_TIMER, option.history_add_interval, NULL);
+}
+
+/*
+ * clipboard_watch_end - クリップボード監視解除
+ */
+static void clipboard_watch_end(const HWND hWnd)
+{
+	if (clip_listening == FALSE) {
+		return;
+	}
+	RemoveClipboardFormatListener(hWnd);
+	clip_listening = FALSE;
+}
+
+/*
  * hook_error - フック登録エラーの表示
  */
 static void hook_error(const HWND hWnd, const DWORD err_code)
 {
 	TCHAR buf[BUF_SIZE];
-	TCHAR err_str[BUF_SIZE + MAX_PATH];
 
 	message_get_error(err_code, buf);
 	if (*buf == TEXT('\0')) {
 		return;
 	}
-	wnsprintf(err_str, BUF_SIZE + MAX_PATH, TEXT("%s\r\n%s"), buf, HOOK_LIB);
-	MessageBox(hWnd, err_str, ERROR_TITLE, MB_ICONERROR);
+	MessageBox(hWnd, buf, ERROR_TITLE, MB_ICONERROR);
+}
+
+/*
+ * key_hook_proc - 修飾キーの押下と解放をメインウィンドウへ通知
+ *
+ *	wParam に仮想キーコード (左右の区別なし)、lParam の最上位ビットにキーの解放を設定して通知する
+ */
+static LRESULT CALLBACK key_hook_proc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+	KBDLLHOOKSTRUCT *kb = (KBDLLHOOKSTRUCT *)lParam;
+	WPARAM vk;
+
+	if (nCode == HC_ACTION && kb != NULL && key_hook_wnd != NULL) {
+		switch (kb->vkCode) {
+		case VK_CONTROL:	case VK_LCONTROL:	case VK_RCONTROL:
+			vk = VK_CONTROL;
+			break;
+		case VK_SHIFT:		case VK_LSHIFT:		case VK_RSHIFT:
+			vk = VK_SHIFT;
+			break;
+		case VK_MENU:		case VK_LMENU:		case VK_RMENU:
+			vk = VK_MENU;
+			break;
+		default:
+			vk = kb->vkCode;
+			break;
+		}
+		PostMessage(key_hook_wnd, WM_KEY_HOOK, vk, ((kb->flags & LLKHF_UP) != 0) ? (LPARAM)0x80000000 : 0);
+	}
+	return CallNextHookEx(key_hook, nCode, wParam, lParam);
+}
+
+/*
+ * key_hook_thread_proc - キーボードフック用のスレッド
+ *
+ *	メインスレッドの処理が長引いてもフックが無効にならないように専用のスレッドで処理する
+ */
+static DWORD WINAPI key_hook_thread_proc(LPVOID param)
+{
+	MSG msg;
+
+	// メッセージキューの作成
+	PeekMessage(&msg, NULL, WM_USER, WM_USER, PM_NOREMOVE);
+	// 高負荷時に応答が遅れて OS にフックを解除されないように優先度を上げる
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+	key_hook = SetWindowsHookEx(WH_KEYBOARD_LL, key_hook_proc, hInst, 0);
+	key_hook_err = (key_hook == NULL) ? GetLastError() : ERROR_SUCCESS;
+	SetEvent((HANDLE)param);
+	if (key_hook == NULL) {
+		return 0;
+	}
+	// 解除されても気付けないため定期的に登録し直す
+	SetTimer(NULL, 0, KEY_HOOK_REFRESH_INTERVAL, NULL);
+	while (GetMessage(&msg, NULL, 0, 0) > 0) {
+		if (msg.message == WM_TIMER && msg.hwnd == NULL) {
+			HHOOK new_hook = SetWindowsHookEx(WH_KEYBOARD_LL, key_hook_proc, hInst, 0);
+			if (new_hook != NULL) {
+				UnhookWindowsHookEx(key_hook);
+				key_hook = new_hook;
+			}
+			continue;
+		}
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+	UnhookWindowsHookEx(key_hook);
+	key_hook = NULL;
+	return 0;
 }
 
 /*
@@ -1356,29 +1477,34 @@ static void hook_error(const HWND hWnd, const DWORD err_code)
  */
 static void regist_hook(const HWND hWnd)
 {
-	FARPROC SetHook;
+	HANDLE ready;
 	int i;
 
+	if (key_hook_thread != NULL) {
+		return;
+	}
 	// フックの登録
 	for (i = 0; i < option.action_cnt; i++) {
 		if ((option.action_info + i)->enable != 0 &&
 			((option.action_info + i)->type == ACTION_TYPE_CTRL_CTRL ||
 			(option.action_info + i)->type == ACTION_TYPE_SHIFT_SHIFT ||
 			(option.action_info + i)->type == ACTION_TYPE_ALT_ALT)) {
-			hook_lib = LoadLibrary(HOOK_LIB);
-			if (hook_lib == NULL) {
+			if ((ready = CreateEvent(NULL, TRUE, FALSE, NULL)) == NULL) {
 				hook_error(hWnd, GetLastError());
 				break;
 			}
-			SetHook = GetProcAddress(hook_lib, "SetHook");
-			if (SetHook == NULL) {
-				hook_error(hWnd, GetLastError());
-				unregist_hook();
-				break;
+			key_hook_wnd = hWnd;
+			key_hook_err = ERROR_SUCCESS;
+			key_hook_thread = CreateThread(NULL, 0, key_hook_thread_proc, ready, 0, &key_hook_thread_id);
+			if (key_hook_thread == NULL) {
+				key_hook_err = GetLastError();
+			} else {
+				WaitForSingleObject(ready, INFINITE);
 			}
-			if (SetHook(hWnd, WM_KEY_HOOK) == FALSE) {
+			CloseHandle(ready);
+			if (key_hook_err != ERROR_SUCCESS) {
 				// フックを開始できなかった
-				hook_error(hWnd, GetLastError());
+				hook_error(hWnd, key_hook_err);
 				unregist_hook();
 			}
 			break;
@@ -1391,17 +1517,15 @@ static void regist_hook(const HWND hWnd)
  */
 static void unregist_hook(void)
 {
-	FARPROC UnHook;
-
 	// フックの解除
-	if (hook_lib != NULL) {
-		UnHook = GetProcAddress(hook_lib, "UnHook");
-		if (UnHook != NULL) {
-			UnHook();
-		}
-		FreeLibrary(hook_lib);
-		hook_lib = NULL;
+	if (key_hook_thread != NULL) {
+		PostThreadMessage(key_hook_thread_id, WM_QUIT, 0, 0);
+		WaitForSingleObject(key_hook_thread, INFINITE);
+		CloseHandle(key_hook_thread);
+		key_hook_thread = NULL;
+		key_hook_thread_id = 0;
 	}
+	key_hook_wnd = NULL;
 }
 
 /*
@@ -1465,8 +1589,7 @@ static BOOL winodw_initialize(const HWND hWnd)
 
 	// クリップボード監視開始
 	if (option.main_clipboard_watch == 1) {
-		hClipNextWnd = SetClipboardViewer(hWnd);
-		SetTimer(hWnd, ID_RECHAIN_TIMER, RECHAIN_INTERVAL, NULL);
+		clipboard_watch_start(hWnd);
 	}
 
 	// ホットキーの登録
@@ -1550,8 +1673,6 @@ static BOOL winodw_reset(const HWND hWnd)
 	// フックの登録
 	regist_hook(hWnd);
 
-	SetTimer(hWnd, ID_RECHAIN_TIMER, RECHAIN_INTERVAL, NULL);
-
 	if (hViewerWnd == NULL && show_viewer == TRUE) {
 		hViewerWnd = (HWND)-1;
 		hViewerWnd = viewer_create(hWnd, show_flag);
@@ -1600,12 +1721,8 @@ static BOOL winodw_end(const HWND hWnd)
 	BOOL b = WTSUnRegisterSessionNotification(hWnd);
 
 	// クリップボード監視解除
-	KillTimer(hWnd, ID_RECHAIN_TIMER);
 	KillTimer(hWnd, ID_TRAY_TIMER);
-	if (option.main_clipboard_watch == 1) {
-		ChangeClipboardChain(hWnd, hClipNextWnd);
-		hClipNextWnd = NULL;
-	}
+	clipboard_watch_end(hWnd);
 
 	// ホットキーの解除
 	unregist_hotkey(hWnd);
@@ -1646,6 +1763,11 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 	static BOOL save_flag = FALSE;
 	static UINT WM_TASKBARCREATED;
 
+	// ポインタを受け渡すメッセージは同じスレッドからのみ受け付ける
+	if (security_is_foreign_message(msg) == TRUE) {
+		return 0;
+	}
+
 	switch (msg) {
 	case WM_CREATE:
 		WM_TASKBARCREATED = RegisterWindowMessage(TEXT("TaskbarCreated"));
@@ -1669,7 +1791,9 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 	case WM_QUERYENDSESSION:
 		// Windows終了
 		session_ending = TRUE;
+		security_trust_begin();
 		winodw_save(hWnd);
+		security_trust_end();
 		save_flag = TRUE;
 		return TRUE;
 
@@ -1692,21 +1816,26 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			return 0;
 		}
 		session_ending = TRUE;
+		security_trust_begin();
 		if (save_flag == FALSE) {
 			winodw_save(hWnd);
 		}
 		save_flag = TRUE;
 		winodw_end(hWnd);
+		security_trust_end();
 		DestroyWindow(hWnd);
 		return 0;
 
 	case WM_CLOSE:
 		// ウィンドウを閉じる
+		security_trust_begin();
 		if (winodw_save(hWnd) == FALSE) {
+			security_trust_end();
 			break;
 		}
 		save_flag = TRUE;
 		winodw_end(hWnd);
+		security_trust_end();
 		DestroyWindow(hWnd);
 		break;
 
@@ -1720,14 +1849,16 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 	case WM_MEASUREITEM:
 		// メニュー描画設定
-		if (wParam == 0) {
+		if (wParam == 0 && popup_menu != NULL &&
+			menu_check_item_info((MENU_ITEM_INFO *)((MEASUREITEMSTRUCT *)lParam)->itemData) == TRUE) {
 			menu_set_drawitem((MEASUREITEMSTRUCT *)lParam);
 		}
 		break;
 
 	case WM_DRAWITEM:
 		// メニュー描画
-		if (wParam == 0) {
+		if (wParam == 0 && popup_menu != NULL &&
+			menu_check_item_info((MENU_ITEM_INFO *)((DRAWITEMSTRUCT *)lParam)->itemData) == TRUE) {
 			HWND menu_wnd;
 			RECT monitor_rect;
 
@@ -1781,28 +1912,17 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		tooltip_hide(hToolTip);
 		break;
 
-	case WM_CHANGECBCHAIN:
-		// クリップボードチェーンの変更
-		if ((HWND)wParam == hClipNextWnd && (HWND)lParam != hWnd) {
-			hClipNextWnd = (HWND)lParam;
-		} else if (hClipNextWnd != NULL && hClipNextWnd != hWnd) {
-			SendMessage(hClipNextWnd, msg, wParam, lParam);
-		}
-		break;
-
-	case WM_DRAWCLIPBOARD:
+	case WM_CLIPBOARDUPDATE:
 		// クリップボード監視
-		if (hClipNextWnd != NULL && hClipNextWnd != hWnd) {
-			SendMessage(hClipNextWnd, msg, wParam, lParam);
+		if (clip_listening == FALSE) {
+			break;
 		}
-		if (clip_flag == TRUE) {
-			// 履歴に入れない
+		if (ignore_clip_seq != 0 && GetClipboardSequenceNumber() == ignore_clip_seq) {
+			// 自分で設定した内容なので履歴に入れない
 			break;
 		}
 		// 履歴に追加
 		SetTimer(hWnd, ID_HISTORY_TIMER, option.history_add_interval, NULL);
-		SetTimer(hWnd, ID_RECHAIN_TIMER, RECHAIN_INTERVAL, NULL);
-		rechain_cnt = 0;
 		break;
 
 	case WM_COMMAND:
@@ -1856,30 +1976,6 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			if (clipboard_to_history(hWnd) == TRUE && hViewerWnd != NULL) {
 				// クリップボードの変化を通知
 				SendMessage(hViewerWnd, WM_VIEWER_CHANGE_CLIPBOARD, 0, 0);
-			}
-			break;
-
-		case ID_RECHAIN_TIMER:
-			// クリップボード再監視
-			if (option.main_clipboard_watch == 0 ||
-				option.main_clipboard_rechain_minute <= 0) {
-				KillTimer(hWnd, wParam);
-				break;
-			}
-			rechain_cnt++;
-			if (rechain_cnt >= option.main_clipboard_rechain_minute) {
-				rechain_cnt = 0;
-				if (GetClipboardViewer() == hWnd) {
-					// 再監視の必要なし
-					break;
-				}
-				// クリップボード監視解除
-				ChangeClipboardChain(hWnd, hClipNextWnd);
-				hClipNextWnd = NULL;
-				// クリップボード監視開始
-				clip_flag = TRUE;
-				hClipNextWnd = SetClipboardViewer(hWnd);
-				clip_flag = FALSE;
 			}
 			break;
 
@@ -2087,15 +2183,12 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			option.main_clipboard_watch = 1;
 			icon_tray = icon_clip;
 			// クリップボード監視開始
-			hClipNextWnd = SetClipboardViewer(hWnd);
-			SetTimer(hWnd, ID_RECHAIN_TIMER, RECHAIN_INTERVAL, NULL);
+			clipboard_watch_start(hWnd);
 		} else {
 			option.main_clipboard_watch = 0;
 			icon_tray = icon_clip_ban;
 			// クリップボード監視解除
-			KillTimer(hWnd, ID_RECHAIN_TIMER);
-			ChangeClipboardChain(hWnd, hClipNextWnd);
-			hClipNextWnd = NULL;
+			clipboard_watch_end(hWnd);
 		}
 		set_tray_tooltip(hWnd);
 		if (hViewerWnd != NULL) {
@@ -2141,8 +2234,10 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 		{
 			TCHAR buf[MAX_PATH];
 
-			wsprintf(buf, TEXT("%s\\%s"), app_path, OPTION_EXE);
-			shell_open(buf, (TCHAR *)lParam);
+			// 設定の変更を通知するため本体と同じ権限で起動する
+			if (path_combine(buf, app_path, OPTION_EXE) == TRUE) {
+				shell_open(buf, (TCHAR *)lParam);
+			}
 		}
 		break;
 
@@ -2152,7 +2247,9 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 	case WM_OPTION_LOAD:
 		// 設定の読み込み
+		security_trust_begin();
 		winodw_reset(hWnd);
+		security_trust_end();
 		break;
 
 	case WM_OPTION_SAVE:
@@ -2404,7 +2501,8 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			format_get_menu_bitmap(di);
 
 			if ((TCHAR *)wParam != NULL) {
-				lstrcpy((TCHAR *)wParam, data_get_title(di));
+				// 仕様で推奨しているバッファの長さに収める
+				lstrcpyn((TCHAR *)wParam, data_get_title(di), BUF_SIZE * 2);
 			}
 		}
 		break;
@@ -2420,7 +2518,9 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 	case WM_VIEWER_SHOW:
 		// ビューア表示
+		security_trust_begin();
 		SendMessage(hWnd, WM_COMMAND, ID_MENUITEM_VIEWER, 0);
+		security_trust_end();
 		break;
 
 	case WM_VIEWER_GET_HWND:
@@ -2587,8 +2687,7 @@ static void get_work_path(const HINSTANCE hInstance)
 
 	int portable = 0;
 	TCHAR app_ini_path[MAX_PATH];
-	wsprintf(app_ini_path, TEXT("%s\\%s"), app_path, APP_INI);
-	if (PathFileExists(app_ini_path) == TRUE) {
+	if (path_combine(app_ini_path, app_path, APP_INI) == TRUE && PathFileExists(app_ini_path) == TRUE) {
 		profile_initialize(app_ini_path, TRUE);
 		portable = profile_get_int(TEXT("GENERAL"), TEXT("portable"), 0, app_ini_path);
 		profile_free();
@@ -2737,6 +2836,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
 	hInst = hInstance;
 
+	// DLL の検索先を限定
+	security_initialize();
+
 #ifndef _DEBUG
 	// 2重起動チェック
 	// 管理者権限など別のトークンで起動したプロセスからもミューテックスを
@@ -2746,14 +2848,29 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
 	sa.lpSecurityDescriptor = &sd;
 	sa.bInheritHandle = TRUE; 
-	hMutex = CreateMutex(&sa, FALSE, MUTEX);
-	if (GetLastError() == ERROR_ALREADY_EXISTS) {
-		// コマンドライン処理
-		commnad_line_func(FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE));
-		if (hMutex != NULL) {
-			CloseHandle(hMutex);
+	// 起動中は所有したままにし、終了やクラッシュで解放される
+	hMutex = CreateMutex(&sa, TRUE, MUTEX);
+	if (hMutex != NULL && GetLastError() == ERROR_ALREADY_EXISTS) {
+		HWND hMainWnd = NULL;
+		BOOL owned = FALSE;
+		int i;
+
+		// 起動中の CLCL のウィンドウを待つ (所有者がいなくなれば自分が起動する)
+		for (i = 0; i < 100; i++) {
+			if ((hMainWnd = FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE)) != NULL) {
+				break;
+			}
+			if (WaitForSingleObject(hMutex, 100) != WAIT_TIMEOUT) {
+				owned = TRUE;
+				break;
+			}
 		}
-		return 0;
+		if (owned == FALSE) {
+			// コマンドライン処理
+			commnad_line_func(hMainWnd);
+			CloseHandle(hMutex);
+			return 0;
+		}
 	}
 #endif
 
@@ -2802,6 +2919,10 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 	hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDR_ACCELERATOR));
 	// ウィンドウメッセージ処理
 	while (GetMessage(&msg, NULL, 0, 0) == TRUE) {
+		// 同じスレッドから SendMessage で送られる前提のメッセージがキューに投稿された場合は破棄する
+		if (security_is_internal_message(msg.message) == TRUE) {
+			continue;
+		}
 		if (accel_flag == TRUE && hViewerWnd != NULL && hViewerWnd == GetForegroundWindow() &&
 			(TranslateAccelerator(hViewerWnd, hAccel, &msg) == TRUE)) {
 			continue;

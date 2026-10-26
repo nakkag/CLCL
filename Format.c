@@ -22,6 +22,7 @@
 #include "Message.h"
 #include "Format.h"
 #include "dpi.h"
+#include "Security.h"
 
 #pragma comment(lib, "shlwapi.lib")
 
@@ -94,23 +95,52 @@ DATA_INFO *format_get_priority_highest(DATA_INFO *di)
 }
 
 /*
+ * format_get_proc - 関数名の接頭辞と名前から関数のアドレスを取得
+ */
+static FARPROC format_get_proc(const HMODULE lib, const TCHAR *header, const char *name)
+{
+	char cbuf[BUF_SIZE];
+	int len;
+
+	*cbuf = '\0';
+	if (header != NULL && *header != TEXT('\0') &&
+		tchar_to_char(header, cbuf, BUF_SIZE - 1) == 0) {
+		return NULL;
+	}
+	len = lstrlenA(cbuf);
+	if (len + lstrlenA(name) >= BUF_SIZE) {
+		return NULL;
+	}
+	lstrcpyA(cbuf + len, name);
+	return GetProcAddress(lib, cbuf);
+}
+
+/*
  * format_initialize - 形式情報の初期化
  */
 BOOL format_initialize(TCHAR *err_str)
 {
 	TCHAR buf[BUF_SIZE];
-	char cbuf[BUF_SIZE];
-	HANDLE lib;
+	TCHAR blocked_list[SECURITY_ERR_SIZE];
+	FORMAT_INFO *fi;
+	HMODULE lib;
+	BOOL blocked;
 	int i;
 
+	*blocked_list = TEXT('\0');
 	for (i = 0; i < option.format_cnt; i++) {
+		fi = option.format_info + i;
 		// モジュールハンドル取得
-		if ((option.format_info + i)->lib_file_path != NULL &&
-			*(option.format_info + i)->lib_file_path != TEXT('\0')) {
-			lib = (option.format_info + i)->lib = LoadLibrary((option.format_info + i)->lib_file_path);
+		if (fi->lib_file_path != NULL && *fi->lib_file_path != TEXT('\0')) {
+			lib = fi->lib = security_load_plugin(fi->lib_file_path, &blocked);
+			if (lib == NULL && blocked == TRUE) {
+				// 管理者として実行中は安全な場所にない DLL を読み込まない (関数は未設定のまま)
+				security_add_blocked(blocked_list, SECURITY_ERR_SIZE, fi->lib_file_path);
+				continue;
+			}
 			if (lib == NULL) {
 				message_get_error(GetLastError(), buf);
-				wnsprintf(err_str, BUF_SIZE, TEXT("%s\r\n%s"), buf, (option.format_info + i)->lib_file_path);
+				wnsprintf(err_str, BUF_SIZE, TEXT("%s\r\n%s"), buf, fi->lib_file_path);
 				return FALSE;
 			}
 		} else {
@@ -119,97 +149,42 @@ BOOL format_initialize(TCHAR *err_str)
 		}
 		// 形式毎の関数アドレス取得
 		// general
-		wnsprintf(buf, BUF_SIZE, TEXT("%sinitialize"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_initialize = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%sget_icon"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_get_icon = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%sfree"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_free = GetProcAddress(lib, cbuf);
+		fi->func_initialize = format_get_proc(lib, fi->func_header, "initialize");
+		fi->func_get_icon = format_get_proc(lib, fi->func_header, "get_icon");
+		fi->func_free = format_get_proc(lib, fi->func_header, "free");
 
 		// item
-		wnsprintf(buf, BUF_SIZE, TEXT("%sinitialize_item"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_initialize_item = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%scopy_data"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_copy_data = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%sdata_to_bytes"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_data_to_bytes = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%sbytes_to_data"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_bytes_to_data = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%sget_file_info"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_get_file_info = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%sdata_to_file"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_data_to_file = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%sfile_to_data"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_file_to_data = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%sfree_data"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_free_data = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%sfree_item"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_free_item = GetProcAddress(lib, cbuf);
+		fi->func_initialize_item = format_get_proc(lib, fi->func_header, "initialize_item");
+		fi->func_copy_data = format_get_proc(lib, fi->func_header, "copy_data");
+		fi->func_data_to_bytes = format_get_proc(lib, fi->func_header, "data_to_bytes");
+		fi->func_bytes_to_data = format_get_proc(lib, fi->func_header, "bytes_to_data");
+		fi->func_get_file_info = format_get_proc(lib, fi->func_header, "get_file_info");
+		fi->func_data_to_file = format_get_proc(lib, fi->func_header, "data_to_file");
+		fi->func_file_to_data = format_get_proc(lib, fi->func_header, "file_to_data");
+		fi->func_free_data = format_get_proc(lib, fi->func_header, "free_data");
+		fi->func_free_item = format_get_proc(lib, fi->func_header, "free_item");
 
 		// menu
-		wnsprintf(buf, BUF_SIZE, TEXT("%sget_menu_title"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_get_menu_title = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%sget_menu_icon"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_get_menu_icon = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%sget_menu_bitmap"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_get_menu_bitmap = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%sget_tooltip_text"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_get_tooltip_text = GetProcAddress(lib, cbuf);
+		fi->func_get_menu_title = format_get_proc(lib, fi->func_header, "get_menu_title");
+		fi->func_get_menu_icon = format_get_proc(lib, fi->func_header, "get_menu_icon");
+		fi->func_get_menu_bitmap = format_get_proc(lib, fi->func_header, "get_menu_bitmap");
+		fi->func_get_tooltip_text = format_get_proc(lib, fi->func_header, "get_tooltip_text");
 
 		// window
-		wnsprintf(buf, BUF_SIZE, TEXT("%swindow_create"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_window_create = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%swindow_destroy"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_window_destroy = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%swindow_show_data"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_window_show_data = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%swindow_save_data"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_window_save_data = GetProcAddress(lib, cbuf);
-
-		wnsprintf(buf, BUF_SIZE, TEXT("%swindow_hide_data"), (option.format_info + i)->func_header);
-		tchar_to_char(buf, cbuf, BUF_SIZE - 1);
-		(option.format_info + i)->func_window_hide_data = GetProcAddress(lib, cbuf);
+		fi->func_window_create = format_get_proc(lib, fi->func_header, "window_create");
+		fi->func_window_destroy = format_get_proc(lib, fi->func_header, "window_destroy");
+		fi->func_window_show_data = format_get_proc(lib, fi->func_header, "window_show_data");
+		fi->func_window_save_data = format_get_proc(lib, fi->func_header, "window_save_data");
+		fi->func_window_hide_data = format_get_proc(lib, fi->func_header, "window_hide_data");
 
 		// 初期化
-		if ((option.format_info + i)->func_initialize != NULL) {
-			((option.format_info + i)->func_initialize)();
+		if (fi->func_initialize != NULL) {
+			(fi->func_initialize)();
 		}
+	}
+	if (*blocked_list != TEXT('\0')) {
+		security_get_blocked_message(err_str, SECURITY_ERR_SIZE, blocked_list);
+		return FALSE;
 	}
 	return TRUE;
 }

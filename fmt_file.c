@@ -11,6 +11,7 @@
 /* Include Files */
 #define _INC_OLE
 #include <windows.h>
+#include <shlwapi.h>
 #undef  _INC_OLE
 
 #include "General.h"
@@ -211,7 +212,7 @@ __declspec(dllexport) BOOL CALLBACK file_get_menu_title(DATA_INFO *di)
 	if (cnt == 1) {
 		di->menu_title = alloc_copy(r);
 	} else {
-		wsprintf(menu_title, TEXT("%d files (%s...)"), cnt, r);
+		wnsprintf(menu_title, BUF_SIZE * 2, TEXT("%d files (%s...)"), cnt, r);
 		di->menu_title = alloc_copy(menu_title);
 	}
 	di->free_title = TRUE;

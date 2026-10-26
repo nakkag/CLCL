@@ -3,6 +3,7 @@
 // Used by CLCLSet.rc
 //
 #define IDS_MENU_REGIST                 1
+#define IDS_ERROR_PLUGIN_BLOCKED        190
 #define IDS_MENU_CANCEL                 2
 #define IDS_MENU_EXIT                   3
 #define IDS_MENU_VIEWER                 4

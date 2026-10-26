@@ -17,6 +17,7 @@
 
 #include "DarkMode.h"
 #include "dpi.h"
+#include "Security.h"
 
 /* Define */
 #define DARK_BUF_SIZE					256
@@ -1184,6 +1185,10 @@ static LRESULT CALLBACK dark_mode_notify_proc(HWND hWnd, UINT msg, WPARAM wParam
 		break;
 
 	case WM_NOTIFY:
+		// 別のスレッドから送られた通知は構造体を参照しない
+		if (security_is_foreign_send() == TRUE) {
+			break;
+		}
 		// ツールチップは表示の直前に作成されることがあるため都度設定する
 		if (((NMHDR *)lParam)->code == TTN_SHOW) {
 			dark_mode_set_tooltip(((NMHDR *)lParam)->hwndFrom);

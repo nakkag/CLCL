@@ -31,6 +31,7 @@
 #include "..\File.h"
 #include "..\dpi.h"
 #include "..\DarkMode.h"
+#include "..\Security.h"
 
 #include "CLCLSet.h"
 #include "SetHistory.h"
@@ -48,6 +49,8 @@
 
 /* Define */
 #define ERROR_TITLE						TEXT("CLCLSet - Error")
+// 本体へのメッセージの応答を待つ時間(ミリ秒)
+#define SEND_MAIN_TIMEOUT				10000
 #define MUTEX							TEXT("_CLCLSET_Mutex_")
 
 #define ABS(n)							((n < 0) ? (n * -1) : n)
@@ -79,6 +82,7 @@ static int CALLBACK compare_func(LPARAM lParam1, LPARAM lParam2, LPARAM colum);
 static int CALLBACK prop_sheet_proc(const HWND hDlg, const UINT msg, const LPARAM lParam);
 static int show_option(const HWND hWnd, const TCHAR *cmd_line);
 static void get_work_path(const HINSTANCE hInstance);
+LRESULT send_main(const HWND hWnd, const UINT msg);
 
 /*
  * init_themes - XP用スタイルの初期化
@@ -362,7 +366,7 @@ void listview_move_item(const HWND hListView, int index, const int Move)
 {
 	HWND header_wnd;
 	LV_ITEM lvi;
-	TCHAR buf[100][BUF_SIZE];
+	TCHAR *buf;
 	int column_cnt;
 	int i = 0;
 	LPARAM lp;
@@ -373,15 +377,18 @@ void listview_move_item(const HWND hListView, int index, const int Move)
 	if ((header_wnd = ListView_GetHeader(hListView)) == NULL) {
 		header_wnd = GetWindow(hListView, GW_CHILD);
 	}
-	// テキストの取得
-	**buf = TEXT('\0');
+	// テキストの取得 (列数分だけ確保する)
 	column_cnt = Header_GetItemCount(header_wnd);
-	if (column_cnt > 100) {
+	if (column_cnt < 1) {
+		column_cnt = 1;
+	} else if (column_cnt > 100) {
 		column_cnt = 100;
 	}
+	if ((buf = mem_calloc(sizeof(TCHAR) * BUF_SIZE * column_cnt)) == NULL) {
+		return;
+	}
 	for (i = 0; i < column_cnt; i++) {
-		*(*(buf + i)) = TEXT('\0');
-		ListView_GetItemText(hListView, index, i, *(buf + i), BUF_SIZE - 1);
+		ListView_GetItemText(hListView, index, i, buf + BUF_SIZE * i, BUF_SIZE - 1);
 	}
 	// アイテムの削除
 	ListView_DeleteItem(hListView, index);
@@ -392,13 +399,14 @@ void listview_move_item(const HWND hListView, int index, const int Move)
 	lvi.mask = LVIF_TEXT | LVIF_PARAM;
 	lvi.iItem = index;
 	lvi.iSubItem = 0;
-	lvi.pszText = *buf;
+	lvi.pszText = buf;
 	lvi.cchTextMax = BUF_SIZE - 1;
 	lvi.lParam = lp;
 	i = ListView_InsertItem(hListView, &lvi);
 	for (i = 1; i < column_cnt; i++) {
-		ListView_SetItemText(hListView, index, i, *(buf + i));
+		ListView_SetItemText(hListView, index, i, buf + BUF_SIZE * i);
 	}
+	mem_free(&buf);
 	ListView_SetItemState(hListView, index,
 		LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
 	ListView_EnsureVisible(hListView, index, TRUE);
@@ -657,6 +665,19 @@ static int show_option(const HWND hWnd, const TCHAR *cmd_line)
 }
 
 /*
+ * send_main - 本体へメッセージを送る (応答しない場合は待たない)
+ */
+LRESULT send_main(const HWND hWnd, const UINT msg)
+{
+	DWORD_PTR result = 0;
+
+	if (SendMessageTimeout(hWnd, msg, 0, 0, SMTO_ABORTIFHUNG | SMTO_NORMAL, SEND_MAIN_TIMEOUT, &result) == 0) {
+		return 0;
+	}
+	return (LRESULT)result;
+}
+
+/*
  * get_work_path - 作業ディレクトリの作成
  */
 static void get_work_path(const HINSTANCE hInstance)
@@ -712,6 +733,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
 	hInst = hInstance;
 
+	// DLL の検索先を限定
+	security_initialize();
+
 	// 2重起動チェック
 	// 本体(main.c)と同じく NULL DACL で全ユーザーからアクセス可能にする
 	InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
@@ -731,7 +755,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 	// メインウィンドウ検索
 	if ((CLCLWnd = FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE)) != NULL) {
 		// バージョンチェック
-		if (SendMessage(CLCLWnd, WM_GET_VERSION, 0, 0) != APP_VAR) {
+		if (send_main(CLCLWnd, WM_GET_VERSION) != APP_VAR) {
 			MessageBox(NULL, message_get_res(IDS_OPTION_START_ERROR), ERROR_TITLE, MB_ICONERROR);
 			if (hMutex != NULL) {
 				CloseHandle(hMutex);
@@ -739,9 +763,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 			return 0;
 		}
 		// 設定保存要求
-		SendMessage(CLCLWnd, WM_OPTION_SAVE, 0, 0);
+		send_main(CLCLWnd, WM_OPTION_SAVE);
 		// ホットキー解除要求
-		SendMessage(CLCLWnd, WM_UNREGIST_HOTKEY, 0, 0);
+		send_main(CLCLWnd, WM_UNREGIST_HOTKEY);
 	}
 
 	// DPIの初期化
@@ -776,19 +800,19 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 	if (ret == 1) {
 		if ((CLCLWnd = FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE)) != NULL) {
 			// 設定保存要求
-			SendMessage(CLCLWnd, WM_OPTION_SAVE, 0, 0);
+			send_main(CLCLWnd, WM_OPTION_SAVE);
 		}
 		// 設定の保存
 		ini_put_option();
 
 		if (CLCLWnd != NULL) {
 			// 設定読み込み要求
-			SendMessage(CLCLWnd, WM_OPTION_LOAD, 0, 0);
+			send_main(CLCLWnd, WM_OPTION_LOAD);
 		}
 	} else {
 		if ((CLCLWnd = FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE)) != NULL) {
 			// ホットキー設定要求
-			SendMessage(CLCLWnd, WM_REGIST_HOTKEY, 0, 0);
+			send_main(CLCLWnd, WM_REGIST_HOTKEY);
 		}
 	}
 	ini_free();
