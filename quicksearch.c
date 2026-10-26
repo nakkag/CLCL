@@ -26,6 +26,7 @@
 #include "dpi.h"
 #include "Font.h"
 #include "ToolTip.h"
+#include "DarkMode.h"
 
 #include "dynamic_popup.h"
 
@@ -134,7 +135,7 @@ static int listbox_add_matches(HWND hListBox, DATA_INFO* start, const TCHAR* src
 				if (bMatches) {
 					TCHAR buf[BUF_SIZE];
 					// ltrim whitespace etc.
-					int i = 0;
+					size_t i = 0;
 					for (i = 0; i < _tcslen(s); i++) {
 						if (s[i] != TEXT(' ') && s[i] != TEXT('\t') 
 								&& s[i] != TEXT('\r') && s[i] != TEXT('\n') || s[i] == 0)
@@ -322,6 +323,24 @@ UINT_PTR quicksearch(HWND hWnd, POINT pt, HWND hToolTip)
 	SetTextMargin(hwndPopup, text_margin);
 	SetMaxVisibleItems(hwndPopup, max_visible_items);
 	SetUserData(hwndPopup, (void*)NULL);
+
+	// Colors: keep the popup visually in sync with CLCL's dark mode
+	if (dark_mode_is_dark()) {
+		SetPopupColors(hwndPopup,
+			dark_mode_get_color(COLOR_WINDOW),
+			dark_mode_get_color(COLOR_WINDOWTEXT),
+			dark_mode_get_color(COLOR_WINDOW),
+			dark_mode_get_color(COLOR_WINDOWTEXT),
+			dark_mode_get_color(COLOR_HIGHLIGHT),
+			dark_mode_get_color(COLOR_HIGHLIGHTTEXT));
+	}
+	else {
+		SetPopupColors(hwndPopup,
+			GetSysColor(COLOR_WINDOW), GetSysColor(COLOR_WINDOWTEXT),
+			GetSysColor(COLOR_WINDOW), GetSysColor(COLOR_WINDOWTEXT),
+			GetSysColor(COLOR_HIGHLIGHT), GetSysColor(COLOR_HIGHLIGHTTEXT));
+	}
+
 	if (menu_font)
 		SetMenuFont(hwndPopup, menu_font);
 

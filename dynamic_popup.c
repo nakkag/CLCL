@@ -14,6 +14,26 @@
 #include <stdio.h>
 #include <windowsx.h>
 
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0601
+#endif
+
+#ifndef EM_SETBKGNDCOLOR
+#define EM_SETBKGNDCOLOR 0x0441
+#endif
+
+#ifndef LB_SETBKCOLOR
+#define LB_SETBKCOLOR 0x019A
+#endif
+
+#ifndef LB_SETTEXTCOLOR
+#define LB_SETTEXTCOLOR 0x019B
+#endif
+
+#ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
+#define DWMWA_USE_IMMERSIVE_DARK_MODE 20
+#endif
+
 #define SUBCLASS_ID_POPUP 202
 #define ITEM_HEIGHT 20
 #define MAX_VISIBLE_ITEMS 10
@@ -40,7 +60,7 @@ typedef struct {
     OnPopupSelectCallback selectCallback;
     OnPopupTooltipCallback tooltipCallback;  // New callback for multiline tooltips
     unsigned int max_visible_items;
-	ModalPopupState* pModalState;
+    ModalPopupState* pModalState;
     void* pUserData;
     BOOL isClosing;
     BOOL listAboveEdit;
@@ -53,6 +73,13 @@ typedef struct {
     int lastHoveredItem;      // Tracking of last displayed tooltip element
     UINT_PTR uiTooltipTimer;  // Timer ID for tooltip delay
     TCHAR* currentTooltipText; // Current tooltip text for WM_PAINT
+    COLORREF editBgColor;
+    COLORREF editTextColor;
+    COLORREF listBgColor;
+    COLORREF listTextColor;
+    COLORREF selectedBgColor;
+    COLORREF selectedTextColor;
+    BOOL useCustomColors;
 } DynamicPopupData;
 
 // Forward declarations
@@ -60,6 +87,128 @@ LRESULT CALLBACK PopupFrameWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 LRESULT CALLBACK DynamicEditSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 LRESULT CALLBACK DynamicListSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 LRESULT CALLBACK TooltipWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+typedef HRESULT(WINAPI* DwmSetWindowAttributeProc)(HWND, DWORD, LPCVOID, DWORD);
+typedef HRESULT(WINAPI* SetWindowThemeProc)(HWND, LPCWSTR, LPCWSTR);
+
+static HMODULE g_dynamic_popup_uxtheme = NULL;
+static HMODULE g_dynamic_popup_dwmapi = NULL;
+static DwmSetWindowAttributeProc g_dynamic_popup_DwmSetWindowAttribute = NULL;
+static SetWindowThemeProc g_dynamic_popup_SetWindowTheme = NULL;
+
+static void DynamicPopupInitThemeApi(void)
+{
+    if (g_dynamic_popup_uxtheme != NULL || g_dynamic_popup_dwmapi != NULL) {
+        return;
+    }
+
+    g_dynamic_popup_uxtheme = LoadLibrary(TEXT("uxtheme.dll"));
+    if (g_dynamic_popup_uxtheme != NULL) {
+        g_dynamic_popup_SetWindowTheme =
+            (SetWindowThemeProc)GetProcAddress(g_dynamic_popup_uxtheme, "SetWindowTheme");
+    }
+
+    g_dynamic_popup_dwmapi = LoadLibrary(TEXT("dwmapi.dll"));
+    if (g_dynamic_popup_dwmapi != NULL) {
+        g_dynamic_popup_DwmSetWindowAttribute =
+            (DwmSetWindowAttributeProc)GetProcAddress(g_dynamic_popup_dwmapi, "DwmSetWindowAttribute");
+    }
+}
+
+static BOOL DynamicPopupIsDarkModeEnabled(void)
+{
+    static int cached = -1;
+    if (cached >= 0) {
+        return cached != 0;
+    }
+
+    cached = 0;
+
+    HIGHCONTRAST hc = { 0 };
+    hc.cbSize = sizeof(hc);
+    if (SystemParametersInfo(SPI_GETHIGHCONTRAST, sizeof(hc), &hc, 0) &&
+        (hc.dwFlags & HCF_HIGHCONTRASTON)) {
+        return FALSE;
+    }
+
+    HKEY hKey = NULL;
+    DWORD value = 0;
+    DWORD size = sizeof(value);
+    DWORD type = REG_DWORD;
+
+    if (RegOpenKeyEx(HKEY_CURRENT_USER,
+        TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"),
+        0, KEY_QUERY_VALUE, &hKey) == ERROR_SUCCESS) {
+        if (RegQueryValueEx(hKey, TEXT("AppsUseLightTheme"), NULL, &type,
+            (LPBYTE)&value, &size) == ERROR_SUCCESS && type == REG_DWORD) {
+            cached = (value == 0) ? 1 : 0;
+        }
+        RegCloseKey(hKey);
+    }
+
+    return cached != 0;
+}
+
+static COLORREF DynamicPopupGetControlColor(int index)
+{
+    switch (index) {
+    case COLOR_WINDOW:
+        return DynamicPopupIsDarkModeEnabled() ? RGB(32, 32, 32) : GetSysColor(COLOR_WINDOW);
+    case COLOR_WINDOWTEXT:
+        return DynamicPopupIsDarkModeEnabled() ? RGB(240, 240, 240) : GetSysColor(COLOR_WINDOWTEXT);
+    case COLOR_MENU:
+        return DynamicPopupIsDarkModeEnabled() ? RGB(43, 43, 43) : GetSysColor(COLOR_MENU);
+    case COLOR_MENUTEXT:
+        return DynamicPopupIsDarkModeEnabled() ? RGB(240, 240, 240) : GetSysColor(COLOR_MENUTEXT);
+    case COLOR_HIGHLIGHT:
+        return DynamicPopupIsDarkModeEnabled() ? RGB(0, 120, 215) : GetSysColor(COLOR_HIGHLIGHT);
+    case COLOR_HIGHLIGHTTEXT:
+        return DynamicPopupIsDarkModeEnabled() ? RGB(255, 255, 255) : GetSysColor(COLOR_HIGHLIGHTTEXT);
+    case COLOR_INFOBK:
+        return DynamicPopupIsDarkModeEnabled() ? RGB(43, 43, 43) : GetSysColor(COLOR_INFOBK);
+    case COLOR_INFOTEXT:
+        return DynamicPopupIsDarkModeEnabled() ? RGB(240, 240, 240) : GetSysColor(COLOR_INFOTEXT);
+    default:
+        return GetSysColor(index);
+    }
+}
+
+static void DynamicPopupApplyDarkModeTheme(HWND hwnd)
+{
+    if (!hwnd || !IsWindow(hwnd)) {
+        return;
+    }
+
+    DynamicPopupInitThemeApi();
+
+    if (!DynamicPopupIsDarkModeEnabled()) {
+        if (g_dynamic_popup_SetWindowTheme != NULL) {
+            g_dynamic_popup_SetWindowTheme(hwnd, NULL, NULL);
+        }
+        return;
+    }
+
+    if (g_dynamic_popup_SetWindowTheme != NULL) {
+        g_dynamic_popup_SetWindowTheme(hwnd, L"DarkMode_CFD", NULL);
+    }
+
+    if (g_dynamic_popup_DwmSetWindowAttribute != NULL) {
+        BOOL dark = TRUE;
+        g_dynamic_popup_DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &dark, sizeof(dark));
+    }
+}
+
+static BOOL CALLBACK DynamicPopupEnumChildScrollBar(HWND hwnd, LPARAM lParam)
+{
+    TCHAR cls[32];
+    GetClassName(hwnd, cls, 32);
+    if (_tcscmp(cls, TEXT("ScrollBar")) == 0) {
+        if (g_dynamic_popup_SetWindowTheme != NULL) {
+            g_dynamic_popup_SetWindowTheme(hwnd, L"DarkMode_Explorer", NULL);
+        }
+    }
+    return TRUE;
+}
 
 // Helper function: Hides the tooltip window
 static void HideTooltip(DynamicPopupData* pData)
@@ -154,6 +303,7 @@ static void ShowTooltipForItem(DynamicPopupData* pData, int itemIndex, POINT ptM
 
         HFONT hFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
         SendMessage(pData->hwndTooltip, WM_SETFONT, (WPARAM)hFont, FALSE);
+        DynamicPopupApplyDarkModeTheme(pData->hwndTooltip);
     }
 
     // Store tooltip text in pData
@@ -174,7 +324,8 @@ static void ShowTooltipForItem(DynamicPopupData* pData, int itemIndex, POINT ptM
     if (!pData->currentTooltipText) {
         ReleaseDC(pData->hwndTooltip, hdc);
         return;
-	}
+    }
+
     RECT rcText = { 0, 0, 280, 1000 };
     DrawText(hdc, pData->currentTooltipText, -1, &rcText, DT_CALCRECT | DT_WORDBREAK | DT_LEFT);
 
@@ -210,14 +361,15 @@ LRESULT CALLBACK TooltipWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             GetClientRect(hWnd, &rcClient);
 
             // Fill background
-            HBRUSH hBg = GetSysColorBrush(COLOR_INFOBK);
+            HBRUSH hBg = CreateSolidBrush(DynamicPopupGetControlColor(COLOR_INFOBK));
             FillRect(hdc, &rcClient, hBg);
+            DeleteObject(hBg);
 
             // Draw text
             HFONT hFont = (HFONT)SendMessage(hWnd, WM_GETFONT, 0, 0);
             HFONT oldFont = hFont ? (HFONT)SelectObject(hdc, hFont) : NULL;
 
-            COLORREF oldTextColor = SetTextColor(hdc, GetSysColor(COLOR_INFOTEXT));
+            COLORREF oldTextColor = SetTextColor(hdc, DynamicPopupGetControlColor(COLOR_INFOTEXT));
             int oldBkMode = SetBkMode(hdc, TRANSPARENT);
 
             RECT rcText = rcClient;
@@ -320,16 +472,16 @@ static void DestroyPopupLayout(DynamicPopupData* pData)
 
 static void RepositionListbox(DynamicPopupData* pData, int editHeight) 
 {
-	if (!pData || !pData->hwndFrame || !pData->hwndEdit || !pData->hwndList)
+    if (!pData || !pData->hwndFrame || !pData->hwndEdit || !pData->hwndList)
         return;
 
     int itemCount = (int)SendMessage(pData->hwndList, LB_GETCOUNT, 0, 0);
     int visibleItems = itemCount > MAX_VISIBLE_ITEMS ? MAX_VISIBLE_ITEMS : itemCount;
     int listHeight = 0;
-	int maxListHeight = ITEM_HEIGHT * MAX_VISIBLE_ITEMS;
+    int maxListHeight = ITEM_HEIGHT * MAX_VISIBLE_ITEMS;
     if (visibleItems > 0 && pData && pData->item_height > 0) {
         listHeight = pData->item_height * visibleItems;
-		maxListHeight = pData->item_height * MAX_VISIBLE_ITEMS;
+        maxListHeight = pData->item_height * MAX_VISIBLE_ITEMS;
     }
     
     // Get screen coordinates of the frame window
@@ -340,30 +492,27 @@ static void RepositionListbox(DynamicPopupData* pData, int editHeight)
     RECT editRect;
     GetWindowRect(pData->hwndEdit, &editRect);
 
-    // Get monitor info to check available space
-    //HMONITOR hMonitor = MonitorFromRect(&frameRect, MONITOR_DEFAULTTONEAREST);
-    //MONITORINFO miInfo = { 0 };
-    //miInfo.cbSize = sizeof(MONITORINFO);
-    //GetMonitorInfo(hMonitor, &miInfo);
     int monitorBottom = pData->monitorRect.bottom;
 
     if (frameRect.left < pData->monitorRect.left) {
         // Move the frame window to the right to fit within the monitor
-		frameRect.left = pData->monitorRect.left;
-		frameRect.right = pData->monitorRect.left + width + 1;
+        frameRect.left = pData->monitorRect.left;
+        frameRect.right = pData->monitorRect.left + width + 1;
     } 
     else if (frameRect.right > pData->monitorRect.right) {
-		// Move the frame window to the left to fit within the monitor
+        // Move the frame window to the left to fit within the monitor
         frameRect.left = pData->monitorRect.right - width  - 1;
-		frameRect.right = pData->monitorRect.right;
-	}
+        frameRect.right = pData->monitorRect.right;
+    }
+
     if (editRect.top < pData->monitorRect.top) {
         // Move the frame window down to fit within the monitor
         frameRect.top = pData->monitorRect.top;
-    } else if (editRect.bottom > pData->monitorRect.bottom) {
+    }
+    else if (editRect.bottom > pData->monitorRect.bottom) {
         // Move the frame window up to fit within the monitor
         frameRect.bottom = pData->monitorRect.bottom;
-	}  
+    }  
     
     // Adjust frame window size
     int totalHeight = editHeight + listHeight;
@@ -377,7 +526,8 @@ static void RepositionListbox(DynamicPopupData* pData, int editHeight)
         SetWindowPos(pData->hwndList, NULL, 0, 0, width, listHeight, SWP_NOZORDER | SWP_NOACTIVATE);
         SetWindowPos(pData->hwndEdit, NULL, 0, listHeight + 1, width, editHeight, SWP_NOZORDER);
         pData->listAboveEdit = TRUE;
-    } else {
+    }
+    else {
         // Position listbox below the edit control (default)
         SetWindowPos(pData->hwndEdit, NULL, 0, 0, width, editHeight, SWP_NOZORDER);
         SetWindowPos(pData->hwndList, NULL, 0, editHeight + 1, width, listHeight, SWP_NOZORDER | SWP_NOACTIVATE);
@@ -390,6 +540,10 @@ static void RepositionListbox(DynamicPopupData* pData, int editHeight)
 
 static void UpdateListContent(DynamicPopupData* pData) 
 {
+    if (!pData || !pData->hwndEdit) {
+        return;
+    }
+
     int len = GetWindowTextLength(pData->hwndEdit);
     TCHAR* text = (TCHAR*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, (len + 1) * sizeof(TCHAR));
     if (text) {
@@ -398,10 +552,17 @@ static void UpdateListContent(DynamicPopupData* pData)
         // Delete old content and its heap objects before populating
         ClearListBoxItems(pData->hwndList);
         HideTooltip(pData);
+        if (pData->hwndTooltip == NULL && pData->tooltipCallback) {
+            POINT pt = { 0, 0 };
+            // If host application handles tooltip, this call will hide it.
+            pData->tooltipCallback(pt, NULL, pData->pUserData);
+        }
+
 
         if (pData->populateCallback) {
             pData->populateCallback(text, pData->hwndList, pData->pUserData);
         }
+
         HeapFree(GetProcessHeap(), 0, text);
     }
 
@@ -413,8 +574,46 @@ static void UpdateListContent(DynamicPopupData* pData)
     RepositionListbox(pData, 26);
 }
 
+void SetPopupColors(HWND hwndFrame,
+    COLORREF editBgColor, COLORREF editTextColor,
+    COLORREF listBgColor, COLORREF listTextColor,
+    COLORREF selectedBgColor, COLORREF selectedTextColor)
+{
+    DynamicPopupData* pData = (DynamicPopupData*)GetWindowLongPtr(hwndFrame, GWLP_USERDATA);
+    if (!pData) return;
+
+    pData->editBgColor = editBgColor;
+    pData->editTextColor = editTextColor;
+    pData->listBgColor = listBgColor;
+    pData->listTextColor = listTextColor;
+    pData->selectedBgColor = selectedBgColor;
+    pData->selectedTextColor = selectedTextColor;
+    pData->useCustomColors = TRUE;
+
+    if (pData->hwndEdit) {
+        DynamicPopupInitThemeApi();
+        if (g_dynamic_popup_SetWindowTheme != NULL) {
+            g_dynamic_popup_SetWindowTheme(pData->hwndEdit, L"", L"");
+        }
+        SendMessage(pData->hwndEdit, EM_SETBKGNDCOLOR, 0, (LPARAM)pData->editBgColor);
+        InvalidateRect(pData->hwndEdit, NULL, TRUE);
+        RedrawWindow(pData->hwndEdit, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+    }
+
+    if (pData->hwndList) {
+        DynamicPopupInitThemeApi();
+        if (g_dynamic_popup_SetWindowTheme != NULL) {
+            g_dynamic_popup_SetWindowTheme(pData->hwndList, L"DarkMode_Explorer", NULL);
+        }
+        SendMessage(pData->hwndList, LB_SETBKCOLOR, 0, (LPARAM)pData->listBgColor);
+        SendMessage(pData->hwndList, LB_SETTEXTCOLOR, 0, (LPARAM)pData->listTextColor);
+        EnumChildWindows(pData->hwndList, DynamicPopupEnumChildScrollBar, 0);
+        InvalidateRect(pData->hwndList, NULL, TRUE);
+    }
+}
+
 HWND CreateDynamicPopupMenu(HWND hwndOwner, int x, int y, int width)
- {
+{
     HINSTANCE hInstance = (HINSTANCE)GetWindowLongPtr(hwndOwner, GWLP_HINSTANCE);
     const TCHAR* szClassName = TEXT("HCP_PopupMenuFrameClass");
 
@@ -499,20 +698,46 @@ HWND CreateDynamicPopupMenu(HWND hwndOwner, int x, int y, int width)
     pData->populateCallback = NULL;
     pData->selectCallback = NULL;
     pData->tooltipCallback = NULL;
-	pData->pModalState = NULL;
+    pData->pModalState = NULL;
     pData->max_visible_items = MAX_VISIBLE_ITEMS;
-    pData->hImageList = (HIMAGELIST) NULL;
+    pData->hImageList = (HIMAGELIST)NULL;
     pData->icon_size = 0;
-    pData->item_height = ITEM_HEIGHT;
+    pData->icon_margin = 0;
     pData->text_margin = 4;
-	pData->pUserData = NULL;
+    pData->item_height = ITEM_HEIGHT;
+    pData->pUserData = NULL;
     pData->lastHoveredItem = -1;
     pData->uiTooltipTimer = 0;
     pData->currentTooltipText = NULL;
 
+    pData->editBgColor = DynamicPopupGetControlColor(COLOR_WINDOW);
+    pData->editTextColor = DynamicPopupGetControlColor(COLOR_WINDOWTEXT);
+    pData->listBgColor = DynamicPopupGetControlColor(COLOR_MENU);
+    pData->listTextColor = DynamicPopupGetControlColor(COLOR_MENUTEXT);
+    pData->selectedBgColor = DynamicPopupGetControlColor(COLOR_HIGHLIGHT);
+    pData->selectedTextColor = DynamicPopupGetControlColor(COLOR_HIGHLIGHTTEXT);
+
+    pData->useCustomColors = FALSE;
+
+    SendMessage(hwndEdit, EM_SETBKGNDCOLOR, 0, (LPARAM)pData->editBgColor);
+    SendMessage(hwndEdit, WM_SETFONT, (WPARAM)pData->hFont, TRUE);
+    SendMessage(hwndList, LB_SETBKCOLOR, 0, (LPARAM)pData->listBgColor);
+    SendMessage(hwndList, LB_SETTEXTCOLOR, 0, (LPARAM)pData->listTextColor);
+
     // Activate subclassing for controls
     SetWindowSubclass(pData->hwndEdit, DynamicEditSubclass, SUBCLASS_ID_POPUP, (DWORD_PTR)pData);
     SetWindowSubclass(pData->hwndList, DynamicListSubclass, SUBCLASS_ID_POPUP, (DWORD_PTR)pData);
+
+    DynamicPopupInitThemeApi();
+    if (g_dynamic_popup_SetWindowTheme != NULL) {
+        g_dynamic_popup_SetWindowTheme(hwndEdit, L"", L"");
+        g_dynamic_popup_SetWindowTheme(hwndList, L"DarkMode_Explorer", NULL);
+        EnumChildWindows(hwndList, DynamicPopupEnumChildScrollBar, 0);
+    }
+
+    DynamicPopupApplyDarkModeTheme(hwndEdit);
+    DynamicPopupApplyDarkModeTheme(hwndList);
+    DynamicPopupApplyDarkModeTheme(hwndFrame);
 
     return hwndFrame;
 }
@@ -544,55 +769,56 @@ void SetTooltipCallback(HWND hwndFrame, OnPopupTooltipCallback tooltipCallback)
 void SetImageList(HWND hwndFrame, HIMAGELIST hImageList, int icon_size)
 {
     DynamicPopupData* pData = (DynamicPopupData*)GetWindowLongPtr(hwndFrame, GWLP_USERDATA);
-    if (!pData)
-        return;
-
-        pData->hImageList = hImageList;
-        pData->icon_size = icon_size;
-
-    if (icon_size == 0) {
-        int cx = 0, cy = 0;
-        if (pData && pData->hImageList && ImageList_GetIconSize(pData->hImageList, &cx, &cy))
-            icon_size = (cy > 0) ? cy : 16;
-    }
+    if (!pData) return;
 
     pData->hImageList = hImageList;
     pData->icon_size = icon_size;
+
+    if (icon_size == 0) {
+        int cx = 0, cy = 0;
+        if (pData->hImageList && ImageList_GetIconSize(pData->hImageList, &cx, &cy))
+            pData->icon_size = (cy > 0) ? cy : 16;
+    }
 }
 
 void SetIconSize(HWND hwndFrame, int icon_size)
 {
     DynamicPopupData* pData = (DynamicPopupData*)GetWindowLongPtr(hwndFrame, GWLP_USERDATA);
-    if (pData)
+    if (pData) {
         pData->icon_size = icon_size;
+    }
 }
 
 void SetIconMargin(HWND hwndFrame, int icon_margin)
 {
     DynamicPopupData* pData = (DynamicPopupData*)GetWindowLongPtr(hwndFrame, GWLP_USERDATA);
-    if (pData)
+    if (pData) {
         pData->icon_margin = icon_margin;
+    }
 }
 
 void SetItemHeight(HWND hwndFrame, int item_height) 
 {
     DynamicPopupData* pData = (DynamicPopupData*)GetWindowLongPtr(hwndFrame, GWLP_USERDATA);
-    if (pData)
+    if (pData) {
         pData->item_height = item_height;
+    }
 }
 
 void SetTextMargin(HWND hwndFrame, int text_margin)
 {
     DynamicPopupData* pData = (DynamicPopupData*)GetWindowLongPtr(hwndFrame, GWLP_USERDATA);
-    if (pData)
+    if (pData) {
         pData->text_margin = text_margin;
+    }
 }
 
 void SetMaxVisibleItems(HWND hwndFrame, unsigned int max_visible_items)
 {
     DynamicPopupData* pData = (DynamicPopupData*)GetWindowLongPtr(hwndFrame, GWLP_USERDATA);
-    if (pData)
+    if (pData) {
         pData->max_visible_items = max_visible_items;
+    }
 }
 
 void SetMenuFont(HWND hwndFrame, HFONT hFont)
@@ -614,7 +840,7 @@ void SetUserData(HWND hwndFrame, void* pUserData)
 void ActivateDynamicPopup(HWND hwndFrame) 
 {
     DynamicPopupData* pData = (DynamicPopupData*)GetWindowLongPtr(hwndFrame, GWLP_USERDATA);
-	if (pData == NULL)
+    if (pData == NULL)
         return;
 
     // Assign modern system font
@@ -628,6 +854,19 @@ void ActivateDynamicPopup(HWND hwndFrame)
         }
     SendMessage(pData->hwndList, LB_SETITEMHEIGHT, 0, (LPARAM)pData->item_height);
 
+    if (!pData->useCustomColors) {
+        pData->editBgColor = DynamicPopupGetControlColor(COLOR_WINDOW);
+        pData->editTextColor = DynamicPopupGetControlColor(COLOR_WINDOWTEXT);
+        pData->listBgColor = DynamicPopupGetControlColor(COLOR_MENU);
+        pData->listTextColor = DynamicPopupGetControlColor(COLOR_MENUTEXT);
+        pData->selectedBgColor = DynamicPopupGetControlColor(COLOR_HIGHLIGHT);
+        pData->selectedTextColor = DynamicPopupGetControlColor(COLOR_HIGHLIGHTTEXT);
+    }
+
+    SendMessage(pData->hwndEdit, EM_SETBKGNDCOLOR, 0, (LPARAM)pData->editBgColor);
+    SendMessage(pData->hwndList, LB_SETBKCOLOR, 0, (LPARAM)pData->listBgColor);
+    SendMessage(pData->hwndList, LB_SETTEXTCOLOR, 0, (LPARAM)pData->listTextColor);
+
     // Populate initially
     UpdateListContent(pData);
 
@@ -637,20 +876,6 @@ void ActivateDynamicPopup(HWND hwndFrame)
     // Select the first item
     int sel = 0;
     LRESULT ret = SendMessage(pData->hwndList, LB_SETCURSEL, (WPARAM)sel, (LPARAM)0);
-    if (ret >= 0 && pData->tooltipCallback != NULL) {
-        // Show tooltip for the selected item
-        RECT itemrect;
-        ret = SendMessage(pData->hwndList, LB_GETITEMRECT, (WPARAM)sel, (LPARAM)&itemrect);
-        if (ret >= 0) {
-            POINT pt;
-            pt.x = (itemrect.left + itemrect.right) / 2;
-            pt.y = itemrect.bottom + 1;
-            if (ClientToScreen(pData->hwndList, &pt))
-                ShowTooltipForItem(pData, sel, pt);
-        }
-    }
-
-    return;
 }
 
 static void SetModalState(DynamicPopupData* pData, const PopupItemData* pSelectedItem)
@@ -663,7 +888,8 @@ static void SetModalState(DynamicPopupData* pData, const PopupItemData* pSelecte
 }
 
 // Window procedure for the outer frame window
-LRESULT CALLBACK PopupFrameWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK PopupFrameWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
     DynamicPopupData* pData = (DynamicPopupData*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
     switch (uMsg) {
@@ -676,6 +902,16 @@ LRESULT CALLBACK PopupFrameWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             }
             break;
 
+        case WM_ERASEBKGND: {
+            HBRUSH hBrush = CreateSolidBrush(pData && pData->useCustomColors ? 
+                pData->listBgColor : DynamicPopupGetControlColor(COLOR_MENU));
+            RECT rc;
+            GetClientRect(hWnd, &rc);
+            FillRect((HDC)wParam, &rc, hBrush);
+            DeleteObject(hBrush);
+            return TRUE;
+        }
+
         case WM_DRAWITEM: {
             DRAWITEMSTRUCT* pdis = (DRAWITEMSTRUCT*)lParam;
             if (pdis->CtlID == IDC_DYNAMIC_LISTBOX && pdis->itemID != -1) {
@@ -686,9 +922,21 @@ LRESULT CALLBACK PopupFrameWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                 RECT rc = pdis->rcItem;
                 BOOL isSelected = (pdis->itemState & ODS_SELECTED);
 
+                COLORREF bgColor;
+                COLORREF textColor;
+                if (pData && pData->useCustomColors) {
+                    bgColor = isSelected ? pData->selectedBgColor : pData->listBgColor;
+                    textColor = isSelected ? pData->selectedTextColor : pData->listTextColor;
+                } 
+                else {
+                    bgColor = DynamicPopupGetControlColor(COLOR_MENU);
+                    textColor = DynamicPopupGetControlColor(COLOR_MENUTEXT);
+                }
+
                 // 1. Draw background (selected vs. standard)
-                HBRUSH hBg = GetSysColorBrush(isSelected ? COLOR_HIGHLIGHT : COLOR_MENU);
+                HBRUSH hBg = CreateSolidBrush(bgColor);
                 FillRect(hdc, &rc, hBg);
+                DeleteObject(hBg);
 
                 // 2. Draw icon (if ImageList and valid index present)
                 if (pData && pData->hImageList && pItem->iIconIndex >= 0 && pData->icon_size > 0) {
@@ -696,10 +944,11 @@ LRESULT CALLBACK PopupFrameWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                     int cy = rc.top + (rc.bottom - rc.top - pData->icon_size) / 2;
                     ImageList_Draw(pData->hImageList, pItem->iIconIndex, hdc, rc.left + pData->icon_margin, cy, ILD_TRANSPARENT);
                 }
+
                 int iconOffset = (pData && pData->icon_size > 0) ? pData->icon_margin + pData->icon_size + pData->icon_margin : 0;
 
                 // 3. Draw text
-                COLORREF oldTextCol = SetTextColor(hdc, GetSysColor(isSelected ? COLOR_HIGHLIGHTTEXT : COLOR_MENUTEXT));
+                COLORREF oldTextCol = SetTextColor(hdc, textColor);
                 int oldBkMode = SetBkMode(hdc, TRANSPARENT);
 
                 RECT rcText = rc;
@@ -733,13 +982,35 @@ LRESULT CALLBACK PopupFrameWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             }
             return 0;
         }
+
+        case WM_CTLCOLOREDIT:
+        case WM_CTLCOLORSTATIC: {
+            if (pData && (HWND)lParam == pData->hwndEdit) {
+                HDC hdc = (HDC)wParam;
+                SetTextColor(hdc, pData->editTextColor);
+                SetBkColor(hdc, pData->editBgColor);
+                return (LRESULT)CreateSolidBrush(pData->editBgColor);
+            }
+            break;
+        }
+
+        case WM_CTLCOLORLISTBOX: {
+            if (pData && (HWND)lParam == pData->hwndList) {
+                HDC hdc = (HDC)wParam;
+                SetTextColor(hdc, pData->listTextColor);
+                SetBkColor(hdc, pData->listBgColor);
+                return (LRESULT)CreateSolidBrush(pData->listBgColor);
+            }
+            break;
+        }
     }
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 // Subclass the edit control
-LRESULT CALLBACK DynamicEditSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData) {
+LRESULT CALLBACK DynamicEditSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+{
     DynamicPopupData* pData = (DynamicPopupData*)dwRefData;
 
     switch (uMsg) {
@@ -776,7 +1047,7 @@ LRESULT CALLBACK DynamicEditSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
                     POINT pt;
                     pt.x = (itemrect.left + itemrect.right) / 2;
                     pt.y = itemrect.bottom + 1;
-                    if (ClientToScreen(pData->hwndList,&pt))
+                if (ClientToScreen(pData->hwndList, &pt))
                          ShowTooltipForItem(pData, sel, pt);
                 }
 
@@ -801,7 +1072,8 @@ LRESULT CALLBACK DynamicEditSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 }
 
 // Subclass the listbox
-LRESULT CALLBACK DynamicListSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData) {
+LRESULT CALLBACK DynamicListSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+{
     DynamicPopupData* pData = (DynamicPopupData*)dwRefData;
 
     switch (uMsg) {
@@ -817,6 +1089,7 @@ LRESULT CALLBACK DynamicListSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
             break;
         // Memorize the position
         oldpos = pt;
+
         int sel = (int)SendMessage(hWnd, LB_GETCURSEL, 0, 0);
         int index = (int)SendMessage(hWnd, LB_ITEMFROMPOINT, 0, lParam);
         // If mouse has really been moved and a different item is under the mouse cursor, select that item.
@@ -851,6 +1124,7 @@ LRESULT CALLBACK DynamicListSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
     }
 
     }
+
     return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 }
 
@@ -867,11 +1141,8 @@ UINT_PTR TrackDynamicPopup(HWND hwndFrame)
 
     // Local variable stays alive in this scope, even after pUserData is destroyed
     ModalPopupState modalState = { 0, FALSE };
-    modalState.selectedItemData = 0;
-    modalState.selectionMade = FALSE;
-
     // Pointer to local variable modalState
-	pData->pModalState = &modalState;
+    pData->pModalState = &modalState;
 
     ActivateDynamicPopup(hwndFrame);
 
@@ -898,7 +1169,5 @@ UINT_PTR TrackDynamicPopup(HWND hwndFrame)
         DestroyWindow(hwndFrame);
     }
 
-    UINT_PTR result = modalState.selectedItemData;
-        
-    return result;
+    return modalState.selectedItemData;
 }

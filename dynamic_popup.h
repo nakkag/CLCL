@@ -67,6 +67,8 @@ void SetIconSize(HWND hwndFrame, int icon_size);
 
 void SetIconMargin(HWND hwndFrame, int icon_margin);
 
+void SetItemHeight(HWND hwndFrame, int item_height);
+
 void SetTextMargin(HWND hwndFrame, int text_margin);
 
 void SetMaxVisibleItems(HWND hwndFrame, unsigned int max_visible_items);
@@ -74,6 +76,11 @@ void SetMaxVisibleItems(HWND hwndFrame, unsigned int max_visible_items);
 void SetMenuFont(HWND hwndFrame, HFONT hFont);
 
 void SetUserData(HWND hwndFrame, void* pUserData);
+
+void SetPopupColors(HWND hwndFrame,
+    COLORREF editBgColor, COLORREF editTextColor,
+    COLORREF listBgColor, COLORREF listTextColor,
+    COLORREF selectedBgColor, COLORREF selectedTextColor);
 
 void ActivateDynamicPopup(HWND hwndFrame);
 
