@@ -54,6 +54,8 @@ extern HINSTANCE hInst;
 
 static BOOL search_flags_supported = FALSE;
 static int elevated = -1;
+// 信頼する外側のメッセージの処理中の深さ (メインスレッドのみで使用)
+static int trusted_depth = 0;
 
 /* Local Function Prototypes */
 static BOOL get_module_dir(TCHAR *buf, const int size);
@@ -151,6 +153,11 @@ void security_add_blocked(TCHAR *list, const int size, const TCHAR *lib_path)
 	lstrcpyn(list + len, TEXT("\r\n"), size - len);
 	len += 2;
 	lstrcpyn(list + len, lib_path, size - len);
+	// 切り詰めでサロゲートペアを分断しない
+	len = lstrlen(list);
+	if (len > 0 && IS_HIGH_SURROGATE(*(list + len - 1))) {
+		*(list + len - 1) = TEXT('\0');
+	}
 }
 
 /*
@@ -410,6 +417,14 @@ HMODULE security_load_plugin(const TCHAR *lib_path, BOOL *blocked)
 	if (security_is_elevated() == FALSE) {
 		return load_library(full_path);
 	}
+	if (search_flags_supported == FALSE) {
+		// 検索先を限定できない環境では PATH 上の DLL が読まれるため、昇格中は読み込まない
+		if (blocked != NULL) {
+			*blocked = TRUE;
+		}
+		SetLastError(ERROR_ACCESS_DENIED);
+		return NULL;
+	}
 
 	// 判定から読み込みまでの間に書き換えられないように書き込みと削除を禁止して開いておく
 	hFile = CreateFile(full_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -417,8 +432,12 @@ HMODULE security_load_plugin(const TCHAR *lib_path, BOOL *blocked)
 		return NULL;
 	}
 	if (get_final_path(hFile, final_path, SEC_PATH_SIZE) == FALSE) {
+		// 実際の場所を確認できない (ドライブ文字のないボリュームなど) ため読み込まない
 		CloseHandle(hFile);
-		SetLastError(ERROR_FILENAME_EXCED_RANGE);
+		if (blocked != NULL) {
+			*blocked = TRUE;
+		}
+		SetLastError(ERROR_ACCESS_DENIED);
 		return NULL;
 	}
 	if ((hToken = get_limited_token()) != NULL) {
@@ -467,17 +486,18 @@ HMODULE security_load_plugin_ui(const HWND hWnd, const TCHAR *lib_path)
 	return NULL;
 }
 
-#ifndef OPTION_SET
 /*
  * security_is_internal_message - 同じスレッドからの SendMessage でのみ受け付けるメッセージか
  *
- *	ポインタやハンドルを受け渡すプラグイン用のメッセージと、システムが同じスレッドへ送るメニューの
- *	メッセージが対象。別のスレッドやプロセスから送られたり、キューに投稿されたりした場合は処理しない。
+ *	ポインタやハンドルを受け渡すプラグイン用・内部用のメッセージと、システムが同じスレッドへ送る
+ *	メニューやコントロールのメッセージが対象。別のスレッドやプロセスから送られたり、キューに
+ *	投稿されたりした場合は処理しない。
  */
 BOOL security_is_internal_message(const UINT msg)
 {
 	switch (msg) {
 	case WM_GET_WORKPATH:
+#ifndef OPTION_SET
 	case WM_GET_FORMAT_ICON:
 	case WM_OPTION_SHOW:
 	case WM_OPTION_GET:
@@ -490,9 +510,51 @@ BOOL security_is_internal_message(const UINT msg)
 	case WM_MENUCHAR:
 	case WM_UAHDRAWMENU:
 	case WM_UAHDRAWMENUITEM:
+	case WM_MEASUREITEM:
+	case WM_DRAWITEM:
+	case WM_NOTIFY:
+#endif	// OPTION_SET
+		return TRUE;
+	}
+#ifndef OPTION_SET
+	// 各ウィンドウが WM_APP + 1 〜 7 で使う内部メッセージ (データや構造体のポインタを渡す)
+	if (msg >= WM_APP + 1 && msg <= WM_APP + 7) {
 		return TRUE;
 	}
 	return (msg >= WM_ITEM_TO_CLIPBOARD && msg <= WM_ITEM_GET_SAVE_INFO) ? TRUE : FALSE;
+#else	// OPTION_SET
+	return FALSE;
+#endif	// OPTION_SET
+}
+
+/*
+ * security_trust_begin - 本体が信頼する外側のメッセージの処理開始
+ *
+ *	別のプロセスから送られた設定の再読み込みや終了要求の処理中に、本体がプラグインを呼び出すと、
+ *	プラグインが同じスレッドで本体へ送るメッセージも「送信中」と判定されてしまう。
+ *	その間は入れ子のメッセージを受け付ける。
+ */
+void security_trust_begin(void)
+{
+	trusted_depth++;
+}
+
+void security_trust_end(void)
+{
+	if (trusted_depth > 0) {
+		trusted_depth--;
+	}
+}
+
+/*
+ * security_is_foreign_send - 現在のメッセージが別のスレッドやプロセスから送られたものか
+ */
+BOOL security_is_foreign_send(void)
+{
+	if (trusted_depth > 0) {
+		return FALSE;
+	}
+	return (InSendMessageEx(NULL) != ISMEX_NOSEND) ? TRUE : FALSE;
 }
 
 /*
@@ -500,9 +562,10 @@ BOOL security_is_internal_message(const UINT msg)
  */
 BOOL security_is_foreign_message(const UINT msg)
 {
-	return (security_is_internal_message(msg) == TRUE && InSendMessage() == TRUE) ? TRUE : FALSE;
+	return (security_is_internal_message(msg) == TRUE && security_is_foreign_send() == TRUE) ? TRUE : FALSE;
 }
 
+#ifndef OPTION_SET
 /*
  * security_shell_open_as_user - エクスプローラ経由で起動する (管理者権限を引き継がない)
  */
@@ -517,8 +580,9 @@ BOOL security_shell_open_as_user(const TCHAR *file_name, const TCHAR *command_li
 	IShellFolderViewDual *psfvd = NULL;
 	IDispatch *pdisp_app = NULL;
 	IShellDispatch2 *psd = NULL;
-	VARIANT v_empty, v_args, v_show;
-	BSTR bs_file = NULL, bs_args = NULL;
+	VARIANT v_empty, v_args, v_dir, v_show;
+	BSTR bs_file = NULL, bs_args = NULL, bs_dir = NULL;
+	TCHAR cur_dir[MAX_PATH];
 	long hwnd = 0;
 	BOOL ret = FALSE;
 
@@ -527,6 +591,7 @@ BOOL security_shell_open_as_user(const TCHAR *file_name, const TCHAR *command_li
 	}
 	VariantInit(&v_empty);
 	VariantInit(&v_args);
+	VariantInit(&v_dir);
 	VariantInit(&v_show);
 
 	if (FAILED(CoCreateInstance(&CLSID_ShellWindows, NULL, CLSCTX_LOCAL_SERVER,
@@ -549,6 +614,11 @@ BOOL security_shell_open_as_user(const TCHAR *file_name, const TCHAR *command_li
 	if ((bs_file = SysAllocString(file_name)) == NULL) {
 		goto end;
 	}
+	// 作業フォルダは ShellExecuteEx と同じくカレントディレクトリにする
+	if (GetCurrentDirectory(MAX_PATH, cur_dir) > 0 && (bs_dir = SysAllocString(cur_dir)) != NULL) {
+		v_dir.vt = VT_BSTR;
+		v_dir.bstrVal = bs_dir;
+	}
 	if (command_line != NULL && *command_line != TEXT('\0')) {
 		if ((bs_args = SysAllocString(command_line)) == NULL) {
 			goto end;
@@ -559,7 +629,7 @@ BOOL security_shell_open_as_user(const TCHAR *file_name, const TCHAR *command_li
 	v_show.vt = VT_I4;
 	v_show.lVal = SW_SHOWNORMAL;
 	ret = SUCCEEDED(IShellDispatch2_ShellExecute(psd, bs_file,
-		v_args, v_empty, v_empty, v_show)) ? TRUE : FALSE;
+		v_args, v_dir, v_empty, v_show)) ? TRUE : FALSE;
 
 end:
 	if (bs_file != NULL) {
@@ -567,6 +637,9 @@ end:
 	}
 	if (bs_args != NULL) {
 		SysFreeString(bs_args);
+	}
+	if (bs_dir != NULL) {
+		SysFreeString(bs_dir);
 	}
 	if (psd != NULL) {
 		IShellDispatch2_Release(psd);

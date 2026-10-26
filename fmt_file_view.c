@@ -28,6 +28,7 @@
 #include "fmt_file_view.h"
 #include "dpi.h"
 #include "DarkMode.h"
+#include "Security.h"
 
 #include "resource.h"
 
@@ -232,6 +233,27 @@ static BOOL file_path_is_local(const TCHAR *path)
 }
 
 /*
+ * file_path_is_plain - リンクやショートカットでない通常のファイルか
+ *
+ *	参照先がネットワーク上にあると実ファイルへの問い合わせで接続が発生するため、
+ *	リパースポイントと .lnk は属性だけで扱う
+ */
+static BOOL file_path_is_plain(const TCHAR *path)
+{
+	DWORD attr;
+	int len = lstrlen(path);
+
+	if (len >= 4 && lstrcmpi(path + len - 4, TEXT(".lnk")) == 0) {
+		return FALSE;
+	}
+	attr = GetFileAttributes(path);
+	if (attr == INVALID_FILE_ATTRIBUTES || (attr & FILE_ATTRIBUTE_REPARSE_POINT) != 0) {
+		return FALSE;
+	}
+	return TRUE;
+}
+
+/*
  * file_item_get_info - シェルからファイル情報を取得
  */
 static BOOL file_item_get_info(const FILE_ITEM *fi, const UINT flags, SHFILEINFO *shfi)
@@ -240,7 +262,7 @@ static BOOL file_item_get_info(const FILE_ITEM *fi, const UINT flags, SHFILEINFO
 
 	file_item_get_fullpath(fi, buf, _countof(buf));
 	ZeroMemory(shfi, sizeof(SHFILEINFO));
-	if (file_path_is_local(buf) == TRUE &&
+	if (file_path_is_local(buf) == TRUE && file_path_is_plain(buf) == TRUE &&
 		SHGetFileInfo(buf, 0, shfi, sizeof(SHFILEINFO), flags) != 0) {
 		return TRUE;
 	}
@@ -577,6 +599,11 @@ static LRESULT CALLBACK fileview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 	int i;
 	static BOOL lock;
 	static BOOL modify;
+
+	// ポインタを受け渡すメッセージは同じスレッドからのみ受け付ける
+	if (security_is_foreign_message(msg) == TRUE) {
+		return 0;
+	}
 
 	switch (msg) {
 	case WM_ERASEBKGND:

@@ -287,6 +287,10 @@ static INT_PTR CALLBACK select_tools_proc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 
 	case WM_GET_WORKPATH:
 		// 作業ディレクトリ取得
+		// 別のプロセスから送られた場合はポインタを参照しない
+		if (security_is_foreign_send() == TRUE) {
+			break;
+		}
 		if (lParam == 0) {
 			break;
 		}
@@ -399,6 +403,10 @@ static INT_PTR CALLBACK select_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
 
 	case WM_GET_WORKPATH:
 		// 作業ディレクトリ取得
+		// 別のプロセスから送られた場合はポインタを参照しない
+		if (security_is_foreign_send() == TRUE) {
+			break;
+		}
 		if (lParam == 0) {
 			break;
 		}
@@ -990,6 +998,10 @@ INT_PTR CALLBACK set_tool_proc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	case WM_GET_WORKPATH:
 		// 作業ディレクトリ取得
+		// 別のプロセスから送られた場合はポインタを参照しない
+		if (security_is_foreign_send() == TRUE) {
+			break;
+		}
 		if (lParam == 0) {
 			break;
 		}

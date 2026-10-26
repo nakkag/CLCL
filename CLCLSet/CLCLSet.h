@@ -35,6 +35,7 @@ void close_theme(HTHEME hTheme);
 BOOL draw_theme_scroll(LPDRAWITEMSTRUCT lpDrawItem, UINT i, HTHEME hTheme);
 #endif	// OP_XP_STYLE
 void alloc_get_text(const HWND hEdit, TCHAR **buf);
+LRESULT send_main(const HWND hWnd, const UINT msg);
 int file_select(const HWND hDlg, const TCHAR *oFilter, const int Index, TCHAR *ret);
 void draw_scroll_sontrol(LPDRAWITEMSTRUCT lpDrawItem, UINT i);
 BOOL CALLBACK enum_windows_proc(const HWND hWnd, const LPARAM lParam);

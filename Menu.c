@@ -369,6 +369,38 @@ static MENU_ITEM_INFO *menu_id_to_menuitem(MENU_ITEM_INFO *mii, const int mcnt, 
 }
 
 /*
+ * menu_find_item_info - メニュー情報の中に指定のアドレスがあるか
+ */
+static BOOL menu_find_item_info(const MENU_ITEM_INFO *mii, const int mcnt, const MENU_ITEM_INFO *target)
+{
+	int i;
+
+	if (mii == NULL) {
+		return FALSE;
+	}
+	for (i = 0; i < mcnt; i++) {
+		if (mii + i == target) {
+			return TRUE;
+		}
+		if ((mii + i)->mii != NULL && menu_find_item_info((mii + i)->mii, (mii + i)->mii_cnt, target) == TRUE) {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+/*
+ * menu_check_item_info - 描画メッセージの項目データが表示中のメニューのものか
+ */
+BOOL menu_check_item_info(const MENU_ITEM_INFO *mii)
+{
+	if (mii == NULL || menu_item_info == NULL) {
+		return FALSE;
+	}
+	return menu_find_item_info(menu_item_info, menu_item_cnt, mii);
+}
+
+/*
  * menu_get_info - メニューIDからメニュー情報を取得
  */
 MENU_ITEM_INFO *menu_get_info(const UINT id)

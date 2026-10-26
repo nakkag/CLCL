@@ -27,9 +27,12 @@ HMODULE security_load_plugin(const TCHAR *lib_path, BOOL *blocked);
 void security_add_blocked(TCHAR *list, const int size, const TCHAR *lib_path);
 void security_get_blocked_message(TCHAR *err_str, const int size, const TCHAR *list);
 HMODULE security_load_plugin_ui(const HWND hWnd, const TCHAR *lib_path);
-#ifndef OPTION_SET
 BOOL security_is_internal_message(const UINT msg);
+void security_trust_begin(void);
+void security_trust_end(void);
+BOOL security_is_foreign_send(void);
 BOOL security_is_foreign_message(const UINT msg);
+#ifndef OPTION_SET
 BOOL security_shell_open_as_user(const TCHAR *file_name, const TCHAR *command_line);
 #endif	// OPTION_SET
 

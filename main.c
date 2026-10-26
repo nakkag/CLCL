@@ -68,6 +68,8 @@
 #define ID_TRAY_TIMER					8
 
 #define RECLIP_INTERVAL					1000
+// キーボードフックを登録し直す間隔(ミリ秒)
+#define KEY_HOOK_REFRESH_INTERVAL		60000
 // タスクトレイのアイコン追加のリトライ間隔(ミリ秒)と回数
 #define TRAY_RETRY_INTERVAL				5000
 #define TRAY_RETRY_MAX					5
@@ -1138,7 +1140,7 @@ static BOOL item_to_clipboard(const HWND hWnd, DATA_INFO *from_di, const BOOL de
 
 	if (clip_flag == TRUE) {
 		// この内容の更新通知は履歴に入れない
-		ignore_clip_seq = GetClipboardSequenceNumber();
+		ignore_clip_seq = clipboard_get_set_sequence();
 		clip_flag = FALSE;
 		if (hViewerWnd != NULL) {
 			// クリップボードの変化を通知
@@ -1442,13 +1444,25 @@ static DWORD WINAPI key_hook_thread_proc(LPVOID param)
 
 	// メッセージキューの作成
 	PeekMessage(&msg, NULL, WM_USER, WM_USER, PM_NOREMOVE);
+	// 高負荷時に応答が遅れて OS にフックを解除されないように優先度を上げる
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 	key_hook = SetWindowsHookEx(WH_KEYBOARD_LL, key_hook_proc, hInst, 0);
 	key_hook_err = (key_hook == NULL) ? GetLastError() : ERROR_SUCCESS;
 	SetEvent((HANDLE)param);
 	if (key_hook == NULL) {
 		return 0;
 	}
+	// 解除されても気付けないため定期的に登録し直す
+	SetTimer(NULL, 0, KEY_HOOK_REFRESH_INTERVAL, NULL);
 	while (GetMessage(&msg, NULL, 0, 0) > 0) {
+		if (msg.message == WM_TIMER && msg.hwnd == NULL) {
+			HHOOK new_hook = SetWindowsHookEx(WH_KEYBOARD_LL, key_hook_proc, hInst, 0);
+			if (new_hook != NULL) {
+				UnhookWindowsHookEx(key_hook);
+				key_hook = new_hook;
+			}
+			continue;
+		}
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
@@ -1772,7 +1786,9 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 	case WM_QUERYENDSESSION:
 		// Windows終了
 		session_ending = TRUE;
+		security_trust_begin();
 		winodw_save(hWnd);
+		security_trust_end();
 		save_flag = TRUE;
 		return TRUE;
 
@@ -1795,21 +1811,26 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			return 0;
 		}
 		session_ending = TRUE;
+		security_trust_begin();
 		if (save_flag == FALSE) {
 			winodw_save(hWnd);
 		}
 		save_flag = TRUE;
 		winodw_end(hWnd);
+		security_trust_end();
 		DestroyWindow(hWnd);
 		return 0;
 
 	case WM_CLOSE:
 		// ウィンドウを閉じる
+		security_trust_begin();
 		if (winodw_save(hWnd) == FALSE) {
+			security_trust_end();
 			break;
 		}
 		save_flag = TRUE;
 		winodw_end(hWnd);
+		security_trust_end();
 		DestroyWindow(hWnd);
 		break;
 
@@ -1823,14 +1844,16 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 	case WM_MEASUREITEM:
 		// メニュー描画設定
-		if (wParam == 0) {
+		if (wParam == 0 && popup_menu != NULL &&
+			menu_check_item_info((MENU_ITEM_INFO *)((MEASUREITEMSTRUCT *)lParam)->itemData) == TRUE) {
 			menu_set_drawitem((MEASUREITEMSTRUCT *)lParam);
 		}
 		break;
 
 	case WM_DRAWITEM:
 		// メニュー描画
-		if (wParam == 0) {
+		if (wParam == 0 && popup_menu != NULL &&
+			menu_check_item_info((MENU_ITEM_INFO *)((DRAWITEMSTRUCT *)lParam)->itemData) == TRUE) {
 			HWND menu_wnd;
 			RECT monitor_rect;
 
@@ -2219,7 +2242,9 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 	case WM_OPTION_LOAD:
 		// 設定の読み込み
+		security_trust_begin();
 		winodw_reset(hWnd);
+		security_trust_end();
 		break;
 
 	case WM_OPTION_SAVE:
@@ -2488,7 +2513,9 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 	case WM_VIEWER_SHOW:
 		// ビューア表示
+		security_trust_begin();
 		SendMessage(hWnd, WM_COMMAND, ID_MENUITEM_VIEWER, 0);
+		security_trust_end();
 		break;
 
 	case WM_VIEWER_GET_HWND:
@@ -2793,24 +2820,29 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
 	sa.lpSecurityDescriptor = &sd;
 	sa.bInheritHandle = TRUE; 
-	hMutex = CreateMutex(&sa, FALSE, MUTEX);
-	if (GetLastError() == ERROR_ALREADY_EXISTS) {
-		HWND hMainWnd;
+	// 起動中は所有したままにし、終了やクラッシュで解放される
+	hMutex = CreateMutex(&sa, TRUE, MUTEX);
+	if (hMutex != NULL && GetLastError() == ERROR_ALREADY_EXISTS) {
+		HWND hMainWnd = NULL;
+		BOOL owned = FALSE;
 		int i;
 
-		// 起動中の CLCL のウィンドウを待つ
-		for (i = 0; i < 50 && (hMainWnd = FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE)) == NULL; i++) {
-			Sleep(100);
+		// 起動中の CLCL のウィンドウを待つ (所有者がいなくなれば自分が起動する)
+		for (i = 0; i < 100; i++) {
+			if ((hMainWnd = FindWindow(MAIN_WND_CLASS, MAIN_WINDOW_TITLE)) != NULL) {
+				break;
+			}
+			if (WaitForSingleObject(hMutex, 100) != WAIT_TIMEOUT) {
+				owned = TRUE;
+				break;
+			}
 		}
-		if (hMainWnd != NULL) {
+		if (owned == FALSE) {
 			// コマンドライン処理
 			commnad_line_func(hMainWnd);
-			if (hMutex != NULL) {
-				CloseHandle(hMutex);
-			}
+			CloseHandle(hMutex);
 			return 0;
 		}
-		// ウィンドウが無い場合は CLCL 以外がミューテックスを作成したとみなして起動を続ける
 	}
 #endif
 
