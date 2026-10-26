@@ -364,6 +364,7 @@ CLCL.exe [/vwnx]
 	- Fixed CLCL so that data a password manager saves to the
 	  clipboard is not kept in the history. (kashima-eyetech)
 	- Improved the wording of the English version.
+	- Fixed security-related issues.
 
 - Ver 2.1.2 -> Ver 2.1.3
 	- Changed the system tray icon shown while the clipboard is not

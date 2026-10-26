@@ -408,6 +408,7 @@ CLCL.exe [/vwnx]
 	  Zwischenablage ablegt, nicht im Verlauf behalten werden.
 	  (kashima-eyetech)
 	- Formulierungen der englischen Version verbessert.
+	- Sicherheitsrelevante Probleme behoben.
 
 - Ver 2.1.2 -> Ver 2.1.3
 	- Symbol im Infobereich geändert, das angezeigt wird, während die
