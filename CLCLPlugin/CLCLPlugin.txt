@@ -44,6 +44,13 @@ struct_size
     ください。
   ・WM_ITEM_TO_BYTES が返すバイト列はプラグインが LocalFree します。
 
+メッセージの送り方
+  ポインタやハンドルを受け渡すメッセージ (WM_GET_WORKPATH, WM_GET_FORMAT_ICON,
+  WM_OPTION_SHOW, WM_OPTION_GET, WM_HISTORY_GET_ROOT, WM_REGIST_GET_ROOT, WM_ITEM_*,
+  WM_VIEWER_GET_SELECTION, WM_VIEWER_SELECT_ITEM) は、本体から呼び出された関数の中で
+  本体のウィンドウへ SendMessage で送ってください。
+  別のスレッドや別のプロセスから送ったり PostMessage で送ったりした場合は処理されません。
+
 
 ----[General]----------------------------
 
@@ -309,8 +316,8 @@ WM_ITEM_GET_TITLE
   戻り値 - 0
   機能:
     アイテムのタイトルを取得します。
-    タイトルの長さに上限は無いため、wParam には十分な長さ (BUF_SIZE * 2 文字以上を
-    推奨) のバッファを指定してください。
+    タイトルは終端文字を含めて BUF_SIZE * 2 文字までに切り詰めて設定するため、
+    wParam には BUF_SIZE * 2 文字以上のバッファを指定してください。
 
 WM_ITEM_GET_OPEN_INFO
   wParam - (OPENFILENAME *)ファイル情報 (OUT)

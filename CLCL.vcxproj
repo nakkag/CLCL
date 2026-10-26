@@ -96,6 +96,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -124,6 +125,10 @@
       <OutputFile>.\Release\CLCL.bsc</OutputFile>
     </Bscmake>
     <Link>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
+      <AdditionalOptions>/guard:cf /DEPENDENTLOADFLAG:0x800 %(AdditionalOptions)</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <SubSystem>Windows</SubSystem>
       <OutputFile>.\Release\CLCL.exe</OutputFile>
@@ -168,6 +173,7 @@
     <ClCompile Include="Regist.c" />
     <ClCompile Include="SelectFolder.c" />
     <ClCompile Include="SelectFormat.c" />
+    <ClCompile Include="Security.c" />
     <ClCompile Include="SendKey.c" />
     <ClCompile Include="SetHotkey.c" />
     <ClCompile Include="StatusBar.c" />
@@ -223,6 +229,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="SelectFolder.h" />
     <ClInclude Include="SelectFormat.h" />
+    <ClInclude Include="Security.h" />
     <ClInclude Include="SendKey.h" />
     <ClInclude Include="SetHotkey.h" />
     <ClInclude Include="StatusBar.h" />

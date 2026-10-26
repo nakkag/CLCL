@@ -746,7 +746,12 @@ BOOL profile_write_string(const TCHAR *section, const TCHAR *key, const TCHAR *s
 	p = buf;
 	*(p++) = TEXT('"');
 	lstrcpy(p, str);
-	p += lstrlen(p);
+	// 改行が入ると次回の読み込みで行が分断されるため空白に置き換える
+	for (; *p != TEXT('\0'); p++) {
+		if (*p == TEXT('\r') || *p == TEXT('\n')) {
+			*p = TEXT(' ');
+		}
+	}
 	*(p++) = TEXT('"');
 	*(p++) = TEXT('\0');
 	ret = profile_write_data(section, key, buf, file_path);

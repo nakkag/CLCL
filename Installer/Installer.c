@@ -16,6 +16,8 @@
 #include <exdisp.h>
 #include <shldisp.h>
 #include <shlwapi.h>
+#include <aclapi.h>
+#include <sddl.h>
 
 #include "instinfo.h"
 #include "resource.h"
@@ -28,6 +30,20 @@
 #define MSG_SIZE					1024
 #define REG_TARGET_MAX				8
 #define LOG_BOM						0xfeff
+// uninstall.dat の上限サイズ
+#define LOG_SIZE_MAX				(16 * 1024 * 1024)
+// 廃止したファイル (前回インストールした記録がある場合のみ削除)
+#define OBSOLETE_HOOK_LIB			TEXT("CLCLHook.dll")
+// Program Files 以外に作成するインストール先のアクセス許可 (一般ユーザーは読み取りと実行のみ)
+#define INSTALL_DIR_SDDL			TEXT("D:P(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)(A;OICI;0x1200a9;;;BU)")
+// 一般ユーザーに許されているとファイルの差し替えが可能になる権限
+#define RIGHTS_INSTALL_DIR			(FILE_ADD_FILE | FILE_ADD_SUBDIRECTORY | FILE_DELETE_CHILD | DELETE | WRITE_DAC | WRITE_OWNER)
+#define RIGHTS_PARENT_DIR			(FILE_DELETE_CHILD | DELETE | WRITE_DAC | WRITE_OWNER)
+
+typedef BOOL (WINAPI *SET_DEFAULT_DLL_DIRECTORIES)(DWORD);
+// 乱数 (advapi32)
+BOOLEAN WINAPI SystemFunction036(PVOID buf, ULONG len);
+#pragma comment(lib, "advapi32.lib")
 
 /* Global Variables */
 static HINSTANCE hInst;
@@ -53,6 +69,8 @@ static BOOL install_end;
 static HFONT hDlgFont;
 // タイトル用のフォント
 static HFONT hTitleFont;
+// 自分自身の実行ファイル (起動直後に開いたまま保持し、差し替えられないようにする)
+static HANDLE self_file = INVALID_HANDLE_VALUE;
 
 /* Local Function Prototypes */
 static TCHAR *str_load(const UINT id, TCHAR *buf, const int size);
@@ -65,7 +83,17 @@ static BOOL build_path(TCHAR *buf, const int len, const TCHAR *dir, const TCHAR 
 static BOOL path_has_dotdot(const TCHAR *path);
 static BOOL path_normalize(const TCHAR *path, TCHAR *buf);
 static BOOL path_is_under(const TCHAR *dir, const TCHAR *path);
-static BOOL create_dir(const TCHAR *path, const BOOL log);
+static BOOL create_dir(const TCHAR *path, const BOOL log, SECURITY_ATTRIBUTES *sa);
+static BOOL install_path_in_program_files(void);
+static HANDLE get_user_token(void);
+static BOOL copy_self(const TCHAR *to, const BOOL fail_if_exists);
+static BOOL path_is_real(const TCHAR *path);
+static BOOL path_component_is_safe(const TCHAR *name, const int len);
+static BOOL check_uninstall_dir(const TCHAR *dir);
+static UINT check_install_path(const TCHAR *path);
+static BOOL user_has_rights(const HANDLE hToken, const TCHAR *path, const DWORD rights);
+static BOOL install_path_is_protected(void);
+static void remove_obsolete_file(const TCHAR *old_log, const TCHAR *name);
 static void delete_dir_tree(const TCHAR *path);
 static BOOL move_in_use_file(const TCHAR *path);
 static BOOL write_file(const HWND hWnd, const TCHAR *path, const BYTE *buf, const DWORD size);
@@ -248,8 +276,10 @@ static BOOL path_is_under(const TCHAR *dir, const TCHAR *path)
 
 /*
  * create_dir - フォルダの作成 (親フォルダも作成、log が TRUE なら作成したフォルダを記録)
+ *
+ *	sa を指定した場合は作成するすべてのフォルダにそのアクセス許可を設定する
  */
-static BOOL create_dir(const TCHAR *path, const BOOL log)
+static BOOL create_dir(const TCHAR *path, const BOOL log, SECURITY_ATTRIBUTES *sa)
 {
 	TCHAR buf[MAX_PATH];
 	TCHAR *p;
@@ -264,15 +294,311 @@ static BOOL create_dir(const TCHAR *path, const BOOL log)
 		}
 		*p = TEXT('\0');
 		if (GetFileAttributes(buf) == INVALID_FILE_ATTRIBUTES &&
-			CreateDirectory(buf, NULL) != FALSE && log == TRUE) {
+			CreateDirectory(buf, sa) != FALSE && log == TRUE) {
 			log_add(TEXT('D'), buf);
 		}
 		*p = TEXT('\\');
 	}
-	if (CreateDirectory(path, NULL) != FALSE && log == TRUE) {
+	if (CreateDirectory(path, sa) != FALSE && log == TRUE) {
 		log_add(TEXT('D'), path);
 	}
 	return (GetFileAttributes(path) != INVALID_FILE_ATTRIBUTES) ? TRUE : FALSE;
+}
+
+/*
+ * install_path_in_program_files - インストール先が Program Files の配下かどうか
+ */
+static BOOL install_path_in_program_files(void)
+{
+	static const int csidl_list[] = { CSIDL_PROGRAM_FILES, CSIDL_PROGRAM_FILESX86 };
+	TCHAR target[MAX_PATH];
+	TCHAR dir[MAX_PATH];
+	TCHAR norm[MAX_PATH];
+	DWORD len;
+	int i;
+
+	if (path_normalize(install_path, target) == FALSE) {
+		return FALSE;
+	}
+	for (i = 0; i < sizeof(csidl_list) / sizeof(int); i++) {
+		if (SUCCEEDED(SHGetFolderPath(NULL, csidl_list[i], NULL, SHGFP_TYPE_CURRENT, dir)) &&
+			path_normalize(dir, norm) == TRUE && path_is_under(norm, target) == TRUE) {
+			return TRUE;
+		}
+	}
+	// 32bit のプロセスからは 64bit 用の Program Files を環境変数で取得する
+	len = GetEnvironmentVariable(TEXT("ProgramW6432"), dir, MAX_PATH);
+	if (len > 0 && len < MAX_PATH &&
+		path_normalize(dir, norm) == TRUE && path_is_under(norm, target) == TRUE) {
+		return TRUE;
+	}
+	return FALSE;
+}
+
+/*
+ * get_user_token - デスクトップを実行しているユーザーの昇格していないトークンを取得
+ */
+static HANDLE get_user_token(void)
+{
+	HANDLE hProcess, hToken, hImpToken = NULL;
+	HWND hShell;
+	DWORD pid = 0;
+	DWORD session = 0, own_session = 0;
+
+	ProcessIdToSessionId(GetCurrentProcessId(), &own_session);
+
+	// 別の管理者アカウントで昇格している場合もログオン中のユーザーで判定する。
+	// シェルが無い場合は判定できないので NULL を返し、呼び出し側は安全側 (拒否) に扱う
+	if ((hShell = GetShellWindow()) != NULL) {
+		GetWindowThreadProcessId(hShell, &pid);
+	}
+	if (pid != 0 && ProcessIdToSessionId(pid, &session) != FALSE && session == own_session &&
+		(hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid)) != NULL) {
+		if (OpenProcessToken(hProcess, TOKEN_QUERY | TOKEN_DUPLICATE, &hToken) != FALSE) {
+			// 制限トークンのプロセスをシェルとして登録されても、それでは判定しない
+			if (IsTokenRestricted(hToken) == FALSE &&
+				DuplicateTokenEx(hToken, TOKEN_QUERY | TOKEN_IMPERSONATE, NULL, SecurityImpersonation,
+					TokenImpersonation, &hImpToken) == FALSE) {
+				hImpToken = NULL;
+			}
+			CloseHandle(hToken);
+		}
+		CloseHandle(hProcess);
+	}
+	return hImpToken;
+}
+
+/*
+ * user_has_rights - トークンに rights のいずれかが許可されているか (判定できない場合は TRUE)
+ */
+static BOOL user_has_rights(const HANDLE hToken, const TCHAR *path, const DWORD rights)
+{
+	PSECURITY_DESCRIPTOR psd = NULL;
+	GENERIC_MAPPING gm = { FILE_GENERIC_READ, FILE_GENERIC_WRITE, FILE_GENERIC_EXECUTE, FILE_ALL_ACCESS };
+	BYTE ps_buf[sizeof(PRIVILEGE_SET) + sizeof(LUID_AND_ATTRIBUTES) * 8];
+	DWORD ps_len = sizeof(ps_buf);
+	DWORD granted = 0;
+	BOOL status = FALSE;
+	BOOL ret = TRUE;
+	HANDLE hDir;
+
+	hDir = CreateFile(path, READ_CONTROL, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+		NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, NULL);
+	if (hDir == INVALID_HANDLE_VALUE) {
+		return TRUE;
+	}
+	if (GetSecurityInfo(hDir, SE_FILE_OBJECT,
+		OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION | LABEL_SECURITY_INFORMATION,
+		NULL, NULL, NULL, NULL, &psd) == ERROR_SUCCESS) {
+		if (AccessCheck(psd, hToken, MAXIMUM_ALLOWED, &gm, (PPRIVILEGE_SET)ps_buf, &ps_len, &granted, &status) != FALSE) {
+			ret = (status != FALSE && (granted & rights) != 0) ? TRUE : FALSE;
+		}
+		LocalFree(psd);
+	}
+	CloseHandle(hDir);
+	return ret;
+}
+
+/*
+ * install_path_is_protected - インストール先とその上位のフォルダを一般ユーザーが変更できないか
+ */
+static BOOL install_path_is_protected(void)
+{
+	TCHAR dir[MAX_PATH];
+	HANDLE hToken;
+	DWORD attr;
+	TCHAR *p;
+	BOOL first = TRUE;
+	BOOL ret = TRUE;
+
+	if (path_normalize(install_path, dir) == FALSE || (hToken = get_user_token()) == NULL) {
+		return FALSE;
+	}
+	for (;;) {
+		// リンクの先は判定できないため使用しない
+		attr = GetFileAttributes(dir);
+		if (attr == INVALID_FILE_ATTRIBUTES || (attr & FILE_ATTRIBUTE_REPARSE_POINT) != 0 ||
+			user_has_rights(hToken, dir, (first == TRUE) ? RIGHTS_INSTALL_DIR : RIGHTS_PARENT_DIR) == TRUE) {
+			ret = FALSE;
+			break;
+		}
+		if (lstrlen(dir) <= 3 || (p = StrRChr(dir, NULL, TEXT('\\'))) == NULL) {
+			break;
+		}
+		if (p == dir + 2 && *(dir + 1) == TEXT(':')) {
+			// ドライブ直下
+			*(p + 1) = TEXT('\0');
+		} else {
+			*p = TEXT('\0');
+		}
+		first = FALSE;
+	}
+	CloseHandle(hToken);
+	return ret;
+}
+
+/*
+ * copy_self - 起動時に開いた自分自身の実行ファイルを書き出す
+ */
+static BOOL copy_self(const TCHAR *to, const BOOL fail_if_exists)
+{
+	HANDLE hTo;
+	BYTE buf[65536];
+	DWORD rd, wr;
+	BOOL ret = TRUE;
+
+	if (self_file == INVALID_HANDLE_VALUE ||
+		SetFilePointer(self_file, 0, NULL, FILE_BEGIN) == INVALID_SET_FILE_POINTER) {
+		return FALSE;
+	}
+	hTo = CreateFile(to, GENERIC_WRITE, 0, NULL, (fail_if_exists == TRUE) ? CREATE_NEW : CREATE_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hTo == INVALID_HANDLE_VALUE) {
+		return FALSE;
+	}
+	for (;;) {
+		if (ReadFile(self_file, buf, sizeof(buf), &rd, NULL) == FALSE) {
+			ret = FALSE;
+			break;
+		}
+		if (rd == 0) {
+			break;
+		}
+		if (WriteFile(hTo, buf, rd, &wr, NULL) == FALSE || wr != rd) {
+			ret = FALSE;
+			break;
+		}
+	}
+	CloseHandle(hTo);
+	if (ret == FALSE) {
+		DeleteFile(to);
+	}
+	return ret;
+}
+
+/*
+ * path_is_real - 途中にリンクを含まない実際のパスか (正規化済みのパスを渡す)
+ */
+static BOOL path_is_real(const TCHAR *path)
+{
+	TCHAR final_path[MAX_PATH + 8];
+	TCHAR long_path[MAX_PATH];
+	HANDLE hFile;
+	DWORD len;
+	const TCHAR *p;
+
+	// 対象そのものがリンクの場合も対象外にする
+	len = GetFileAttributes(path);
+	if (len == INVALID_FILE_ATTRIBUTES || (len & FILE_ATTRIBUTE_REPARSE_POINT) != 0) {
+		return FALSE;
+	}
+	// 8.3 形式の短い名前は長い名前に揃えて比較する (リンクは解決されない)
+	len = GetLongPathName(path, long_path, MAX_PATH);
+	if (len == 0 || len >= MAX_PATH) {
+		return FALSE;
+	}
+	hFile = CreateFile(path, READ_CONTROL, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL,
+		OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, NULL);
+	if (hFile == INVALID_HANDLE_VALUE) {
+		return FALSE;
+	}
+	len = GetFinalPathNameByHandle(hFile, final_path, MAX_PATH + 8, FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
+	CloseHandle(hFile);
+	if (len == 0 || len >= MAX_PATH + 8) {
+		return FALSE;
+	}
+	p = final_path;
+	if (*p == TEXT('\\') && *(p + 1) == TEXT('\\') && *(p + 2) == TEXT('?') && *(p + 3) == TEXT('\\')) {
+		p += 4;
+	}
+	return (lstrcmpi(p, long_path) == 0) ? TRUE : FALSE;
+}
+
+/*
+ * path_component_is_safe - 展開先のフォルダ名・ファイル名として安全か
+ */
+static BOOL path_component_is_safe(const TCHAR *name, const int len)
+{
+	static const TCHAR * const reserved[] = {
+		TEXT("CON"), TEXT("PRN"), TEXT("AUX"), TEXT("NUL"),
+		TEXT("COM1"), TEXT("COM2"), TEXT("COM3"), TEXT("COM4"), TEXT("COM5"), TEXT("COM6"), TEXT("COM7"), TEXT("COM8"), TEXT("COM9"),
+		TEXT("LPT1"), TEXT("LPT2"), TEXT("LPT3"), TEXT("LPT4"), TEXT("LPT5"), TEXT("LPT6"), TEXT("LPT7"), TEXT("LPT8"), TEXT("LPT9") };
+	int base_len = len;
+	int i;
+
+	if (len <= 0) {
+		return FALSE;
+	}
+	for (i = 0; i < len; i++) {
+		if (*(name + i) < TEXT(' ') || *(name + i) == TEXT('<') || *(name + i) == TEXT('>') ||
+			*(name + i) == TEXT(':') || *(name + i) == TEXT('"') || *(name + i) == TEXT('|') ||
+			*(name + i) == TEXT('?') || *(name + i) == TEXT('*')) {
+			return FALSE;
+		}
+	}
+	// 末尾の空白と '.' は Win32 が取り除くため記録したパスと一致しなくなる
+	if (*(name + len - 1) == TEXT(' ') || *(name + len - 1) == TEXT('.')) {
+		return FALSE;
+	}
+	// 予約されたデバイス名 (拡張子は無視される)
+	for (i = 0; i < len; i++) {
+		if (*(name + i) == TEXT('.')) {
+			base_len = i;
+			break;
+		}
+	}
+	for (i = 0; i < (int)(sizeof(reserved) / sizeof(reserved[0])); i++) {
+		if (base_len == lstrlen(reserved[i]) &&
+			CompareString(LOCALE_INVARIANT, NORM_IGNORECASE, name, base_len, reserved[i], base_len) == CSTR_EQUAL) {
+			return FALSE;
+		}
+	}
+	return TRUE;
+}
+
+/*
+ * check_uninstall_dir - アンインストールで削除してよいフォルダか
+ *
+ *	一般ユーザーが変更できる場所の一覧に従って管理者権限で削除しないようにする
+ */
+static BOOL check_uninstall_dir(const TCHAR *dir)
+{
+	if (*dir == TEXT('\\') || check_install_path(dir) != 0) {
+		return FALSE;
+	}
+	lstrcpyn(install_path, dir, MAX_PATH);
+	return install_path_is_protected();
+}
+
+/*
+ * remove_obsolete_file - 前回インストールした記録がある廃止したファイルを削除
+ */
+static void remove_obsolete_file(const TCHAR *old_log, const TCHAR *name)
+{
+	TCHAR path[MAX_PATH];
+	const TCHAR *p, *r;
+	int len;
+
+	if (old_log == NULL || build_path(path, MAX_PATH, install_path, name) == FALSE) {
+		return;
+	}
+	len = lstrlen(path);
+	for (p = old_log; *p != TEXT('\0'); p = r) {
+		for (r = p; *r != TEXT('\0') && *r != TEXT('\r') && *r != TEXT('\n'); r++)
+			;
+		if (*p == TEXT('F') && r - p - 1 == len &&
+			CompareString(LOCALE_INVARIANT, NORM_IGNORECASE, p + 1, len, path, len) == CSTR_EQUAL) {
+			if (GetFileAttributes(path) != INVALID_FILE_ATTRIBUTES) {
+				SetFileAttributes(path, FILE_ATTRIBUTE_NORMAL);
+				if (DeleteFile(path) == FALSE) {
+					move_in_use_file(path);
+				}
+			}
+			return;
+		}
+		for (; *r == TEXT('\r') || *r == TEXT('\n'); r++)
+			;
+	}
 }
 
 /*
@@ -526,7 +852,8 @@ static int reg_find_install(REG_TARGET *list, const int max_cnt, TCHAR *install_
 				(list + cnt)->root = root_list[i];
 				(list + cnt)->view = view_list[i];
 				lstrcpyn((list + cnt)->subkey, subkey, BUF_SIZE);
-				if (cnt == 0 && install_loc != NULL) {
+				// インストール先は一般ユーザーが書けない HKLM の登録からのみ採用する
+				if (install_loc != NULL && *install_loc == TEXT('\0') && root_list[i] == HKEY_LOCAL_MACHINE) {
 					if (reg_get_string(hSubKey, TEXT("InstallLocation"), buf, MAX_PATH) == TRUE) {
 						lstrcpyn(install_loc, buf, MAX_PATH);
 					}
@@ -759,10 +1086,8 @@ static BOOL exec_app(void)
 	if (build_path(path, MAX_PATH, install_path, APP_EXE) == FALSE) {
 		return FALSE;
 	}
-	if (exec_as_user(path, install_path) == TRUE) {
-		return TRUE;
-	}
-	return ((INT_PTR)ShellExecute(NULL, NULL, path, NULL, install_path, SW_SHOWNORMAL) > 32) ? TRUE : FALSE;
+	// 通常の権限で起動できない場合は管理者権限のまま起動しない
+	return exec_as_user(path, install_path);
 }
 
 /*
@@ -826,7 +1151,7 @@ static TCHAR *log_load(const TCHAR *dir_path)
 		return NULL;
 	}
 	size = GetFileSize(hFile, NULL);
-	if (size == 0xffffffff || size < sizeof(TCHAR) ||
+	if (size == 0xffffffff || size < sizeof(TCHAR) || size > LOG_SIZE_MAX ||
 		(buf = (BYTE *)HeapAlloc(GetProcessHeap(), 0, size + sizeof(TCHAR))) == NULL) {
 		CloseHandle(hFile);
 		return NULL;
@@ -893,10 +1218,23 @@ static DWORD str_to_dword(const TCHAR *p)
  */
 static BOOL path_is_safe(const TCHAR *name)
 {
+	const TCHAR *p, *q;
+
 	if (*name == TEXT('\\') || *name == TEXT('\0') || *(name + 1) == TEXT(':')) {
 		return FALSE;
 	}
-	return (path_has_dotdot(name) == TRUE) ? FALSE : TRUE;
+	if (path_has_dotdot(name) == TRUE) {
+		return FALSE;
+	}
+	// 区切りごとに名前を確認する
+	for (p = name; *p != TEXT('\0'); p = (*q == TEXT('\0')) ? q : q + 1) {
+		for (q = p; *q != TEXT('\0') && *q != TEXT('\\'); q++)
+			;
+		if (path_component_is_safe(p, (int)(q - p)) == FALSE) {
+			return FALSE;
+		}
+	}
+	return TRUE;
 }
 
 /*
@@ -915,7 +1253,7 @@ static void create_parent_dir(const TCHAR *path)
 		}
 	}
 	if (p > buf && *buf != TEXT('\0')) {
-		create_dir(buf, TRUE);
+		create_dir(buf, TRUE, NULL);
 	}
 }
 
@@ -1000,22 +1338,25 @@ static BOOL extract_files(const HWND hDlg)
 	DWORD size;
 	DWORD i;
 	TCHAR path[MAX_PATH];
-	TCHAR self[MAX_PATH];
 	BOOL ret;
 
 	set_ctrl_text(hDlg, IDC_STATIC_STATUS, IDS_STATUS_EXTRACT);
 	SendDlgItemMessage(hDlg, IDC_PROGRESS, PBM_SETRANGE32, 0, (LPARAM)zip.count);
 	for (i = 0; i < zip.count; i++) {
 		SendDlgItemMessage(hDlg, IDC_PROGRESS, PBM_SETPOS, (WPARAM)i, 0);
-		if (zip_get_entry(&zip, i, &ze) == FALSE || path_is_safe(ze.name) == FALSE) {
+		if (zip_get_entry(&zip, i, &ze) == FALSE) {
 			continue;
+		}
+		if (path_is_safe(ze.name) == FALSE) {
+			msg_box(hDlg, IDS_ERR_EXTRACT, MB_OK | MB_ICONEXCLAMATION, ze.name);
+			return FALSE;
 		}
 		if (build_path(path, MAX_PATH, install_path, ze.name) == FALSE) {
 			msg_box(hDlg, IDS_ERR_EXTRACT, MB_OK | MB_ICONEXCLAMATION, ze.name);
 			return FALSE;
 		}
 		if (ze.is_dir == TRUE) {
-			create_dir(path, TRUE);
+			create_dir(path, TRUE, NULL);
 			continue;
 		}
 		if (zip_extract(&zip, &ze, &buf, &size) != UNZIP_OK) {
@@ -1038,13 +1379,22 @@ static BOOL extract_files(const HWND hDlg)
 		log_add(TEXT('F'), path);
 	}
 
-	// アンインストーラの配置
-	GetModuleFileName(NULL, self, MAX_PATH);
+	// アンインストーラの配置 (起動時に開いた自分自身から書き出す)
 	if (build_path(path, MAX_PATH, install_path, UNINSTALL_EXE) == FALSE) {
 		msg_box(hDlg, IDS_ERR_EXTRACT, MB_OK | MB_ICONEXCLAMATION, UNINSTALL_EXE);
 		return FALSE;
 	}
-	return copy_file(hDlg, self, path);
+	for (;;) {
+		if (GetFileAttributes(path) != INVALID_FILE_ATTRIBUTES) {
+			SetFileAttributes(path, FILE_ATTRIBUTE_NORMAL);
+		}
+		if (copy_self(path, FALSE) == TRUE) {
+			return TRUE;
+		}
+		if (msg_box(hDlg, IDS_FILE_LOCKED, MB_RETRYCANCEL | MB_ICONWARNING, path) != IDRETRY) {
+			return FALSE;
+		}
+	}
 }
 
 /*
@@ -1061,9 +1411,45 @@ static BOOL do_install(const HWND hDlg)
 		return FALSE;
 	}
 	// インストール先の作成
-	if (create_dir(install_path, FALSE) == FALSE) {
-		msg_box(hDlg, IDS_ERR_CREATE_DIR, MB_OK | MB_ICONEXCLAMATION, install_path);
-		return FALSE;
+	// 全ユーザーのスタートアップや管理者で実行するアンインストーラから起動されるため、
+	// 一般ユーザーが CLCL を差し替えられないフォルダにのみインストールする。
+	// Program Files 以外に新しく作るフォルダには管理者だけが書き込めるアクセス許可を付ける
+	{
+		SECURITY_ATTRIBUTES sa;
+		PSECURITY_DESCRIPTOR psd = NULL;
+		BOOL created;
+		BOOL in_pf = install_path_in_program_files();
+
+		if (in_pf == FALSE &&
+			ConvertStringSecurityDescriptorToSecurityDescriptor(INSTALL_DIR_SDDL, SDDL_REVISION_1, &psd, NULL) == FALSE) {
+			msg_box(hDlg, IDS_ERR_CREATE_DIR, MB_OK | MB_ICONEXCLAMATION, install_path);
+			return FALSE;
+		}
+		sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+		sa.lpSecurityDescriptor = psd;
+		sa.bInheritHandle = FALSE;
+		created = (GetFileAttributes(install_path) == INVALID_FILE_ATTRIBUTES) ? TRUE : FALSE;
+		ret = create_dir(install_path, FALSE, (psd != NULL) ? &sa : NULL);
+		if (psd != NULL) {
+			LocalFree(psd);
+		}
+		if (ret == FALSE) {
+			msg_box(hDlg, IDS_ERR_CREATE_DIR, MB_OK | MB_ICONEXCLAMATION, install_path);
+			return FALSE;
+		}
+		if (*install_path == TEXT('\\')) {
+			// ネットワーク上のフォルダはアクセス許可を確認できない
+			if (msg_box(hDlg, IDS_CONFIRM_PATH_NETWORK, MB_YESNO | MB_ICONWARNING, NULL) != IDYES) {
+				return FALSE;
+			}
+		} else if (install_path_is_protected() == FALSE) {
+			// Program Files 配下でも確認する (環境変数などで判定が変わっても保護を省略しない)
+			if (created == TRUE) {
+				RemoveDirectory(install_path);
+			}
+			msg_box(hDlg, IDS_ERR_PATH_UNSAFE, MB_OK | MB_ICONEXCLAMATION, install_path);
+			return FALSE;
+		}
 	}
 	// 再試行の場合は前回の記録を破棄する (保存済みの一覧から引き継ぐ)
 	sb_free(&log_buf);
@@ -1073,6 +1459,9 @@ static BOOL do_install(const HWND hDlg)
 	// ファイルの展開
 	ret = extract_files(hDlg);
 	if (ret == TRUE) {
+		// 廃止したファイルの削除
+		remove_obsolete_file(old_log, OBSOLETE_HOOK_LIB);
+
 		// ショートカットの作成
 		set_ctrl_text(hDlg, IDC_STATIC_STATUS, IDS_STATUS_SHORTCUT);
 		set_shortcut(CSIDL_COMMON_STARTUP,
@@ -1084,13 +1473,18 @@ static BOOL do_install(const HWND hDlg)
 
 		// アプリの一覧に登録
 		set_ctrl_text(hDlg, IDC_STATIC_STATUS, IDS_STATUS_REGIST);
-		if (reg_target_cnt > 0) {
-			// 二重に登録されないように既存の登録を使用する
-			rt = *reg_target;
-		} else {
-			rt.root = HKEY_LOCAL_MACHINE;
-			rt.view = (is_wow64() == TRUE) ? KEY_WOW64_32KEY : 0;
-			lstrcpy(rt.subkey, UNINSTALL_SUBKEY);
+		// 登録先は常に HKEY_LOCAL_MACHINE (既存の HKLM の登録があればそのキーを使う)
+		rt.root = HKEY_LOCAL_MACHINE;
+		rt.view = (is_wow64() == TRUE) ? KEY_WOW64_32KEY : 0;
+		lstrcpy(rt.subkey, UNINSTALL_SUBKEY);
+		{
+			int t;
+			for (t = 0; t < reg_target_cnt; t++) {
+				if ((reg_target + t)->root == HKEY_LOCAL_MACHINE) {
+					rt = *(reg_target + t);
+					break;
+				}
+			}
 		}
 		if (reg_write_install(&rt) == FALSE) {
 			msg_box(hDlg, IDS_ERR_REGIST, MB_OK | MB_ICONEXCLAMATION, NULL);
@@ -1291,6 +1685,13 @@ static UINT check_install_path(const TCHAR *path)
 	}
 	if (path_has_dotdot(path) == TRUE) {
 		return IDS_ERR_PATH_INVALID;
+	}
+	// フォルダ名に使えない文字 (コマンドラインに埋め込むため '"' も含む)
+	for (; *p != TEXT('\0'); p++) {
+		if (*p < TEXT(' ') || *p == TEXT('<') || *p == TEXT('>') || *p == TEXT('"') ||
+			*p == TEXT('|') || *p == TEXT('?') || *p == TEXT('*') || *p == TEXT(':')) {
+			return IDS_ERR_PATH_INVALID;
+		}
 	}
 	if (lstrlen(path) + 1 + get_name_len_max() > MAX_PATH - 1) {
 		return IDS_ERR_PATH_LONG;
@@ -1535,14 +1936,15 @@ static void do_uninstall(const TCHAR *dir_path, const DWORD pid, const BOOL dele
 		WaitForSingleObject(hProcess, 30000);
 		CloseHandle(hProcess);
 	}
-	// インストール先として扱えないパスの場合はファイルを削除しない
-	if (path_normalize(dir_path, dir) == TRUE) {
+	// インストール先として扱えないパスや一般ユーザーが変更できるフォルダの場合はファイルを削除しない
+	if (path_normalize(dir_path, dir) == TRUE && check_uninstall_dir(dir) == TRUE) {
 		// インストールしたファイルの削除 (インストール先の配下とショートカットのみ)
 		if ((log = log_load(dir)) != NULL) {
 			cnt = log_split(log, &lines);
 			for (i = 0; i < cnt; i++) {
 				if (**(lines + i) == TEXT('F') &&
-					uninstall_file_check(dir, *(lines + i) + 1, path) == TRUE) {
+					uninstall_file_check(dir, *(lines + i) + 1, path) == TRUE &&
+					path_is_real(path) == TRUE) {
 					SetFileAttributes(path, FILE_ATTRIBUTE_NORMAL);
 					DeleteFile(path);
 				}
@@ -1576,13 +1978,19 @@ static void do_uninstall(const TCHAR *dir_path, const DWORD pid, const BOOL dele
 	for (i = 0; i < reg_target_cnt; i++) {
 		reg_delete_install(reg_target + i);
 	}
-	// 設定データの削除
-	if (delete_data == TRUE &&
-		SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, SHGFP_TYPE_CURRENT, path)) &&
-		lstrlen(path) + lstrlen(APP_DATA_FOLDER) + 2 <= MAX_PATH) {
-		lstrcat(path, TEXT("\\"));
-		lstrcat(path, APP_DATA_FOLDER);
-		delete_dir_tree(path);
+	// 設定データの削除 (ログオン中のユーザーのフォルダを対象にする)
+	if (delete_data == TRUE) {
+		HANDLE hToken = get_user_token();
+
+		if (hToken != NULL) {
+			if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, hToken, SHGFP_TYPE_CURRENT, path)) &&
+				lstrlen(path) + lstrlen(APP_DATA_FOLDER) + 2 <= MAX_PATH) {
+				lstrcat(path, TEXT("\\"));
+				lstrcat(path, APP_DATA_FOLDER);
+				delete_dir_tree(path);
+			}
+			CloseHandle(hToken);
+		}
 	}
 	msg_box(NULL, IDS_UNINSTALL_COMPLETE, MB_OK | MB_ICONINFORMATION, NULL);
 
@@ -1622,12 +2030,12 @@ static BOOL start_uninstall(void)
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 	TCHAR dir_path[MAX_PATH];
-	TCHAR self[MAX_PATH];
 	TCHAR temp_dir[MAX_PATH];
 	TCHAR temp_path[MAX_PATH];
 	TCHAR cmd[MAX_PATH * 3];
 	DWORD len;
 	BOOL delete_data = FALSE;
+	int i;
 
 	if (get_uninstall_dir(dir_path) == FALSE) {
 		msg_box(NULL, IDS_ERR_NOT_INSTALLED, MB_OK | MB_ICONEXCLAMATION, NULL);
@@ -1644,13 +2052,36 @@ static BOOL start_uninstall(void)
 		delete_data = TRUE;
 	}
 	// 実行中のファイルを削除できるように一時フォルダから実行する
-	GetModuleFileName(NULL, self, MAX_PATH);
-	len = GetTempPath(MAX_PATH, temp_dir);
-	if (len == 0 || len >= MAX_PATH ||
-		wnsprintf(temp_path, MAX_PATH, TEXT("%sclcl_uninst_%08x_%08x.exe"),
-			temp_dir, GetCurrentProcessId(), GetTickCount()) < 0 ||
-		CopyFile(self, temp_path, TRUE) == FALSE) {
+	// 管理者で実行するため、ユーザーの一時フォルダではなく一般ユーザーが他のファイルを
+	// 変更できない Windows の一時フォルダにコピーする
+	len = GetWindowsDirectory(temp_dir, MAX_PATH);
+	if (len == 0 || len + 6 >= MAX_PATH) {
 		return FALSE;
+	}
+	if (*(temp_dir + len - 1) != TEXT('\\')) {
+		lstrcat(temp_dir, TEXT("\\"));
+	}
+	lstrcat(temp_dir, TEXT("Temp\\"));
+	if (GetFileAttributes(temp_dir) == INVALID_FILE_ATTRIBUTES) {
+		msg_box(NULL, IDS_ERR_UNINSTALL_START, MB_OK | MB_ICONEXCLAMATION, NULL);
+		return FALSE;
+	}
+	// 名前を予測して先に作られても別の名前で再試行する
+	for (i = 0; ; i++) {
+		DWORD rnd[2] = { 0, 0 };
+
+		SystemFunction036(rnd, sizeof(rnd));
+		if (wnsprintf(temp_path, MAX_PATH, TEXT("%sclcl_uninst_%08x%08x.exe"), temp_dir, rnd[0], rnd[1]) < 0) {
+			msg_box(NULL, IDS_ERR_UNINSTALL_START, MB_OK | MB_ICONEXCLAMATION, NULL);
+			return FALSE;
+		}
+		if (copy_self(temp_path, TRUE) == TRUE) {
+			break;
+		}
+		if (i >= 10) {
+			msg_box(NULL, IDS_ERR_UNINSTALL_START, MB_OK | MB_ICONEXCLAMATION, NULL);
+			return FALSE;
+		}
 	}
 	wsprintf(cmd, TEXT("\"%s\" %s \"%s\" %s%u"),
 		temp_path, CMD_UNINSTALL_RUN, dir_path, CMD_PID, GetCurrentProcessId());
@@ -1662,6 +2093,7 @@ static BOOL start_uninstall(void)
 	si.cb = sizeof(STARTUPINFO);
 	if (CreateProcess(NULL, cmd, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi) == FALSE) {
 		DeleteFile(temp_path);
+		msg_box(NULL, IDS_ERR_UNINSTALL_START, MB_OK | MB_ICONEXCLAMATION, NULL);
 		return FALSE;
 	}
 	CloseHandle(pi.hThread);
@@ -1675,6 +2107,7 @@ static BOOL start_uninstall(void)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	INITCOMMONCONTROLSEX ic;
+	SET_DEFAULT_DLL_DIRECTORIES set_default_dll_directories;
 	LPWSTR *argv;
 	TCHAR dir_path[MAX_PATH];
 	TCHAR buf[MAX_PATH];
@@ -1683,6 +2116,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int i;
 	int mode = 0;
 	BOOL delete_data = FALSE;
+
+	// 管理者で実行するため、インストーラと同じフォルダ (ダウンロードフォルダなど) や
+	// カレントディレクトリにある DLL を読み込まないようにシステムフォルダに限定する
+	SetDllDirectory(TEXT(""));
+	set_default_dll_directories = (SET_DEFAULT_DLL_DIRECTORIES)GetProcAddress(
+		GetModuleHandle(TEXT("kernel32.dll")), "SetDefaultDllDirectories");
+	if (set_default_dll_directories != NULL) {
+		set_default_dll_directories(LOAD_LIBRARY_SEARCH_SYSTEM32);
+	}
+
+	// 自分自身を開いたまま保持する (アンインストーラとして配置するまでに差し替えられないようにする)
+	if (GetModuleFileName(NULL, buf, MAX_PATH) > 0) {
+		self_file = CreateFile(buf, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	}
 
 	hInst = hInstance;
 	set_language();
@@ -1751,6 +2198,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		break;
 	}
 	CoUninitialize();
+	if (self_file != INVALID_HANDLE_VALUE) {
+		CloseHandle(self_file);
+	}
 	return 0;
 }
 /* End of source */

@@ -76,7 +76,6 @@ prepare.ps1 が以下のファイルを収集して ZIP にまとめ、インス
 
   CLCL.exe        Release フォルダから収集
   CLCLSet.exe     Release フォルダから収集
-  CLCLHook.dll    Release フォルダから収集
   readme_jp.txt   リポジトリのルートから収集
   readme_en.txt
   readme_de.txt

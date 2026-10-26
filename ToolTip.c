@@ -18,6 +18,7 @@
 #include "Ini.h"
 #include "Font.h"
 #include "dpi.h"
+#include "Security.h"
 #include "DarkMode.h"
 
 #include "resource.h"
@@ -221,6 +222,11 @@ static LRESULT CALLBACK tooltip_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 	HDC hdc;
 	HFONT hRetFont;
 	TOOLTIP_INFO *ti;
+
+	// ポインタを受け渡すメッセージは同じスレッドからのみ受け付ける
+	if (security_is_foreign_message(msg) == TRUE) {
+		return 0;
+	}
 
 	switch (msg) {
 	case WM_CREATE:

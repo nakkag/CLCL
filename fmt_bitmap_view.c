@@ -28,6 +28,7 @@
 #include "DarkMode.h"
 
 #include "resource.h"
+#include "Security.h"
 
 /* Define */
 #define WINDOW_CLASS					TEXT("CLCLBitmapView")
@@ -91,6 +92,11 @@ static LRESULT CALLBACK bmpview_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 	int max, min, pos;
 	int i;
 	int s_width, s_height;
+
+	// ポインタを受け渡すメッセージは同じスレッドからのみ受け付ける
+	if (security_is_foreign_message(msg) == TRUE) {
+		return 0;
+	}
 
 	switch (msg) {
 	case WM_CREATE:

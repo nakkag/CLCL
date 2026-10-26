@@ -20,6 +20,11 @@
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
 LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
 
+STRINGTABLE
+BEGIN
+    IDS_ERROR_PLUGIN_BLOCKED "管理者として実行しているため、一般ユーザーが書き換えられる場所にある次のプラグインを読み込みませんでした。\nアプリケーションのフォルダか、一般ユーザーが書き込めないフォルダに置いてください。"
+END
+
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -892,6 +897,11 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 
+STRINGTABLE
+BEGIN
+    IDS_ERROR_PLUGIN_BLOCKED "由于 CLCL 以管理员身份运行，且以下插件位于普通用户可修改的位置，因此未加载这些插件。\n请将其放在应用程序文件夹或普通用户无法写入的文件夹中。"
+END
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
@@ -1753,6 +1763,11 @@ END
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_UKR)
 LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
+
+STRINGTABLE
+BEGIN
+    IDS_ERROR_PLUGIN_BLOCKED "Наведені нижче плагіни не завантажено, оскільки CLCL запущено від імені адміністратора, а вони розташовані в місці, яке можуть змінювати звичайні користувачі.\nРозмістіть їх у папці програми або в папці, до якої звичайні користувачі не мають права запису."
+END
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -2617,6 +2632,11 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
+STRINGTABLE
+BEGIN
+    IDS_ERROR_PLUGIN_BLOCKED "The following plug-ins were not loaded because CLCL is running as administrator and they are in a location that standard users can modify.\nPlace them in the application folder or in a folder that standard users cannot write to."
+END
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
@@ -3444,6 +3464,11 @@ END
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
 LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+
+STRINGTABLE
+BEGIN
+    IDS_ERROR_PLUGIN_BLOCKED "Die folgenden Plug-ins wurden nicht geladen, da CLCL als Administrator ausgeführt wird und sie sich an einem Ort befinden, den Standardbenutzer ändern können.\nLegen Sie sie im Anwendungsordner oder in einem Ordner ab, in den Standardbenutzer nicht schreiben können."
+END
 
 /////////////////////////////////////////////////////////////////////////////
 //

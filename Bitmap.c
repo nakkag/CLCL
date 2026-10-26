@@ -44,7 +44,7 @@ DWORD dib_get_bits_offset(const BYTE *dib, const DWORD size)
 	ULONGLONG image_size;
 	DWORD color_cnt;
 	DWORD mask_cnt = 0;
-	LONG height;
+	ULONGLONG height;
 
 	if (dib == NULL || size < sizeof(BITMAPINFOHEADER)) {
 		return 0;
@@ -91,7 +91,7 @@ DWORD dib_get_bits_offset(const BYTE *dib, const DWORD size)
 		return 0;
 	}
 	// 画素データのサイズ
-	height = (bih->biHeight < 0) ? -bih->biHeight : bih->biHeight;
+	height = (bih->biHeight < 0) ? (ULONGLONG)(-(LONGLONG)bih->biHeight) : (ULONGLONG)bih->biHeight;
 	switch (bih->biCompression) {
 	case BI_RGB:
 	case BI_BITFIELDS:

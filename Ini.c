@@ -26,6 +26,7 @@
 #include "Format.h"
 #include "SendKey.h"
 #include "dpi.h"
+#include "Security.h"
 #if (defined(_MSC_VER) && _MSC_VER >=  1930)
 #include <versionhelpers.h>
 #endif
@@ -215,8 +216,11 @@ static BOOL ini_read_option(TCHAR *err_str)
 	char_set = GetTextCharset(hdc);
 	ReleaseDC(NULL, hdc);
 
-	wsprintf(ini_path, TEXT("%s\\%s"), work_path, USER_INI);
-	wsprintf(ini_path_old, TEXT("%s\\%s"), work_path, USER_INI_OLD);
+	if (path_join(ini_path, MAX_PATH, work_path, USER_INI) == FALSE ||
+		path_join(ini_path_old, MAX_PATH, work_path, USER_INI_OLD) == FALSE) {
+		message_get_error(ERROR_FILENAME_EXCED_RANGE, err_str);
+		return FALSE;
+	}
 	if (file_check_file(ini_path) == FALSE && file_check_file(ini_path_old) == TRUE) {
 		// INIファイル名変更 (Ver 1.0.8)
 		MoveFile(ini_path_old, ini_path);
@@ -226,7 +230,6 @@ static BOOL ini_read_option(TCHAR *err_str)
 	// main
 	version = profile_get_int(TEXT("main"), TEXT("version"), 0, ini_path);
 	option.main_clipboard_watch = profile_get_int(TEXT("main"), TEXT("clipboard_watch"), 1, ini_path);
-	option.main_clipboard_rechain_minute = profile_get_int(TEXT("main"), TEXT("clipboard_rechain_minute"), 1, ini_path);
 	option.main_show_trayicon = profile_get_int(TEXT("main"), TEXT("show_trayicon"), 1, ini_path);
 	option.main_show_viewer = profile_get_int(TEXT("main"), TEXT("show_viewer"), 0, ini_path);
 	int cnt = profile_get_string(TEXT("main"), TEXT("language"), TEXT(""), option.main_language, LOCALE_NAME_MAX_LENGTH, ini_path);
@@ -848,7 +851,9 @@ BOOL ini_put_option(void)
 	TCHAR buf[BUF_SIZE];
 	int i;
 
-	wsprintf(ini_path, TEXT("%s\\%s"), work_path, USER_INI);
+	if (path_join(ini_path, MAX_PATH, work_path, USER_INI) == FALSE) {
+		return FALSE;
+	}
 	profile_initialize(ini_path, TRUE);
 
 	// main
@@ -856,7 +861,6 @@ BOOL ini_put_option(void)
 #ifndef OPTION_SET
 	profile_write_int(TEXT("main"), TEXT("clipboard_watch"), option.main_clipboard_watch, ini_path);
 #endif	// OPTION_SET
-	profile_write_int(TEXT("main"), TEXT("clipboard_rechain_minute"), option.main_clipboard_rechain_minute, ini_path);
 	profile_write_int(TEXT("main"), TEXT("show_trayicon"), option.main_show_trayicon, ini_path);
 	profile_write_int(TEXT("main"), TEXT("show_viewer"), option.main_show_viewer, ini_path);
 	profile_write_string(TEXT("main"), TEXT("language"), option.main_language, ini_path);
