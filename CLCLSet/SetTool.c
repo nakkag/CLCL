@@ -432,6 +432,8 @@ static void set_call_type(const HWND hDlg, const int call_type)
 	CheckDlgButton(hDlg, IDC_CHECK_CLIPBOARD, (call_type & CALLTYPE_ITEM_TO_CLIPBOARD) ? 1 : 0);
 	CheckDlgButton(hDlg, IDC_CHECK_START, (call_type & CALLTYPE_START) ? 1 : 0);
 	CheckDlgButton(hDlg, IDC_CHECK_END, (call_type & CALLTYPE_END) ? 1 : 0);
+	CheckDlgButton(hDlg, IDC_CHECK_ENTER_SESSION, (call_type & CALLTYPE_ENTER_SESSION) ? 1 : 0);
+	CheckDlgButton(hDlg, IDC_CHECK_LEAVE_SESSION, (call_type & CALLTYPE_LEAVE_SESSION) ? 1 : 0);
 	CheckDlgButton(hDlg, IDC_CHECK_COPY_PATE, (call_type & CALLTYPE_MENU_COPY_PASTE) ? 1 : 0);
 }
 
@@ -546,6 +548,8 @@ static INT_PTR CALLBACK set_tool_item_proc(HWND hDlg, UINT uMsg, WPARAM wParam, 
 				ti->call_type |= (IsDlgButtonChecked(hDlg, IDC_CHECK_CLIPBOARD) * CALLTYPE_ITEM_TO_CLIPBOARD);
 				ti->call_type |= (IsDlgButtonChecked(hDlg, IDC_CHECK_START) * CALLTYPE_START);
 				ti->call_type |= (IsDlgButtonChecked(hDlg, IDC_CHECK_END) * CALLTYPE_END);
+				ti->call_type |= (IsDlgButtonChecked(hDlg, IDC_CHECK_ENTER_SESSION) * CALLTYPE_ENTER_SESSION);
+				ti->call_type |= (IsDlgButtonChecked(hDlg, IDC_CHECK_LEAVE_SESSION) * CALLTYPE_LEAVE_SESSION);
 
 				ti->copy_paste = IsDlgButtonChecked(hDlg, IDC_CHECK_COPY_PATE);
 				ti->old = item_old;

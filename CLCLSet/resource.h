@@ -129,6 +129,8 @@
 #define IDC_HOTKEY_TOOL                 1088
 #define IDC_CHECK_COPY_PATE             1089
 #define IDC_CHECK_VIEWER_CLOSE          1090
+#define IDC_CHECK_ENTER_SESSION         1091
+#define IDC_CHECK_LEAVE_SESSION         1092
 #define IDC_STATIC_PATH                 1095
 #define IDC_CHECK_IGNORE                1097
 #define IDC_CHECK_FOCUS                 1098
