@@ -565,6 +565,27 @@ BOOL security_is_foreign_message(const UINT msg)
 	return (security_is_internal_message(msg) == TRUE && security_is_foreign_send() == TRUE) ? TRUE : FALSE;
 }
 
+/*
+ * security_call_window_proc - ウィンドウプロシージャの呼び出し
+ *
+ *	別のプロセスから送られた通常のメッセージ (タスクトレイの通知、設定の変更、終了要求など) の
+ *	処理中は、自分自身へ同じスレッドで送る内部メッセージも「送信中」と判定されて拒否され、
+ *	ウィンドウの初期化や保存が途中で止まる。そのため、その処理の間は入れ子のメッセージを受け付ける。
+ *	内部メッセージ自体が別のプロセスから送られた場合は信頼しない。
+ */
+LRESULT security_call_window_proc(const WNDPROC proc, const HWND hWnd, const UINT msg, const WPARAM wParam, const LPARAM lParam)
+{
+	LRESULT ret;
+
+	if (security_is_internal_message(msg) == TRUE || security_is_foreign_send() == FALSE) {
+		return proc(hWnd, msg, wParam, lParam);
+	}
+	security_trust_begin();
+	ret = proc(hWnd, msg, wParam, lParam);
+	security_trust_end();
+	return ret;
+}
+
 #ifndef OPTION_SET
 /*
  * security_shell_open_as_user - エクスプローラ経由で起動する (管理者権限を引き継がない)

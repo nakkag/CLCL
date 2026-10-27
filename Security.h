@@ -32,6 +32,7 @@ void security_trust_begin(void);
 void security_trust_end(void);
 BOOL security_is_foreign_send(void);
 BOOL security_is_foreign_message(const UINT msg);
+LRESULT security_call_window_proc(const WNDPROC proc, const HWND hWnd, const UINT msg, const WPARAM wParam, const LPARAM lParam);
 #ifndef OPTION_SET
 BOOL security_shell_open_as_user(const TCHAR *file_name, const TCHAR *command_line);
 #endif	// OPTION_SET
