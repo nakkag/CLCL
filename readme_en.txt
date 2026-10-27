@@ -1,4 +1,4 @@
-CLCL Ver 2.1.4
+CLCL Ver 2.2.1
 --
 
 * Introduction
@@ -354,6 +354,10 @@ CLCL.exe [/vwnx]
 
 * Update history
 
+- Ver 2.2.0 -> Ver 2.2.1
+	- Fixed a crash when the Viewer is opened by double-clicking the
+	  system tray icon.
+
 - Ver 2.1.3 -> Ver 2.2.0
 	- Added support for the Windows dark mode.
 	- Improved to support for high-DPI displays.
@@ -364,6 +368,7 @@ CLCL.exe [/vwnx]
 	- Fixed CLCL so that data a password manager saves to the
 	  clipboard is not kept in the history. (kashima-eyetech)
 	- Improved the wording of the English version.
+	- Security fixes.
 
 - Ver 2.1.2 -> Ver 2.1.3
 	- Changed the system tray icon shown while the clipboard is not
