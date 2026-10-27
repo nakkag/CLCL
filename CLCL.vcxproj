@@ -148,6 +148,7 @@
     <ClCompile Include="DarkMode.c" />
     <ClCompile Include="Data.c" />
     <ClCompile Include="dpi.c" />
+    <ClCompile Include="dynamic_popup.c" />
     <ClCompile Include="File.c" />
     <ClCompile Include="Filter.c" />
     <ClCompile Include="fmt_Bitmap.c" />
@@ -170,6 +171,7 @@
     <ClCompile Include="Message.c" />
     <ClCompile Include="OleDragDrop.c" />
     <ClCompile Include="Profile.c" />
+    <ClCompile Include="quicksearch.c" />
     <ClCompile Include="Regist.c" />
     <ClCompile Include="SelectFolder.c" />
     <ClCompile Include="SelectFormat.c" />
@@ -206,6 +208,7 @@
     <ClInclude Include="DarkMode.h" />
     <ClInclude Include="Data.h" />
     <ClInclude Include="dpi.h" />
+    <ClInclude Include="dynamic_popup.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="Filter.h" />
     <ClInclude Include="fmt_bitmap_view.h" />
@@ -225,6 +228,7 @@
     <ClInclude Include="Message.h" />
     <ClInclude Include="OleDragDrop.h" />
     <ClInclude Include="Profile.h" />
+    <ClInclude Include="quicksearch.h" />
     <ClInclude Include="Regist.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SelectFolder.h" />

@@ -8,6 +8,8 @@
 #define IDS_MENU_VIEWER                 4
 #define IDS_MENU_OPTION                 5
 #define IDS_MENU_CLIPBOARD_WATCH        6
+#define IDS_MENU_HELP                   7
+#define IDS_MENU_QUICKSEARCH            8
 #define IDS_TREEITEM_CLIPBOARD          10
 #define IDS_TREEITEM_HISTORY            11
 #define IDS_TREEITEM_REGIST             12
@@ -139,6 +141,8 @@
 #define ID_MENUITEM_OPEN                40054
 #define ID_MENU_DGDP_MOVE               40063
 #define ID_MENU_DGDP_COPY               40064
+#define ID_MENUITEM_HELP                40066
+#define ID_MENUITEM_QUICKSEARCH         40070
 #define ID_MENUITEM_CLIPBOARD_TB        50000
 #define ID_MENUITEM_PASTE_TB            50001
 #define ID_MENUITEM_REGIST_ADD_TB       50002

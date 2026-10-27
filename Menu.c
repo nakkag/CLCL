@@ -869,6 +869,7 @@ static MENU_ITEM_INFO *menu_create_info(MENU_INFO *menu_info, const int menu_cnt
 		case MENU_CONTENT_OPTION:
 		case MENU_CONTENT_CLIPBOARD_WATCH:
 		case MENU_CONTENT_APP:
+		case MENU_CONTENT_QUICKSEARCH:
 		case MENU_CONTENT_CANCEL:
 		case MENU_CONTENT_EXIT:
 			(*ret_cnt)++;
@@ -924,6 +925,7 @@ static MENU_ITEM_INFO *menu_create_info(MENU_INFO *menu_info, const int menu_cnt
 
 		case MENU_CONTENT_HISTORY:
 			// 履歴 (昇順)
+			// History (ascending order)
 			if (menu_create_datainfo(history_di, mii, j, id, 1, (menu_info + i)->min, (menu_info + i)->max) == FALSE) {
 				// メモリ確保に失敗した場合は作成済みの項目を解放して中止
 				menu_item_free(mii, *ret_cnt);
@@ -938,6 +940,7 @@ static MENU_ITEM_INFO *menu_create_info(MENU_INFO *menu_info, const int menu_cnt
 
 		case MENU_CONTENT_HISTORY_DESC:
 			// 履歴 (降順)
+			// History (descending order)
 			if (menu_create_datainfo(history_di, mii, j, id, -1, (menu_info + i)->min, (menu_info + i)->max) == FALSE) {
 				menu_item_free(mii, *ret_cnt);
 				*ret_cnt = 0;
@@ -1018,6 +1021,7 @@ static MENU_ITEM_INFO *menu_create_info(MENU_INFO *menu_info, const int menu_cnt
 
 		case MENU_CONTENT_CLIPBOARD_WATCH:
 			// クリップボード監視切り替え
+			// toggle clipboard monitoring
 			(mii + j)->id = ID_MENUITEM_CLIPBOARD_WATCH;
 			(mii + j)->flag = MF_OWNERDRAW | ((option.main_clipboard_watch == 1) ? MF_CHECKED : 0);
 			(mii + j)->item = (LPCTSTR)(mii + j);
@@ -1030,6 +1034,7 @@ static MENU_ITEM_INFO *menu_create_info(MENU_INFO *menu_info, const int menu_cnt
 
 		case MENU_CONTENT_TOOL:
 			// ツール
+			// Tools
 			if ((menu_info + i)->path != NULL && *(menu_info + i)->path != TEXT('\0')) {
 				if ((t = tool_title_to_index((menu_info + i)->path)) != -1) {
 					(mii + j)->id = ID_MENUITEM_DATA + ((*id)++);
@@ -1086,6 +1091,17 @@ static MENU_ITEM_INFO *menu_create_info(MENU_INFO *menu_info, const int menu_cnt
 			(mii + j)->free_icon = TRUE;
 			// メニュー情報を設定
 			(mii + j)->mi = menu_info + i;
+			j++;
+			break;
+
+		case MENU_CONTENT_QUICKSEARCH:
+			(mii + j)->id = ID_MENUITEM_QUICKSEARCH;
+			(mii + j)->flag = MF_OWNERDRAW;
+			(mii + j)->item = (LPCTSTR)(mii + j);
+			(mii + j)->text = alloc_copy(((menu_info + i)->title == NULL || *(menu_info + i)->title == TEXT('\0')) ?
+				message_get_res(IDS_MENU_QUICKSEARCH) : (menu_info + i)->title);
+			(mii + j)->icon = menu_read_icon((menu_info + i)->icon_path, (menu_info + i)->icon_index, option.menu_icon_size);
+			(mii + j)->free_icon = TRUE;
 			j++;
 			break;
 
