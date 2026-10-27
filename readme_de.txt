@@ -1,4 +1,4 @@
-CLCL Ver 2.2.0
+CLCL Ver 2.2.1
 --
 
 * Einleitung
@@ -395,6 +395,10 @@ CLCL.exe [/vwnx]
 	/x Beenden
 
 * Änderungsverlauf
+
+- Ver 2.2.0 -> Ver 2.2.1
+	- Absturz behoben, der auftrat, wenn die Anzeige per Doppelklick auf
+	  das Symbol im Infobereich geöffnet wurde.
 
 - Ver 2.1.3 -> Ver 2.2.0
 	- Unterstützung für den dunklen Modus von Windows hinzugefügt.

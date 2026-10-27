@@ -137,6 +137,7 @@ static void viewer_reset_dpi(const HWND hWnd);
 static void menu_detach_submenu(const HMENU hMenu, const HMENU hSubMenu);
 static BOOL viewer_close(const HWND hWnd);
 static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+static LRESULT CALLBACK viewer_message_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // ポップアップメニューの操作対象のツリー項目
 static HTREEITEM menu_target_item;
@@ -2660,8 +2661,19 @@ static BOOL viewer_close(const HWND hWnd)
 
 /*
  * viewer_proc - ウィンドウのプロシージャ
+ *
+ *	DPI や配色の変更、終了要求など別のプロセスから送られるメッセージの処理中も
+ *	子ウィンドウや本体へ送る内部メッセージを受け付けられるようにして処理する
  */
 static LRESULT CALLBACK viewer_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	return security_call_window_proc(viewer_message_proc, hWnd, msg, wParam, lParam);
+}
+
+/*
+ * viewer_message_proc - ウィンドウのメッセージ処理
+ */
+static LRESULT CALLBACK viewer_message_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	LPIDROPTARGET_NOTIFY pdtn;
 	static HWND FocusWnd;

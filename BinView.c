@@ -367,6 +367,10 @@ static void binview_set_scrollbar(const HWND hWnd, BUFFER *bf)
 	SCROLLINFO si;
 	RECT rect;
 
+	// フォント情報が未設定の間は除算できないため何もしない
+	if (bf->char_width <= 0 || bf->font_height <= 0) {
+		return;
+	}
 	GetClientRect(hWnd, &rect);
 
 	// 横スクロールバー
