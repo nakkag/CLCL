@@ -189,6 +189,7 @@ static BOOL winodw_reset(const HWND hWnd);
 static BOOL winodw_save(const HWND hWnd);
 static BOOL winodw_end(const HWND hWnd);
 static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+static LRESULT CALLBACK main_message_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 static BOOL path_combine(TCHAR *buf, const TCHAR *dir, const TCHAR *name);
 static void copy_old_file(void);
 static void get_work_path(const HINSTANCE hInstance);
@@ -1755,8 +1756,19 @@ static BOOL winodw_end(const HWND hWnd)
 
 /*
  * main_proc - メインウィンドウプロシージャ
+ *
+ *	タスクトレイの通知や終了要求など別のプロセスから送られるメッセージの処理中も
+ *	自分自身へ送る内部メッセージを受け付けられるようにして処理する
  */
 static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	return security_call_window_proc(main_message_proc, hWnd, msg, wParam, lParam);
+}
+
+/*
+ * main_message_proc - メインウィンドウのメッセージ処理
+ */
+static LRESULT CALLBACK main_message_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static int key_cnt, key_flag;
 	static UINT prev_key;
@@ -1791,9 +1803,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 	case WM_QUERYENDSESSION:
 		// Windows終了
 		session_ending = TRUE;
-		security_trust_begin();
 		winodw_save(hWnd);
-		security_trust_end();
 		save_flag = TRUE;
 		return TRUE;
 
@@ -1816,26 +1826,21 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 			return 0;
 		}
 		session_ending = TRUE;
-		security_trust_begin();
 		if (save_flag == FALSE) {
 			winodw_save(hWnd);
 		}
 		save_flag = TRUE;
 		winodw_end(hWnd);
-		security_trust_end();
 		DestroyWindow(hWnd);
 		return 0;
 
 	case WM_CLOSE:
 		// ウィンドウを閉じる
-		security_trust_begin();
 		if (winodw_save(hWnd) == FALSE) {
-			security_trust_end();
 			break;
 		}
 		save_flag = TRUE;
 		winodw_end(hWnd);
-		security_trust_end();
 		DestroyWindow(hWnd);
 		break;
 
@@ -2247,9 +2252,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 	case WM_OPTION_LOAD:
 		// 設定の読み込み
-		security_trust_begin();
 		winodw_reset(hWnd);
-		security_trust_end();
 		break;
 
 	case WM_OPTION_SAVE:
@@ -2518,9 +2521,7 @@ static LRESULT CALLBACK main_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 	case WM_VIEWER_SHOW:
 		// ビューア表示
-		security_trust_begin();
 		SendMessage(hWnd, WM_COMMAND, ID_MENUITEM_VIEWER, 0);
-		security_trust_end();
 		break;
 
 	case WM_VIEWER_GET_HWND:

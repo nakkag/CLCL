@@ -675,8 +675,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,2,0,0
- PRODUCTVERSION 2,2,0,0
+ FILEVERSION 2,2,1,0
+ PRODUCTVERSION 2,2,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -692,12 +692,12 @@ BEGIN
         BLOCK "041104b0"
         BEGIN
             VALUE "FileDescription", "CLCLSet"
-            VALUE "FileVersion", "2.2.0.0"
+            VALUE "FileVersion", "2.2.1.0"
             VALUE "InternalName", "CLCLSet.exe"
             VALUE "LegalCopyright", "Copyright (C) 1996-2026 by Ohno Tomoaki. All rights reserved."
             VALUE "OriginalFilename", "CLCLSet.exe"
             VALUE "ProductName", "CLCL"
-            VALUE "ProductVersion", "2.2.0.0"
+            VALUE "ProductVersion", "2.2.1.0"
         END
     END
     BLOCK "VarFileInfo"
