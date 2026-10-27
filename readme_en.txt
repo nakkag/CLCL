@@ -1,4 +1,4 @@
-CLCL Ver 2.1.4
+CLCL Ver 2.2.1
 --
 
 * Introduction
@@ -353,6 +353,10 @@ CLCL.exe [/vwnx]
 	/x Exit
 
 * Update history
+
+- Ver 2.2.0 -> Ver 2.2.1
+	- Fixed a crash when the Viewer is opened by double-clicking the
+	  system tray icon.
 
 - Ver 2.1.3 -> Ver 2.2.0
 	- Added support for the Windows dark mode.
